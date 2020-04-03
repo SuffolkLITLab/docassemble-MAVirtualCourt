@@ -1,0 +1,270 @@
+---
+modules:
+  - docassemble.MACourts.macourts
+---
+objects:
+  - users: DAList.using(object_type=Individual, there_are_any=True)
+  - children: DAList.using(object_type=Individual)
+  - other_parties: DAList.using(object_type=Individual)
+  - courts: DAList.using(object_type=MACourt, there_are_any=True, there_is_another=False) # Normally let's only have one court...
+  - macourts: MACourtList.using(courts=True)  
+  - witnesses: DAList.using(object_type=Individual)
+---
+mandatory: True
+code: |
+  # Set some variables that we need in all the interviews
+  multi_user = True
+  allow_cron = True
+  speak_text = True
+  # menu_items = [action_menu_item('Review Answers', 'road_map')]
+  # menu_items.append( {'url': url_ask(['share_fields', 'share_success', {'recompute': ['share_email','sent_sharing_email','share_cell','sent_sharing_text']}]), 'label': 'Share interview'})
+  menu_items = (action_menu_item('Language','language'))
+  set_live_help_status(availability='available', mode='help',partner_roles=['housing','family law'])
+---
+question:  What is your name?
+fields:
+  - First Name: users[0].name.first
+  - Middle Name: users[0].name.middle
+    required: False
+  - Last Name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    required: False
+---
+question: Are there more form users?
+fields:
+  - There are more form users: users.there_is_another
+    datatype: yesno
+---
+question: What is the name of the ${ ordinal(i) } user?
+fields:
+  - First Name: users[i].name.first
+  - Middle Name: users[i].name.middle
+    required: False
+  - Last Name: users[i].name.last
+  - Suffix: users[i].name.suffix
+    required: False
+---
+question: Add to form
+fields:
+  - Are there other parties to add to the form?: other_parties.there_are_any
+    datatype: yesno
+  - Are there children to add to the form?: children.there_are_any
+    datatype: yesno
+---
+question: More other parties
+fields:
+  - Are there more other parties to add to the form?: other_parties.there_is_another
+    datatype: yesno
+---
+question: More Children
+fields:
+  - Are there more children to add to the form?: children.there_is_another
+    datatype: yesno
+---
+question: What is the name of the ${ ordinal(i) } of the children?
+fields:
+  - First Name: children[i].name.first
+  - Middle Name: children[i].name.middle
+    required: False
+  - Last Name: children[i].name.last
+  - Suffix: children[i].name.suffix
+    required: False
+---
+question: What is the name of the ${ ordinal(i) } of the other parties
+fields:
+  - First Name: other_parties[i].name.first
+  - Middle Name: other_parties[i].name.middle
+    required: False
+  - Last Name: other_parties[i].name.last
+  - Suffix: other_parties[i].name.suffix
+    required: False
+---
+generic object: Individual
+question: What is the address for ${ x.name }?
+fields:
+  - Street address: x.address.address
+  - Unit: x.address.unit
+    required: False
+  - City: x.address.city
+  - State: x.address.state
+  - Zip: x.address.zip
+---
+generic object: Individual
+question: What is the contact information for ${ x.name }?
+fields:
+  - Phone: x.phone
+  - Email: x.email
+    required: False
+---
+generic object: Individual
+question: |
+  ${x}, please sign below
+signature: x.signature
+under: |
+  ${x}
+---
+id: court information
+question: |
+  What court is your case being heard in?
+fields:
+  - Court name: courts[0]
+    datatype: object
+    choices: macourts
+---
+question: |
+  What is the docket number for your case?
+fields:
+  - no label: docket_number
+    required: False
+continue button field: ask_docket_number
+---
+id: signature
+decoration: file-signature
+question: |
+  Sign your court forms
+subquestion: |
+  We are almost ready to print your forms. You will need to sign them before
+  delivering them. We recommend you sign electronically now, before you print. 
+  You can sign using your computer mouse, or sign on your phone with your finger.
+field: signature_choice
+buttons:  
+  - Sign on my phone: phone
+    image: mobile-alt
+  - Sign on this computer: this device
+    image: desktop
+  - Sign after I print: paper
+    image: print
+help: |
+  #### Why do I need to sign it now?
+  We will print several forms for you. You will need to add your signature
+  to each page and then copy each collated set. If you sign now, you can print
+  all of the copies you need at once.
+  #### Will the court accept my digital signature?
+  Yes. Digital signatures are allowed by court rule. See [mass.gov](https://www.mass.gov/supreme-judicial-court-rules/massachusetts-rules-of-electronic-filing-rule-13-electronic-signature).
+continue button field: saw_signature_choice
+script: |
+  <script>
+    $(document).on('daPageLoad', function(){
+      $(".da-field-buttons > div > .btn-da-custom").last().after("<br>")
+      $(".da-field-buttons > div > .btn-da-custom").first().before("<br>")
+    });
+  </script>
+---
+id: signature wait screen
+question: |
+  % if defined('tenant.signature'):
+  Thank you for signing.
+  % else:
+  Sign on your phone
+  % endif
+subquestion: |
+  % if device().is_pc:
+  % if defined('tenant.signature'):
+  Click continue.
+  % else:
+  Click continue on this screen once you have finished signing on your phone.
+  % endif
+  % else:
+  Click continue on this screen when you're ready to sign.
+  % endif  
+field: signature_wait_screen
+decoration: file-signature
+---
+id: signature-phone
+question: |
+  Sign your court forms
+fields:
+  - note: |
+      1. Open the camera app or barcode reader app on your phone.
+      2. Point it at the screen.
+      3. Click the link icon that appears on the camera screen.
+      4. Click ${word("continue")} on your phone.
+      
+      <center>
+      ${interview_url_as_qr()}
+      </center>
+    show if: 
+      code: |
+        device().is_pc
+  - Text me a link instead: text_link
+    datatype: yesnowide
+    show if: 
+      code: |
+        device().is_pc
+  - label: Cell phone number
+    field: link_cell
+    show if: text_link
+    default: ${showifdef('user_cell_edited')}
+  - note: |
+      Click ${word("continue")} to add your signature.
+  - note: |
+      Click ${word("continue")} to add your signature.
+    show if: 
+      code: |
+        not device().is_pc
+help: |
+  Many smartphones will automatically find the link on this screen when you use
+  the camera app. The link
+  may "float" up from the screen into a small icon you can click.
+  If your phone does not do this, use the text option instead.
+continue button field: saw_signature_qrcode
+---
+id: signature phone followup
+question: |
+  Continue on the device you started the interview on
+subquestion: |
+  Thank you for signing. You can close this browser on your phone.
+  Keep going on the computer you started the interview on.
+field: signature_phone_followup  
+---
+generic object: Individual
+id: signature
+question: Sign below
+subquestion: |
+signature: x.signature
+under: |
+  ${ x }
+---
+template: interview_link
+content: |
+  Hi, someone sent you a form to sign.
+  Click the link below to continue the interview on your phone.
+  ${interview_url()}
+---
+id: almost done
+question: |
+  Almost done!
+subquestion: |
+  You've finished the main interview. Just a few quick questions left!
+  
+  If you need to change anything, click one of the section labels on the left
+  to update your answers.
+field: almost_done
+section: Conclusion
+progress: 95
+---
+code: |
+  if started_on_phone:
+    saw_signature_choice = True
+    user[0].signature
+    # Add in logic for when we need additional signatures
+  else: 
+    saw_signature_choice
+    if defined('signature_choice') and signature_choice =='this device':
+      user[0].signature
+    elif defined('signature_choice') and signature_choice == 'phone':
+      saw_signature_qrcode
+      if defined('link_cell') and link_cell and task_not_yet_performed('send signature link'):
+        send_sms(task='send signature link', to=link_cell,template=interview_link)
+        signature_wait_screen
+        user[0].signature
+        if device().is_mobile:
+          signature_phone_followup
+      else:
+        user[0].signature
+    # Handle situation where someone uses the QR code    
+    if saw_signature_choice and not defined('signature_choice'):
+      user[0].signature
+      signature_phone_followup
+      signature_choice = 'phone'  
+  signature_flow = True
