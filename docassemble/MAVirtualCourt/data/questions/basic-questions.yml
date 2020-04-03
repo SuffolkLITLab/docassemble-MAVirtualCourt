@@ -5,10 +5,14 @@ modules:
 objects:
   - users: DAList.using(object_type=Individual, there_are_any=True)
   - children: DAList.using(object_type=Individual)
+  - defendants: DAList.using(object_type=Individual)
+  - plaintiffs: DAList.using(object_type=Individual)
+  - plaintiff: Individual
   - other_parties: DAList.using(object_type=Individual)
   - courts: DAList.using(object_type=MACourt, there_are_any=True, there_is_another=False) # Normally let's only have one court...
   - macourts: MACourtList.using(courts=True)  
   - witnesses: DAList.using(object_type=Individual)
+  - docket_numbers: DAList
 ---
 mandatory: True
 code: |
@@ -28,6 +32,17 @@ fields:
     required: False
   - Last Name: users[0].name.last
   - Suffix: users[0].name.suffix
+    required: False
+---
+generic object: Individual
+question: |
+  What is ${x.object_possessive('name')}?
+fields:
+  - First Name: x.name.first
+  - Middle Name: x.name.middle
+    required: False
+  - Last Name: x.name.last
+  - Suffix: x.name.suffix
     required: False
 ---
 question: Are there more form users?
@@ -83,6 +98,7 @@ generic object: Individual
 question: What is the address for ${ x.name }?
 fields:
   - Street address: x.address.address
+    address autocomplete: True
   - Unit: x.address.unit
     required: False
   - City: x.address.city
@@ -92,8 +108,9 @@ fields:
 generic object: Individual
 question: What is the contact information for ${ x.name }?
 fields:
-  - Phone: x.phone
+  - Phone: x.phone_number
   - Email: x.email
+    datatype: email
     required: False
 ---
 generic object: Individual
@@ -104,12 +121,15 @@ under: |
   ${x}
 ---
 id: court information
+sets:
+  - courts[0].name
 question: |
   What court is your case being heard in?
 fields:
   - Court name: courts[0]
     datatype: object
     choices: macourts
+continue button field: ask_court_question    
 ---
 question: |
   What is the docket number for your case?
@@ -117,6 +137,27 @@ fields:
   - no label: docket_number
     required: False
 continue button field: ask_docket_number
+---
+question: |
+  Enter any docket numbers you need on this form below
+list collect: True
+fields:
+  - no label: docket_numbers[i]
+    required: False
+---
+question: |
+  Who are the defendants on this form?
+list collect: True
+fields:
+  - Name: defendants[i].name.first
+---
+question: |
+  What date should appear on the signed form?
+subquestion: |
+  This will appear next to your signature on the finished PDF form.
+fields: 
+  - no label: signature_date
+    datatype: date
 ---
 id: signature
 decoration: file-signature
@@ -194,7 +235,7 @@ fields:
   - label: Cell phone number
     field: link_cell
     show if: text_link
-    default: ${showifdef('user_cell_edited')}
+    default: ${showifdef('users[0].phone_number')}
   - note: |
       Click ${word("continue")} to add your signature.
   - note: |
@@ -231,40 +272,39 @@ content: |
   Click the link below to continue the interview on your phone.
   ${interview_url()}
 ---
-id: almost done
-question: |
-  Almost done!
-subquestion: |
-  You've finished the main interview. Just a few quick questions left!
-  
-  If you need to change anything, click one of the section labels on the left
-  to update your answers.
-field: almost_done
-section: Conclusion
-progress: 95
+code: |
+  started_on_phone = device().is_mobile
 ---
 code: |
   if started_on_phone:
     saw_signature_choice = True
-    user[0].signature
+    users[0].signature
     # Add in logic for when we need additional signatures
   else: 
     saw_signature_choice
     if defined('signature_choice') and signature_choice =='this device':
-      user[0].signature
+      users[0].signature
     elif defined('signature_choice') and signature_choice == 'phone':
       saw_signature_qrcode
       if defined('link_cell') and link_cell and task_not_yet_performed('send signature link'):
         send_sms(task='send signature link', to=link_cell,template=interview_link)
         signature_wait_screen
-        user[0].signature
+        users[0].signature
         if device().is_mobile:
           signature_phone_followup
       else:
-        user[0].signature
+        users[0].signature
     # Handle situation where someone uses the QR code    
     if saw_signature_choice and not defined('signature_choice'):
-      user[0].signature
+      users[0].signature
       signature_phone_followup
       signature_choice = 'phone'  
   signature_flow = True
+---
+code: |
+  user_signature_verification = users[0].signature
+---
+code: |
+  user_name_full__2 = users[0].name.full()
+  user_name_full__3 = users[0].name.full()
+  user_phone__2 = users[0].phone_number
