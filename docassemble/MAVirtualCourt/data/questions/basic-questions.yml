@@ -308,3 +308,9 @@ code: |
   user_name_full__2 = users[0].name.full()
   user_name_full__3 = users[0].name.full()
   user_phone__2 = users[0].phone_number
+---
+code: |
+  basic_questions_intro_screen = True
+---
+code: |
+  basic_questions_user_fields = True
