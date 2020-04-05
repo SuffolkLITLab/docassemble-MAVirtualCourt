@@ -3,7 +3,7 @@ modules:
   - docassemble.MACourts.macourts
 ---
 objects:
-  - interview_metadata: DADict.using(object_type=DADict.using(auto_gather=False, gathered=True)
+  - interview_metadata: DADict.using(object_type=DADict.using(auto_gather=False, gathered=True))
   - users: DAList.using(object_type=Individual, there_are_any=True)
   - children: DAList.using(object_type=Individual)
   - defendants: DAList.using(object_type=Individual)
