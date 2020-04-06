@@ -1,7 +1,7 @@
 from docassemble.base.functions import define, defined, value
 
 from docassemble.base.util import Address, Individual, DAEmpty
-from docassemble.assemblylinewizard.assembly_line import map_names
+from docassemble.assemblylinewizard.interview_generator import map_names
 
 def trigger_user_questions(interview_metadata_dict, question_order = None):
   """There may be a more elegant way to handle this."""
