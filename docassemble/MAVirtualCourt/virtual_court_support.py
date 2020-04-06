@@ -47,7 +47,11 @@ def trigger_signature_flow(interview_metadata_dict, question_order = None):
 
 def mark_unfilled_fields_empty(interview_metadata_dict):
   """Given an interview metadata dictionary, transform any un-filled fields into DAEmpty()"""
-  for field in interview_metadata_dict.get('field_list',[]) + interview_metadata_dict.get('built_in_fields_used',[]):
+  for field_dict in interview_metadata_dict.get('field_list',[]) + interview_metadata_dict.get('built_in_fields_used',[]):
+    try:
+        field = field_dict['variable'] # Our list of fields is a dictionary
+    except:
+        continue
     # Make sure we don't try to define a method
     # Also, don't set any signatures to DAEmpty
     if not map_names(field).endswith('()') and not map_names(field).endswith('.signature'):  

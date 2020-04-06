@@ -1,4 +1,7 @@
 ---
+features:
+  question help button: True
+---
 modules:
   - docassemble.MACourts.macourts
   - .virtual_court_support
@@ -52,17 +55,50 @@ code: |
   speak_text = True
   # menu_items = [action_menu_item('Review Answers', 'road_map')]
   # menu_items.append( {'url': url_ask(['share_fields', 'share_success', {'recompute': ['share_email','sent_sharing_email','share_cell','sent_sharing_text']}]), 'label': 'Share interview'})
-  menu_items = (action_menu_item('Language','language'))
+  # menu_items = (action_menu_item('Language','language'))
   set_live_help_status(availability='available', mode='help',partner_roles=['housing','family law'])
 ---
-question:  What is your name?
+question:  |
+  What is your name?
 fields:
   - First Name: users[0].name.first
   - Middle Name: users[0].name.middle
     required: False
   - Last Name: users[0].name.last
   - Suffix: users[0].name.suffix
+    code: |
+      name_suffix()
+    required: False  
+---
+question: |
+  What is your contact information?
+subquestion: |
+  Put in the address that you want filled in on the court form
+  next to your name.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
     required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip 
+  - Phone number where you can be reached: users[0].phone_number
+    required: False
+  - Email address where you can be reached: users[0].email    
+    datatype: email
+    required: False
+  - How can we reach you?: users[0].other_contact_method
+    input type: area
+    js show if: |
+      (val("users[0].phone_number") == '' && val("users[0].email") == '') ||
+      !(val("users[0].phone_number") || val("users[0].email"))
+---
+code: |
+  local_housing_court = macourts.matching_housing_court(users[0].address)
 ---
 generic object: Individual
 question: |
@@ -125,7 +161,8 @@ fields:
     required: False
 ---
 generic object: Individual
-question: What is the address for ${ x.name }?
+question: |
+  What is ${ x.possessive('address') }?
 fields:
   - Street address: x.address.address
     address autocomplete: True
@@ -133,6 +170,9 @@ fields:
     required: False
   - City: x.address.city
   - State: x.address.state
+    default: MA   
+    code: |
+      states_list()   
   - Zip: x.address.zip
 ---
 generic object: Individual
@@ -150,15 +190,53 @@ signature: x.signature
 under: |
   ${x}
 ---
+if: |
+  preferred_court == 'Housing Court'
 id: court information
 sets:
   - courts[0].name
 question: |
   What court is your case being heard in?
+subquestion: |
+  Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
+  
+  % if preferred_court:
+  We have tried to select the court your case is most likely to be in
+  below, based on the address you gave us.
+  
+  We think you are most likely to file in ${local_housing_court}, which
+  is at ${local_housing_court.address.on_one_line()}
+  
+  ${map_of(local_housing_court.address)}
+  
+  % endif
 fields:
   - Court name: courts[0]
     datatype: object
     choices: macourts
+    default: local_housing_court
+continue button field: ask_court_question    
+help: |
+  ${quote_paragraphs(local_housing_court.description)}
+---
+id: court information
+#sets:
+#  - courts[0].name
+question: |
+  What court is your case being heard in?
+subquestion: |
+  Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
+  
+  % if preferred_court:
+  We have tried to select the court your case is most likely to be in
+  below, based on the address you gave us.
+  
+  
+  % endif
+#fields:
+#  - Court name: courts[0]
+#    datatype: object
+#    choices: macourts
 continue button field: ask_court_question    
 ---
 question: |
@@ -182,12 +260,13 @@ fields:
   - Name: defendants[i].name.first
 ---
 question: |
-  What date should appear on the signed form?
+  When will these forms be signed?
 subquestion: |
-  This will appear next to your signature on the finished PDF form.
+  Normally, leave this set to today's date.
 fields: 
-  - no label: signature_date
+  - Date: signature_date
     datatype: date
+    default: ${today().format("yyyy-MM-dd")}
 ---
 id: signature
 decoration: file-signature
@@ -333,11 +412,6 @@ code: |
 ---
 code: |
   user_signature_verification = users[0].signature
----
-code: |
-  user_name_full__2 = users[0].name.full()
-  user_name_full__3 = users[0].name.full()
-  user_phone__2 = users[0].phone_number
 ---
 question: |
   Mass Access Project
