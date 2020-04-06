@@ -15,6 +15,34 @@ objects:
   - witnesses: DAList.using(object_type=Individual)
   - docket_numbers: DAList
 ---
+comment: |
+  Update this if our interview needs to handle more types of people
+  This is mostly used for signature flow
+  
+  You can also add more people in your interview if you need them.
+  Use .append() on this list.
+  
+  TODO: these are actually all lists...
+variable name: individuals
+data:
+  - user
+  - other_party
+  - plaintiff
+  - defendant
+  - respondent
+  - petitioner
+  - spouse
+  - children
+  - parent
+  - guardian
+  - caregiver
+  - guardian_ad_litem
+  - attorney
+  - translator
+  - witness
+  - debt_collector
+  - creditor
+---
 mandatory: True
 code: |
   # Set some variables that we need in all the interviews
@@ -310,8 +338,18 @@ code: |
   user_name_full__3 = users[0].name.full()
   user_phone__2 = users[0].phone_number
 ---
-code: |
-  basic_questions_intro_screen = True
+question: |
+  Mass Access Project
+subquestion: |
+  This project helps you file emergency forms with the court
+  in a time of critical need. At the end, your forms will be
+  delivered securely to the court.
+  
+  The court should contact you in x days to confirm receipt of
+  your form. If you don't hear back from them, please call the
+  court. You'll get the number for your court at the end of this
+  interview.
+continue button field: basic_questions_intro_screen
 ---
 code: |
   basic_questions_user_fields = True
