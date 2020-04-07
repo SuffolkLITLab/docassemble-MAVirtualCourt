@@ -26,6 +26,8 @@ code: |
     'logic block variable': 'Housing_Temporary_Restraining_Order0002',
     'attachment block variable': 'Housing_Temporary_Restraining_Order0002_attachment',
     'typical role': 'plaintiff',  })
+  interview_metadata['Housing_Temporary_Restraining_Order0002']['field_list']
+  interview_metadata['Housing_Temporary_Restraining_Order0002']['built_in_fields_used']    
 ---
 question: |
   How did this harm you?
@@ -379,7 +381,7 @@ code: |
   users[0].address.geolocate() # fill in the county attribute of address
   courts[0]
   set_party_assignments
-  docket_numbers = DAEmpty() # we don't need this field
+  docket_numbers[0] = '' # we don't need this field
   # plaintiff
   #  # docket_numbers[0]
   #  str(defendants)
@@ -397,7 +399,7 @@ code: |
   #preview_empty_fields
   mark_unfilled_fields_empty( interview_metadata["Housing_Temporary_Restraining_Order0002"])
   
-  # Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
+  Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
   basic_questions_signature_flow
   users[0].signature
   Housing_Temporary_Restraining_Order0002 = True
