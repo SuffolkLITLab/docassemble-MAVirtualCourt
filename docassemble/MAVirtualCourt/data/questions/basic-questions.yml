@@ -1,6 +1,7 @@
 ---
 features:
   question help button: True
+  progress bar: True
 ---
 modules:
   - docassemble.MACourts.macourts
@@ -111,17 +112,24 @@ fields:
   - Suffix: x.name.suffix
     required: False
 ---
-question: Are there more form users?
+question: |
+  Is there anyone else who will be filing this form with you?
+subquestion: |
+  Answer yes if someone else will be a party of the case with you.
+  For example, a spouse, partner, or co-tenant who is on your side
+  of this case (not the opposing party).
 fields:
   - There are more form users: users.there_is_another
-    datatype: yesno
+    datatype: yesnoradio
 ---
-question: What is the name of the ${ ordinal(i) } user?
+question: |
+  What is the name of the ${ ordinal(i) } user?
 fields:
   - First Name: users[i].name.first
   - Middle Name: users[i].name.middle
     required: False
   - Last Name: users[i].name.last
+    required: False
   - Suffix: users[i].name.suffix
     required: False
 ---
@@ -195,6 +203,7 @@ if: |
 id: court information
 sets:
   - courts[0].name
+  - courts[0].address.county
 question: |
   What court is your case being heard in?
 subquestion: |
@@ -374,6 +383,7 @@ subquestion: |
 signature: x.signature
 under: |
   ${ x }
+progress: 99
 ---
 template: interview_link
 content: |
@@ -431,3 +441,9 @@ code: |
 ---
 code: |
   basic_questions_signature_flow = True
+---
+generic object: Individual
+code: |
+  x.gender_female = x.gender == 'female'
+  x.gender_male = x.gender == 'male'
+  x.gender_other = ((x.gender != 'male') and (x.gender != 'female'))

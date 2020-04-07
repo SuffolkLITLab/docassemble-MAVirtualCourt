@@ -37,7 +37,8 @@ subquestion: |
   Even if you don't have any specific itemized expenses, your landlord may be 
   liable for up to three months' rent as a penalty. 
   
-  Put in your best guess.
+  Put in your best estimate. You will have a chance to prove the specific
+  amount in court.
   
 fields:
   - I didn't have any specific expenses: no_expenses
@@ -138,7 +139,11 @@ code: |
   largest_liable_guess = three_times_rent if three_times_rent > expense_total else expense_total
 ---
 code: |
-  court_county = courts[0].address.county
+  courts[0].name
+  try:
+    court_county = courts[0].address.county
+  except:
+    court_county = ''
 ---
 question: |
   What is your name?
@@ -222,18 +227,19 @@ decoration: file-download
 question: |
   Great job! You finished the interview
 subquestion: |
-  Thank you ${users[0]}. Your document is ready.  There is a preview
+  Thank you ${users}. Your document is ready.  There is a preview
   below.
   
   ${ Housing_Temporary_Restraining_Order0002_attachment }
   
   We emailed a copy of your form to ${courts[0]} and to you.
   
-  1. :tasks: You may want to download and print a copy of this form for your 
+  1. You may want to download and print a copy of this form for your 
   records.
-  1. :tasks: You should hear back from the court about scheduling in the next 
+  1. You should hear back from the court about scheduling in the next 
   x days.
-  1. :tasks: If  you don't hear back, please call the court at ${courts[0].phone}  
+  1. If  you don't hear back, please call the court at ${courts[0].phone}  
+progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
 ---
 need: Housing_Temporary_Restraining_Order0002
@@ -257,7 +263,7 @@ attachment:
       - "user_address_on_one_line": ${ users[0].address.on_one_line() }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
-      - "court_county": ${ court_county }
+      - "court_county": ${ court_county if defined('court_county') else ''}
       - "incident_date": ${ incident_date }
       - "incident_locked_out": ${ incident_locked_out }
       - "incident_utility": ${ incident_utility }
@@ -358,7 +364,14 @@ continue button field: Housing_Temporary_Restraining_Order0002_intro
 question: |
   Housing temporary restraining order
 subquestion: |
-  This form lets you ask the court for emergency help if your landlord is not fixing bad conditions in your apartment, your utilities are shut off, or your landlord is doing something else to breach your right to "quiet enjoyment" of your home.
+  This form lets you ask the court for emergency help if your landlord illegallly locked you out of your apartment, your utilities are shut off, or your landlord is doing something else to breach your right to "quiet enjoyment" of your home.
+  
+  You will be asked about 10 questions. At the end, you will need to provide
+  your name and signature. We'll deliver your form to the court by secure
+  email.
+---
+features:
+  progress bar multiplier: 0.07
 ---
 id: Housing_Temporary_Restraining_Order0002
 code: |
@@ -374,17 +387,20 @@ code: |
   no_expenses
   tenant_monthly_rent
   other_parties[0].name.first
+  set_progress(25)
   landlord_liable_amount
   requested_action_deny_possession
   allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
   preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
   users[0].address.geolocate() # fill in the county attribute of address
   courts[0]
+  court_county
   set_party_assignments
   docket_numbers[0] = '' # we don't need this field
   # plaintiff
   #  # docket_numbers[0]
   #  str(defendants)
+  set_progress(75)
   str(users[0])
   users[0].address.on_one_line()
   users[0].phone_number
@@ -412,11 +428,13 @@ code: |
 ---
 continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
-  Placeholder preview screen
+  Nearly finished
 subquestion: |
-  Here is a preview of the form you'll sign on the next page. 
+  You are almost done with the interview. On the next screen, you'll
+  be asked to sign the form below. Please review it for any mistakes.
   
    ${Housing_Temporary_Restraining_Order0002_attachment_preview}
+progress: 95
 ---
 attachment:
     variable name: Housing_Temporary_Restraining_Order0002_attachment_preview
@@ -437,7 +455,7 @@ attachment:
       - "user_address_on_one_line": ${ users[0].address.on_one_line() }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
-      - "court_county": ${ court_county }
+      - "court_county": ${ court_county if defined('court_county') else ''}
       - "incident_date": ${ incident_date }
       - "incident_locked_out": ${ incident_locked_out }
       - "incident_utility": ${ incident_utility }
