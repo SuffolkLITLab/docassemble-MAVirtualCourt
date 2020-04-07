@@ -1,3 +1,6 @@
+metadata:
+  logo: |
+    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"/> <h3>Mass Access: Courts</h3>
 ---
 features:
   question help button: True
