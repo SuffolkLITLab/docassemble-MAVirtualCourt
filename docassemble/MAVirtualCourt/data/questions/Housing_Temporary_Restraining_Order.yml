@@ -102,27 +102,22 @@ fields:
       is: business
 ---
 question: |
-  How much do you think ${other_parties[0]} is liable for?
+  ${other_parties[0].possessive('liability')}
 subquestion: |
-  Your landlord may be liable for 3 times your monthly rent, or the actual amount you paid because of your landlord's actions or failure to act. The court should give you whichever amount is larger.
+  Your landlord may be liable for 3 times your monthly rent, or the actual amount you paid because of your landlord's actions or failure to act. The court should give you whichever amount is larger. In this case, that amount is
+  **${currency(largest_liable_guess)}**.
   
-  You told us that you had epenses totaling ${currency(expense_total)},
+  You told us that you had expenses totaling ${currency(expense_total)},
   and that your rent is ${currency(tenant_monthly_rent)}.
   
   % if largest_liable_guess > expense_total:
-  Because three times your monthly rent is ${currency(three_times_rent)}, which 
-  is larger than ${currency(expense_total)}, we are using your rent figure
-  as the default.
+  Three times your monthly rent is ${currency(three_times_rent)}, which 
+  is larger than ${currency(expense_total)}.
   % else:
-  Because three times your monthly rent of ${currency(three_times_rent)} is
-  still smaller than your actual expenses of ${currency(expense_total)}, we 
-  are using your actual expenses as the default below.
+  Three times your monthly rent of ${currency(three_times_rent)} is
+  still smaller than your actual expenses of ${currency(expense_total)}.
   % endif
-  
-fields:
-  - 'Amount': landlord_liable_amount
-    datatype: currency
-    default: ${largest_liable_guess}
+continue button field:  landlord_liable_amount
 ---
 code: |
   three_times_rent = tenant_monthly_rent * 3
@@ -276,7 +271,7 @@ attachment:
       - "incident2_item_cost": ${ currency(incident2_item_cost ) }
       - "incident3_item": ${ incident3_item }
       - "incident3_item_cost": ${ currency(incident3_item_cost ) }
-      - "landlord_liable_amount": ${ landlord_liable_amount }
+      - "landlord_liable_amount": ${ largest_liable_guess }
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
