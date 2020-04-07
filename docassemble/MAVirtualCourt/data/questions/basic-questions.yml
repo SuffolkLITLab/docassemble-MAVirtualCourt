@@ -9,7 +9,7 @@ metadata:
 features:
   question help button: True
   progress bar: True
-  bootstrap theme: custom-css-bootstrap-magic-2020-04-07.css
+  css: colors.css
 ---
 modules:
   - docassemble.MACourts.macourts
