@@ -1,10 +1,15 @@
 metadata:
+  title: |
+    MassAccess: Court Forms
+  short title: |
+    MassAccess
   logo: |
-    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"/> <h3>Mass Access: Courts</h3>
+    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"> <h1 style="display:inline; font-size: 1em; font-family: 'Inter Bold', 'Arial'; font-weight: bold;"> MassAccess: Court Forms</h1>
 ---
 features:
   question help button: True
   progress bar: True
+  bootstrap theme: custom-css-bootstrap-magic-2020-04-07.css
 ---
 modules:
   - docassemble.MACourts.macourts
