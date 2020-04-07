@@ -54,16 +54,17 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
         continue
     # Make sure we don't try to define a method
     # Also, don't set any signatures to DAEmpty
-    if not map_names(field).endswith('()') and not map_names(field).endswith('.signature'):  
+    if not map_names(field).endswith('.signature') and not '(' in map_names(field):
       if not defined(map_names(field)):
-        define(map_names(field), DAEmpty()) # set to special Docassemble empty object
+        define(map_names(field), '') # set to special Docassemble empty object
+        #define(map_names(field), DAEmpty()) # set to special Docassemble empty object
     # Handle special case of an address that we skipped filling in on the form
     elif map_names(field).endswith('address.on_one_line()'):
       individual_name = map_names(field).partition('.on_one_line')[0]
       if not defined(individual_name+'.address'): # here we're checking for an empty street address attribute
-        define(individual_name, DAEmpty()) # at this point this should be something like user.address
+        define(individual_name, '') # at this point this should be something like user.address
     elif map_names(field).endswith('address.line_two()'):
       individual_name = map_names(field).partition('.line_two')[0]
       if not defined(individual_name+'.city'):
-        define(individual_name, DAEmpty())
+        define(individual_name, '')
 
