@@ -4,7 +4,7 @@ metadata:
   short title: |
     MassAccess
   logo: |
-    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"> <h1 style="display:inline; font-size: 1em; font-family: 'Inter Bold', 'Arial'; font-weight: bold;"> MassAccess: Court Forms</h1>
+    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"> <h1 style="display:inline; font-size: 1em; font-family: 'Inter Bold', 'Arial'; font-weight: bold;"> MassAccess</h1>
 ---
 features:
   question help button: True
@@ -17,16 +17,22 @@ modules:
 ---
 objects:
   - interview_metadata: DADict.using(object_type=DADict.using(auto_gather=False, gathered=True))
-  - users: DAList.using(object_type=Individual, there_are_any=True)
-  - children: DAList.using(object_type=Individual)
-  - defendants: DAList.using(object_type=Individual)
-  - plaintiffs: DAList.using(object_type=Individual)
+  - users: PeopleList.using(there_are_any=True)
+  - children: PeopleList
+  - defendants: PeopleList
+  - plaintiffs: PeopleList
   - plaintiff: Individual
-  - other_parties: DAList.using(object_type=Individual)
+  - other_parties: PeopleList
   - courts: DAList.using(object_type=MACourt, there_are_any=True, there_is_another=False) # Normally let's only have one court...
-  - macourts: MACourtList.using(courts=True)  
-  - witnesses: DAList.using(object_type=Individual)
+  - macourts: MACourtList.using(courts=True)  # this is for lookups
+  - witnesses: PeopleList
   - docket_numbers: DAList
+  - caregivers: PeopleList
+  - guardians_ad_litem: PeopleList
+  - attorneys: PeopleList
+  - translators: PeopleList
+  - debt_collectors: PeopleList
+  - creditors: PeopleList
 ---
 comment: |
   Update this if our interview needs to handle more types of people
@@ -56,6 +62,89 @@ data:
   - debt_collector
   - creditor
 ---
+generic object: PeopleList
+question: |
+  Will this form include any ${noun_plural(x.object_name())}?
+yesno: x.there_are_any
+---
+question: |
+  List the name of each witness below
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - First name: witnesses[i].name.first
+  - Middle name: witnesses[i].name.middle
+  - Last name: witnesses[i].name.last
+    required: False
+  - Suffix: witnesses[i].name.suffix
+    code: |
+      name_suffix()
+    required: False  
+---
+generic object: PeopleList
+question: |
+  Please list all ${x.object_name()} below
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - Is this ${noun_singular(x.object_name())} a person or business?: x[i].person_type
+    input type: radio
+    choices:
+      - Business or organization: business
+      - Person: individual
+  - First name: x[i].name.first
+    show if:
+      variable: x[i].person_type
+      is: "individual"
+  - Last name: x[i].name.last
+    show if:
+      variable: x[i].person_type      
+      is: "individual"
+  - Suffix: x[i].name.suffix
+    code: |
+      name_suffix()
+    show if:
+      variable: x[i].person_type      
+      is: "individual"
+    required: False      
+  - Name of organization or business: x[i].name.first
+    show if:
+      variable: x[i].person_type
+      is: business
+---
+question: |
+  Please list all people on the other side of your case below
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - Is this a person, or a business?: other_parties[i].person_type
+    input type: radio
+    choices:
+      - Business or organization: business
+      - Person: individual
+  - First name: other_parties[i].name.first
+    show if:
+      variable: other_parties[i].person_type
+      is: "individual"
+  - Last name: other_parties[i].name.last
+    show if:
+      variable: other_parties[i].person_type      
+      is: "individual"
+  - Suffix: other_parties[i].name.suffix
+    code: |
+      name_suffix()
+    show if:
+      variable: other_parties[i].person_type      
+      is: "individual"
+    required: False      
+  - Name of organization or business: other_parties[i].name.first
+    show if:
+      variable: other_parties[i].person_type
+      is: business
+---
 mandatory: True
 code: |
   # Set some variables that we need in all the interviews
@@ -78,6 +167,7 @@ fields:
     code: |
       name_suffix()
     required: False  
+---
 ---
 question: |
   What is your contact information?
@@ -121,17 +211,19 @@ fields:
     required: False
 ---
 question: |
-  Is there anyone else who will be filing this form with you?
+  Is there anyone else who will be filing this form with you?  
 subquestion: |
+  % if len(users.elements) <= 1:
   Answer yes if someone else will be a party of the case with you.
   For example, a spouse, partner, or co-tenant who is on your side
   of this case (not the opposing party).
-fields:
-  - There are more form users: users.there_is_another
-    datatype: yesnoradio
+  % else:
+  You already told us about ${comma_and_list(users.elements)}
+  % endif
+yesno: users.there_is_another
 ---
 question: |
-  What is the name of the ${ ordinal(i) } user?
+  What is the name of the ${ ordinal(i) } person on your side of the case?
 fields:
   - First Name: users[i].name.first
   - Middle Name: users[i].name.middle
@@ -141,24 +233,11 @@ fields:
   - Suffix: users[i].name.suffix
     required: False
 ---
-question: Add to form
-fields:
-  - Are there other parties to add to the form?: other_parties.there_are_any
-    datatype: yesno
-  - Are there children to add to the form?: children.there_are_any
-    datatype: yesno
----
-question: More other parties
-fields:
-  - Are there more other parties to add to the form?: other_parties.there_is_another
-    datatype: yesno
----
-question: More Children
-fields:
-  - Are there more children to add to the form?: children.there_is_another
-    datatype: yesno
----
-question: What is the name of the ${ ordinal(i) } of the children?
+question: |
+  Tell us about the children who will be on this form
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
 fields:
   - First Name: children[i].name.first
   - Middle Name: children[i].name.middle
@@ -166,15 +245,73 @@ fields:
   - Last Name: children[i].name.last
   - Suffix: children[i].name.suffix
     required: False
+  - Birthdate: children[i].birthdate
 ---
-question: What is the name of the ${ ordinal(i) } of the other parties
+code: |
+  if user_role == 'plaintiff':
+    plaintiffs = users
+    petitioners = users
+    defendants = other_parties
+    respondents = other_parties
+  elif user_role == 'defendant':
+    defendants = users
+    respondents = users
+    plaintiffs = other_parties
+    petitioners = other_parties
+  else:
+    if user_ask_role == 'plaintiff':
+      plaintiffs = users
+      petitioners = users
+      defendants = other_parties
+      respondents = other_parties
+    else:
+      defendants = users
+      respondents = users
+      plaintiffs = other_parties
+      petitioners = other_parties
+  evaluate_role = True
+---
+question: |
+  On this form, will you be the person starting a new case or responding to an existing case?
+subquestion: |
+  If you are starting the case, you may be called either the "Plaintiff"
+  or the petitioner, depending on your form.
+  
+  If you are responding to a case, you may be called either the "Defendant"
+  or the "respondent."
+field: user_ask_role
+buttons:
+  - Starting: plaintiff
+  - Responding: defendant
+---
+question: |
+  Is there anyone on the other side of this case?
+subquestion: |
+  I.e., the person who you are suing or who is suing you.
+yesno: other_parties.there_are_any
+---
+question: |
+  Tell us about the children who will be on this form
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
 fields:
-  - First Name: other_parties[i].name.first
-  - Middle Name: other_parties[i].name.middle
+  - First Name: children[i].name.first
+  - Middle Name: children[i].name.middle
     required: False
-  - Last Name: other_parties[i].name.last
-  - Suffix: other_parties[i].name.suffix
-    required: False
+  - Last Name: children[i].name.last
+  - Suffix: children[i].name.suffix
+    required: False  
+---
+code: |
+  children_parent_question_temp = []
+  for child in children:
+    pass
+#---
+#question: |
+#  Which children are you the parent of?
+#fields:
+#  - 
 ---
 generic object: Individual
 question: |
@@ -269,12 +406,6 @@ list collect: True
 fields:
   - no label: docket_numbers[i]
     required: False
----
-question: |
-  Who are the defendants on this form?
-list collect: True
-fields:
-  - Name: defendants[i].name.first
 ---
 question: |
   When will these forms be signed?

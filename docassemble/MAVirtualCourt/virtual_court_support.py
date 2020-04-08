@@ -1,7 +1,18 @@
 from docassemble.base.functions import define, defined, value
 
-from docassemble.base.util import Address, Individual, DAEmpty
+from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject
 from docassemble.assemblylinewizard.interview_generator import map_names
+
+class PeopleList(DAList):
+    def init(self, *pargs, **kwargs):
+        super(PeopleList, self).init(*pargs, **kwargs)
+        self.object_type = Individual
+
+class VCCase(Thing):
+  # add a complete attribute
+  # add a .tostring method which spits out description  
+  def __str__(self):
+    return self.description
 
 def trigger_user_questions(interview_metadata_dict, question_order = None):
   """There may be a more elegant way to handle this."""
