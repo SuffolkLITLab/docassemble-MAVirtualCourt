@@ -43,7 +43,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MAVirtualCourt',
-      version='0.22',
+      version='0.23',
       description=(''),
       long_description='# docassemble.MAVirtualCourt\r\n\r\n\r\n\r\n## Author\r\n\r\nQuinten Steenhuis, qsteenhuis@suffolk.edu\r\n\r\n',
       long_description_content_type='text/markdown',
@@ -53,7 +53,7 @@ setup(name='docassemble.MAVirtualCourt',
       url='https://docassemble.org',
       packages=find_packages(),
       namespace_packages=['docassemble'],
-      install_requires=[],
+      install_requires=['docassemble.MACourts', 'docassemble.assemblylinewizard'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MAVirtualCourt/', package='docassemble.MAVirtualCourt'),
      )
