@@ -319,10 +319,11 @@ attachment:
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ user_phone__2 }
-      - "user_name_full__3": ${ user_name_full__3 }
-      - "user_name_full__2": ${ user_name_full__2 }
-      - "user_signature_verification": ${ user_signature_verification }
+      - "user_phone__2": ${ users[0].phone_number }
+      - "user_name_full__3": ${ users[0] }
+      - "user_name_full__2": ${ users[0] }
+      - "user_signature_verification": ${ users[0].signature }
+      - "user_signature": ${ users[0].signature }
 ---
 variable name: interview_metadata['Housing_Temporary_Restraining_Order0002']['built_in_fields_used']
 data:
@@ -464,12 +465,13 @@ attachment:
       - "incident2_item_cost": ${ currency(incident2_item_cost ) }
       - "incident3_item": ${ incident3_item }
       - "incident3_item_cost": ${ currency(incident3_item_cost ) }
-      - "landlord_liable_amount": ${ landlord_liable_amount }
+      - "landlord_liable_amount": ${ largest_liable_guess }
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ user_phone__2 }
-      - "user_name_full__3": ${ user_name_full__3 }
+      - "user_phone__2": ${ users[0].phone_number }
+      - "user_name_full__3": ${ users[0] }
+      - "user_name_full__2": ${ users[0] }      
 ---
 question: |
   What is the phone number for your landlord?
