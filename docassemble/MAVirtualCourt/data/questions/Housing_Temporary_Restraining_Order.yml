@@ -387,7 +387,7 @@ code: |
   requested_action_deny_possession
   allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
   preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
-  users[0].address.geolocate() # fill in the county attribute of address
+  # users[0].address.geolocate() # fill in the county attribute of address
   courts[0]
   court_county
   set_party_assignments
