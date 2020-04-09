@@ -452,22 +452,15 @@ decoration: file-signature
 question: |
   Sign your court forms
 subquestion: |
-  We are almost ready to print your forms. You will need to sign them before
-  delivering them. We recommend you sign electronically now, before you print. 
-  You can sign using your computer mouse, or sign on your phone with your finger.
+  We are almost ready to deliver your forms. You will need to sign them before
+  delivering them. You can sign using your computer mouse, or sign on your
+  phone with your finger. You can also send the forms to someone else to sign.
 field: signature_choice
 buttons:  
   - Sign on my phone: phone
     image: mobile-alt
   - Sign on this computer: this device
     image: desktop
-help: |
-  #### Why do I need to sign it now?
-  We will print several forms for you. You will need to add your signature
-  to each page and then copy each collated set. If you sign now, you can print
-  all of the copies you need at once.
-  #### Will the court accept my digital signature?
-  Yes. Digital signatures are allowed by court rule. See [mass.gov](https://www.mass.gov/supreme-judicial-court-rules/massachusetts-rules-of-electronic-filing-rule-13-electronic-signature).
 continue button field: saw_signature_choice
 script: |
   <script>
