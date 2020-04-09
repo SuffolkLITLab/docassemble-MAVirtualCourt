@@ -70,7 +70,7 @@ subquestion: |
   The amount your landlord owes you depend on how much your monthly rent
   is.
 fields:
-  - Amount: tenant_monthly_rent
+  - Monthly rent: tenant_monthly_rent
     datatype: currency
 ---
 question: |
@@ -222,7 +222,7 @@ decoration: file-download
 question: |
   Great job! You finished the interview
 subquestion: |
-  Thank you ${users}. Your document is ready.  There is a preview
+  Thank you ${users[0]}. Your document is ready.  There is a preview
   below.
   
   ${ Housing_Temporary_Restraining_Order0002_attachment }
@@ -414,6 +414,9 @@ code: |
   basic_questions_signature_flow
   users[0].signature
   Housing_Temporary_Restraining_Order0002 = True
+---
+code: |
+  user_role = interview_metadata["Housing_Temporary_Restraining_Order0002"]['typical role']
 ---
 code: |
   plaintiff = users[0]
