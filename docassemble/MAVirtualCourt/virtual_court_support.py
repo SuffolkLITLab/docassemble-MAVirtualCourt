@@ -14,6 +14,14 @@ class VCCase(Thing):
   def __str__(self):
     return self.description
 
+def get_signature_fields(interview_metadata_dict):
+  signature_fields = []
+  for field_dict in (interview_metadata_dict.get('built_in_fields_used',[]) + interview_metadata_dict.get('fields',[])):
+    field = map_names(field_dict.get('variable',''))
+    if field.endswith('.signature'):
+      signature_fields.append(field)
+  return signature_fields
+
 def trigger_user_questions(interview_metadata_dict, question_order = None):
   """There may be a more elegant way to handle this."""
   if not question_order:
