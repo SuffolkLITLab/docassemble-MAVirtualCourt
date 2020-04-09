@@ -3,6 +3,50 @@ include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
   - basic-questions.yml
 ---
+id: Housing_Temporary_Restraining_Order0002
+code: |
+  # This is a placeholder to control logic flow in this interview
+
+  basic_questions_intro_screen 
+  Housing_Temporary_Restraining_Order0002_intro
+  incident_date
+  no_expenses
+  tenant_monthly_rent
+  other_parties[0].name.first
+  set_progress(25)
+  landlord_liable_amount
+  requested_action_deny_possession
+  allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
+  preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
+  # users[0].address.geolocate() # fill in the county attribute of address
+  courts[0]
+  court_county
+  set_party_assignments
+  docket_numbers[0] = '' # we don't need this field
+  # plaintiff
+  #  # docket_numbers[0]
+  #  str(defendants)
+  set_progress(75)
+  str(users[0])
+  users[0].address.on_one_line()
+  users[0].phone_number
+  other_parties[0].address.on_one_line()
+  other_parties[0].phone_number
+  users[0].address.on_one_line()
+  users[0].email
+  signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  #interview_metadata_dict = interview_metadata[ "Housing_Temporary_Restraining_Order0002"]
+  #preview_empty_fields
+  mark_unfilled_fields_empty( interview_metadata["Housing_Temporary_Restraining_Order0002"])
+  
+  Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
+  signature_fields = get_signature_fields(interview_metadata["Housing_Temporary_Restraining_Order0002"])
+  basic_questions_signature_flow
+  users[0].signature
+  Housing_Temporary_Restraining_Order0002 = True
+---
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
@@ -367,53 +411,7 @@ subquestion: |
 ---
 features:
   progress bar multiplier: 0.07
----
-id: Housing_Temporary_Restraining_Order0002
-code: |
-  # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.  # We list one variable from each screen here, in order to control the order of questions
-  # To change the order, you can rearrange, or make conditional. If you make conditional here,
-  # You must also make sure it's conditional in the attachment block, or assign each variable 
-  # on the optional screen to DAEmpty() 
-  
-  basic_questions_intro_screen 
-  Housing_Temporary_Restraining_Order0002_intro
-  incident_date
-  no_expenses
-  tenant_monthly_rent
-  other_parties[0].name.first
-  set_progress(25)
-  landlord_liable_amount
-  requested_action_deny_possession
-  allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
-  preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
-  # users[0].address.geolocate() # fill in the county attribute of address
-  courts[0]
-  court_county
-  set_party_assignments
-  docket_numbers[0] = '' # we don't need this field
-  # plaintiff
-  #  # docket_numbers[0]
-  #  str(defendants)
-  set_progress(75)
-  str(users[0])
-  users[0].address.on_one_line()
-  users[0].phone_number
-  other_parties[0].address.on_one_line()
-  other_parties[0].phone_number
-  users[0].address.on_one_line()
-  users[0].email
-  signature_date
-  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-  # Comment out the line below if you don't want this behavior. 
-  #interview_metadata_dict = interview_metadata[ "Housing_Temporary_Restraining_Order0002"]
-  #preview_empty_fields
-  mark_unfilled_fields_empty( interview_metadata["Housing_Temporary_Restraining_Order0002"])
-  
-  Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
-  Housing_Temporary_Restraining_Order0002 = True
+
 ---
 code: |
   user_role = interview_metadata["Housing_Temporary_Restraining_Order0002"]['typical role']

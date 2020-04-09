@@ -63,11 +63,13 @@ data:
   - debt_collector
   - creditor
 ---
+id: who will be on this form
 generic object: PeopleList
 question: |
   Will this form include any ${noun_plural(x.object_name())}?
 yesno: x.there_are_any
 ---
+id: names of witnesses
 question: |
   List the name of each witness below
 subquestion: |
@@ -83,6 +85,7 @@ fields:
       name_suffix()
     required: False  
 ---
+id: names of people
 generic object: PeopleList
 question: |
   Please list all ${x.object_name()} below
@@ -115,6 +118,7 @@ fields:
       variable: x[i].person_type
       is: business
 ---
+id: names of oppposing parties
 question: |
   Please list all people on the other side of your case below
 subquestion: |
@@ -146,6 +150,7 @@ fields:
       variable: other_parties[i].person_type
       is: business
 ---
+id: set basic options
 mandatory: True
 code: |
   # Set some variables that we need in all the interviews
@@ -157,6 +162,7 @@ code: |
   # menu_items = (action_menu_item('Language','language'))
   set_live_help_status(availability='available', mode='help',partner_roles=['housing','family law'])
 ---
+id: your name
 question:  |
   What is your name?
 fields:
@@ -169,7 +175,7 @@ fields:
       name_suffix()
     required: False  
 ---
----
+id: your contact information
 question: |
   What is your contact information?
 subquestion: |
@@ -207,6 +213,7 @@ code: |
   #  local_housing_court = DAEmpty()
   #  found_housing_court = False
 ---
+id: name of person
 generic object: Individual
 question: |
   What is ${x.object_possessive('name')}?
@@ -218,6 +225,7 @@ fields:
   - Suffix: x.name.suffix
     required: False
 ---
+id: other users
 question: |
   Is there anyone else who will be filing this form with you?  
 subquestion: |
@@ -230,6 +238,7 @@ subquestion: |
   % endif
 yesno: users.there_is_another
 ---
+id: other users names
 question: |
   What is the name of the ${ ordinal(i) } person on your side of the case?
 fields:
@@ -241,6 +250,7 @@ fields:
   - Suffix: users[i].name.suffix
     required: False
 ---
+id: names of children
 question: |
   Tell us about the children who will be on this form
 subquestion: |
@@ -254,6 +264,7 @@ fields:
   - Suffix: children[i].name.suffix
     required: False
   - Birthdate: children[i].birthdate
+    required: False
 ---
 code: |
   if user_role == 'plaintiff':
@@ -279,6 +290,7 @@ code: |
       petitioners = other_parties
   evaluate_role = True
 ---
+id: user role
 question: |
   On this form, will you be the person starting a new case or responding to an existing case?
 subquestion: |
@@ -292,12 +304,14 @@ buttons:
   - Starting: plaintiff
   - Responding: defendant
 ---
+id: other users there are any
 question: |
   Is there anyone on the other side of this case?
 subquestion: |
   I.e., the person who you are suing or who is suing you.
 yesno: other_parties.there_are_any
 ---
+id: children names without birthdate
 question: |
   Tell us about the children who will be on this form
 subquestion: |
@@ -321,6 +335,7 @@ code: |
 #fields:
 #  - 
 ---
+id: persons address
 generic object: Individual
 question: |
   What is ${ x.possessive('address') }?
@@ -336,6 +351,7 @@ fields:
       states_list()   
   - Zip: x.address.zip
 ---
+id: persons contact information
 generic object: Individual
 question: What is the contact information for ${ x.name }?
 fields:
@@ -344,12 +360,14 @@ fields:
     datatype: email
     required: False
 ---
+id: persons signature
 generic object: Individual
 question: |
   ${x}, please sign below
 signature: x.signature
 under: |
   ${x}
+progress: 99  
 ---
 if: |
   preferred_court == 'Housing Court'
@@ -403,6 +421,7 @@ subquestion: |
 #    choices: macourts
 continue button field: ask_court_question    
 ---
+id: docket number
 question: |
   What is the docket number for your case?
 fields:
@@ -410,6 +429,7 @@ fields:
     required: False
 continue button field: ask_docket_number
 ---
+id: docket numbers
 question: |
   Enter any docket numbers you need on this form below
 list collect: True
@@ -417,6 +437,7 @@ fields:
   - no label: docket_numbers[i]
     required: False
 ---
+id: signature date
 question: |
   When will these forms be signed?
 subquestion: |
@@ -426,7 +447,7 @@ fields:
     datatype: date
     default: ${today().format("yyyy-MM-dd")}
 ---
-id: signature
+id: signature choice
 decoration: file-signature
 question: |
   Sign your court forms
@@ -440,8 +461,6 @@ buttons:
     image: mobile-alt
   - Sign on this computer: this device
     image: desktop
-  - Sign after I print: paper
-    image: print
 help: |
   #### Why do I need to sign it now?
   We will print several forms for you. You will need to add your signature
@@ -452,10 +471,8 @@ help: |
 continue button field: saw_signature_choice
 script: |
   <script>
-    $(document).on('daPageLoad', function(){
-      $(".da-field-buttons > div > .btn-da-custom").last().after("<br>")
-      $(".da-field-buttons > div > .btn-da-custom").first().before("<br>")
-    });
+    $(".da-field-buttons > div > .btn-da-custom").last().after("<br>")
+    $(".da-field-buttons > div > .btn-da-custom").first().before("<br>")
   </script>
 ---
 id: signature wait screen
@@ -505,8 +522,6 @@ fields:
     default: ${showifdef('users[0].phone_number')}
   - note: |
       Click ${word("continue")} to add your signature.
-  - note: |
-      Click ${word("continue")} to add your signature.
     show if: 
       code: |
         not device().is_pc
@@ -525,15 +540,6 @@ subquestion: |
   Keep going on the computer you started the interview on.
 field: signature_phone_followup  
 ---
-generic object: Individual
-id: signature
-question: Sign below
-subquestion: |
-signature: x.signature
-under: |
-  ${ x }
-progress: 99
----
 template: interview_link
 content: |
   Hi, someone sent you a form to sign.
@@ -543,31 +549,51 @@ content: |
 code: |
   started_on_phone = device().is_mobile
 ---
+# Triggers some questions to ask for signatures on either desktop or mobile
+# Allows sending via text/email
+id: basic questions signature flow control
 code: |
+  if not defined('signature_fields'):
+    # Not a perfect default, but typically only the user needs to sign
+    # Make sure signature_fields is defined in a mandatory block
+    signature_fields = ['users[0].signature']
   if started_on_phone:
     saw_signature_choice = True
-    users[0].signature
+    for signature in signature_fields:
+      value(signature)
     # Add in logic for when we need additional signatures
   else: 
+    # Three branches:
+    # 1. Decided to sign on the PC
+    # 2. Sent someone a link to sign the form
+    # 3. Used the QR code
     saw_signature_choice
-    if defined('signature_choice') and signature_choice =='this device':
-      users[0].signature
-    elif defined('signature_choice') and signature_choice == 'phone':
+
+    # Branch 1: PC
+    if signature_choice =='this device':
+      for signature in signature_fields:
+        value(signature)    
+    # Check for Branch 2 or 3
+    elif signature_choice == 'phone':
       saw_signature_qrcode
-      if defined('link_cell') and link_cell and task_not_yet_performed('send signature link'):
+      # User will click continue. link_cell will only be defined if they chose the texting option
+      if defined('link_cell') and link_cell and task_not_yet_performed('send signature link'): 
+        # They used the text option
         send_sms(task='send signature link', to=link_cell,template=interview_link)
         signature_wait_screen
-        users[0].signature
-        if device().is_mobile:
-          signature_phone_followup
-      else:
-        users[0].signature
-    # Handle situation where someone uses the QR code    
-    if saw_signature_choice and not defined('signature_choice'):
-      users[0].signature
-      signature_phone_followup
-      signature_choice = 'phone'  
-  signature_flow = True
+        for signature in signature_fields:
+          value(signature)
+      else: # Branch 3: They used the QR Code. No special screen, just continue
+        for signature in signature_fields:
+          value(signature)
+      # Show the follow-up either way
+      if device().is_mobile:
+        #signed = False
+        #while not signed:
+        #  for signature in signature_fields:
+        #    signed = defined(signature) & signed
+        signature_phone_followup
+  basic_questions_signature_flow = True
 ---
 code: |
   user_signature_verification = users[0].signature
@@ -587,9 +613,6 @@ continue button field: basic_questions_intro_screen
 ---
 code: |
   basic_questions_user_fields = True
----
-code: |
-  basic_questions_signature_flow = True
 ---
 generic object: Individual
 code: |
