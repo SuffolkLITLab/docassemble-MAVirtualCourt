@@ -202,7 +202,7 @@ code: |
   
   #try:
   local_housing_court = macourts.matching_housing_court(users[0].address)
-  found_housing_court = True
+  found_housing_court = local_housing_court
   #except:
   #  local_housing_court = DAEmpty()
   #  found_housing_court = False
