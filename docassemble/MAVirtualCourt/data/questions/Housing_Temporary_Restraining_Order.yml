@@ -6,7 +6,7 @@ include:
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
-  if not defined("interview_metadata['Housing_Temporary_Restraining_Order0002']"):
+  if not defined( "interview_metadata['Housing_Temporary_Restraining_Order0002']"):
     interview_metadata.initializeObject('Housing_Temporary_Restraining_Order0002')
   interview_metadata['Housing_Temporary_Restraining_Order0002'].update({
     'title': 'Housing temporary restraining order',

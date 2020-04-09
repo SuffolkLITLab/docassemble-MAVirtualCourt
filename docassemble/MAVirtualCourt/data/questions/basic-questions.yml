@@ -1,10 +1,11 @@
 metadata:
   title: |
-    MassAccess: Court Forms
+    MassAccess
   short title: |
     MassAccess
   logo: |
-    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="max-height:1.9em;"> <h1 style="display:inline; font-size: 1em; font-family: 'Inter Bold', 'Arial'; font-weight: bold;"> MassAccess</h1>
+    <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'><img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="height:40px;width:40px;margin:11px 15px 11px 0;" alt="MA State Icon"><h1 style="display:inline; font-family: 'Inter Bold', 'Arial'; font-weight: bold;margin:0px;font-size:20px;line-height:60px;">MassAccess</h1>
+    
 ---
 features:
   question help button: True
@@ -24,7 +25,7 @@ objects:
   - plaintiff: Individual
   - other_parties: PeopleList
   - courts: DAList.using(object_type=MACourt, there_are_any=True, there_is_another=False) # Normally let's only have one court...
-  - macourts: MACourtList.using(courts=True)  # this is for lookups
+  - macourts: MACourtList.using(courts=['housing_courts','bmc','district_courts','superior_courts','land_court', 'juvenile_courts', 'probate_and_family_courts'])  # this is for lookups
   - witnesses: PeopleList
   - docket_numbers: DAList
   - caregivers: PeopleList
@@ -197,7 +198,14 @@ fields:
       !(val("users[0].phone_number") || val("users[0].email"))
 ---
 code: |
+  users[0].address.geolocate()
+  
+  #try:
   local_housing_court = macourts.matching_housing_court(users[0].address)
+  found_housing_court = True
+  #except:
+  #  local_housing_court = DAEmpty()
+  #  found_housing_court = False
 ---
 generic object: Individual
 question: |
@@ -348,13 +356,12 @@ if: |
 id: court information
 sets:
   - courts[0].name
-  - courts[0].address.county
 question: |
   What court is your case being heard in?
 subquestion: |
   Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
   
-  % if preferred_court:
+  % if preferred_court and found_housing_court:
   We have tried to select the court your case is most likely to be in
   below, based on the address you gave us.
   
@@ -370,8 +377,10 @@ fields:
     choices: macourts
     default: local_housing_court
 continue button field: ask_court_question    
-help: |
-  ${quote_paragraphs(local_housing_court.description)}
+#help: |
+#  % if local_housing_court:
+#  ${quote_paragraphs(local_housing_court.description)}
+#  % endif
 ---
 id: court information
 #sets:
