@@ -27,6 +27,8 @@ field: seen_attachment
 ---
 question: |  
   Hi ${ result }
+subquestion: |
+  You can review your submission [here](${ url_for_submission(id=submission_id) }). 
 field: seen_hi
 ---
 question: |

@@ -1,11 +1,20 @@
 from datetime import datetime
 from docassemble.base.core import DAFile
-from docassemble.base.functions import defined, get_user_info
+from docassemble.base.functions import defined, get_user_info, interview_url
 from docassemble.base.util import get_config, send_email, user_info
 from psycopg2 import connect
 from textwrap import dedent
+from typing import Optional, Tuple
 
-__all__ = ["can_access_submission", "get_files", "initialize_db", "new_entry", "send_attachments"]
+__all__ = [
+  "can_access_submission",
+  "get_accessible_submissions",
+  "get_files",
+  "initialize_db",
+  "new_entry",
+  "send_attachments",
+  "url_for_submission"
+]
 
 db_config = get_config("filesdb")
 
@@ -67,7 +76,7 @@ def get_user_id() -> str:
   else:
     return str(user_info().session)
 
-def get_user_email():
+def get_user_email() -> Optional[str]:
   """Returns the user's email, if it exists, or None"""
   info = get_user_info()
 
@@ -109,6 +118,18 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   
   return str(submission_id)
 
+def url_for_submission(id="") -> str:
+  return interview_url(i="docassemble.MAVirtualCourt:submission.yml", id=id)
+
+def get_court_from_email(email="", court_emails=dict()) -> Optional[str]:
+  """
+  """
+  for [name, court_email] in court_emails.items():
+    if email == court_email:
+      return name
+
+  return None
+
 def can_access_submission(submission_id="", court_emails=dict()) -> bool:
   """
   Determines whether the current user can access the files related to the submission, submission_id
@@ -136,9 +157,7 @@ def can_access_submission(submission_id="", court_emails=dict()) -> bool:
     user_email = get_user_email()
 
     if user_email:
-      for [name, email] in court_emails.items():
-        if email == user_email:
-          return name == entry[0]
+      return get_court_from_email(email=user_email, court_emails=court_emails)
 
     return False
 
@@ -178,6 +197,32 @@ def get_files(submission_id="", authorized=False) -> list:
 
   return files
 
+def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
+  connection = connect(**db_config)
+  cursor = connection.cursor()
+
+  court_name = None
+  email = get_user_email()
+
+  if email:
+    court_name = get_court_from_email(email=email, court_emails=court_emails)
+
+  if court_name:
+    cursor.execute("SELECT id, timestamp, name FROM interviews WHERE court_name = (%s)", (court_name,))
+    field_name = "Name"
+  else:
+    user_id = get_user_id()
+    cursor.execute("SELECT id, timestamp, court_name FROM interviews WHERE user_id = (%s)", (user_id,))
+    field_name = "Court name"
+
+
+  results = [cursor.fetchall(), field_name]
+
+  cursor.close()
+  connection.close()
+
+  return results
+
 
 def send_attachments(name="", court_name="", court_emails=dict(), files=[], submission_id="") -> bool:
   """
@@ -209,6 +254,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
 
   filenames = [file.filename for file in attachments]
   filenames_str = "\n".join(filenames)
+  submission_url = url_for_submission(id=submission_id)
 
   if len(attachments) != len(files):
     if len(attachments) == 0:
@@ -217,7 +263,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
 
       {name} has submitted {len(files)} online. However, these file(s) have sensitive information, and will not be sent over email.
       
-      Please access these forms with the following submission id: {submission_id}.
+      Please access these forms with the following submission id: {submission_url}.
       """)
 
       attachments = None
@@ -230,7 +276,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
 
       However, there are also {len(files) - len(attachments)} forms which are sensitive that will not be sent over email.
 
-      Please access these forms with the following submission id: {submission_id}.
+      Please access these forms with the following submission id: {submission_url}.
       """)
   else:
     body = dedent(f"""
@@ -239,7 +285,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
     You are receiving {len(attachments)} files from {name}:
     {filenames_str}
 
-    The reference ID for these forms is {submission_id}.
+    The reference ID for these forms is {submission_url}.
     """)
 
   return send_email(to=court_email, subject=f"Online form submission {submission_id}", body=body, attachments=attachments)

@@ -4,16 +4,26 @@ modules:
 mandatory: True
 code: |
   court_emails = { "test court": "kgarner@mit.edu" }
-  
+    
   if "id" in url_args:
     id = url_args["id"]
     
     if can_access_submission(submission_id=id, court_emails=court_emails):
       authorized
     else:
-      not_authorized
+      if user_logged_in():
+        not_authorized
+      else:
+        not_authorized_login
   else:
+    [submissions, field] = get_accessible_submissions(court_emails=court_emails)
     no_submission
+---
+event: view_submission
+code: |
+  id = action_argument("id");
+  if can_access_submission(submission_id=id, court_emails=court_emails):
+    authorized
 ---
 event: authorized
 question: |
@@ -25,8 +35,24 @@ subquestion: |
 ---
 event: no_submission
 question: |
-  You did not provide a submission id.
+  Submissions you can view. 
+subquestion: |
+  % if len(submissions) > 0:
+    ID | Timestamp | ${ field } | Link
+    ---|-----------|------------|-----
+    % for submission in submissions:
+    ${ submission[0] } | ${ format_datetime(submission[1], "MMMM d, yyyy h:mm a") } | ${ submission[2] } | [View forms](${ url_action("view_submission", id=submission[0])  })
+    % endfor
+  % else:
+  There are no submissions you can access
+  % endif
 ---
 event: not_authorized
 question: |
-  You are not authorized to view the submission ${ id }
+  You are not authorized to view submission ${ id }.
+---
+event: not_authorized_login
+question: |
+  You are not authorized to view submission ${ id }. Please log in.
+buttons:
+  - Sign in: signin
