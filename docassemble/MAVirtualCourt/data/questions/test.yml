@@ -1,0 +1,52 @@
+metadata:
+  title: Default playground interview
+  short title: Test
+  comment: This is a learning tool.  Feel free to write over it.
+---
+include:
+  - basic-questions.yml
+---
+modules:
+  - .upload
+---
+question: |
+  Here is your document, ${ users[0] }.
+subquestion: |
+  In order ${ quest }, you will need this.
+attachments:
+  - name: Information Sheet
+    filename: info sheet
+    variable name: info_sheet
+    persistent: True
+    private: True
+    content: |
+      Your name is ${ users[0] }.
+
+      Your quest is ${ quest }.
+field: seen_attachment
+---
+question: |  
+  Hi ${ result }
+field: seen_hi
+---
+question: |
+  What is your quest?
+fields:
+  - Your quest: quest
+    hint: to find the Loch Ness Monster
+---
+mandatory: True
+code: |
+  seen_attachment
+  
+  court_emails = {"test court": "kgarner@mit.edu"}
+  files = [info_sheet.pdf]
+  court_name = "test court"
+  name = str(users[0].name)
+  
+  submission_id = new_entry(court_emails=court_emails, court_name=court_name, name=name, files=files)
+  result = send_attachments(name=name, court_name=court_name, court_emails=court_emails, files=files, submission_id=submission_id)
+  
+  # how to make a file from attributes in the table
+  # file = DAFile(number=39, filename="info sheet.pdf", mimetype="application/pdf")
+  seen_hi
