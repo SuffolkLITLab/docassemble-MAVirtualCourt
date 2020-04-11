@@ -1,10 +1,11 @@
 from datetime import datetime
+from docassemble.base.core import DAFile
 from docassemble.base.functions import defined, get_user_info
 from docassemble.base.util import get_config, send_email, user_info
 from psycopg2 import connect
 from textwrap import dedent
 
-__all__ = ["initialize_db", "new_entry", "send_attachments"]
+__all__ = ["can_access_submission", "get_files", "initialize_db", "new_entry", "send_attachments"]
 
 db_config = get_config("filesdb")
 
@@ -54,7 +55,7 @@ def initialize_db():
   cur.close()
   conn.close()
   
-def get_user_id():
+def get_user_id() -> str:
   """
   Returns a unique ID for the current user
   If the user is logged in, uses their user id, otherwise uses session id.
@@ -62,9 +63,18 @@ def get_user_id():
   info = get_user_info()
   
   if info:
-    return info["id"]
+    return str(info["id"])
   else:
-    return user_info().session  
+    return str(user_info().session)
+
+def get_user_email():
+  """Returns the user's email, if it exists, or None"""
+  info = get_user_info()
+
+  if info:
+    return info["email"]
+  else:
+    return None
 
 def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   """
@@ -75,6 +85,9 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
     doc_name (str): the name of the document
     court_name (str): the name of the court to file
     file_path (str): the path of the assembled file (on disk)
+
+  Returns (str):
+    A unique ID corresponding to the current submission
   """
   if court_name not in court_emails:
     # in our system, this should never happen, but will leave in for debugging
@@ -96,7 +109,97 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   
   return str(submission_id)
 
-def send_attachments(name="", court_name="", court_emails=dict(), files=[], submission_id=""):
+def can_access_submission(submission_id="", court_emails=dict()) -> bool:
+  """
+  Determines whether the current user can access the files related to the submission, submission_id
+
+  Args:
+    submission_id (str): the id of the submission we are interested in
+    court_emails (dict): a dictionary mapping court names to emails
+
+  TODO: yes, we should probably have a reverse mapping (and not iterate through it each time)
+
+  Returns (bool):
+    True if the user made the initial submission, or the user is with the court that the submission was filed; otherwise, false
+  """
+  connection = connect(**db_config)
+  cursor = connection.cursor()
+  
+  cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
+  entry = cursor.fetchone()
+
+  if entry is None:
+    return False
+  elif get_user_id() == str(entry[1]):
+    return True
+  else:
+    user_email = get_user_email()
+
+    if user_email:
+      for [name, email] in court_emails.items():
+        if email == user_email:
+          return name == entry[0]
+
+    return False
+
+def get_files(submission_id="", authorized=False) -> list:
+  """
+  Gets a list of files for the submission, submission_id and authorizes the current user access
+  
+  NOTE: You should ONLY call this function AFTER checking for access permissions (like through can_access_submission).
+
+  Args:
+    submission_id (str): the id of the submission to find
+    authorized (bool): a flag that must be set true, reminder to use this function safely
+
+  Returns (List[DAFile]):
+    a list of DAFiles corresponding to all the files that were created in this submission
+  """
+  if not authorized:
+    return []
+
+  connection = connect(**db_config)
+  cursor = connection.cursor()
+
+  cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
+  entry = cursor.fetchall()
+
+  if entry is None or len(entry) == 0:
+    raise ValueError(f"Could not find a submission {submission_id}")
+
+  files = []
+
+  # currently we do nothing with 'sensitive', but this should change when we tweak the court-email mapping
+  for [number, filename, mimetype, sensitive] in entry:
+    file = DAFile(number=number, filename=filename, mimetype=mimetype)
+    file.user_access(get_user_id())
+
+    files.append(file)
+
+  return files
+
+
+def send_attachments(name="", court_name="", court_emails=dict(), files=[], submission_id="") -> bool:
+  """
+  Sends one or nore non-sensitive applications and submission info to the email of the court, court_name
+
+  The email includes the user's name, submission id, and a list of non-sensitive forms. 
+  If there are any sensitive forms in the files list, they will not be sent. 
+  Instead, the recipient will be instructed to access the submission on our own site.
+
+  Args:
+    name (str): the name of the submitter
+    court_name (str): the name of the court that should be receiving this email
+    court_emails (dict): a dictionary mapping court names to emails
+    files (List[DAFile]): a list of DAFiles (possibly sensitive) to be sent
+    submission_id (str): the unique id for this submission
+
+  Raises:
+    ValueError if court_name is not in the court_emails dict
+
+  Returns (bool):
+    True if the email was sent successfully, false otherwise
+  """
   if court_name not in court_emails:
     # in our system, this should never happen, but will leave in for debugging
     raise ValueError(f"Court {court_name} does not exist")

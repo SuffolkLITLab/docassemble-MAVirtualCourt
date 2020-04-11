@@ -1,0 +1,32 @@
+modules:
+  - .upload
+---
+mandatory: True
+code: |
+  court_emails = { "test court": "kgarner@mit.edu" }
+  
+  if "id" in url_args:
+    id = url_args["id"]
+    
+    if can_access_submission(submission_id=id, court_emails=court_emails):
+      authorized
+    else:
+      not_authorized
+  else:
+    no_submission
+---
+event: authorized
+question: |
+  You are authorized to see submission ${ id }
+subquestion: |
+  % for file in get_files(submission_id=id, authorized=True):
+  * ${ file.filename }: [${file.url_for()}](${file.url_for()})
+  % endfor
+---
+event: no_submission
+question: |
+  You did not provide a submission id.
+---
+event: not_authorized
+question: |
+  You are not authorized to view the submission ${ id }
