@@ -4,7 +4,7 @@ metadata:
   short title: |
     MassAccess
   logo: |
-    <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'><img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="height:40px;width:40px;margin:11px 15px 11px 0;" alt="MA State Icon"><h1 style="display:inline; font-family: 'Inter Bold', 'Arial'; font-weight: bold;margin:0px;font-size:20px;line-height:60px;">MassAccess</h1>
+    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
 ---
 objects from file:
   - court_emails : court_emails.yml
