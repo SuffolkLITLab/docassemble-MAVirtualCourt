@@ -1,0 +1,24 @@
+# I propose having an umbrella file all non-basic-
+# question screens. basic-questions.yml is crowded
+---
+id: send_to_court
+event: send_to_court
+progress: 100
+question: |
+  Send your form
+subquestion: |
+  When you're ready, click to send your form.
+
+  ${ action_button_html( url_action('do_stuff'), id_tag="submitToCourt", label=submit_to_court_button_text, icon=send_icon, size="md", color="primary")}
+---
+id: court_submission_placeholder_values
+# Replace these values with interview values
+code: |
+  court_submission_address = 'https://docassemble.org'
+  name_of_court = 'Placeholder District Court'
+  submit_to_court_button_text = "Send to " + name_of_court
+  send_icon = "envelope"
+---
+event: placeholder_submission_action
+code: |
+  log( 'submitted to courts', 'console' )

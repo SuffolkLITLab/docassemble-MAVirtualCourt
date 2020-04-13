@@ -9,6 +9,9 @@ metadata:
 objects from file:
   - court_emails : court_emails.yml
 ---
+include:
+  - form-actions.yml
+---
 features:
   question help button: True
   progress bar: True
