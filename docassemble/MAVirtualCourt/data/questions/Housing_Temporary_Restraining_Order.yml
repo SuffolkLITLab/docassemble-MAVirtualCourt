@@ -271,7 +271,7 @@ subquestion: |
   
   ${ Housing_Temporary_Restraining_Order0002_attachment }
   
-  We emailed a copy of your form to ${courts[0]} and to you.
+    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
   
   1. You may want to download and print a copy of this form for your 
   records.
@@ -280,6 +280,7 @@ subquestion: |
   1. If  you don't hear back, please call the court at ${courts[0].phone}  
 progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
+
 ---
 need: Housing_Temporary_Restraining_Order0002
 attachment:

@@ -5,7 +5,9 @@ metadata:
     MassAccess
   logo: |
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'><img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" style="height:40px;width:40px;margin:11px 15px 11px 0;" alt="MA State Icon"><h1 style="display:inline; font-family: 'Inter Bold', 'Arial'; font-weight: bold;margin:0px;font-size:20px;line-height:60px;">MassAccess</h1>
-    
+---
+objects from file:
+  - court_emails : court_emails.yml
 ---
 features:
   question help button: True
@@ -612,3 +614,72 @@ code: |
   x.gender_female = x.gender == 'female'
   x.gender_male = x.gender == 'male'
   x.gender_other = ((x.gender != 'male') and (x.gender != 'female'))
+---
+generic object: Individual
+question: |
+  What is ${x.possessive('gender')}?
+subquestion: |
+  **Note**: Many forms require you to specify a gender of either Male or Female.
+  
+  If you answer something other than "Female" or "Male", we may not be able
+  to check any box on your form.
+fields:
+  - no label: x.gender
+    choices:
+      - Female: female
+      - Male: male
+      - Non-binary: non-binary
+      - Prefer not to say: prefer-not-to-say
+      - Prefer to write in a different gender: self-described
+  - Self-described gender: x.gender
+    show if:
+      variable: x.gender
+      is: "self-described"
+---
+code: |
+  ready_to_email
+  email_status
+  form_delivery_complete = True
+---
+code: |
+  send_icon = "envelope"
+---
+code: |
+  email_to_use = court_emails.get(courts[0].name,None)
+  if not email_to_use:
+    found_email = False
+  else:
+    found_email = True
+---
+code: |
+  email_success = True # until we're ready to turn this on
+  sent_email_to_court = True
+---
+question: |
+  Your form is ready to be delivered to ${courts}.
+subquestion: |
+  % if found_email:
+  We will email it to ${email_to_use}
+  % else:
+  We couldn't locate an email for ${courts}
+  % endif
+  
+  Click continue if you're ready to send it.
+continue button field: ready_to_email
+---
+question: |
+  % if email_success:
+  Your form was delivered
+  % else:
+  Something went wrong delivering your form
+  % endif
+subquestion: |
+  % if email_success:
+  You should hear back from the court in x days. If you don't hear
+  anything, please call the ${courts[0]} at ${courts[0].phone}.
+  % else:
+  Something went wrong delivering your form to the ${courts[0]}.
+  
+  You can try emailing your form to ${email_to_use}.
+  % endif
+continue button field: email_status
