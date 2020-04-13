@@ -9,6 +9,7 @@ code: |
 
   basic_questions_intro_screen 
   Housing_Temporary_Restraining_Order0002_intro
+  send_to_court  # Placed early for testing purposes
   incident_date
   no_expenses
   tenant_monthly_rent
@@ -45,7 +46,6 @@ code: |
   signature_fields = get_signature_fields(interview_metadata["Housing_Temporary_Restraining_Order0002"])
   basic_questions_signature_flow
   users[0].signature
-  send_to_court
   Housing_Temporary_Restraining_Order0002 = True
 ---
 mandatory: True
