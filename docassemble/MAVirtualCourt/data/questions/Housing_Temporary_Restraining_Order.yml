@@ -9,7 +9,6 @@ code: |
 
   basic_questions_intro_screen 
   Housing_Temporary_Restraining_Order0002_intro
-  send_to_court  # Placed early for testing purposes
   incident_date
   no_expenses
   tenant_monthly_rent

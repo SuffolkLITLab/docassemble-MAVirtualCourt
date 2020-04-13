@@ -9,14 +9,14 @@ question: |
 subquestion: |
   When you're ready, click to send your form.
 
-  ${ action_button_html( url_action('do_stuff'), id_tag="submitToCourt", label=submit_to_court_button_text, icon=send_icon, size="md", color="primary")}
+  ${ action_button_html( url_action('do_stuff'), id_tag="sendToCourt", label=send_to_court_button_text, icon=send_icon, size="md", color="primary")}
 ---
 id: court_submission_placeholder_values
 # Replace these values with interview values
 code: |
   court_submission_address = 'https://docassemble.org'
   name_of_court = 'Placeholder District Court'
-  submit_to_court_button_text = "Send to " + name_of_court
+  send_to_court_button_text = "Send to " + str(courts[0].name)
   send_icon = "envelope"
 ---
 event: placeholder_submission_action
