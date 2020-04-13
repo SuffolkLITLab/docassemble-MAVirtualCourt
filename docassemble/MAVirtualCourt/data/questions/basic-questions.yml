@@ -8,7 +8,7 @@ metadata:
     
 ---
 include:
-  - shared-screens.yml
+  - form-actions.yml
 ---
 features:
   question help button: True
