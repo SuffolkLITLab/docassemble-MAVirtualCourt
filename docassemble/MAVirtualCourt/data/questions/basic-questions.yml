@@ -8,7 +8,7 @@ metadata:
 ---
 default screen parts:
   under: |
-    You can share a link to this interview session with [this link](${interview_url()})
+    Have some feedback about this interview? Take a screenshot of this page, then [right click and "copy the address" of this link](${interview_url()}) and post it on our Slack channel.
 ---
 objects from file:
   - court_emails : court_emails.yml
