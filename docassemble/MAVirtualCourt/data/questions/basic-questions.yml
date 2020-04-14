@@ -6,6 +6,10 @@ metadata:
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
 ---
+default screen parts:
+  under: |
+    You can share a link to this interview session with [this link](${interview_url()})
+---
 objects from file:
   - court_emails : court_emails.yml
 ---
@@ -29,7 +33,7 @@ objects:
   - plaintiffs: PeopleList
   - plaintiff: Individual
   - other_parties: PeopleList
-  - courts: DAList.using(object_type=MACourt, there_are_any=True, there_is_another=False) # Normally let's only have one court...
+  - courts: DAList.using(auto_gather=False, gathered=True, complete_attribute='name') # Normally let's only have one court...
   - macourts: MACourtList.using(courts=['housing_courts','bmc','district_courts','superior_courts','land_court', 'juvenile_courts', 'probate_and_family_courts'])  # this is for lookups
   - witnesses: PeopleList
   - docket_numbers: DAList
