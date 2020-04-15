@@ -411,8 +411,8 @@ continue button field: ask_court_question
 #  % endif
 ---
 id: court information
-#sets:
-#  - courts[0].name
+sets:
+  - courts[0].name
 question: |
   What court is your case being heard in?
 subquestion: |
@@ -424,10 +424,10 @@ subquestion: |
   
   
   % endif
-#fields:
-#  - Court name: courts[0]
-#    datatype: object
-#    choices: macourts
+fields:
+  - Court name: courts[0]
+    datatype: object
+    choices: macourts
 continue button field: ask_court_question    
 ---
 id: docket number
