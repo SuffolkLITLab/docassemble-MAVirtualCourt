@@ -1,0 +1,243 @@
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['A_Plaintiff_Confidential_Information0011']"):
+    interview_metadata.initializeObject('A_Plaintiff_Confidential_Information0011')
+  interview_metadata['A_Plaintiff_Confidential_Information0011'].update({
+    'title': 'Plaintiff Confidential Information Form',
+    'short title': 'Plaintiff Confidential Information Form',
+    'description': 'Use when filing for a 209A or 258E',
+    'original_form': 'https://www.mass.gov/files/documents/2016/08/rd/faha-6.pdf',
+    'allowed courts': [
+      'Boston Municipal Court',
+      'District Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ],
+    'preferred court': 'District Court',
+    'categories': [
+      'Domestic Violence / Safety of self',
+      'Family Law',
+    ],
+    'logic block variable': 'A_Plaintiff_Confidential_Information0011',
+    'attachment block variable': 'A_Plaintiff_Confidential_Information0011_attachment',
+    'typical role': 'plaintiff',
+    'built_in_fields_used': [
+      {'variable': 'plaintiff_birthdate',
+       'transformed_variable': 'plaintiffs[0].birthdate.format()',
+      },
+      {'variable': 'plaintiff_name',
+       'transformed_variable': 'str(plaintiffs[0])',
+      },
+      {'variable': 'plaintiff_phone',
+       'transformed_variable': 'plaintiffs[0].phone_number',
+      },
+      {'variable': 'plaintiff_signature',
+       'transformed_variable': 'plaintiffs[0].signature',
+      },
+      {'variable': 'signature_date',
+       'transformed_variable': 'signature_date',
+      },
+      ],
+    'fields': [
+      {'variable': 'plainitff_address_residential',
+       'transformed_variable': 'plainitff_address_residential',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_apartment_yes',
+       'transformed_variable': 'plaintiffs[0].apartment_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'plaintiff_address_former',
+       'transformed_variable': 'plaintiffs[0].address_former',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_workplace_name',
+       'transformed_variable': 'plaintiffs[0].workplace_name',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_workplace_address',
+       'transformed_variable': 'plaintiffs[0].workplace_address',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_workplace_phone',
+       'transformed_variable': 'plaintiffs[0].workplace_phone',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_school_name',
+       'transformed_variable': 'plaintiffs[0].school_name',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'plaintiff_school_address',
+       'transformed_variable': 'plaintiffs[0].school_address',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'persons_authorized_confidential_information',
+       'transformed_variable': 'persons_authorized_confidential_information',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      ],
+  })
+---
+question: |
+  Home
+subquestion: |
+  Fill in your home contact information
+fields: 
+  - 'Former addresses you have left to avoid abuse': plaintiffs[0].address_former
+    required: False
+  # gather as a group of addresses because there could be many.
+    # hide if:
+      # variable: is_209A # dummy variable. Will need to change when we put the interviews together.
+      # is: True
+under: |
+  SMEs to provide text explaining why we need this info. 
+---
+question: |
+  Apartment building or multi-family home.
+yesno: plaintiffs[0].apartment_yes 
+subquestion: |
+  Is this an apartment building or multi-family home?
+---
+continue button field: School
+question: |
+  School
+subquestion: |
+  Tell us more about your school, if you have one.  (Please don't include your childrens' schools.  There will be another place to give that information).
+fields:
+  - 'Your school name': plaintiffs[0].school_name
+  - 'School address': plaintiffs[0].school_address
+---
+continue button field: Who_is_allowed_to_see_this_form
+question: |
+  Who is allowed to see this form?
+subquestion: |
+  Please list other people who you want to be able to see the information on this form.  For example, you can list lawyers or domestic violence advocates who are helping you with this case.
+fields:
+  - 'Name(s)': persons_authorized_confidential_information
+---
+continue button field: Workplace
+question: |
+  Workplace
+subquestion: |
+  Tell us more about your workplace, if you have one
+fields:
+  - 'Name of your workplace': plaintiffs[0].workplace_name
+  - 'Work address': plaintiffs[0].workplace_address
+  - 'Work phone number': plaintiffs[0].workplace_phone
+---
+progress: 100
+mandatory: True
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+  
+  ### Next steps
+  
+  1. Step 1
+  1. Step 2
+  
+  Below is a preview of your form.
+  
+  ${A_Plaintiff_Confidential_Information0011_attachment }
+attachment code: A_Plaintiff_Confidential_Information0011_attachment
+---
+need: A_Plaintiff_Confidential_Information0011
+attachment:
+    variable name: A_Plaintiff_Confidential_Information0011_attachment
+    name: Plaintiff Confidential Information Form
+    filename: Plaintiff_Confidential_Information_Form
+    pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
+    fields: 
+      - "plaintiff_birthdate": ${ plaintiffs[0].birthdate.format() }
+      - "plaintiff_name": ${ str(plaintiffs[0]) }
+      - "plaintiff_phone": ${ plaintiffs[0].phone_number }
+      - "plaintiff_signature": ${ plaintiffs[0].signature }
+      - "signature_date": ${ signature_date }
+      #- "plainitff_address_residential": ${ plainitff_address_residential }
+      - "plaintiff_apartment_yes": ${ plaintiffs[0].apartment_yes }
+      - "plaintiff_address_former": ${ plaintiffs[0].address_former }
+      - "plaintiff_workplace_name": ${ plaintiffs[0].workplace_name }
+      - "plaintiff_workplace_address": ${ plaintiffs[0].workplace_address }
+      - "plaintiff_workplace_phone": ${ plaintiffs[0].workplace_phone }
+      - "plaintiff_school_name": ${ plaintiffs[0].school_name }
+      - "plaintiff_school_address": ${ plaintiffs[0].school_address }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: A_Plaintiff_Confidential_Information0011_intro # SMEs to provide splash page language.
+question: |
+  Plaintiff Confidential Information Form. MAKE SURE TO GET BETTER LANGUAGE FROM SMEs.
+subquestion: |
+  Use when filing for a 209A or 258E
+---
+id: interview_order_A_Plaintiff_Confidential_Information0011
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
+  user_role = plaintiff
+  A_Plaintiff_Confidential_Information0011_intro
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
+  allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
+  #plainitff_address_residential
+  plaintiffs[0].address_former
+  plaintiffs[0].apartment_yes
+  plaintiffs[0].phone_number #SMEs think phone number should be required. Talk to development team. Could also pop up with a warning if someone doesn't put in their phone number.
+  plaintiffs[0].apartment_yes
+  Workplace
+  School
+  Who_is_allowed_to_see_this_form
+  plaintiffs[0].birthdate.format()
+  str(plaintiffs[0])
+  signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
+  A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
+  basic_questions_signature_flow
+  plaintiffs[0].signature
+  A_Plaintiff_Confidential_Information0011 = True
+---
+continue button field: A_Plaintiff_Confidential_Information0011_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${A_Plaintiff_Confidential_Information0011_attachment_preview}
+---
+attachment:
+    variable name: A_Plaintiff_Confidential_Information0011_attachment_preview
+    name: Plaintiff Confidential Information Form
+    filename: Plaintiff_Confidential_Information_Form
+    pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
+    fields: 
+      - "plaintiff_birthdate": ${ plaintiffs[0].birthdate.format() }
+      - "plaintiff_name": ${ str(plaintiffs[0]) }
+      - "plaintiff_phone": ${ plaintiffs[0].phone_number }
+      - "plaintiff_signature": ${ plaintiffs[0].signature }
+      - "signature_date": ${ signature_date }
+      #- "plainitff_address_residential": ${ plainitff_address_residential }
+      - "plaintiff_apartment_yes": ${ plaintiffs[0].apartment_yes }
+      - "plaintiff_address_former": ${ plaintiffs[0].address_former }
+      - "plaintiff_workplace_name": ${ plaintiffs[0].workplace_name }
+      - "plaintiff_workplace_address": ${ plaintiffs[0].workplace_address }
+      - "plaintiff_workplace_phone": ${ plaintiffs[0].workplace_phone }
+      - "plaintiff_school_name": ${ plaintiffs[0].school_name }
+      - "plaintiff_school_address": ${ plaintiffs[0].school_address }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+  
