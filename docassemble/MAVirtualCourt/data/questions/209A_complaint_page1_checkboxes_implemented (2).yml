@@ -44,6 +44,17 @@ code: |
   other_cases[i].complete = True
   
 ---
+comment: |
+  Kate Barry, family law SME, has compiled a lot of bugs here: https://drive.google.com/drive/u/0/shared-with-me
+  
+  This form is being used to collect bug reports. Contact Matt on Slack or at mbrooks@gbls.org to request access to the
+  responses: https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform
+  
+  As of April 15, 2020 at 5pm, the only real bug being reported on the above bug report form is one that produces this error. 
+  Unfortunately, the reporters did not provide links to their interview sessions: Error
+There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
+  
+---
 question: |
   What to expect.
 subquestion: |
@@ -322,7 +333,7 @@ fields:
       - 'I live with the Defendant': defendant_and_plaintiff_are_not_related_but_live_together
       - 'I used to live with the Defendant': defendant_and_plaintiff_used_to_live_together
       - 'I dated or used to date the Defendant': defendant_and_plaintiff_are_dating_or_dated
-      - 'I am or was engaged to the Defendant': defendant_and_plaintiff_engaged
+      - 'I am or was engaged to the Defendant': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
 ---
@@ -371,7 +382,7 @@ code: |
   else:
     defendant_gender_male = False
     defendant_gender_female = True 
-  if not defendant_weapons_guns:
+  if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
     defendant_weapons_description = DAEmpty()
   if relationship_to_defendant_marriage_or_kids.all_false():
     if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
@@ -380,7 +391,7 @@ code: |
     if relationship_to_defendant_unmarried.all_false():
       refer_to_258E_resources
   if court_selection == "Superior Court":
-    district_court = DAEmpty()
+    district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
     municipal_court = DAEmpty()
     probate_court = DAEmpty()
     superior_court = True
