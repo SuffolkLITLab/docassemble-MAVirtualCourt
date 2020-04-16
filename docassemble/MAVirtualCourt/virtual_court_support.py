@@ -35,13 +35,18 @@ class OtherProceeding(DAObject):
     super(OtherProceeding, self).init(*pargs, **kwargs)
     if not hasattr(self, 'children'):
       self.initializeAttribute('children', PeopleList)
-    self.complete_attribute = 'complete_proceeding'    
+    if not hasattr(self, 'attorneys'):
+      self.initializeAttribute('attorneys', PeopleList)
 
+  # We use a property decorator because Docassemble expects this to be an attribute, not a method
   @property
   def complete_proceeding(self):
+    """Tells docassemble the list item has been gathered when the variables named below are defined."""
     self.role
     self.case_status
     self.children.gathered
+    if self.case_status == 'pending':
+      self.attorneys.gather()
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
@@ -73,6 +78,8 @@ class OtherProceedingList(DAList):
   def init(self, *pargs, **kwargs):
     super(OtherProceedingList, self).init(*pargs, **kwargs)
     self.object_type = OtherProceeding
+    self.complete_attribute = 'complete_proceeding' # triggers the complete_proceeding method of an OtherProceeding
+
   def includes_adoption(self):
     """Returns true if any of the listed proceedings was an adoption proceeding."""
     for case in self.elements:
