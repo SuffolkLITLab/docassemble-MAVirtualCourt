@@ -6,6 +6,20 @@ metadata:
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
 ---
+# This is a backfill to ensure these keys in our metadata dictionary are
+# defined and can be accessed by other helper code
+generic object: DADict
+code: |
+  x['fields'] = DAEmpty()
+---
+generic object: DADict
+code: |
+  x['field_list'] = DAEmpty()
+---
+generic object: DADict
+code: |
+  x['built_in_fields_used'] = DAEmpty()
+---
 default screen parts:
   under: |
     Found a bug? Don't close this page! But <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">do fill out this form</a>. Follow its instructions about [this link](${interview_url()}).

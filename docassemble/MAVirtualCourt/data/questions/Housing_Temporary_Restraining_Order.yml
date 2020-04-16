@@ -70,8 +70,8 @@ code: |
     'logic block variable': 'Housing_Temporary_Restraining_Order0002',
     'attachment block variable': 'Housing_Temporary_Restraining_Order0002_attachment',
     'typical role': 'plaintiff',  })
-  interview_metadata['Housing_Temporary_Restraining_Order0002']['field_list']
-  interview_metadata['Housing_Temporary_Restraining_Order0002']['built_in_fields_used']    
+  # interview_metadata['Housing_Temporary_Restraining_Order0002']['field_list']
+  # interview_metadata['Housing_Temporary_Restraining_Order0002']['built_in_fields_used']    
 ---
 question: |
   How did this harm you?
