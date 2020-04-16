@@ -276,6 +276,12 @@ fields:
     required: False
 ---
 code: |
+  # This is a workaround for the fact that user role isn't
+  # defined in the wizard-generated file yet.
+  if not defined('user_role'):
+    user_role = False # this should get defined to "plaintiff" or "defendant" in the actual interview
+---
+code: |
   if user_role == 'plaintiff':
     plaintiffs = users
     petitioners = users
