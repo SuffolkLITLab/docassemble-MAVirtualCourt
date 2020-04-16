@@ -189,10 +189,6 @@ question: |
   What is your contact information?
 subquestion: |
   Put in the address the court should use to mail papers to you.
-
-  CR: It doesn't really make sense to describe the address on the form next to their name. It's safe to assume people do **not** already know what the form looks like. Or what address they should put there if they do know. If we are in a contact information section then this address should be their mailing address. If we need their residence then we should ask a different question or ask this question differently.
-
-  CR: Also below, should their be a field for a PO number? 
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -223,9 +219,6 @@ help: |
   
   Some forms allow you to tell the court you need to keep your address, phone, and email 
   confidential, so that only court staff can see this information. 
-  
-  CR: This is not confidence inspiring... 'You may be asked that 
-  question later.'
 ---
 code: |
   users[0].address.geolocate()
@@ -276,7 +269,7 @@ fields:
 ---
 id: names of children
 question: |
-  Tell us about the children 'who will be on this form' CR: Can we say 'involved in this case'?
+  Tell us about the children who will be involved in this case
 subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
@@ -307,6 +300,7 @@ code: |
     respondents = users
     plaintiffs = other_parties
     petitioners = other_parties
+    other_parties.there_are_any = True
   else:
     if user_ask_role == 'plaintiff':
       plaintiffs = users
@@ -318,6 +312,7 @@ code: |
       respondents = users
       plaintiffs = other_parties
       petitioners = other_parties
+      other_parties.there_are_any = True
   evaluate_role = True
 ---
 id: user role
@@ -336,16 +331,16 @@ buttons:
 ---
 id: other users there are any
 question: |
-  Is there anyone on the other side of this case?
+  Is there any person or organization on the other side of this case?
 subquestion: |
-   the person who you are suing or who is suing you.
-
-CR: use variables here, if you are plaintiff, question_variable =   Who are you taking to court?, if you are defendant, question_variable = Who is taking you to court?  Brain is stuck here, can't think right now of instances - maybe Bankruptcy where you go to court and you are neither taking nor being taken to court... 
+  % if users == plaintiffs:
+  Answer yes if there is a person or organization you are suing or taking to court.
+  % endif
 yesno: other_parties.there_are_any
 ---
 id: children names without birthdate
 question: |
-  Tell us about the children CR: involved in this case. 'who will be on this form'
+  Tell us about the children involved in this case.
 subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
@@ -483,15 +478,12 @@ decoration: file-signature
 question: |
   Sign your court forms
 subquestion: |
-  We are almost ready to 'deliver' CR: can we say'file'? your forms. You will need to sign them before
-  'delivering' them. 
+  We are almost ready to file your forms. You will need to sign them first.
   
   Use the mouse or touchpad on your computer or
-   your sign with your finger on your phone. 
+  sign with your finger on your phone. 
    
-   You can also send the forms to someone else to sign.
-
-  CR: I don't see an option to send to someone else and not sign in the course of the interview. I could be missing something.    
+  You can send the forms to someone else to sign if you choose the "phone" option.
 field: signature_choice
 buttons:  
   - Sign on my phone: phone
@@ -575,7 +567,6 @@ content: |
   Hi, ${ user }  sent you a form from MassAccess. To sign the form,
   click the link below to continue the interview on your phone.
   ${interview_url()}
-  CR: telling recipient 2 things - 1 to sign, 2 to carry on w interview.
 ---
 code: |
   started_on_phone = device().is_mobile
@@ -640,9 +631,9 @@ subquestion: |
   If do not hear from the court in 1 business day, call the Trial
   Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
   
-  The Emergency HelpLine is open:
-  8:30am - 4:30pm, 
-  Monday - Friday.
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,  
+  Monday - Friday.  
 continue button field: basic_questions_intro_screen
 ---
 code: |
@@ -659,12 +650,10 @@ generic object: Individual
 question: |
   What is ${x.possessive('gender')}?
 subquestion: |
-  **Note**: Many forms require you to specify 'Male' or 'Female.''
+  **Note**: Many forms require you to specify "Female" or "Male."
   
   If you answer something other than "Female" or "Male", we may not be able
-  to check any box on your form. 
-
-  CR: The court may not accept the form and it can delay your case.
+  to check any box on your form. This may delay your case.
 fields:
   - no label: x.gender
     choices:
@@ -720,18 +709,18 @@ question: |
   % endif
 subquestion: |
   % if email_success:
-   If do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  If do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
   
-    The Emergency HelpLine is open:
-    8:30am - 4:30pm, 
-    Monday - Friday.
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,   
+  Monday - Friday.  
   % else:
-  Something went wrong delivering your form to the ${courts[0]}.
+  Something went wrong delivering your form to the ${courts[0]}.  
   Try again later or call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
   
-    The Emergency HelpLine is open:
-    8:30am - 4:30pm, 
-    Monday - Friday.
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,  
+  Monday - Friday.  
   % endif
 continue button field: email_status
 ---
