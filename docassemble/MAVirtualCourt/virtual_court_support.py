@@ -3,16 +3,61 @@ from docassemble.base.functions import define, defined, value
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject
 from docassemble.assemblylinewizard.interview_generator import map_names
 
-class PeopleList(DAList):
-    def init(self, *pargs, **kwargs):
-        super(PeopleList, self).init(*pargs, **kwargs)
-        self.object_type = Individual
+class AddressList(DAList):
+  """Store a list of Address objects"""
+  def init(self, *pargs, **kwargs):
+    super(AddressList, self).init(*pargs, **kwargs)
+    self.object_type = Address
 
-class VCCase(Thing):
-  # add a complete attribute
-  # add a .tostring method which spits out description  
+class PeopleList(DAList):
+  """Used to represent a list of people. E.g., defendants, plaintiffs, children"""
+  def init(self, *pargs, **kwargs):
+    super(PeopleList, self).init(*pargs, **kwargs)
+    self.object_type = VCIndividual
+
+class VCIndividual(Individual):
+  """Used to represent an Individual on the assembly line/virtual court project.
+  Two custom attributes are objects and so we need to initialize: `previous_addresses` 
+  and `other_addresses`
+  """
+  def init(self, *pargs, **kwargs):
+    super(VCIndividual, self).init(*pargs, **kwargs)
+    # Initialize the attributes that are themselves objects. Requirement to work with Docassemble
+    # See: https://docassemble.org/docs/objects.html#ownclassattributes
+    if not hasattr(self, 'previous_addresses'):
+      self.initializeAttribute('previous_addresses', AddressList)
+    if not hasattr(self, 'other_addresses'):
+      self.initializeAttribute('other_addresses', AddressList)      
+
+class OtherProceeding(DAObject):
+  """Currently used to represents a care and custody proceeding."""
+  def init(self, *pargs, **kwargs):
+    super(OtherProceeding, self).init(*pargs, **kwargs)
+    if not hasattr(self, 'children'):
+      self.initializeAttribute('children', PeopleList)
+    self.complete_attribute = 'complete_proceeding'    
+
+  @property
+  def complete_proceeding(self):
+    self.role
+    # self.children
+
+  def status(self):
+    """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
+    # I think there's four possible ways the status could go
+    # -if the case is an adoption: status should say "adoption"
+    # -if the case is still pending: status should say "pending"
+    # -if the case is closed and was about custody: should should say "custody to [person], [date of custody award]"
+    # -if the case is closed and was about something other than custody, I would do a very brief outcome of the case and the date the case closed, like "Father to pay child support, [date of judgment]"    
+    pass
+
   def __str__(self):
-    return self.description
+    return self.docket_number
+
+class OtherProceedingList(DAList):
+  def init(self, *pargs, **kwargs):
+    super(OtherProceedingList, self).init(*pargs, **kwargs)
+    self.object_type = OtherProceeding
 
 def get_signature_fields(interview_metadata_dict):
   signature_fields = []
