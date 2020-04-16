@@ -184,6 +184,13 @@ fields:
       name_suffix()
     required: False  
 ---
+id: names of children
+question: |
+  When were you born?
+fields:
+  - Birthdate: users[0].birthdate
+    required: True
+---
 id: your contact information
 question: |
   What is your contact information?
