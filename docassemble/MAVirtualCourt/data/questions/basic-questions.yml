@@ -184,6 +184,14 @@ fields:
       name_suffix()
     required: False  
 ---
+id: birthdate question
+generic object: Individual
+question: |
+  When was ${x} born?
+fields:
+  - Birthdate: x.birthdate
+    datatype: date
+---
 id: your contact information
 question: |
   What is your contact information?
