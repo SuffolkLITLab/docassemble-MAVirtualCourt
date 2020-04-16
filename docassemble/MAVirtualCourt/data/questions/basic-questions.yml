@@ -201,16 +201,26 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
-  - Phone number where you can be reached: users[0].phone_number
+  - Phone number: users[0].phone_number
     required: False
-  - Email address where you can be reached: users[0].email    
+  - Email address: users[0].email    
     datatype: email
     required: False
-  - How can we reach you?: users[0].other_contact_method
+  - How can the court contact you?: users[0].other_contact_method
     input type: area
-    js show if: |
-      (val("users[0].phone_number") == '' && val("users[0].email") == '') ||
-      !(val("users[0].phone_number") || val("users[0].email"))
+    required: False
+    help: |
+      Provide specific contact instructions if you do not provide a phone
+      or email. E.g., the phone number of a trusted friend.
+validation code: |
+  if (not showifdef('users[0].phone_number') and (not showifdef('users[0].email')) and (not showifdef('users[0].other_contact_method'))):
+    validation_error(word("You need to provide at least one contact method."))
+help: |
+  You _must_ provide your contact information for the court to reach you.
+  
+  On some forms, you have the option to keep your address, phone, and email 
+  confidential from anyone other than court staff. You may be asked that 
+  question later.
 ---
 code: |
   users[0].address.geolocate()
@@ -416,6 +426,8 @@ continue button field: ask_court_question
 #  ${quote_paragraphs(local_housing_court.description)}
 #  % endif
 ---
+if: |
+  not defined('preferred_court') or preferred_court != 'Housing Court'
 id: court information
 sets:
   - courts[0].name
@@ -423,13 +435,9 @@ question: |
   What court is your case being heard in?
 subquestion: |
   Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
-  
-  % if preferred_court:
-  We have tried to select the court your case is most likely to be in
-  below, based on the address you gave us.
-  
-  
-  % endif
+
+  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
+
 fields:
   - Court name: courts[0]
     datatype: object
@@ -446,7 +454,10 @@ continue button field: ask_docket_number
 ---
 id: docket numbers
 question: |
-  Enter any docket numbers you need on this form below
+  What is the docket number for this case?
+subquestion: |
+  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
+  to add more than one.
 list collect: True
 fields:
   - no label: docket_numbers[i]
@@ -456,7 +467,7 @@ id: signature date
 question: |
   When will these forms be signed?
 subquestion: |
-  Normally, leave this set to today's date.
+  We have defaulted your answer to "today" below.
 fields: 
   - Date: signature_date
     datatype: date
@@ -550,7 +561,7 @@ field: signature_phone_followup
 ---
 template: interview_link
 content: |
-  Hi, someone sent you a form to sign.
+  Hi, someone sent you a form to sign from MassAccess.
   Click the link below to continue the interview on your phone.
   ${interview_url()}
 ---
@@ -606,6 +617,7 @@ code: |
 code: |
   user_signature_verification = users[0].signature
 ---
+id: basic questions intro screen
 question: |
   Mass Access Project
 subquestion: |
@@ -613,10 +625,9 @@ subquestion: |
   in a time of critical need. At the end, your forms will be
   delivered securely to the court.
   
-  The court should contact you in x days to confirm receipt of
-  your form. If you don't hear back from them, please call the
-  court. You'll get the number for your court at the end of this
-  interview.
+  If you have not heard from the court within one business day, call the trial
+  court’s emergency help line number 833-91-COURT (833-912-6878). The emergency
+  help line is open from 8:30am to 4:30pm, Mondays through Fridays.
 continue button field: basic_questions_intro_screen
 ---
 code: |
@@ -628,6 +639,7 @@ code: |
   x.gender_male = x.gender == 'male'
   x.gender_other = ((x.gender != 'male') and (x.gender != 'female'))
 ---
+id: gender
 generic object: Individual
 question: |
   What is ${x.possessive('gender')}?
@@ -668,18 +680,21 @@ code: |
   email_success = True # until we're ready to turn this on
   sent_email_to_court = True
 ---
+id: ready to email
 question: |
   Your form is ready to be delivered to ${courts}.
 subquestion: |
   % if found_email:
-  We will email it to ${email_to_use}
+  We will deliver it securely.
   % else:
-  We couldn't locate an email for ${courts}
+  There was a problem delivering this to the ${courts[0]}. We couldn't
+  locate the contact information for this court.
   % endif
   
   Click continue if you're ready to send it.
 continue button field: ready_to_email
 ---
+id: email status
 question: |
   % if email_success:
   Your form was delivered
@@ -688,11 +703,29 @@ question: |
   % endif
 subquestion: |
   % if email_success:
-  You should hear back from the court in x days. If you don't hear
-  anything, please call the ${courts[0]} at ${courts[0].phone}.
+  If you have not heard from the court within one business day, call the trial court’s emergency help line number 833-91-COURT (833-912-6878). The emergency help line is open from 8:30am to 4:30pm, Mondays through Fridays.
   % else:
   Something went wrong delivering your form to the ${courts[0]}.
-  
-  You can try emailing your form to ${email_to_use}.
+
+  You can try again later or try calling the trial court's emergency
+  help line number 833-91-COURT (833-912-6878). The emergency
+  help line is open from 8:30am to 4:30pm, Mondays through Fridays.
   % endif
 continue button field: email_status
+---
+id: email to court
+template: email_to_court
+subject: |
+  MassAccess submission from ${users} intended for ${courts[0]}
+content: |
+  On ${today()} at about ${current_datetime().format_datetime()},
+  ${users} submitted the attached form(s).
+  
+  Please contact them to confirm you received the forms:
+  
+  % for user in users:
+  ${user}:  
+  * Phone: ${showifdef('user.phone_number')}
+  * Email: ${showifdef('user.email')}
+  * Other contact method: ${showifdef('user.other_contact_method')}
+  % endfor
