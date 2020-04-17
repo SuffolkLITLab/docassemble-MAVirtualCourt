@@ -10,11 +10,11 @@ code: |
   basic_questions_intro_screen 
   Housing_Temporary_Restraining_Order0002_intro
   incident_date
-  no_expenses
-  tenant_monthly_rent
+  #no_expenses
+  #tenant_monthly_rent
   other_parties[0].name.first
   set_progress(25)
-  landlord_liable_amount
+  # landlord_liable_amount
   requested_action_deny_possession
   allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
   preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
@@ -275,9 +275,8 @@ subquestion: |
   
   1. You may want to download and print a copy of this form for your 
   records.
-  1. You should hear back from the court about scheduling in the next 
-  x days.
-  1. If  you don't hear back, please call the court at ${courts[0].phone}  
+  1. You should hear back from the court about scheduling within 1 business day.
+  1. If  you don't hear back, please call the court's emergency number, 833-91-COURT.
 progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
 
@@ -287,7 +286,7 @@ attachment:
     variable name: Housing_Temporary_Restraining_Order0002_attachment
     name: Housing TRO
     filename: Housing_TRO
-    pdf template file: Housing_Temporary_Restraining_Order.pdf
+    pdf template file: Housing_Temporary_Restraining_Order_redacted.pdf
     fields: 
       - "court_name": ${ courts[0] }
       - "plaintiff": ${ plaintiff }
@@ -310,13 +309,13 @@ attachment:
       - "incident_utility_description": ${ incident_utility_description }
       - "incident_other": ${ incident_other }
       - "incident_other_description": ${ incident_other_description }
-      - "incident1_item": ${ incident1_item }
-      - "incident1_item_cost": ${ currency(incident1_item_cost ) }
-      - "incident2_item": ${ incident2_item }
-      - "incident2_item_cost": ${ currency(incident2_item_cost ) }
-      - "incident3_item": ${ incident3_item }
-      - "incident3_item_cost": ${ currency(incident3_item_cost ) }
-      - "landlord_liable_amount": ${ largest_liable_guess }
+#      - "incident1_item": ${ incident1_item }
+#      - "incident1_item_cost": ${ currency(incident1_item_cost ) }
+#      - "incident2_item": ${ incident2_item }
+#      - "incident2_item_cost": ${ currency(incident2_item_cost ) }
+#      - "incident3_item": ${ incident3_item }
+#      - "incident3_item_cost": ${ currency(incident3_item_cost ) }
+#      - "landlord_liable_amount": ${ largest_liable_guess }
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
@@ -438,7 +437,7 @@ attachment:
     variable name: Housing_Temporary_Restraining_Order0002_attachment_preview
     name: Housing TRO
     filename: Housing_TRO
-    pdf template file: Housing_Temporary_Restraining_Order.pdf
+    pdf template file: Housing_Temporary_Restraining_Order_redacted.pdf
     fields: 
       - "court_name": ${ courts[0] }
       - "plaintiff": ${ plaintiff }
@@ -460,13 +459,13 @@ attachment:
       - "incident_utility_description": ${ incident_utility_description if defined('incident_utility_description') else '' }
       - "incident_other": ${ incident_other }
       - "incident_other_description": ${ incident_other_description if defined('incident_utility_description') else '' }
-      - "incident1_item": ${ incident1_item }
-      - "incident1_item_cost": ${ currency(incident1_item_cost ) }
-      - "incident2_item": ${ incident2_item }
-      - "incident2_item_cost": ${ currency(incident2_item_cost ) }
-      - "incident3_item": ${ incident3_item }
-      - "incident3_item_cost": ${ currency(incident3_item_cost ) }
-      - "landlord_liable_amount": ${ largest_liable_guess }
+#      - "incident1_item": ${ incident1_item }
+#      - "incident1_item_cost": ${ currency(incident1_item_cost ) }
+#      - "incident2_item": ${ incident2_item }
+#      - "incident2_item_cost": ${ currency(incident2_item_cost ) }
+#      - "incident3_item": ${ incident3_item }
+#      - "incident3_item_cost": ${ currency(incident3_item_cost ) }
+#      - "landlord_liable_amount": ${ largest_liable_guess }
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }

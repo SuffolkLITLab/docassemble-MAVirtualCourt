@@ -129,12 +129,12 @@ fields:
 ---
 id: names of oppposing parties
 question: |
-  Please list all people on the other side of your case below
+  Please list everyone who is on the 'other side' of your case below:
 subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
 fields:
-  - Is this a person, or a business?: other_parties[i].person_type
+  - Are they a person, or a business?: other_parties[i].person_type
     input type: radio
     choices:
       - Business or organization: business
@@ -196,8 +196,7 @@ id: your contact information
 question: |
   What is your contact information?
 subquestion: |
-  Put in the address that you want filled in on the court form
-  next to your name.
+  Put in the address the court should use to mail papers to you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -209,16 +208,25 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
-  - Phone number where you can be reached: users[0].phone_number
+  - Phone number: users[0].phone_number
     required: False
-  - Email address where you can be reached: users[0].email    
+  - Email address: users[0].email    
     datatype: email
     required: False
-  - How can we reach you?: users[0].other_contact_method
+  - How can the court contact you?: users[0].other_contact_method
     input type: area
-    js show if: |
-      (val("users[0].phone_number") == '' && val("users[0].email") == '') ||
-      !(val("users[0].phone_number") || val("users[0].email"))
+    required: False
+    help: |
+      If you do not have a phone number 
+      or email the court can use, provide specific contact instructions. For example, use a friend's phone number. But the friend must be someone you can trust to tell you the court is trying to reach you.
+validation code: |
+  if (not showifdef('users[0].phone_number') and (not showifdef('users[0].email')) and (not showifdef('users[0].other_contact_method'))):
+    validation_error(word("You need to provide at least one contact method."))
+help: |
+  You _must_ provide contact information so the court can reach you.
+  
+  Some forms allow you to tell the court you need to keep your address, phone, and email 
+  confidential, so that only court staff can see this information. 
 ---
 code: |
   users[0].address.geolocate()
@@ -244,12 +252,12 @@ fields:
 ---
 id: other users
 question: |
-  Is there anyone else who will be filing this form with you?  
+  Is anyone else filing this form with you?  
 subquestion: |
   % if len(users.elements) <= 1:
-  Answer yes if someone else will be a party of the case with you.
+  Answer yes if someone else is a party in the case with you.
   For example, a spouse, partner, or co-tenant who is on your side
-  of this case (not the opposing party).
+  of this case. Do not include any opposing party.
   % else:
   You already told us about ${comma_and_list(users.elements)}
   % endif
@@ -257,7 +265,7 @@ yesno: users.there_is_another
 ---
 id: other users names
 question: |
-  What is the name of the ${ ordinal(i) } person on your side of the case?
+  What is the name of the ${ ordinal(i) } other person filing with you?
 fields:
   - First Name: users[i].name.first
   - Middle Name: users[i].name.middle
@@ -269,7 +277,7 @@ fields:
 ---
 id: names of children
 question: |
-  Tell us about the children who will be on this form
+  Tell us about the children who will be involved in this case
 subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
@@ -300,6 +308,7 @@ code: |
     respondents = users
     plaintiffs = other_parties
     petitioners = other_parties
+    other_parties.there_are_any = True
   else:
     if user_ask_role == 'plaintiff':
       plaintiffs = users
@@ -311,16 +320,17 @@ code: |
       respondents = users
       plaintiffs = other_parties
       petitioners = other_parties
+      other_parties.there_are_any = True
   evaluate_role = True
 ---
 id: user role
 question: |
-  On this form, will you be the person starting a new case or responding to an existing case?
+  Are you starting a new case or responding to an existing case?
 subquestion: |
-  If you are starting the case, you may be called either the "Plaintiff"
-  or the petitioner, depending on your form.
+  If you are starting the case, you are the "Plaintiff"
+  or the "petitioner."
   
-  If you are responding to a case, you may be called either the "Defendant"
+  If you are responding to a case, you are the "Defendant"
   or the "respondent."
 field: user_ask_role
 buttons:
@@ -329,14 +339,16 @@ buttons:
 ---
 id: other users there are any
 question: |
-  Is there anyone on the other side of this case?
+  Is there any person or organization on the other side of this case?
 subquestion: |
-  I.e., the person who you are suing or who is suing you.
+  % if users == plaintiffs:
+  Answer yes if there is a person or organization you are suing or taking to court.
+  % endif
 yesno: other_parties.there_are_any
 ---
 id: children names without birthdate
 question: |
-  Tell us about the children who will be on this form
+  Tell us about the children involved in this case.
 subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
@@ -424,6 +436,8 @@ continue button field: ask_court_question
 #  ${quote_paragraphs(local_housing_court.description)}
 #  % endif
 ---
+if: |
+  not defined('preferred_court') or preferred_court != 'Housing Court'
 id: court information
 sets:
   - courts[0].name
@@ -431,13 +445,7 @@ question: |
   What court is your case being heard in?
 subquestion: |
   Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
-  
-  % if preferred_court:
-  We have tried to select the court your case is most likely to be in
-  below, based on the address you gave us.
-  
-  
-  % endif
+  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
 fields:
   - Court name: courts[0]
     datatype: object
@@ -454,7 +462,10 @@ continue button field: ask_docket_number
 ---
 id: docket numbers
 question: |
-  Enter any docket numbers you need on this form below
+  What is the docket number for this case?
+subquestion: |
+  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
+  to add more than one.
 list collect: True
 fields:
   - no label: docket_numbers[i]
@@ -462,9 +473,9 @@ fields:
 ---
 id: signature date
 question: |
-  When will these forms be signed?
+  When do you plan to file these forms that we are working on?
 subquestion: |
-  Normally, leave this set to today's date.
+  We automatically answer "today" for you, below. You can change the date.
 fields: 
   - Date: signature_date
     datatype: date
@@ -475,9 +486,12 @@ decoration: file-signature
 question: |
   Sign your court forms
 subquestion: |
-  We are almost ready to deliver your forms. You will need to sign them before
-  delivering them. You can sign using your computer mouse, or sign on your
-  phone with your finger. You can also send the forms to someone else to sign.
+  We are almost ready to file your forms. You will need to sign them first.
+  
+  Use the mouse or touchpad on your computer or
+  sign with your finger on your phone. 
+   
+  You can send the forms to someone else to sign if you choose the "phone" option.
 field: signature_choice
 buttons:  
   - Sign on my phone: phone
@@ -558,8 +572,8 @@ field: signature_phone_followup
 ---
 template: interview_link
 content: |
-  Hi, someone sent you a form to sign.
-  Click the link below to continue the interview on your phone.
+  Hi, ${ user }  sent you a form from MassAccess. To sign the form,
+  click the link below to continue the interview on your phone.
   ${interview_url()}
 ---
 code: |
@@ -584,7 +598,6 @@ code: |
     # 2. Sent someone a link to sign the form
     # 3. Used the QR code
     saw_signature_choice
-
     # Branch 1: PC
     if signature_choice =='this device':
       for signature in signature_fields:
@@ -614,17 +627,21 @@ code: |
 code: |
   user_signature_verification = users[0].signature
 ---
+id: basic questions intro screen
 question: |
   Mass Access Project
 subquestion: |
-  This project helps you file emergency forms with the court
-  in a time of critical need. At the end, your forms will be
-  delivered securely to the court.
+  This project helps you file forms with the court 
+  in an emergency. 
   
-  The court should contact you in x days to confirm receipt of
-  your form. If you don't hear back from them, please call the
-  court. You'll get the number for your court at the end of this
-  interview.
+  We ask questions and use your answers to fill in the forms you need. When we finish, you can see the completed forms. You can file them with the court securely, keep a copy for yourself and email them. 
+  
+  If do not hear from the court in 1 business day, call the Trial
+  Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,  
+  Monday - Friday.  
 continue button field: basic_questions_intro_screen
 ---
 code: |
@@ -636,14 +653,15 @@ code: |
   x.gender_male = x.gender == 'male'
   x.gender_other = ((x.gender != 'male') and (x.gender != 'female'))
 ---
+id: gender
 generic object: Individual
 question: |
   What is ${x.possessive('gender')}?
 subquestion: |
-  **Note**: Many forms require you to specify a gender of either Male or Female.
+  **Note**: Many forms require you to specify "Female" or "Male."
   
   If you answer something other than "Female" or "Male", we may not be able
-  to check any box on your form.
+  to check any box on your form. This may delay your case.
 fields:
   - no label: x.gender
     choices:
@@ -676,18 +694,21 @@ code: |
   email_success = True # until we're ready to turn this on
   sent_email_to_court = True
 ---
+id: ready to email
 question: |
   Your form is ready to be delivered to ${courts}.
 subquestion: |
   % if found_email:
-  We will email it to ${email_to_use}
+  We will deliver it securely.
   % else:
-  We couldn't locate an email for ${courts}
+  There was a problem delivering this to the ${courts[0]}. We couldn't
+  locate the contact information for this court.
   % endif
   
   Click continue if you're ready to send it.
 continue button field: ready_to_email
 ---
+id: email status
 question: |
   % if email_success:
   Your form was delivered
@@ -696,11 +717,34 @@ question: |
   % endif
 subquestion: |
   % if email_success:
-  You should hear back from the court in x days. If you don't hear
-  anything, please call the ${courts[0]} at ${courts[0].phone}.
-  % else:
-  Something went wrong delivering your form to the ${courts[0]}.
+  If do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
   
-  You can try emailing your form to ${email_to_use}.
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,   
+  Monday - Friday.  
+  % else:
+  Something went wrong delivering your form to the ${courts[0]}.  
+  Try again later or call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,  
+  Monday - Friday.  
   % endif
 continue button field: email_status
+---
+id: email to court
+template: email_to_court
+subject: |
+  MassAccess submission from ${users} intended for ${courts[0]}
+content: |
+  On ${today()} at about ${current_datetime().format_datetime()},
+  ${users} submitted the attached form(s).
+  
+  Please contact them to confirm you received the forms:
+  
+  % for user in users:
+  ${user}:  
+  * Phone: ${showifdef('user.phone_number')}
+  * Email: ${showifdef('user.email')}
+  * Other contact method: ${showifdef('user.other_contact_method')}
+  % endfor
