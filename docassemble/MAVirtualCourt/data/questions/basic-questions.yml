@@ -656,6 +656,16 @@ subquestion: |
   The Emergency HelpLine is open:  
   8:30am - 4:30pm,  
   Monday - Friday.  
+fields:
+  - I accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False    
+    minlength: 1
+    choices:
+      - I accept.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.        
 continue button field: basic_questions_intro_screen
 ---
 code: |
