@@ -12,6 +12,7 @@ __all__ = [
   "get_files",
   "initialize_db",
   "new_entry",
+  "reverse_dictionary",
   "send_attachments",
   "url_for_submission"
 ]
@@ -63,6 +64,10 @@ def initialize_db():
   conn.commit()
   cur.close()
   conn.close()
+  
+def reverse_dictionary(input_dict: {}) -> dict:   
+  """Creates a dictionary mapping values to keys"""
+  return { value: key for key, value in input_dict.items() }
   
 def get_user_id() -> str:
   """
@@ -119,26 +124,16 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   return str(submission_id)
 
 def url_for_submission(id="") -> str:
+  """Returns the url that one can use to view the submission (if logged in and allowed)"""
   return interview_url(i="docassemble.MAVirtualCourt:submission.yml", id=id)
 
-def get_court_from_email(email="", court_emails=dict()) -> Optional[str]:
-  """
-  """
-  for [name, court_email] in court_emails.items():
-    if email == court_email:
-      return name
-
-  return None
-
-def can_access_submission(submission_id="", court_emails=dict()) -> bool:
+def can_access_submission(submission_id="", emails_to_courts=dict()) -> bool:
   """
   Determines whether the current user can access the files related to the submission, submission_id
 
   Args:
     submission_id (str): the id of the submission we are interested in
-    court_emails (dict): a dictionary mapping court names to emails
-
-  TODO: yes, we should probably have a reverse mapping (and not iterate through it each time)
+    emails_to_courts (dict): a dictionary mapping court emails to names
 
   Returns (bool):
     True if the user made the initial submission, or the user is with the court that the submission was filed; otherwise, false
@@ -157,7 +152,7 @@ def can_access_submission(submission_id="", court_emails=dict()) -> bool:
     user_email = get_user_email()
 
     if user_email:
-      return get_court_from_email(email=user_email, court_emails=court_emails)
+      return entry[0] == emails_to_courts.get(user_email)
 
     return False
 
@@ -197,7 +192,19 @@ def get_files(submission_id="", authorized=False) -> list:
 
   return files
 
-def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
+def get_accessible_submissions(emails_to_courts={}) -> Tuple[list, str]:
+  """
+  Gets a list of all the submissions (id, time, other data) that the current user is authorized to see
+
+  If the user is a court, it shows the name of who submitted the form.
+  Otherwise, it will show the court to which the form was sent.
+
+  Args:
+    emails_to_courts (dict): a dictionary mapping emails to court names
+
+  Returns (Tuple[list,str]):
+    a list of all the entries the user can view, and a title for the third field
+  """
   connection = connect(**db_config)
   cursor = connection.cursor()
 
@@ -205,7 +212,7 @@ def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
   email = get_user_email()
 
   if email:
-    court_name = get_court_from_email(email=email, court_emails=court_emails)
+    court_name = emails_to_courts.get(email)
 
   if court_name:
     cursor.execute("SELECT id, timestamp, name FROM interviews WHERE court_name = (%s)", (court_name,))
@@ -214,7 +221,6 @@ def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
     user_id = get_user_id()
     cursor.execute("SELECT id, timestamp, court_name FROM interviews WHERE user_id = (%s)", (user_id,))
     field_name = "Court name"
-
 
   results = [cursor.fetchall(), field_name]
 

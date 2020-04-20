@@ -1,14 +1,19 @@
+include:
+  - basic-questions.yml
+---
 modules:
   - .upload
 ---
 mandatory: True
 code: |
-  court_emails = { "test court": "kgarner@mit.edu" }
+  court_emails["test court"] = "kgarner@mit.edu"
+  
+  emails_to_courts = reverse_dictionary(court_emails)
     
   if "id" in url_args:
     id = url_args["id"]
     
-    if can_access_submission(submission_id=id, court_emails=court_emails):
+    if can_access_submission(submission_id=id, emails_to_courts=emails_to_courts):
       authorized
     else:
       if user_logged_in():
@@ -16,13 +21,13 @@ code: |
       else:
         not_authorized_login
   else:
-    [submissions, field] = get_accessible_submissions(court_emails=court_emails)
+    [submissions, field] = get_accessible_submissions(emails_to_courts=emails_to_courts)
     no_submission
 ---
 event: view_submission
 code: |
   id = action_argument("id");
-  if can_access_submission(submission_id=id, court_emails=court_emails):
+  if can_access_submission(submission_id=id, emails_to_courts=emails_to_courts):
     authorized
 ---
 event: authorized
