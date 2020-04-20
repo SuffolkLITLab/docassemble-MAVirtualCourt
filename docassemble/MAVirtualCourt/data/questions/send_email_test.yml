@@ -55,7 +55,6 @@ attachment:
 question: |
   Interview 0 result
 subquestion: |
-  ${ url_of("playground")}
   We have just compiled and submitted your attachment [here](${ interveiw_0_attachment.url_for() }) 
   Your submission id is **${submission_id_0}**.
   
@@ -106,16 +105,16 @@ subquestion: |
 
     You should see the following:
 
-    ```
     Dear ${ fake_court_name }:
 
     You are receiving 1 file(s) from ${ users[0].name }: 
 
     interveiw_1_attachment.pdf
-    ```
 
     At the bottom, you should also see a link.
-    If you click on the link, it should take you to a page to view submissions/
+    If you click on the link, it should take you to a page to view submissions.
+
+    Please note, this link will only work properly if this package is installed on the server
   % else:
     According to our records, the email did not send successfully.
     
@@ -169,7 +168,6 @@ subquestion: |
 
     You should see the following:
 
-    ```
     Dear ${ fake_court_name }:
 
     You are receiving 2 file(s) from ${ users[0].name }: 
@@ -177,7 +175,6 @@ subquestion: |
     interveiw_1_attachment.pdf
     
     interveiw_2_attachment.pdf
-    ```
 
     At the bottom, you should also see a link.
     If you click on the link, it should take you to a page to view submissions/
@@ -189,6 +186,15 @@ subquestion: |
 
   You can review your subquestion [here](${ url_for_submission(id=submission_id_1) })
 continue button field: to_interview_3
+---
+progress: 100
+event: complete_test
+question: |
+  That's it!
+subquestion: |
+  If both emails sent successfully (matching the format exactly), they the tests have succeeded.
+
+  However, if any of the emails did **not** send correctly, please make note of that.
 ---
 mandatory: True
 code: |
@@ -224,3 +230,4 @@ code: |
   result_2 = send_attachments(name=name, court_name=fake_court_name, court_emails=court_emails, files=files, submission_id=submission_id_2)
 
   to_interview_3
+  complete_test

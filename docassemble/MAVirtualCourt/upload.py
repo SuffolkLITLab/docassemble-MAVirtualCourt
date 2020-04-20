@@ -111,9 +111,11 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   submission_id = None
   
   with connection.cursor() as cursor:
+    # create a new interview submission
     cursor.execute("INSERT INTO interviews (timestamp, name, court_name, user_id) VALUES (%s, %s, %s, %s) RETURNING id", (datetime.now(), name, court_name, get_user_id()))
     submission_id = cursor.fetchone()[0]
 
+    # save the file metadata (NOT the files themselves)
     for file in files:
       sensitive = defined("file.sensitive") and file.sensitive
       cursor.execute("INSERT INTO files (number, filename, mimetype, sensitive, submission_id) VALUES (%s, %s, %s, %s, %s)", (file.number, file.filename, file.mimetype, sensitive, submission_id))
@@ -142,37 +144,40 @@ def can_access_submission(submission_id="", emails_to_courts=dict()) -> bool:
   connection = connect(**db_config)
   
   with connection.cursor() as cursor:
+    # get the submission, submission_id
     cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
     entry = cursor.fetchone()
 
-    result = False
+    authorized = False
 
     if entry is None:
-      result = False
+      authorized = False
     elif get_user_id() == str(entry[1]):
-      result = True
+      authorized = True
     else:
       user_email = get_user_email()
 
       if user_email:
-        result = entry[0] == emails_to_courts.get(user_email)
+        authorized = entry[0] == emails_to_courts.get(user_email)
 
-    if result:
+    if authorized:
       cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
       files = cursor.fetchall()
 
+      # if the user is authorized, grant access to all the files
       for [number, filename, mimetype, _sensitive] in files:
         file = DAFile(number=number, filename=filename, mimetype=mimetype)
         file.user_access(get_user_id())
 
-
   connection.close()
 
-  return result
+  return authorized
 
 def get_files(submission_id="") -> list:
   """
   Gets a list of files for the submission, submission_id and authorizes the current user access
+  We assume that the user already has access to the files when calling this function.
+  If the user does not have access, then docassemble will not show the files.
 
   Args:
     submission_id (str): the id of the submission to find
@@ -191,6 +196,7 @@ def get_files(submission_id="") -> list:
 
   files = []
 
+  # recreate all the files from metadata
   for [number, filename, mimetype, _sensitive] in entries:
     files.append(DAFile(number=number, filename=filename, mimetype=mimetype))
     
