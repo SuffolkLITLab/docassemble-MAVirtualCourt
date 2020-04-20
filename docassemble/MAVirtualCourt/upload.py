@@ -1,6 +1,6 @@
 from datetime import datetime
 from docassemble.base.core import DAFile
-from docassemble.base.functions import defined, get_user_info, interview_url
+from docassemble.base.functions import defined, get_user_info, interview_url, quantity_noun
 from docassemble.base.util import get_config, send_email, user_info
 from psycopg2 import connect
 from textwrap import dedent
@@ -259,7 +259,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
   court_email = court_emails[court_name]
 
   filenames = [file.filename for file in attachments]
-  filenames_str = "\n".join(filenames)
+  filenames_str = "\n    ".join(filenames)
   submission_url = url_for_submission(id=submission_id)
 
   if len(attachments) != len(files):
@@ -267,7 +267,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
       body = dedent(f"""
       Dear {court_name}:
 
-      {name} has submitted {len(files)} online. However, these file(s) have sensitive information, and will not be sent over email.
+      {name} has submitted {len(files)} file(s) online. However, these file(s) have sensitive information, and will not be sent over email.
       
       Please access these forms with the following submission id: {submission_url}.
       """)
@@ -277,10 +277,10 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
       body = dedent(f"""
       Dear {court_name}:
       
-      You are receiving {len(attachments)} files from {name}:
+      You are receiving {quantity_noun(len(attachments), "file")} from {name}:
       {filenames_str}
 
-      However, there are also {len(files) - len(attachments)} forms which are sensitive that will not be sent over email.
+      However, there are also {quantity_noun(len(files) - len(attachments), "form")} which are sensitive that will not be sent over email.
 
       Please access these forms with the following submission id: {submission_url}.
       """)
@@ -288,7 +288,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
     body = dedent(f"""
     Dear {court_name}:
 
-    You are receiving {len(attachments)} files from {name}:
+    You are receiving {quantity_noun(len(attachments), "file")} from {name}:
     {filenames_str}
 
     The reference ID for these forms is {submission_url}.
