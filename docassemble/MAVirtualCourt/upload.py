@@ -1,6 +1,6 @@
 from datetime import datetime
 from docassemble.base.core import DAFile
-from docassemble.base.functions import defined, get_user_info, interview_url
+from docassemble.base.functions import defined, get_user_info, interview_url, quantity_noun
 from docassemble.base.util import get_config, send_email, user_info
 from psycopg2 import connect
 from textwrap import dedent
@@ -12,6 +12,7 @@ __all__ = [
   "get_files",
   "initialize_db",
   "new_entry",
+  "reverse_dictionary",
   "send_attachments",
   "url_for_submission"
 ]
@@ -64,6 +65,10 @@ def initialize_db():
   cur.close()
   conn.close()
   
+def reverse_dictionary(input_dict: {}) -> dict:   
+  """Creates a dictionary mapping values to keys"""
+  return { value: key for key, value in input_dict.items() }
+  
 def get_user_id() -> str:
   """
   Returns a unique ID for the current user
@@ -106,9 +111,11 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   submission_id = None
   
   with connection.cursor() as cursor:
+    # create a new interview submission
     cursor.execute("INSERT INTO interviews (timestamp, name, court_name, user_id) VALUES (%s, %s, %s, %s) RETURNING id", (datetime.now(), name, court_name, get_user_id()))
     submission_id = cursor.fetchone()[0]
 
+    # save the file metadata (NOT the files themselves)
     for file in files:
       sensitive = defined("file.sensitive") and file.sensitive
       cursor.execute("INSERT INTO files (number, filename, mimetype, sensitive, submission_id) VALUES (%s, %s, %s, %s, %s)", (file.number, file.filename, file.mimetype, sensitive, submission_id))
@@ -119,85 +126,98 @@ def new_entry(name="", court_name="", court_emails=dict(), files=[]) -> str:
   return str(submission_id)
 
 def url_for_submission(id="") -> str:
+  """Returns the url that one can use to view the submission (if logged in and allowed)"""
   return interview_url(i="docassemble.MAVirtualCourt:submission.yml", id=id)
 
-def get_court_from_email(email="", court_emails=dict()) -> Optional[str]:
-  """
-  """
-  for [name, court_email] in court_emails.items():
-    if email == court_email:
-      return name
-
-  return None
-
-def can_access_submission(submission_id="", court_emails=dict()) -> bool:
+def can_access_submission(submission_id="", emails_to_courts=dict()) -> bool:
   """
   Determines whether the current user can access the files related to the submission, submission_id
+  If the user is authorized to access the files, we also grant the user access to view the files.
 
   Args:
     submission_id (str): the id of the submission we are interested in
-    court_emails (dict): a dictionary mapping court names to emails
-
-  TODO: yes, we should probably have a reverse mapping (and not iterate through it each time)
+    emails_to_courts (dict): a dictionary mapping court emails to names
 
   Returns (bool):
     True if the user made the initial submission, or the user is with the court that the submission was filed; otherwise, false
   """
   connection = connect(**db_config)
-  cursor = connection.cursor()
   
-  cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
-  entry = cursor.fetchone()
+  with connection.cursor() as cursor:
+    # get the submission, submission_id
+    cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
+    entry = cursor.fetchone()
 
-  if entry is None:
-    return False
-  elif get_user_id() == str(entry[1]):
-    return True
-  else:
-    user_email = get_user_email()
+    authorized = False
 
-    if user_email:
-      return get_court_from_email(email=user_email, court_emails=court_emails)
+    if entry is None:
+      authorized = False
+    elif get_user_id() == str(entry[1]):
+      authorized = True
+    else:
+      user_email = get_user_email()
 
-    return False
+      if user_email:
+        authorized = entry[0] == emails_to_courts.get(user_email)
 
-def get_files(submission_id="", authorized=False) -> list:
+    if authorized:
+      cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
+      files = cursor.fetchall()
+
+      # if the user is authorized, grant access to all the files
+      for [number, filename, mimetype, _sensitive] in files:
+        file = DAFile(number=number, filename=filename, mimetype=mimetype)
+        file.user_access(get_user_id())
+
+  connection.close()
+
+  return authorized
+
+def get_files(submission_id="") -> list:
   """
   Gets a list of files for the submission, submission_id and authorizes the current user access
-  
-  NOTE: You should ONLY call this function AFTER checking for access permissions (like through can_access_submission).
+  We assume that the user already has access to the files when calling this function.
+  If the user does not have access, then docassemble will not show the files.
 
   Args:
     submission_id (str): the id of the submission to find
-    authorized (bool): a flag that must be set true, reminder to use this function safely
 
   Returns (List[DAFile]):
     a list of DAFiles corresponding to all the files that were created in this submission
   """
-  if not authorized:
-    return []
-
   connection = connect(**db_config)
   cursor = connection.cursor()
 
   cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
-  entry = cursor.fetchall()
+  entries = cursor.fetchall()
 
-  if entry is None or len(entry) == 0:
+  if entries is None or len(entries) == 0:
     raise ValueError(f"Could not find a submission {submission_id}")
 
   files = []
 
-  # currently we do nothing with 'sensitive', but this should change when we tweak the court-email mapping
-  for [number, filename, mimetype, sensitive] in entry:
-    file = DAFile(number=number, filename=filename, mimetype=mimetype)
-    file.user_access(get_user_id())
-
-    files.append(file)
+  # recreate all the files from metadata
+  for [number, filename, mimetype, _sensitive] in entries:
+    files.append(DAFile(number=number, filename=filename, mimetype=mimetype))
+    
+  cursor.close()
+  connection.close()
 
   return files
 
-def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
+def get_accessible_submissions(emails_to_courts={}) -> Tuple[list, str]:
+  """
+  Gets a list of all the submissions (id, time, other data) that the current user is authorized to see
+
+  If the user is a court, it shows the name of who submitted the form.
+  Otherwise, it will show the court to which the form was sent.
+
+  Args:
+    emails_to_courts (dict): a dictionary mapping emails to court names
+
+  Returns (Tuple[list,str]):
+    a list of all the entries the user can view, and a title for the third field
+  """
   connection = connect(**db_config)
   cursor = connection.cursor()
 
@@ -205,7 +225,7 @@ def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
   email = get_user_email()
 
   if email:
-    court_name = get_court_from_email(email=email, court_emails=court_emails)
+    court_name = emails_to_courts.get(email)
 
   if court_name:
     cursor.execute("SELECT id, timestamp, name FROM interviews WHERE court_name = (%s)", (court_name,))
@@ -214,7 +234,6 @@ def get_accessible_submissions(court_emails=dict()) -> Tuple[list, str]:
     user_id = get_user_id()
     cursor.execute("SELECT id, timestamp, court_name FROM interviews WHERE user_id = (%s)", (user_id,))
     field_name = "Court name"
-
 
   results = [cursor.fetchall(), field_name]
 
@@ -253,7 +272,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
   court_email = court_emails[court_name]
 
   filenames = [file.filename for file in attachments]
-  filenames_str = "\n".join(filenames)
+  filenames_str = "\n    ".join(filenames)
   submission_url = url_for_submission(id=submission_id)
 
   if len(attachments) != len(files):
@@ -261,7 +280,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
       body = dedent(f"""
       Dear {court_name}:
 
-      {name} has submitted {len(files)} online. However, these file(s) have sensitive information, and will not be sent over email.
+      {name} has submitted {len(files)} file(s) online. However, these file(s) have sensitive information, and will not be sent over email.
       
       Please access these forms with the following submission id: {submission_url}.
       """)
@@ -271,10 +290,10 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
       body = dedent(f"""
       Dear {court_name}:
       
-      You are receiving {len(attachments)} files from {name}:
+      You are receiving {quantity_noun(len(attachments), "file")} from {name}:
       {filenames_str}
 
-      However, there are also {len(files) - len(attachments)} forms which are sensitive that will not be sent over email.
+      However, there are also {quantity_noun(len(files) - len(attachments), "form")} which are sensitive that will not be sent over email.
 
       Please access these forms with the following submission id: {submission_url}.
       """)
@@ -282,7 +301,7 @@ def send_attachments(name="", court_name="", court_emails=dict(), files=[], subm
     body = dedent(f"""
     Dear {court_name}:
 
-    You are receiving {len(attachments)} files from {name}:
+    You are receiving {quantity_noun(len(attachments), "file")} from {name}:
     {filenames_str}
 
     The reference ID for these forms is {submission_url}.
