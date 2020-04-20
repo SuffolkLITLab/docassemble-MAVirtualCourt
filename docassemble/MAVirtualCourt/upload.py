@@ -130,6 +130,7 @@ def url_for_submission(id="") -> str:
 def can_access_submission(submission_id="", emails_to_courts=dict()) -> bool:
   """
   Determines whether the current user can access the files related to the submission, submission_id
+  If the user is authorized to access the files, we also grant the user access to view the files.
 
   Args:
     submission_id (str): the id of the submission we are interested in
@@ -139,56 +140,62 @@ def can_access_submission(submission_id="", emails_to_courts=dict()) -> bool:
     True if the user made the initial submission, or the user is with the court that the submission was filed; otherwise, false
   """
   connection = connect(**db_config)
-  cursor = connection.cursor()
   
-  cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
-  entry = cursor.fetchone()
+  with connection.cursor() as cursor:
+    cursor.execute("SELECT court_name, user_id FROM interviews WHERE id = (%s)", (submission_id,))
+    entry = cursor.fetchone()
 
-  if entry is None:
-    return False
-  elif get_user_id() == str(entry[1]):
-    return True
-  else:
-    user_email = get_user_email()
+    result = False
 
-    if user_email:
-      return entry[0] == emails_to_courts.get(user_email)
+    if entry is None:
+      result = False
+    elif get_user_id() == str(entry[1]):
+      result = True
+    else:
+      user_email = get_user_email()
 
-    return False
+      if user_email:
+        result = entry[0] == emails_to_courts.get(user_email)
 
-def get_files(submission_id="", authorized=False) -> list:
+    if result:
+      cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
+      files = cursor.fetchall()
+
+      for [number, filename, mimetype, _sensitive] in files:
+        file = DAFile(number=number, filename=filename, mimetype=mimetype)
+        file.user_access(get_user_id())
+
+
+  connection.close()
+
+  return result
+
+def get_files(submission_id="") -> list:
   """
   Gets a list of files for the submission, submission_id and authorizes the current user access
-  
-  NOTE: You should ONLY call this function AFTER checking for access permissions (like through can_access_submission).
 
   Args:
     submission_id (str): the id of the submission to find
-    authorized (bool): a flag that must be set true, reminder to use this function safely
 
   Returns (List[DAFile]):
     a list of DAFiles corresponding to all the files that were created in this submission
   """
-  if not authorized:
-    return []
-
   connection = connect(**db_config)
   cursor = connection.cursor()
 
   cursor.execute("SELECT number, filename, mimetype, sensitive FROM files WHERE submission_id = (%s)", (submission_id,))
-  entry = cursor.fetchall()
+  entries = cursor.fetchall()
 
-  if entry is None or len(entry) == 0:
+  if entries is None or len(entries) == 0:
     raise ValueError(f"Could not find a submission {submission_id}")
 
   files = []
 
-  # currently we do nothing with 'sensitive', but this should change when we tweak the court-email mapping
-  for [number, filename, mimetype, sensitive] in entry:
-    file = DAFile(number=number, filename=filename, mimetype=mimetype)
-    file.user_access(get_user_id())
-
-    files.append(file)
+  for [number, filename, mimetype, _sensitive] in entries:
+    files.append(DAFile(number=number, filename=filename, mimetype=mimetype))
+    
+  cursor.close()
+  connection.close()
 
   return files
 

@@ -34,7 +34,7 @@ event: authorized
 question: |
   You are authorized to see submission ${ id }
 subquestion: |
-  % for file in get_files(submission_id=id, authorized=True):
+  % for file in get_files(submission_id=id):
   * ${ file.filename }: [${file.url_for()}](${file.url_for()})
   % endfor
 ---

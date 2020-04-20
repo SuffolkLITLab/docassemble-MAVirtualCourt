@@ -25,11 +25,51 @@ subquestion: |
   
   We will set this fake court as your preferred court. In an actual interview, we would ask you for your preffered court.
 
-  Make sure that you have access to the email you have provided.
+  Make sure that you have access to the email you have provided. 
+  For best testing, please provide an email that is not the one you are currently using to sign into this account.
 fields:
   - Fake court name: fake_court_name
   - Fake court email: fake_court_email
     datatype: email
+---
+question: |
+  Interview 0
+subquestion: |
+  This email does **not** test sending emails.
+  Rather, it tests whether or not we are able to save metadata and allow the appropriate users access.
+
+  This test will work best if you have installed the package.
+  If you have not, the links provided will **not** work. 
+
+  Do you want to run this test?
+yesno: wants_submission_test
+---
+attachment:
+  variable name: interveiw_0_attachment
+  filename: interveiw_0_attachment
+  persistent: True
+  private: True
+  content: |
+    This is interview 0 for the court ${ fake_court_name }
+---
+question: |
+  Interview 0 result
+subquestion: |
+  ${ url_of("playground")}
+  We have just compiled and submitted your attachment [here](${ interveiw_0_attachment.url_for() }) 
+  Your submission id is **${submission_id_0}**.
+  
+  You can access your submission using the following link:
+  **[${ url_for_submission(id=submission_id_0)}](${ url_for_submission(id=submission_id_0)})**.
+  
+  If you click on the link, you should see the following page:
+
+  #### Expected content
+
+  You are authorized to see submission ${ submission_id_0 }
+
+  * interveiw_0_attachment: [${ interveiw_0_attachment.url_for() }](${ interveiw_0_attachment.url_for() }).
+field: finished_interview_0
 ---
 question: |
   Interview 1
@@ -156,8 +196,13 @@ code: |
   court_emails[fake_court_name] = fake_court_email
   emails_to_courts = reverse_dictionary(court_emails)
 
+  if wants_submission_test:
+    files = [interveiw_0_attachment.pdf]
+    interveiw_0_attachment
+    submission_id_0 = new_entry(court_emails=court_emails, court_name=fake_court_name, name="Dummy User", files=files)
+    finished_interview_0
+
   saw_interview_1
-  users[0].name
   interveiw_1_attachment
   send_interview_1
 
