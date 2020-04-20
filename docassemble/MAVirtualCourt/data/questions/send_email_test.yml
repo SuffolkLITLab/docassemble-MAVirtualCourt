@@ -212,22 +212,26 @@ code: |
   interveiw_1_attachment
   send_interview_1
 
-  files = [interveiw_1_attachment.pdf]
   name = str(users[0].name)
   
-  submission_id_1 = new_entry(court_emails=court_emails, court_name=fake_court_name, name=name, files=files)
-  result_1 = send_attachments(name=name, court_name=fake_court_name, court_emails=court_emails, files=files, submission_id=submission_id_1)
-  
+  result_1
+
   to_interview_2
   saw_interview_2
   interview_2_textbox
   interveiw_2_attachment
   send_interview_2
-
-  files = [interveiw_1_attachment.pdf, interveiw_2_attachment.pdf]
-
-  submission_id_2 = new_entry(court_emails=court_emails, court_name=fake_court_name, name=name, files=files)
-  result_2 = send_attachments(name=name, court_name=fake_court_name, court_emails=court_emails, files=files, submission_id=submission_id_2)
-
+  result_2
+  
   to_interview_3
   complete_test
+---
+code: |
+  files_1 = [interveiw_1_attachment.pdf]
+  submission_id_1 = new_entry(court_emails=court_emails, court_name=fake_court_name, name=name, files=files_1)
+  result_1 = send_attachments(name=name, court_name=fake_court_name, court_emails=court_emails, files=files_1, submission_id=submission_id_1)
+---
+code: |
+  files_2 = [interveiw_1_attachment.pdf, interveiw_2_attachment.pdf]
+  submission_id_2 = new_entry(court_emails=court_emails, court_name=fake_court_name, name=name, files=files_2)
+  result_2 = send_attachments(name=name, court_name=fake_court_name, court_emails=court_emails, files=files_2, submission_id=submission_id_2)

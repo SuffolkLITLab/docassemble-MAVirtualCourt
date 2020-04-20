@@ -5,9 +5,7 @@ modules:
   - .upload
 ---
 mandatory: True
-code: |
-  court_emails["test court"] = "kgarner@mit.edu"
-  
+code: |  
   emails_to_courts = reverse_dictionary(court_emails)
     
   if "id" in url_args:
