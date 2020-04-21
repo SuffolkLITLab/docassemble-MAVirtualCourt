@@ -339,7 +339,7 @@ code: |
 ---
 id: user role
 question: |
-  Are you starting a new case or responding to an existing case?
+  Are you filing a new case or responding to a suit that has been filed against you?
 subquestion: |
   If you are starting the case, you are the "Plaintiff"
   or the "petitioner."

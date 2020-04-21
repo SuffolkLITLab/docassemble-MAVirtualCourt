@@ -31,7 +31,7 @@ fields:
 question: |
   Interview 0
 subquestion: |
-  This email does **not** test sending emails.
+  This screen does **not** test sending emails.
   Rather, it tests whether or not we are able to save metadata and allow the appropriate users access.
 
   This test will work best if you have installed the package.
