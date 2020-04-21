@@ -1,0 +1,461 @@
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['A_complaint_for_protection_from_abuse_probation_copy0005']"):
+    interview_metadata.initializeObject('A_complaint_for_protection_from_abuse_probation_copy0005')
+  interview_metadata['A_complaint_for_protection_from_abuse_probation_copy0005'].update({
+    'title': '209A Complaint for Protection from Abuse pg 2',
+    'short title': '209A Page 2',
+    'description': 'Complete this form if you are applying for 209A restraining order and you have children under  18.',
+    'original_form': 'https://www.mass.gov/doc/complaint-for-protection-from-abuse-gl-c-209a-page-2/download',
+    'allowed courts': [
+      'Boston Municipal Court',
+      'District Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ],
+    'preferred court': 'District Court',
+    'categories': [
+      'Domestic Violence / Safety of self',
+      'Family Law',
+    ],
+    'logic block variable': 'A_complaint_for_protection_from_abuse_probation_copy0005',
+    'attachment block variable': 'A_complaint_for_protection_from_abuse_probation_copy0005_attachment',
+    'typical role': 'plaintiff',  })
+---
+question: |
+  Do you have children? (todo SME consult on all the children details)
+yesno: children_involved_that_are_relevant
+---
+# If this question was here, the question about custody should
+# explain that these two types of custody are different.
+question: |
+  todo: group SME required for all-interview assessment. Are there other cases between you and the defendant?
+subquestion: |
+  Select what other kinds of cases have happened between you and the
+  defendant.
+fields:
+  - 'Related custody case': custody_case_yes
+    datatype: yesno
+  - 'No related custody case': custody_case_no
+    datatype: yesno
+  - 'Related paternity case': paternity_case_no
+    datatype: yesno
+  - 'No related paternity case': paternity_case_yes
+    datatype: yesno
+---
+question: |
+  Child Support
+subquestion: |
+  If the defendant has an obligation to support your children (for example, if he
+  is their father), do you want the defendant to pay temporary child support?
+yesno: request_child_support_temporary_yes
+---
+question: |
+  Contact with Children
+subquestion: |
+  Are you asking for the defendant not to contact your children? If so, which children?
+fields:
+  - 'Child 1 name': child1_name_full__4  # child[1-1].name.full
+  - 'Child 1 age': child1_age__4
+    datatype: number
+  - 'Child 2 name': child2_name_full__4
+  - 'Child 2 age': child2_age__4
+    datatype: number
+  - 'Child 3 name': child3_name_full__4
+  - 'Child 3 age': child3_age__4
+    datatype: number
+  - 'Child 4 name': child4_name_full__4
+  - 'Child 4 age': child4_age__4
+    datatype: number
+  - 'Child 5 name': child5_name_full__4
+  - 'Child 5 age': child5_age__4
+    datatype: number
+  - 'Child 6 name': child6_name_full__4
+  - 'Child 6 age': child6_age__4
+    datatype: number
+---
+# children[i]
+question: |
+  Do you need the court to give you custody of ${ str(children[0]) }?
+yesno: request_custody_yes
+---
+# children[i]
+# ${ defendants[0] }
+question: |
+  Do you need the court to order the defendant not to contact ${ str(children[0]) }?
+yesno: do_request_no_contact
+---
+question: |
+  Reasons for asking Defendant not to Contact Children
+subquestion: |
+fields:
+  - no label: no_contact_request_reasons
+    input type: area
+    required: False
+---
+# todo: required on showif. change to address
+question: |
+  School and Daycare
+subquestion: |
+  Do you want the defendant to stay away from the children(s) school and/or daycare?
+fields:
+  - 'Order defendant remain away from school(s)/daycare(s)': order_defendant_remain_away_from_schools_daycares_yes
+    datatype: yesnoradio
+  - 'School name and address and/or daycare name and address': school_name_address_daycare_name_address
+    input type: area
+    required: False
+    default: ''
+    show if: order_defendant_remain_away_from_schools_daycares_yes
+---
+question: |
+  To Do in Clean Up
+subquestion: |
+  Placeholder text
+fields:
+  - 'Date of user signature': user_signature_date
+    datatype: date
+---
+# todo: Depends on the court
+question: |
+  Do you need the court order to permit visitation?
+subquestion: |
+  todo: SME group consultation
+yesno: visitation  # wrong - opposite
+---
+# Give defendant name
+question: |
+  When can the defendant visit your children?
+subquestion: |
+  Placeholder SME needed
+fields:
+  - 'Allow visitation at visitation center': visitation_at_location
+    datatype: yesno
+  - 'Visitation center name': visitation_center_name
+  - 'Name of person paying for visitation center': visitation_payer_name_full
+  - 'Allow supervised visitation': visitation_supervised
+    datatype: yesno
+  - "Visitation supervisor's name": visitation_supervisor_name_full
+  - 'Visitation times': visitation_times
+  - 'Name of person paying for visitation supervisor': visitation_payer2_name_full
+  - 'Permit visitation with third party involvement': visitation_third_party_involvement
+    datatype: yesno
+  - "Third party's name": visitation_third_party_name_full
+  - 'Permit other visitation': visitation_other
+    datatype: yesno
+  - 'Other visitation requests': visitation_other_requests
+---
+mandatory: True
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+buttons:
+  - Exit: exit
+  - Restart: restart
+attachment code: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
+---
+need: A_complaint_for_protection_from_abuse_probation_copy0005
+attachment:
+    variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
+    name: 209A Page 2
+    filename: A_Page_2
+    pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
+    fields: 
+      - "child1_name_full": ${ str(children[1-1]) }
+      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child2_name_full": ${ '' }
+      - "child2_age": ${ '' }
+      - "child3_name_full": ${ '' }
+      - "child3_age": ${ '' }
+      - "child4_name_full": ${ '' }
+      - "child4_age": ${ '' }
+      - "child5_name_full": ${ '' }
+      - "child5_age": ${ '' }
+      - "child6_name_full": ${ '' }
+      - "child6_age": ${ '' }
+      - "user_signature": ${ users[0].signature }
+      - "custody_case_yes": ${ custody_case_yes }
+      - "custody_case_no": ${ custody_case_no }
+      - "paternity_case_no": ${ paternity_case_no }
+      - "paternity_case_yes": ${ paternity_case_yes }
+      - "request_custody_yes": ${ request_custody_yes }
+      - "child1_name_full__4": ${ '' }
+      - "child1_age__4": ${ '' }
+      - "child2_name_full__4": ${ '' }
+      - "child2_age__4": ${ '' }
+      - "child3_name_full__4": ${ '' }
+      - "child3_age__4": ${ '' }
+      - "child4_name_full__4": ${ '' }
+      - "child4_age__4": ${ '' }
+      - "child5_name_full__4": ${ '' }
+      - "child5_age__4": ${ '' }
+      - "child6_name_full__4": ${ '' }
+      - "child6_age__4": ${ '' }
+      - "custody_request_reasons": ${ no_contact_request_reasons }
+      - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
+      - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
+      - "visitation_yes": ${ visitation }
+      - "visitation_no": ${ not visitation }
+      - "visitation_at_location": ${ visitation_at_location }
+      - "visitation_center_name": ${ visitation_center_name }
+      - "visitation_payer_name_full": ${ visitation_payer_name_full }
+      - "visitation_supervised": ${ visitation_supervised }
+      - "visitation_supervisor_name_full": ${ visitation_supervisor_name_full }
+      - "visitation_times": ${ visitation_times }
+      - "visitation_payer2_name_full": ${ visitation_payer2_name_full }
+      - "visitation_third_party_involvement": ${ visitation_third_party_involvement }
+      - "visitation_third_party_name_full": ${ visitation_third_party_name_full }
+      - "visitation_other": ${ visitation_other }
+      - "visitation_other_requests": ${ visitation_other_requests }
+      - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
+      - "user_signature_date": ${ user_signature_date }
+---
+variable name: interview_metadata['A_complaint_for_protection_from_abuse_probation_copy0005']['built_in_fields_used']
+data:
+  - variable: child1_name_full
+  - variable: child1_age
+  - variable: child2_name_full
+  - variable: child2_age
+  - variable: child3_name_full
+  - variable: child3_age
+  - variable: child4_name_full
+  - variable: child4_age
+  - variable: child5_name_full
+  - variable: child5_age
+  - variable: child6_name_full
+  - variable: child6_age
+  - variable: user_signature
+---
+variable name: interview_metadata['A_complaint_for_protection_from_abuse_probation_copy0005']['field_list']
+data:
+  - variable: custody_case_yes
+    field_type: yesno
+  - variable: custody_case_no
+    field_type: yesno
+  - variable: paternity_case_no
+    field_type: yesno
+  - variable: paternity_case_yes
+    field_type: yesno
+  - variable: request_custody_yes
+    field_type: yesno
+  - variable: child1_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child1_age__4
+    field_type: text
+    field_data_type: number
+  - variable: child2_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child2_age__4
+    field_type: text
+    field_data_type: number
+  - variable: child3_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child3_age__4
+    field_type: text
+    field_data_type: number
+  - variable: child4_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child4_age__4
+    field_type: text
+    field_data_type: number
+  - variable: child5_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child5_age__4
+    field_type: text
+    field_data_type: number
+  - variable: child6_name_full__4
+    field_type: text
+    field_data_type: text
+  - variable: child6_age__4
+    field_type: text
+    field_data_type: number
+  - variable: no_contact_request_reasons
+    field_type: area
+    field_data_type: text
+  - variable: order_defendant_remain_away_from_schools_daycares_yes
+    field_type: yesno
+  - variable: school_name_address_daycare_name_address
+    field_type: text
+    field_data_type: text
+  - variable: visitation_yes
+    field_type: yesno
+  - variable: visitation_no
+    field_type: yesno
+  - variable: visitation_at_location
+    field_type: yesno
+  - variable: visitation_center_name
+    field_type: text
+    field_data_type: text
+  - variable: visitation_payer_name_full
+    field_type: text
+    field_data_type: text
+  - variable: visitation_supervised
+    field_type: yesno
+  - variable: visitation_supervisor_name_full
+    field_type: text
+    field_data_type: text
+  - variable: visitation_times
+    field_type: text
+    field_data_type: text
+  - variable: visitation_payer2_name_full
+    field_type: text
+    field_data_type: text
+  - variable: visitation_third_party_involvement
+    field_type: yesno
+  - variable: visitation_third_party_name_full
+    field_type: text
+    field_data_type: text
+  - variable: visitation_other
+    field_type: yesno
+  - variable: visitation_other_requests
+    field_type: text
+    field_data_type: text
+  - variable: request_child_support_temporary_yes
+    field_type: yesno
+  - variable: user_signature_date
+    field_type: text
+    field_data_type: date
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_intro
+question: |
+  209A Complaint for Protection from Abuse pg 2
+subquestion: |
+  todo: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under  18.
+---
+id: A_complaint_for_protection_from_abuse_probation_copy0005
+code: |
+  if children_involved_that_are_relevant:
+    # This is a placeholder to control logic flow in this interview
+    # It was generated from interview_generator.py as an 'interview order' type question.  # We list one variable from each screen here, in order to control the order of questions
+    # To change the order, you can rearrange, or make conditional. If you make conditional here,
+    # You must also make sure it's conditional in the attachment block, or assign each variable 
+    # on the optional screen to DAEmpty() 
+    basic_questions_intro_screen 
+    A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip
+    children[1-1].age_in_years()
+    # Make sure that Affidavit of care has these same var names
+    # are set so that this gets asked only if it wasn't asked already
+    custody_case_yes
+    request_custody_yes
+
+    if do_request_no_contact:
+      no_contact_request_reasons
+    else:
+      no_contact_request_reasons = ''
+
+    if not visitation:
+      visitation_at_location
+      order_defendant_remain_away_from_schools_daycares_yes
+    else:  # All this stuff would not have been asked
+      # All the visitation question stuff for now (bools at top)
+      visitation_at_location = False
+      visitation_supervised = False
+      visitation_third_party_involvement = False
+      visitation_other = False
+      visitation_center_name = ''
+      visitation_payer_name_full = ''
+      #visitation_supervised
+      visitation_supervisor_name_full = ''
+      visitation_times = ''
+      visitation_payer2_name_full = ''
+      #visitation_third_party_involvement
+      visitation_third_party_name_full = ''
+      #visitation_other
+      visitation_other_requests = ''
+      # Separate question page
+      order_defendant_remain_away_from_schools_daycares_yes = False
+
+    request_child_support_temporary_yes
+    user_signature_date  # signature_date
+    # str(children[2-1])
+    # children[2-1].age_in_years()
+    # str(children[3-1])
+    # children[3-1].age_in_years()
+    # str(children[4-1])
+    # children[4-1].age_in_years()
+    # str(children[5-1])
+    # children[5-1].age_in_years()
+    # str(children[6-1])
+    # children[6-1].age_in_years()
+    # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+    # Comment out the line below if you don't want this behavior. 
+    mark_unfilled_fields_empty(interview_metadata["A_complaint_for_protection_from_abuse_probation_copy0005"])
+    A_complaint_for_protection_from_abuse_probation_copy0005_preview_question # Pre-canned preview screen
+    basic_questions_signature_flow
+    users[0].signature
+  else:
+    mark_unfilled_fields_empty(interview_metadata["A_complaint_for_protection_from_abuse_probation_copy0005"])
+  A_complaint_for_protection_from_abuse_probation_copy0005 = True
+---
+continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview}
+---
+attachment:
+    variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview
+    name: 209A Page 2
+    filename: A_Page_2
+    pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
+    fields: 
+      - "child1_name_full": ${ str(children[1-1]) }
+      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child2_name_full": ${ '' }
+      - "child2_age": ${ '' }
+      - "child3_name_full": ${ '' }
+      - "child3_age": ${ '' }
+      - "child4_name_full": ${ '' }
+      - "child4_age": ${ '' }
+      - "child5_name_full": ${ '' }
+      - "child5_age": ${ '' }
+      - "child6_name_full": ${ '' }
+      - "child6_age": ${ '' }
+      - "custody_case_yes": ${ custody_case_yes }
+      - "custody_case_no": ${ custody_case_no }
+      - "paternity_case_no": ${ paternity_case_no }
+      - "paternity_case_yes": ${ paternity_case_yes }
+      - "request_custody_yes": ${ request_custody_yes }
+      - "child1_name_full__4": ${ '' }
+      - "child1_age__4": ${ '' }
+      - "child2_name_full__4": ${ '' }
+      - "child2_age__4": ${ '' }
+      - "child3_name_full__4": ${ '' }
+      - "child3_age__4": ${ '' }
+      - "child4_name_full__4": ${ '' }
+      - "child4_age__4": ${ '' }
+      - "child5_name_full__4": ${ '' }
+      - "child5_age__4": ${ '' }
+      - "child6_name_full__4": ${ '' }
+      - "child6_age__4": ${ '' }
+      - "custody_request_reasons": ${ no_contact_request_reasons }
+      - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
+      - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
+      - "visitation_yes": ${ visitation }
+      - "visitation_no": ${ not visitation }
+      - "visitation_at_location": ${ visitation_at_location }
+      - "visitation_center_name": ${ visitation_center_name }
+      - "visitation_payer_name_full": ${ visitation_payer_name_full }
+      - "visitation_supervised": ${ visitation_supervised }
+      - "visitation_supervisor_name_full": ${ visitation_supervisor_name_full }
+      - "visitation_times": ${ visitation_times }
+      - "visitation_payer2_name_full": ${ visitation_payer2_name_full }
+      - "visitation_third_party_involvement": ${ visitation_third_party_involvement }
+      - "visitation_third_party_name_full": ${ visitation_third_party_name_full }
+      - "visitation_other": ${ visitation_other }
+      - "visitation_other_requests": ${ visitation_other_requests }
+      - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
+      - "user_signature_date": ${ user_signature_date }
