@@ -1,0 +1,233 @@
+# Questions:
+# - What do we want to do about attaching additional pages?
+# - Can we get this in a hard copy?
+# - Other questions in the doc
+# - All language is a draft
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['a_258e_motion_for_impoundment0019']"):
+    interview_metadata.initializeObject('a_258e_motion_for_impoundment0019')
+  interview_metadata['a_258e_motion_for_impoundment0019'].update({
+    'title': 'MOTION FOR IMPOUNDMENT & AFFIDAVIT, G.L. c. 209A, § 8 or G.L. c. 258E, § 10',
+    'short title': 'Motion for Impoundment',
+    'description': 'A motion may be made for impoundment of information that is currently contained in the case record. Upon receipt of such a motion, the clerk shall remove the subject material from the case record and withhold it from public dissemination pending the court\'s ruling on the motion. A plaintiff should use this if they want their address or other contact information kept secret.',
+    'original_form': 'https://www.mass.gov/doc/motion-for-impoundment-and-affidavit-gl-c-209a-or-258e/download',
+    'allowed courts': [
+      'Boston Municipal Court',
+      'District Court',
+      'Juvenile Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ],
+    'preferred court': 'District Court',
+    'categories': [
+      'Domestic Violence / Safety of self',
+      'Family Law',
+    ],
+    'logic block variable': 'a_258e_motion_for_impoundment0019',
+    'attachment block variable': 'a_258e_motion_for_impoundment0019_attachment',
+    'typical role': 'plaintiff',
+    'built_in_fields_used': [
+      {'variable': 'user_signature',
+       'transformed_variable': 'users[0].signature',
+      },
+      {'variable': 'signature_date',
+       'transformed_variable': 'signature_date',
+      },
+      ],
+    'fields': [
+      {'variable': 'impound_personal_information',
+       'transformed_variable': 'impound_personal_information',
+      'field_type': 'yesno',
+      },
+      {'variable': 'impound_case_record_information',
+       'transformed_variable': 'impound_case_record_information',
+      'field_type': 'yesno',
+      },
+      {'variable': 'case_record_information_to_be_impounded',
+       'transformed_variable': 'case_record_information_to_be_impounded',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'impound_information_ex_parte',
+       'transformed_variable': 'impound_information_ex_parte',
+      'field_type': 'yesno',
+      },
+      {'variable': 'request_based_on',
+       'transformed_variable': 'request_based_on',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'attach_additional_pages',
+       'transformed_variable': 'attach_additional_pages',
+      'field_type': 'yesno',
+      },
+      {'variable': 'motion_allowed_ex_parte',
+       'transformed_variable': 'motion_allowed_ex_parte',
+      'field_type': 'yesno',
+      },
+      {'variable': 'motion_allowed_after_hearing',
+       'transformed_variable': 'motion_allowed_after_hearing',
+      'field_type': 'yesno',
+      },
+      {'variable': 'motion_denied',
+       'transformed_variable': 'motion_denied',
+      'field_type': 'yesno',
+      },
+      ],
+  })
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+comment: |
+  id: need this form at all?
+  question: |
+    Draft: Do you need to keep any of the information about this case away from the public?
+  yesno: do_need_to_fill_out_this_form
+---
+question: |
+  Is there any other information in the case that you'd want to be withheld from the public?
+subquestion: |
+  Draft: The defendant will still see all of this information. Privacy reasons are not enough. Sexual abuse information can sometimes be a good reason. todo: SMEs
+fields:
+  - 'Do you have a good reason that you want this information to be kept private?': impound_case_record_information
+    datatype: yesno
+  - 'What information do you want to keep from the public?': case_record_information_to_be_impounded
+    show if: impound_case_record_information
+    input type: area
+---
+question: |
+  Draft: Do you want some of your addresses to be withheld from the public?
+subquestion: |
+  This will mean that the only addresses anyone will be able to see would be the addresses that you ask the court to order the defendant to stay away from. If police and domestic violence counselors absolutely need the information, they will see it.
+
+  Alternatively this plus other descriptions:
+  The defendant and other members of the public will only be able to see the addresses that you ask the court to order the defendant to stay away from.
+yesno: impound_personal_information
+---
+question: |
+  Why are you asking for this?
+fields:
+  - no label: request_based_on
+    input type: area
+---
+question: |
+  Would you be hurt if people heard about this request in advance? (plain language)
+subquestion: |
+  Draft:
+  If the defendant or someone else found out about this request before your hearing, could you be hurt, either physically or in another way (like ruining your reputation)?
+
+  TODO: Next question:
+  Would there be any way to repair this damage? If not, then
+  impound_information_ex_parte would be False.
+yesno: impound_information_ex_parte
+---
+progress: 100
+mandatory: True
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+
+  ### Next steps
+
+  1. Step 1
+  1. Step 2
+
+  Below is a preview of your form.
+
+  ${a_258e_motion_for_impoundment0019_attachment }
+attachment code: a_258e_motion_for_impoundment0019_attachment
+---
+need: a_258e_motion_for_impoundment0019
+attachment:
+    variable name: a_258e_motion_for_impoundment0019_attachment
+    name: Motion for Impoundment
+    filename: Motion_for_Impoundment
+    pdf template file: 209a_258e_motion_for_impoundment.pdf
+    fields: 
+      # Some of these fields should be multi-line fields
+      - "user_signature": ${ users[0].signature } # This is the right type of field!
+      - "signature_date": ${ signature_date }
+      - "impound_personal_information": ${ impound_personal_information }
+      - "impound_case_record_information": ${ impound_case_record_information }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
+      - "impound_information_ex_parte": ${ impound_information_ex_parte }
+      - "request_based_on": ${ request_based_on }
+      # todo: What do we want to do about this?
+      - "attach_additional_pages": ${ True }
+      # These are for the court to fill in and were included accidentally
+      - "motion_allowed_ex_parte": ${ '' }
+      - "motion_allowed_after_hearing": ${ '' }
+      - "motion_denied": ${ '' }
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+question: |
+  Draft: Do you need to keep some of the information about this case away from the public?
+subquestion: |
+  A motion may be made for impoundment of information that is currently contained in the case record. Upon receipt of such a motion, the clerk shall remove the subject material from the case record and withhold it from public dissemination pending the court's ruling on the motion. A plaintiff should use this if they want their address or other contact information kept secret.
+  
+  **Do you need to keep some information away from the public?**
+yesno: a_258e_motion_for_impoundment0019_intro
+---
+id: interview_order_a_258e_motion_for_impoundment0019
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.
+  basic_questions_intro_screen
+  # If the user needs to fill out the form
+  if a_258e_motion_for_impoundment0019_intro:
+    # Set the preferred/allowed courts for this interview
+    preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
+    allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
+    impound_personal_information
+    # Wrong type of pdf field
+    if not impound_case_record_information:
+      case_record_information_to_be_impounded = ''
+    # Wrong type of pdf field
+    impound_information_ex_parte
+    request_based_on
+    signature_date
+    # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+    # Comment out the line below if you don't want this behavior. 
+    # I think we can get rid of this inside the if statement:
+    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+    a_258e_motion_for_impoundment0019_preview_question # Pre-canned preview screen
+    basic_questions_signature_flow
+    users[0].signature
+
+  # If they don't need to do this at all, skip everything
+  else:
+    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  a_258e_motion_for_impoundment0019 = True
+---
+continue button field: a_258e_motion_for_impoundment0019_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page.
+
+   ${a_258e_motion_for_impoundment0019_attachment_preview}
+---
+attachment:
+    variable name: a_258e_motion_for_impoundment0019_attachment_preview
+    name: Motion for Impoundment
+    filename: Motion_for_Impoundment
+    pdf template file: 209a_258e_motion_for_impoundment.pdf
+    fields: 
+      # Some of these fields should be multi-line fields
+      - "signature_date": ${ signature_date }
+      - "impound_personal_information": ${ impound_personal_information }
+      - "impound_case_record_information": ${ impound_case_record_information }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
+      - "impound_information_ex_parte": ${ impound_information_ex_parte }
+      - "request_based_on": ${ request_based_on }
+      # todo: What do we want to do about this?
+      - "attach_additional_pages": ${ True }
+      # These are for the court to fill in and were included accidentally
+      - "motion_allowed_ex_parte": ${ '' }
+      - "motion_allowed_after_hearing": ${ '' }
+      - "motion_denied": ${ '' }
