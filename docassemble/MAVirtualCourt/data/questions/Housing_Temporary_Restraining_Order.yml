@@ -255,6 +255,7 @@ fields:
   - 'Other breach of quiet enjoyment': incident_other
     datatype: yesno
   - 'Describe the other thing your landlord did wrong': incident_other_description
+    datatype: area
     show if: incident_other
 validation code: |
   if not incident_locked_out and not incident_utility and not incident_utility:
