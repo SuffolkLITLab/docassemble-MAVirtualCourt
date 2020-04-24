@@ -37,16 +37,25 @@ class OtherProceeding(DAObject):
       self.initializeAttribute('children', PeopleList)
     if not hasattr(self, 'attorneys'):
       self.initializeAttribute('attorneys', PeopleList)
+    if not hasattr(self, 'other_parties'):
+      self.initializeAttribute('other_parties', PeopleList)
 
   # We use a property decorator because Docassemble expects this to be an attribute, not a method
   @property
   def complete_proceeding(self):
     """Tells docassemble the list item has been gathered when the variables named below are defined."""
-    self.role
+    self.user_role
     self.case_status
     self.children.gathered
-    if self.case_status == 'pending':
-      self.attorneys.gather()
+    self.other_parties.gather()
+    # We're going to gather this per-attorney instead of
+    # per-case now
+    #if self.case_status == 'pending':
+    #  self.attorneys.gather()
+
+  def child_letters(self):
+    """Return ABC if children lettered A,B,C are part of this case"""
+    return ''.join([child.letter for child in self.children])
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
@@ -59,7 +68,7 @@ class OtherProceeding(DAObject):
     # - Non-adoption case without a final decision yet: pending
     # - Custody case that is complete: custody-closed
     # - Non-custody case that is complete: non-custody-closed
-    if self.case_status == 'adoption':
+    if self.case_status in ['adoption',"adoption-pending", "adoption-closed"]:
       return 'Adoption'
     elif self.case_status == 'pending':
       return 'Pending'
@@ -70,8 +79,18 @@ class OtherProceeding(DAObject):
     else:
       return self.case_status
 
+  def case_description(self):
+    """Returns a short description of the other case or proceeding meant to display to identify it
+    during list gathering in the course of the interview"""
+    description = ""
+    description += self.court_name
+    if hasattr(self, 'docket_number') and len(self.docket_number.strip()):
+      description += ', case number: ' + self.docket_number
+    description += " (" + str(self.children) + ")"
+    return description
+
   def __str__(self):
-    return self.status()
+    return self.case_description()
 
 class OtherProceedingList(DAList):
   """Represents a list of care and custody proceedings"""
@@ -95,48 +114,17 @@ def get_signature_fields(interview_metadata_dict):
       signature_fields.append(field)
   return signature_fields
 
-# Below commented out functions were replaced by code blocks in basic-questions.yml
-# def trigger_user_questions(interview_metadata_dict, question_order = None):
-#   """There may be a more elegant way to handle this."""
-#   if not question_order:
-#     question_order = [
-#       'guardian',
-#       'caregiver',
-#       'guardian_ad_litem',
-#       'attorney',
-#       'translator',
-#       'witness',
-#       'spouse',
-#       'user',
-#       'user.address',
-#       'user.email',
-#     ]
-#   for field in question_order:
-#     if field in interview_metadata_dict.get('built_in_fields_used',[]):
-#       if isinstance(value(field),Individual):
-#         value(field + '.name.first')
-#       elif isinstance(value(field),Address):
-#         value(field + '.address')      
-#       else:
-#         value(field)
-
-# def trigger_court_questions(interview_metadata_dict, question_order = None):
-#   """ Not sure if we need this function yet."""
-#   # if not question_order:
-#   #   question_order = [
-#   #     'court.name',
-#   #     'docket_number[0]'
-#   #   ]
-
-#   # for field in question_order:
-#   #   if map_names(field) in interview_metadata_dict.get('',[]):
-#   #     value(field)  
-
-# def trigger_signature_flow(interview_metadata_dict, question_order = None):
-#   if not question_order:
-#     question_order = [
-
-#     ]
+def number_to_letter(n):
+  """Returns a capital letter representing ordinal position. E.g., 1=A, 2=B, etc. Appends letters
+  once you reach 26 in a way compatible with Excel/Google Sheets column naming conventions. 27=AA, 28=AB...
+  """
+  string = ""
+  if n is None:
+    n = 0
+  while n > 0:
+    n, remainder = divmod(n - 1, 26)
+    string = chr(65 + remainder) + string
+  return string
 
 def mark_unfilled_fields_empty(interview_metadata_dict):
   """Sets the listed fields that are not yet defined to an empty string. Requires an interview metadata dictionary
@@ -157,21 +145,40 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
     # address.line_two(), address.on_one_line(), and address.block()
     if not map_names(field).endswith('.signature') and not '(' in map_names(field):
       if not defined(map_names(field)):
-        # define(map_names(field), '') # set to an empty string
-        define(map_names(field), DAEmpty()) # set to special Docassemble empty object. Should work in DA > 1.1.4
+        define(map_names(field), '""') # set to an empty string 
+        #define(map_names(field), 'DAEmpty()') # set to special Docassemble empty object. Should work in DA > 1.1.4
     # Handle special case of an address that we skipped filling in on the form
     elif map_names(field).endswith('address.on_one_line()'):
       address_obj_name = map_names(field).partition('.on_one_line')[0]
       if not defined(address_obj_name+'.address'): # here we're checking for an empty street address attribute
         # define(individual_name, '') # at this point this should be something like user.address
-        define(address_obj_name, DAEmpty()) 
+        try:
+          exec(address_obj_name + "= DAEmpty()")
+        except:
+          pass
+        # define(address_obj_name, DAEmpty()) 
     elif map_names(field).endswith('address.line_two()'):
       address_obj_name = map_names(field).partition('.line_two')[0]
       if not defined(address_obj_name+'.city'): # We check for an undefined city attribute
-        define(address_obj_name, DAEmpty())
+        try:
+          exec(address_obj_name + "= DAEmpty()")
+        except:
+          pass
     elif map_names(field).endswith('address.block()'):
       address_obj_name = map_names(field).partition('.block')[0]
       if not defined(address_obj_name+'.address'): # We check for an undefined street address
-        define(address_obj_name, DAEmpty())
+        try:
+          exec(address_obj_name + "= DAEmpty()")
+        except:
+          pass
 
 
+def filter_letters(letter_strings):
+  """Used to take a list of letters like ["A","ABC","AB"] and filter out any duplicate letters."""
+  # There is probably a cute one liner, but this is easy to follow and
+  # probably same speed
+  unique_letters = set()
+  for string in letter_strings:
+    for letter in string:
+      unique_letters.add(letter)
+  return ''.join(sorted(unique_letters))
