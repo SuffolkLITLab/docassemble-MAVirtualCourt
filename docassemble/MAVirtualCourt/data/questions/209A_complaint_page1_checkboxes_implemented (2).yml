@@ -61,7 +61,7 @@ subquestion: |
 continue button field: user_saw_what_to_expect
 ---
 question: |
-  Tell me about the ${ ordinal(i) } other case. WHERE ON THE .pdf SHOULD THIS INFORMATION GO? THERE'S NOT ENOUGH ROOM IN THE SPACE PROVIDED.
+ hello Tell me about the ${ ordinal(i) } other case. WHERE ON THE .pdf SHOULD THIS INFORMATION GO? THERE'S NOT ENOUGH ROOM IN THE SPACE PROVIDED.
 fields:
   - Court name: other_cases[i].court_name
     required: False
