@@ -22,7 +22,7 @@ code: |
 ---
 default screen parts:
   under: |
-    Found a bug? Don't close this page! But <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">do fill out this form</a>. Follow its instructions about [this link](${interview_url()}).
+    Have a problem with this website? <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">Please complete this feedback form.</a>. Follow its instructions about [this link](${interview_url()}).
 ---
 objects from file:
   - court_emails : court_emails.yml
@@ -645,24 +645,22 @@ id: basic questions intro screen
 question: |
   Mass Access Project
 subquestion: |
-  This project helps you file forms with the court 
-  in an emergency. 
+ 
+  This website can help you complete and file court forms in three steps:
+  STEP 1. Click through this guide to prefill your form.
+  STEP 2. Review the completed form.
+  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference. 
   
-  We ask questions and use your answers to fill in the forms you need. When we finish, you can see the completed forms. You can file them with the court securely, keep a copy for yourself and email them. 
+  If you have immediate questions about this form or the court process, 
+  please call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm. 
   
-  If do not hear from the court in 1 business day, call the Trial
-  Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
-  
-  The Emergency HelpLine is open:  
-  8:30am - 4:30pm,  
-  Monday - Friday.  
-fields:
-  - I accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+ fields:
+  - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
     choices:
-      - I accept.
+      - I accept the terms of use.
     validation messages:
       minlength: |
         You cannot continue unless you agree to the terms of use.        
