@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value
+from docassemble.base.functions import define, defined, value, comma_and_list
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -8,6 +8,9 @@ class AddressList(DAList):
   def init(self, *pargs, **kwargs):
     super(AddressList, self).init(*pargs, **kwargs)
     self.object_type = Address
+
+  def __str__(self):
+    return comma_and_list([item.on_on_line() for item in self])
 
 class PeopleList(DAList):
   """Used to represent a list of people. E.g., defendants, plaintiffs, children"""
