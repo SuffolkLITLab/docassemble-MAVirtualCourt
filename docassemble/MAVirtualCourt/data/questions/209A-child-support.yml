@@ -200,7 +200,8 @@ fields:
 question: |
   Defendant is not working
 subquestion: |
-   If Defendant is not working or earning income, **the court can only order the minimum amount allowed by the Child Support Guidelines**, unless there are grounds to order a different amount. You should consider contacting an advocate to discuss this. SMEs to think on this.
+  Generally, parents have a responsibility to contribute to the support of their children. So the court can order a parent to pay a minimum amount of child support recommended by the Child Support Guidelines, even when that parent has no income. The court can also take other factors and circumstances into account and deviate from the recommended minimum amount.
+
 continue button field: defendant_not_working_warning_given
 ---
 question: |
@@ -284,7 +285,8 @@ question: |
 subquestion: |
   What is your gross income? "Gross" means your income before taxes are taken out of your check.  You can enter either your weekly or monthly income.
   
-   For purposes of these guidelines, income is defined as gross income from whatever source regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. 
+   For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](${ https://www.mass.gov/doc/2018-child-support-guidelines/download }). 
+ 
 fields:
   - "What is your gross income (before taxes)?": users[0].gross_income
     datatype: currency
@@ -352,7 +354,8 @@ continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_suppo
 question: |
   Plaintiff's Affidavit in Support of Request for Child support Order
 subquestion: |
-  Plaintiff affidavit in support of request for child support order - laura gal edited damico first quality check ready for upload SME's to provide better text.
+  This form allows you to ask the court to order the Defendant to pay child support for the children you have together. However, the court cannot enforce or modify existing child support orders through the 209A Abuse Prevention Order. When the court orders the Defendant to pay child support through the 209A Abuse Prevention Order, the court uses the information in this form to calculate the child support amount according to the Massachusetts Child Support Guidelines. It is important that you report the income and expenses requested in this form as accurately as possible. At the end of the form, you will be signing it under the pains and penalties of perjury.
+
 ---
 id: interview_order_Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
 code: |
