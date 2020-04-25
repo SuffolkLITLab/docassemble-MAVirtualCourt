@@ -285,9 +285,9 @@ objects:
 question: |
   Best places to find Defendant
 subquestion: |
-  This information helps the police serve the Defendant even if the Defendant is avoiding service. Be as thorough as possible.
+  This information helps the police find the Defendant to give them with a copy of the restraining order.
 fields:
-  - 'What is the best place and time to find Defendant? Is he staying somewhere else at the moment? Is there a certain place or friend that he visits at a particular time? Where are the police most likely to find Defendant now?': other_parties[0].location_information_other
+  - 'What is the best place and time to find Defendant? Are they staying somewhere else at the moment? Is there places or friends that they visit at a particular time?': other_parties[0].location_information_other
     datatype: area
 ---
 question: |
@@ -309,7 +309,7 @@ fields:
 question: |
   Defendant's Physical Location
 subquestion: |
-  Please describe where the police can best find the Defendant by providing the following information.
+  Please describe where the police can best find the Defendant by providing the following information.  This information is important so that the police can quickly find the Defendant to give them a copy of the restraining order.
 fields:
   - "Defendant's Address": other_parties[0].address
   - 'Defendant address apartment number': other_parties[0].address_apartment
@@ -353,20 +353,20 @@ fields:
   - "What is the name of Defendant's mother, using her maiden name?": parents[0]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other   people share his name
+      This information is used so the police can find the right Defendant if other people share his name
   - "What is the name of Defendant's father?": parents[1]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other   people share his name
+      This information is used so the police can find the right Defendant if other people share his name
 ---
 question: |
   Information for Service
 subquestion: |
-  The following information helps the police prepare for and understand any risks in serving the Defendant. Answering fully and honestly protects both the police and the Defendant. This information is used for service, not in other parts of your case.
+  The following information helps keep you and the police safe during this process. 
 fields:
   - 'Does Defendant have a history of violence towards police officers?': other_parties[0].police_violence_yes
     datatype: yesnoradio
-  - 'Does Defendant have a history of using and/or abusing drugs/alcohol?': other_parties[0].drug_alcohol_yes
+  - 'Does Defendant have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
     datatype: yesnoradio
   - 'What drugs or alcohol?': other_parties[0].drug_alcohol_abuse
     show if:
@@ -475,13 +475,11 @@ continue button field: defendantinformation209A0008_intro
 question: |
   Defendant Information
 subquestion: |
-  This information is used to serve the abuse prevention order on Defendant. The Defendant must be served for the order to be extended at a two party hearing. 
-  
-  If the Defendant has not been served, the order is still in effect, but the Defendant will not be prosecuted for violating the order, as the Court assumes he did not have notice of the order. 
+  The  next questions are about the Defendant. This information is used to give (serve) Defendant a copy of the restraining order. The police need to give the Defendant a copy of the restraining order so that the Defendant knows the restraining order exists and so that the Defendant knows when the next court date is.  If the police can't serve the Defendant, you may have to come back to court every ten days until service is done. It is also much harder to prosecute the Defendant for violating the restraining order.  
   
   The more information you can provide about the Defendant's usual location, the sooner the order will be served.
   
-  **If you see the Defendant, and you know the order has not been served, call the police.** The police should not arrest the Defendant, but they will be able to serve the Defendant. **Call the police even if you are not afraid.**
+  If you see the Defendant, and you know the order has not been served, call the police. The police should not arrest the Defendant, but they will be able to serve the Defendant. Call the police even if you are not afraid.
 ---
 id: interview_order_defendantinformation209A0008
 code: |
