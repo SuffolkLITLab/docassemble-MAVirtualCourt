@@ -160,7 +160,7 @@ include:
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: a_plaintiff_s_motion_to_modify_qc_v20009_intro
-continue button label: I am the plaintif and I wish to continue
+continue button label: I am the plaintiff and I wish to continue
 question: |
   Plaintiff Motion to Modify or Terminate an Abuse Prevention Order
 subquestion: |
