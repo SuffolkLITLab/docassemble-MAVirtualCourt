@@ -85,13 +85,6 @@ fields:
       - I do not understand: False
 ---
 question: |
-  What Court are you filing in?
-subquestion: |
-  What is the name of the division of the ${macourts[i]}?
-fields:
-  - 'Name of Court division': macourts[i].division
----
-question: |
   What are you asking the Court to do?
 subquestion: |
   I request that the court:
