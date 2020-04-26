@@ -134,18 +134,19 @@ attachment:
     variable name: a_plaintiff_s_motion_to_modify_qc_v20009_attachment
     name: Plaintiff Motion to Modify  - 209a
     filename: Plaintiffs_Motion_to_Modify__209a
-    pdf template file: 209a_plaintiff_s_motion_to_modify_qc_v4.pdf
+    pdf template file: 209A_plaintiff_s_motion_to_modify_qc_v4.pdf
+    editable: False    
     fields: 
-      - "plaintiff_name": ${ str(plaintiffs[0]) }
-      - "defendant_name": ${ str(defendants[0]) }
-      - "plaintiff_name__1": ${ str(plaintiffs[0]) }
+      - "plaintiff_name": ${ plaintiffs }
+      - "defendant_name": ${ defendants }
+      - "plaintiff_name__1": ${ plaintiffs }
       - "signature_date": ${ signature_date }
-      - "plaintiff_signature": ${ plaintiffs[0].signature }
-      - "court_division": ${ courts[0].division }
+      - "court_division": ${ courts[0] }
       - "modify_order": ${ modify_order }
       - "terminate_order": ${ terminate_order }
       - "plaintiff_statement": ${ plaintiffs[0].statement }
       - "understand_yes": ${ understand_yes }
+      - "plaintiff_signature": ${ plaintiffs[0].signature }
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -207,13 +208,14 @@ attachment:
     variable name: a_plaintiff_s_motion_to_modify_qc_v20009_attachment_preview
     name: Plaintiff Motion to Modify  - 209a
     filename: Plaintiffs_Motion_to_Modify__209a
-    pdf template file: 209a_plaintiff_s_motion_to_modify_qc_v4.pdf
+    pdf template file: 209A_plaintiff_s_motion_to_modify_qc_v4.pdf
+    editable: False
     fields: 
-      - "plaintiff_name": ${ str(plaintiffs[0]) }
-      - "defendant_name": ${ str(defendants[0]) }
-      - "plaintiff_name__1": ${ str(plaintiffs[0]) }
+      - "plaintiff_name": ${ plaintiffs }
+      - "defendant_name": ${ defendants }
+      - "plaintiff_name__1": ${ plaintiffs }
       - "signature_date": ${ signature_date }
-      - "court_division": ${ courts[0].division }
+      - "court_division": ${ courts[0] }
       - "modify_order": ${ modify_order }
       - "terminate_order": ${ terminate_order }
       - "plaintiff_statement": ${ plaintiffs[0].statement }
