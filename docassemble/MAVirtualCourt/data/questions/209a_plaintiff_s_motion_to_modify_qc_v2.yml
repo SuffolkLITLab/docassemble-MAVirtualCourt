@@ -4,9 +4,9 @@ code: |
   if not defined("interview_metadata['a_plaintiff_s_motion_to_modify_qc_v20009']"):
     interview_metadata.initializeObject('a_plaintiff_s_motion_to_modify_qc_v20009')
   interview_metadata['a_plaintiff_s_motion_to_modify_qc_v20009'].update({
-    'title': 'Plaintiff Motion to Modify or terminate an abuse prevention order - 209A',
+    'title': 'Plaintiff Motion to Modify or terminate an Abuse Prevention Order - 209A',
     'short title': 'Plaintiff Motion to Modify  - 209a',
-    'description': 'This wizard will let you generate a Modify or terminate an abuse prevention order - 209A',
+    'description': 'This wizard will let you generate a Modify or terminate an Abuse Prevention Order - 209A',
     'original_form': 'https://trello-attachments.s3.amazonaws.com/5e7a59002834604886a7b4e8/5e8c829c43304d8fa27a4f31/3786ad7715e0e0e1ed786f2aab1809fc/plaintiff_s_motion_to_modify_209A.pdf',
     'allowed courts': [
       'Boston Municipal Court',
@@ -65,35 +65,58 @@ code: |
       ],
   })
 ---
+# Display the new abuse order understanding as a question with a single
+# checkbox
 question: |
-  Understanding
+  Please confirm that you understand this statement
 subquestion: |
-  Placeholder text
-yesno: understand_yes
+  I understand that, even if I ${ MJFmodify_terminate } this order,
+  I can request a new Abuse Prevention Order at any time if the person
+  against whom I took out the Abuse Prevention Order (the **Defendant**):
+
+  - harms or attempts to harm me physically; or 
+  - places me in fear of imminent serious physical harm; or
+  - by using force, threat or duress makes me engage in sexual relations
+fields:
+  - no label: understand_yes
+    datatype: radio
+    choices:
+      - I understand: True
+      - I do not understand: False
 ---
 question: |
   What Court are you filing in?
 subquestion: |
-  Placeholder text
+  What is the name of the division of the ${macourts[i]}?
 fields:
-  - 'Name of Court division': courts[0].division
+  - 'Name of Court division': macourts[i].division
 ---
 question: |
   What are you asking the Court to do?
 subquestion: |
-  Placeholder text
+  I request that the court:
 fields:
-  - 'Do you want to modify your order': modify_order
-    datatype: yesno
-  - 'Do you want to terminate your order': terminate_order
-    datatype: yesno
+  - no label: MJFmodify_terminate
+    datatype: radio
+    choices:
+      - modify this Abuse Prevention Order: modify
+      - terminate this Abuse Prevention Order: terminate
+---
+code: |
+  if MJFmodify_terminate == 'modify':
+    terminate_order = False
+    modify_order = True
+  else:
+    terminate_order = True
+    modify_order = False
 ---
 question: |
-  Why are you asking the Court to terminate or end your restraining order?
+  Reasons supporting your request to ${ MJFmodify_terminate } your restraining order
 subquestion: |
-  Placeholder text
+  Please enter the reasons why you have asked the court
+  to ${ MJFmodify_terminate } your restraining order below.
 fields:
-  - 'Please enter your statement': plaintiffs[0].statement
+  - no label: users[0].statement
     input type: area
 ---
 progress: 100
@@ -137,10 +160,20 @@ include:
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: a_plaintiff_s_motion_to_modify_qc_v20009_intro
+continue button label: I am the plaintif and I wish to continue
 question: |
-  Plaintiff Motion to Modify or terminate an abuse prevention order - 209A
+  Plaintiff Motion to Modify or Terminate an Abuse Prevention Order
 subquestion: |
-  This wizard will let you generate a Modify or terminate an abuse prevention order - 209A
+  This wizard helps you to generate a *Plaintiff's Motion to Modify or Terminate Abuse
+  Prevention Order* (pursuant to G.L. c. 209A).
+
+  You should only run this wizard if you are the **Plaintiff**,  that is:
+  
+  1. you personally have previously applied for an Abuse Prevention Order; **and**
+  1. you wish to either modify your existing order, or to terminate your order.
+
+  If you are not the plaintiff or if you are the subject of an Abuse Prevention Order, then
+  **do not run this wizard**.  Instead, you should **instructions to go here**.
 ---
 id: interview_order_a_plaintiff_s_motion_to_modify_qc_v20009
 code: |
@@ -151,12 +184,14 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["a_plaintiff_s_motion_to_modify_qc_v20009"]["preferred court"]
   allowed_courts = interview_metadata["a_plaintiff_s_motion_to_modify_qc_v20009"]["allowed courts"]
-  understand_yes
+  # Only a plaintiff can fill in this form so we'll hard-code it here
+  user_ask_role = 'plaintiff'
+  str(plaintiffs[0])
+  str(defendants[0])
   courts[0].division
   modify_order
   plaintiffs[0].statement
-  str(plaintiffs[0])
-  str(defendants[0])
+  understand_yes
   str(plaintiffs[0])
   signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
