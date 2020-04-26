@@ -153,6 +153,7 @@ attachment:
       - "terminate_order": ${ terminate_order }
       - "plaintiff_statement": ${ plaintiffs[0].statement }
       - "understand_yes": ${ understand_yes }
+      - "plaintiff_signature": ${ plaintiffs[0].signature }
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
