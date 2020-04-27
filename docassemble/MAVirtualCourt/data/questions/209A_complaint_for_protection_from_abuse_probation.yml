@@ -93,7 +93,7 @@ data:
   - variable: child6_age__4
     field_type: text
     field_data_type: number
-  - variable: no_contact_request_reasons
+  - variable: reasons_for_no_contact
     field_type: area
     field_data_type: text
   - variable: order_defendant_remain_away_from_schools_daycares_yes
@@ -197,7 +197,7 @@ comment: |
     Reasons for asking Defendant not to Contact Children
   subquestion: |
   fields:
-    - no label: no_contact_request_reasons
+    - no label: reasons_for_no_contact
       input type: area
       required: False
   ---
@@ -229,47 +229,35 @@ comment: |
   subquestion: |
     todo: SME group consultation
   yesno: visitation  # wrong - opposite
----
-question: |
-  Do you have children? (todo SME consult on all the children details)
-yesno: children_involved_that_are_relevant
----
-question: |
-  Child Support
-subquestion: |
-  If the defendant has an obligation to support your children (for example, if he
-  is their father), do you want the defendant to pay temporary child support?
-yesno: request_child_support_temporary_yes
----
-# Give defendant name
-question: |
-  When can the defendant visit your children?
-subquestion: |
-  Placeholder SME needed
-fields:
-  - 'Allow visitation at visitation center': visitation_at_location
-    datatype: yesno
-  - 'Visitation center name': visitation_center_name
-  - 'Name of person paying for visitation center': visitation_payer_name_full
-  - 'Allow supervised visitation': visitation_supervised
-    datatype: yesno
-  - "Visitation supervisor's name": visitation_supervisor_name_full
-  - 'Visitation times': visitation_times
-  - 'Name of person paying for visitation supervisor': visitation_payer2_name_full
-  - 'Permit visitation with third party involvement': visitation_third_party_involvement
-    datatype: yesno
-  - "Third party's name": visitation_third_party_name_full
-  - 'Permit other visitation': visitation_other
-    datatype: yesno
-  - 'Other visitation requests': visitation_other_requests
----
-comment: |
-  This question is used to introduce your interview. Please customize.
-continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_intro
-question: |
-  209A Complaint for Protection from Abuse pg 2
-subquestion: |
-  todo: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under 18.
+  ---
+  question: |
+    Child Support
+  subquestion: |
+    If the defendant has an obligation to support your children (for example, if he
+    is their father), do you want the defendant to pay temporary child support?
+  yesno: request_child_support_temporary_yes
+  ---
+  # Give defendant name
+  question: |
+    When can the defendant visit your children?
+  subquestion: |
+    Placeholder SME needed
+  fields:
+    - 'Allow visitation at visitation center': visitation_at_location
+      datatype: yesno
+    - 'Visitation center name': visitation_center_name
+    - 'Name of person paying for visitation center': visitation_payer_name_full
+    - 'Allow supervised visitation': visitation_supervised
+      datatype: yesno
+    - "Visitation supervisor's name": visitation_supervisor_name_full
+    - 'Visitation times': visitation_times
+    - 'Name of person paying for visitation supervisor': visitation_payer2_name_full
+    - 'Permit visitation with third party involvement': visitation_third_party_involvement
+      datatype: yesno
+    - "Third party's name": visitation_third_party_name_full
+    - 'Permit other visitation': visitation_other
+      datatype: yesno
+    - 'Other visitation requests': visitation_other_requests
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
@@ -288,9 +276,9 @@ code: |
     # request_custody_yes
 
     # if do_request_no_contact:
-    #   no_contact_request_reasons
+    #   reasons_for_no_contact
     # else:
-    #   no_contact_request_reasons = ''
+    #   reasons_for_no_contact = ''
 
     # if not visitation:
     #   visitation_at_location
@@ -333,85 +321,70 @@ code: |
     # basic_questions_signature_flow
     # users[0].signature
     
+    #######
+    # Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
+    #######
     #basic_questions_intro_screen 
-    #A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip?
-    #number_of_children
+    #A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
+    
+    #######
+    # Custom logic start
+    #######
+    number_of_children
 
     # Placeholder for now
     defendant_and_plaintiff_are_parents_of_child = True
-    # Need different list for each question
-    
-    # For development
-    children_of_parent[0].name.first = 'Blah'
-    children_of_parent[0].name.last = 'Blah'
-    children_of_parent[0].birthdate = '12/12/2020'
-    children_of_parent[0].defendant_is_parent = True
-    children_of_parent[0].plaintiff_is_parent = True
 
-    children_of_parent[1].name.first = 'Nar'
-    children_of_parent[1].name.last = 'Wal'
-    children_of_parent[1].birthdate = '12/12/2020'
-    children_of_parent[1].defendant_is_parent = True
-    children_of_parent[1].plaintiff_is_parent = True
-
-    children_of_parent[2].name.first = 'Squir'
-    children_of_parent[2].name.last = 'Rel'
-    children_of_parent[2].birthdate = '12/12/2020'
-    children_of_parent[2].defendant_is_parent = True
-    children_of_parent[2].plaintiff_is_parent = True
-    children_of_parent.there_is_another = False
-    
-    children_of_custody[0].name.first = 'Foo'
-    children_of_custody[0].name.last = 'Foo'
-    children_of_custody[0].birthdate = '10/10/2020'
-    children_of_custody[0].defendant_is_parent = False
-    children_of_custody[0].plaintiff_is_parent = True
-    children_of_custody.there_is_another = False
-    
+    # todo: Add warnings about 18+ to both and prohibit
+    # adding those children
     children_of_parent[0].birthdate
     children_of_custody[0].birthdate
-    # Try later
-    # children_of_parent.item(0).birthdate
 
     all_children = children_of_parent + children_of_custody
 
-    # TODO Uncomment after development is over
-    # Can ask for custody if child of both
+    # Can ask for custody and other things if child of both
     children_of_both = children_of_parent.filter(defendant_is_parent = True)
 
-    #if len(children_of_both) > 0:
-    #  wants_custody_of
-    #  for custody_child in wants_custody_of:
-    #    custody_child.seeking_custody = True
+    if len(children_of_both) > 0:
+      wants_custody_of
+      for custody_child in wants_custody_of:
+        custody_child.seeking_custody = True
 
-    #wants_no_contact_with
-    #for contact_child in wants_no_contact_with:
-    #  contact_child.seeking_no_contact = True
-    #if len(wants_no_contact_with) > 0:
-    #  no_contact_request_reasons
-    #else:
-    #  no_contact_request_reasons = ''
+    wants_no_contact_with
+    for contact_child in wants_no_contact_with:
+      contact_child.seeking_no_contact = True
 
-  #if schools_to_stay_away_from.there_are_any:
-  #  schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
-  
-  actual_center_payer = ''
-  actual_supervision_payer = ''
-  if wants_visitation_orders:
-    if kind_of_visitation_wanted == "allow_visitation":
-      wants_center
+    if len(wants_no_contact_with) > 0 and not defined('reasons_for_no_contact'):
+      # Technically redundant after use in `if`, but
+      # feels weird to not have something in here
+      reasons_for_no_contact
+    else:
+      reasons_for_no_contact = ''
 
-      if pays_for_center is "other":
-        actual_center_payer = other_pays_for_center
-      else: actual_center_payer = pays_for_center
+    #if schools_to_stay_away_from.there_are_any:
+    #  schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
 
-      #if supervision_payer is "other":
-      #  actual_supervision_payer = other_supervision_payer
-      #else: actual_supervision_payer = supervision_payer
+    #actual_center_payer = ''
+    #actual_supervision_payer = ''
+    # if wants_visitation_orders:
+    #   if kind_of_visitation_wanted == "allow_visitation":
+    #     wants_center  # Asks all the questions
 
-    if kind_of_visitation_wanted == "prohibit_visitation":
-      log("prohibit_visitation", 'console')
+    #     if pays_for_center is "other":
+    #       actual_center_payer = other_pays_for_center
+    #     else: actual_center_payer = pays_for_center
 
+    #     #if supervision_payer is "other":
+    #     #  actual_supervision_payer = other_supervision_payer
+    #     #else: actual_supervision_payer = supervision_payer
+
+    #wants_child_support_for
+    #for support_child in wants_child_support_for:
+    #  wants_child_support_for.seeking_child_support = True
+    
+    # majors_needing_support[0].name.first
+
+    there_have_been_other_cases_for_children
 
     # At the end
     children = all_children
@@ -423,6 +396,7 @@ reconsider: True
 comment: |
   Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
 ---
+id: custom_objects
 objects:
   - children_of_parent: PeopleList
   - children_of_custody: PeopleList
@@ -430,7 +404,23 @@ objects:
   - wants_custody_of: PeopleList
   - wants_no_contact_with: PeopleList
   - schools_to_stay_away_from: DAList.using(object_type=Organization)
+  - majors_needing_support: PeopleList
 ---
+comment: |
+  This screen is used to introduce your interview. Please customize.
+continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_intro
+question: |
+  209A Complaint for Protection from Abuse pg 2
+subquestion: |
+  todo: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under 18.
+---
+question: |
+  Do you have children? (todo SME consult on all the children details)
+yesno: children_involved_that_are_relevant
+---
+# todo: Where do we want to use this and how
+# do we want to handle it?
+id: number_of_children_under_18
 question: |
   How many children do you have under 18?
 subquestion: |
@@ -439,6 +429,10 @@ fields:
   - Number of children you have: number_of_children
     datatype: integer
 ---
+# Nothing can be required because they might not
+# have even one child they're the parent of, just
+# ones they have care of
+id: parent_children
 question: |
   Tell us about the children that you are the parent of.
 subquestion: |
@@ -465,6 +459,10 @@ fields:
 validation code: |
   children_of_parent[i].plaintiff_is_parent = True
 ---
+# Nothing can be required because they might not
+# have even one child they have care of, just
+# ones they are parents to
+id: non_parent_children
 question: |
   Tell us about the other children that are in your care or custody.
 subquestion: |
@@ -491,8 +489,9 @@ fields:
 validation code: |
   children_of_custody[i].plaintiff_is_parent = False
 ---
+id: custody_children
 question: |
-  Which children do you want the court to give you **custody of**?
+  Which children do you need the court to give you **custody of**?
 fields:
   - no label: wants_custody_of
     datatype: object_checkboxes
@@ -501,8 +500,9 @@ fields:
     none of the above: |
       None of them
 ---
+id: no_contact_children
 question: |
-  Which children do you want the court to tell the defendant **not to contact**?
+  Which children do you need the court to tell the defendant **not to contact**?
 fields:
   - no label: wants_no_contact_with
     datatype: object_checkboxes
@@ -511,20 +511,21 @@ fields:
     none of the above: |
       None of them
 ---
+id: reasons_no_contact
 question: |
-  What are the reasons you want the court to tell the defendant not to contact them?
+  What are the reasons you need the court to tell the defendant not to contact them?
 fields:
-  - no label: no_contact_request_reasons
+  - no label: reasons_for_no_contact
     input type: area
 ---
 id: plaintiff_wants_defendant_to_stay_away_from_schools_daycares
 question: |
-  Do you want the court to tell the defendant to stay away from schools and daycares?
+  Do you need the court to tell the defendant to stay away from schools and daycares?
 yesno: schools_to_stay_away_from.there_are_any
 ---
 # For listing for each child (if we choose to do that), see
 # https://github.com/SuffolkLITLab/docassemble-MAVirtualCourt/blob/209a-affidavit-concerning-care-and-custody/docassemble/MAVirtualCourt/data/questions/209A_affidavit_disclosing_care_or_custody_proceedings.yml#L582
-id: no visitation schools and daycares
+id: schools_and_daycares
 question:
   Please give us the information for the schools and daycares you want the court to tell the defendant not to go to.
 list collect: True
@@ -554,7 +555,7 @@ id: kind_of_visitation_wanted
 question: |
   More About Visitation
 subquestion: |
-  What do you want the court to order about the Defendant’s visitation? Pick all that apply.
+  What do you need the court to order about the Defendant’s visitation? Pick all that apply.
 fields:
   - no label: kind_of_visitation_wanted
     input type: radio
@@ -563,11 +564,16 @@ fields:
     - I want the court to say the Defendant can’t have visitation.: "prohibit_visitation"
 ---
 id: safe_visits
-
+# Are we sure we want these all on the same page?
+# Note: have not yet looked into checkboxes with
+# `show if:`s between them.
 validation code: |
   if wants_center:
     log('1', 'console')
-    if not defined('visitation_center_name'):
+    if (not defined('visitation_center_name') or not defined('pays_for_center')):
+      log('2', 'console')
+      validation_error("We need the visitation center details.")
+    elif (defined('pays_for_center') and pays_for_center == 'other' and not defined('other_pays_for_center')):
       log('2', 'console')
       validation_error("We need the visitation center details.")
 
@@ -577,7 +583,7 @@ subquestion: |
   You are allowed to ask the court to make the Defendant’s visits supervised and for other safety measures.  Do you want any of the following?
 
 fields:
-  - '**Do you want the Defendant’s visits to happen at a supervision center?**': wants_center
+  - '**Do you need the Defendant’s visits to happen at a supervision center?**': wants_center
     datatype: yesnoradio
   - What visitation center?: visitation_center_name
     show if: wants_center
@@ -597,18 +603,20 @@ fields:
     required: False
   - html: |
       <hr>
----
-comment: |
-  - '**Do you want the Defendant’s visits to be supervised by someone else?**': wants_supervision
+
+  - '**Do you need the Defendant’s visits to be supervised by someone else?**': wants_supervision
     datatype: yesnoradio
   - Who should the supervisor be?: visitation_supervisor_name_full
     show if: wants_supervision
+    required: False
   - When should the visitation happen?: supervision_time
-    #datatype: time # not a friendly computer interface at least
+    #datatype: time # not a friendly inteface. At least not for desktop
     show if: wants_supervision
-  - Professional supervisors have to get paid.  Who should pay those fees?: supervision_payer
+    required: False
+  - Professional supervisors charge fees.  Who should pay them?: supervision_payer
     input type: radio
     show if: wants_supervision
+    required: False
     choices:
       - The defendant: "defendant"
       - Me: "plaintiff"
@@ -617,25 +625,60 @@ comment: |
     show if:
       variable: supervision_payer
       is: "other"
+    required: False
   - html: |
       <hr>
-  # visitation_payer2_name_full
-  Show If yes
-  What visitation center?
-  Who should have to pay the visitation center’s fees? (Options - The Defendant; Me; Other)
-  I want the Defendant’s visits to be supervised by someone else.
-  Show if yes:
-  Who should the supervisor be?
-  When should the visitation happen?
-  Professional supervisors charge fees.  Who should pay those fees?  (Options - The Defendant; me; other)
-  I want someone else to pick up and drop off the children for visits.
-  Show if yes 
-  Who should pick up and drop off the child(ren)?
-  I want the Court to make some other order about visitation.
-  Show if yes
-  What else do you want the court to order?
-  None of the above
 
+  - '**Do you need someone else to pick up and drop off the children for visits?**': wants_pickup
+    datatype: yesnoradio
+  - Who should pick up and drop off the child(ren)?: who_picks_up
+    show if: wants_pickup
+    required: False
+  - html: |
+      <hr>
+
+  - '**Do you need the Court to make some other order about visitation?**': wants_other_order
+    datatype: yesnoradio
+  - What else do you need the court to order?: other_order
+    input type: area
+    show if: wants_other_order
+    required: False
+---
+id: seeking_child_support
+question: |
+  Do you need the court to order the defendant to pay you child support for any of these children?
+subquestion: |
+  Sometimes, you can ask for child support for kids you share with the defendant that are between 18 and 22. See [Child Support for Children 18-22](https://www.masslegalhelp.org/children-and-families/child-support-over-18) on MassLegalHelp.
+fields:
+  - no label: wants_child_support_for
+    datatype: object_checkboxes
+    choices: |
+      children_of_both
+    none of the above: |
+      None of them
+---
+id: non_minors_needing_child_support
+question: |
+  Are there any kids that are between 18 and and 22 that you need to add?
+subquestion: |
+  Sometimes, you can ask for child support for kids you share with the defendant that are between 18 and 22. See [Child Support for Children 18-22](https://www.masslegalhelp.org/children-and-families/child-support-over-18) on MassLegalHelp.
+
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - First Name: majors_needing_support[i].name.first
+    required: False
+  - Middle Name: majors_needing_support[i].name.middle
+    required: False
+  - Last Name: majors_needing_support[i].name.last
+    required: False
+  - Suffix: majors_needing_support[i].name.suffix
+    required: False
+---
+id: have_there_been_other_cases
+question: |
+  Have there ever been any court cases about the care and custody of ${comma_and_list(children_of_both.elements)}?
+yesno: there_have_been_other_cases_for_children
 ---
 id: preview attachment
 continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
@@ -681,7 +724,7 @@ attachment:
       - "child5_age__4": ${ '' }
       - "child6_name_full__4": ${ '' }
       - "child6_age__4": ${ '' }
-      - "custody_request_reasons": ${ no_contact_request_reasons }
+      - "custody_request_reasons": ${ reasons_for_no_contact }
       - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
       - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
       - "visitation_yes": ${ visitation }
@@ -747,7 +790,7 @@ attachment:
       - "child5_age__4": ${ '' }
       - "child6_name_full__4": ${ '' }
       - "child6_age__4": ${ '' }
-      - "custody_request_reasons": ${ no_contact_request_reasons }
+      - "custody_request_reasons": ${ reasons_for_no_contact }
       - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
       - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
       - "visitation_yes": ${ visitation }
