@@ -201,7 +201,7 @@ fields:
 id: birthdate question
 generic object: Individual
 question: |
-  When was ${x} born?
+  When was ${x} born? [SHOULD THIS BE "WHEN WERE *YOU* BORN?"]
 fields:
   - Birthdate: x.birthdate
     datatype: date
@@ -344,7 +344,7 @@ subquestion: |
   If you are starting the case, you are the "Plaintiff"
   or the "petitioner."
   
-  If you are responding to a case, you are the "Defendant"
+  If you are responding to an existing case, you are the "Defendant"
   or the "respondent."
 field: user_ask_role
 buttons:
