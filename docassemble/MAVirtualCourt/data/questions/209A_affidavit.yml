@@ -29,11 +29,11 @@ objects:
 features:
   question help button: True
 ---
+comment: |
+  Hopefully this screen will be unnecessary when merged in to parent
 mandatory: True
 question: |
-  Placeholder download screen
-subquestion: |
-  Placeholder
+  Download your 209A Affidavit 
 buttons:
   - Exit: exit
   - Restart: restart
@@ -95,7 +95,7 @@ help:
   label: What should I talk about?
   heading: Is this all?
   content: |
-    Tell the judge about any incidents where you or a child were physically harmed, threatened, felt fear, or tried to get help from police. Judges often care most about abuse that has happened during the last year. One serious incident can be enough to get an Order for Protection. But adding more incidents may improve your chances -- especially if you can show a pattern or trend of abuse. Make it very clear to the judge that you need help. |
+    Tell the judge about any incidents where you or a child were physically harmed, threatened, felt fear, or tried to get help from police. Judges often care most about abuse that has happened during the last year. One serious incident can be enough to get an Order for Protection. But adding more incidents may improve your chances -- especially if you can show a pattern or trend of abuse. Make it very clear to the judge that you need help.
 ---
 id: complaint_209A_Affidavit
 code: |
@@ -126,9 +126,11 @@ code: |
   users[0].signature
   complaint_209A_Affidavit = True
 ---
+comment: |
+  Hopefully this screen will also go away if/when it is merged with other parts of 209A
 continue button field: complaint_209A_Affidavit_preview_question
 question: |
-  Placeholder preview screen
+  Preview of your 209A Affidavit
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
@@ -150,14 +152,13 @@ subquestion: |
   Do you have any children under eighteen?
 fields:
   - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
-    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
+    datatype: yesnoradio
 ---
 code: |
   incidents_of_abuse[i].year
   incidents_of_abuse[i].time_of_day
   incidents_of_abuse[i].location
-  incidents_of_abuse[i].initializeAttribute('abuse', DADict)
-  incidents_of_abuse[i].abuse.feared_harm
+  incidents_of_abuse[i].abuse
   incidents_of_abuse[i].description
   
   if not incidents_of_abuse[i].police_included:
@@ -172,14 +173,14 @@ code: |
     if incidents_of_abuse[i].injuries_self_child:
       if not incidents_of_abuse[i].injuries_describe:
         if incidents_of_abuse[i].injuries_edit:
-          incidents_of_abuse[i].injuries_description
+          incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
   else:
     if not incidents_of_abuse[i].injuries:
       if incidents_of_abuse[i].injuries_edit:
         incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
     
   if incidents_of_abuse[i].medical_add:
-    incidents_of_abuse[i].medical_treatment = incidents_of_abuse[i].medical_treatment
+    incidents_of_abuse[i].description = incidents_of_abuse[i].medical_treatment
     
   incidents_of_abuse[i].feelings
   incidents_of_abuse[i].summary
@@ -213,6 +214,8 @@ subquestion: |
   What time of day did it happen?
 fields:
   - no label: incidents_of_abuse[i].time_of_day
+  - note: |
+      It is okay to give an approximate time, like "in the morning".
 help:
   label: What if I cannot remember?
   heading: What if I cannot remember?
@@ -242,23 +245,22 @@ subquestion: |
    
    Use the green button to help you decide the boxes you need to check.
 fields:
-  - ${ defendant } made me AFRAID that ${ defendant }  was going to seriously hurt me, physically.: incidents_of_abuse[i].abuse.feared_harm
-    datatype: yesnowide
-  - ${ defendant } tried to physically hurt me.: incidents_of_abuse[i].abuse.defendant_abuse_attempted_physical_harm
-    datatype: yesnowide
-  - ${ defendant } physically hurt me.: incidents_of_abuse[i].abuse.defendant_abuse_caused_physical_harm
-    datatype: yesnowide
-  - ${ defendant }  threatened, pressured or forced me to have sex with ${ defendant }.: incidents_of_abuse[i].abuse.defendant_abuse_caused_sexual_assault
-    datatype: yesnowide
+  - no label: incidents_of_abuse[i].abuse
+    choices:
+      - ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically
+      - ${ defendant } tried to physically hurt me
+      - ${ defendant } physically hurt me
+      - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }
+    datatype: checkboxes
 help:
   label: Can you give me some examples?
   heading: Can you give me some examples?
   content: |
-    Making you afraid of physical harm includes saying things like "I'll kill you if you leave me," or "If you don't give me the car keys, I'll hit you harder than last time." It can also include waving a gun or knife at you, smashing your furniture, driving recklessly, and hurting or killing your pets.It includes threatening to commit any act of violence, threatening with a fake gun, or bomb threats. 
+    Making you afraid of physical harm includes saying things like "I'll kill you if you leave me," or "If you don't give me the car keys, I'll hit you harder than last time." It can also include waving a gun or knife at you, smashing your furniture, driving recklessly, and hurting or killing your pets. It includes threatening to commit any act of violence, threatening with a fake gun, or bomb threats. 
     
-    slamming fist into hand, into wall, blocking not letting you get by, standing between you and the door, not letting you get back.... 
+    slamming fist into hand, into wall, blocking you from passing, standing between you and the door, not letting you get back.... 
     
-    Looming over you, menacing..Spitting on you, punching %%HISHER([Defendant gender MC])%% fist into %%HISHER([Defendant gender MC])%% hand, putting a fist through the wall, 
+    Looming over you, menacing..Spitting on you, putting a fist through the wall, 
     More - See a list of examples on MassLegalHelp.... 
     
     DV Advocates contributed and refined this help screen and the list on MLH. 
@@ -266,19 +268,21 @@ help:
     Physically hurting you includes shoving, pushing, punching, slapping, kicking, pulling your hair, choking, strangling, throwing things at you, burning you with hot food or cigarettes, stabbing, shooting, or locking you in a room.
     Threatening, pressuring or forcing you to have sex also includes forced contact with intimate body parts. 
     For children under 18, it can mean any sexual contact.
+comment: |
+  Should get link for this
 ---
 id: Affidavit description
 question: |
   Describe the incident  
 subquestion: |
    In your own words, what happened? Please use complete sentences, and be as descriptive as you can. List as many details and witnesses as you can remember. 
-   
-   See some examples
+
+   Click "How descriptive should I be?" for some examples
 fields: 
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } 
+      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } ${ ", ".join(incidents_of_abuse[i].abuse.true_values()) }.
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -415,11 +419,17 @@ id: 209A Affidavit medical treatment
 question: |
   Medical Treatment
 subquestion: |
-   It may help you to tell the judge about any medical treatment you got. 
+  % if plaintiff_has_minor_children:
+  It may help you to tell the judge about any medical treatment you or your children got. 
+
+  Or, if you or your children needed it and did not get it, why not? 
+  % else:
+  It may help you to tell the judge about any medical treatment you got. 
+
+  Or, if you needed it and did not get it, why not? 
+  % endif
    
-   Or, if you needed it and did not get it, why not? 
-   
-   Do want to add anything about medical treatment? 
+  Do want to add anything about medical treatment? 
 yesno: incidents_of_abuse[i].medical_add
 ---
 id: 209A Affidavit Medical treatment describe
@@ -441,7 +451,7 @@ question: |
 subquestion: |
    It gives the judge a better picture if you describe how it made you feel. 
    
-   Complete this sentence: "Because of this incident, I felt..."
+   Complete this sentence: "Because of what happened, I felt..."
 fields: 
   - no label: incidents_of_abuse[i].feelings
 ---
@@ -453,12 +463,12 @@ subquestion: |
   
   This is what you have told me about this incident, so far. 
   
-  If you want to add or change anything, (make the box bigger) and type in your changes.
+  If you want to add or change anything, feel free to edit the box below:
 fields:
   - no label: incidents_of_abuse[i].summary
     input type: area
     default: |
-      ${ incidents_of_abuse[i].description + " Because of this incident, I felt " +  incidents_of_abuse[i].feelings }
+      ${ incidents_of_abuse[i].description + " Because of what happened, I felt " +  incidents_of_abuse[i].feelings }
 ---
 question: |
   Are there any other incidents you would like to mention?
@@ -480,8 +490,6 @@ attachment:
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
-      - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
       - "affidavit_body": ${ affidavit_body }
       - "incident_date": ${ incidents_of_abuse[0].date }
 ---
