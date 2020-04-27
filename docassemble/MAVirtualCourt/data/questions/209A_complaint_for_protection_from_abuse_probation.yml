@@ -261,7 +261,8 @@ comment: |
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
-  if children_involved_that_are_relevant:
+  #interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
+  #if children_involved_that_are_relevant:
     # This is a placeholder to control logic flow in this interview
     # It was generated from interview_generator.py as an 'interview order' type question.  # We list one variable from each screen here, in order to control the order of questions
     # To change the order, you can rearrange, or make conditional. If you make conditional here,
@@ -303,7 +304,6 @@ code: |
     #   order_defendant_remain_away_from_schools_daycares_yes = False
 
     # request_child_support_temporary_yes
-    # user_signature_date  # signature_date
     # # str(children[2-1])
     # # children[2-1].age_in_years()
     # # str(children[3-1])
@@ -317,6 +317,7 @@ code: |
     # # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
     # # Comment out the line below if you don't want this behavior. 
     # mark_unfilled_fields_empty(interview_metadata["A_complaint_for_protection_from_abuse_probation_copy0005"])
+    # user_signature_date  # signature_date
     # A_complaint_for_protection_from_abuse_probation_copy0005_preview_question # Pre-canned preview screen
     # basic_questions_signature_flow
     # users[0].signature
@@ -324,6 +325,8 @@ code: |
     #######
     # Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
     #######
+  interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
+  if children_involved_that_are_relevant:
     #basic_questions_intro_screen 
     #A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
     
@@ -340,31 +343,31 @@ code: |
     children_of_parent[0].birthdate
     children_of_custody[0].birthdate
 
+    # todo: This probably needs to be different in DA.
+    # Probably a lot of these list things do.
     all_children = children_of_parent + children_of_custody
 
-    # Can ask for custody and other things if child of both
+    # Should ask for custody and other things if child of both
     children_of_both = children_of_parent.filter(defendant_is_parent = True)
 
-    #if len(children_of_both) > 0:
-    #  wants_custody_of
-    #  for custody_child in wants_custody_of:
-    #    custody_child.seeking_custody = True
+    if len(children_of_both) > 0:
+      wants_custody_of
+      for custody_child in wants_custody_of:
+        custody_child.seeking_custody = True
 
-    #wants_no_contact_with
-    #for contact_child in wants_no_contact_with:
-    #  contact_child.seeking_no_contact = True
+    wants_no_contact_with
+    for contact_child in wants_no_contact_with:
+      contact_child.seeking_no_contact = True
 
     
-    #if len(wants_no_contact_with) > 0:
-    #  # Technically redundant after use in `if`, but
-    #  # feels weird to not have something in here
-    #  hack_reasons_for_no_contact = reasons_for_no_contact
-    #  # Wat?!
-    #else:
-    #  hack_reasons_for_no_contact = ''
+    if len(wants_no_contact_with) > 0:
+      # Wat?! Can't just use reasons_for_no_contact
+      hack_reasons_for_no_contact = reasons_for_no_contact
+    else:
+      hack_reasons_for_no_contact = ''
 
-    #if schools_to_stay_away_from.there_are_any:
-    #  schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
+    if schools_to_stay_away_from.there_are_any:
+      schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
 
     actual_center_payer = ''
     actual_supervision_payer = ''
@@ -382,18 +385,30 @@ code: |
             actual_supervision_payer = other_supervision_payer
           else: actual_supervision_payer = supervision_payer
 
-    #wants_child_support_for
-    #for support_child in wants_child_support_for:
-    #  wants_child_support_for.seeking_child_support = True
+    wants_child_support_for
+    for support_child in wants_child_support_for:
+      wants_child_support_for.seeking_child_support = True
     
-    # majors_needing_support[0].name.first
+    majors_needing_support[0].name.first
 
     there_have_been_other_cases_for_children
 
     # At the end
     children = all_children
+
+    #########
+    # End custom logic basically
+    #########
+    user_signature_date = signature_date
+    # Pre-canned preview screen
+    A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
+    basic_questions_signature_flow
+    users[0].signature
+
+    mark_unfilled_fields_empty(interview_metadata[interview_id])
   else:
-    mark_unfilled_fields_empty(interview_metadata["A_complaint_for_protection_from_abuse_probation_copy0005"])
+    mark_unfilled_fields_empty(interview_metadata[interview_id])
+
   A_complaint_for_protection_from_abuse_probation_copy0005 = True
 reconsider: True
 ---
@@ -402,6 +417,7 @@ comment: |
 ---
 id: custom_objects
 objects:
+  - children: PeopleList
   - children_of_parent: PeopleList
   - children_of_custody: PeopleList
   - children_of_both: PeopleList
@@ -594,7 +610,6 @@ fields:
   - Who should have to pay the visitation center’s fees?: pays_for_center
     input type: radio
     show if: wants_center
-    required: False
     choices:
       - The defendant: "defendant"
       - Me: "plaintiff"
@@ -603,7 +618,6 @@ fields:
     show if:
       variable: pays_for_center
       is: "other"
-    required: False
   - html: |
       <hr>
 
@@ -611,23 +625,20 @@ fields:
     datatype: yesnoradio
   - Who should the supervisor be?: visitation_supervisor_name_full
     show if: wants_supervision
-    required: False
   - When should the visitation happen?: supervision_time
+    #datatype: time # not a friendly inteface. At least not for desktop
     show if: wants_supervision
-    required: False
   - Professional supervisors charge fees.  Who should pay them?: supervision_payer
     input type: radio
     show if: wants_supervision
-    required: False
     choices:
       - The defendant: "defendant"
       - Me: "plaintiff"
       - Someone else: "other"
-  #- Who?: other_supervision_payer
-  #  show if:
-  #    variable: supervision_payer
-  #    is: "other"
-  #  required: False
+  - Who?: other_supervision_payer
+    show if:
+      variable: supervision_payer
+      is: "other"
   - html: |
       <hr>
 
@@ -641,13 +652,12 @@ fields:
 
   - '**Do you need the Court to make some other order about visitation?**': wants_other_order
     datatype: yesnoradio
----
-comment: |
-  #datatype: time # not a friendly inteface. At least not for desktop
   - What else do you need the court to order?: other_order
     input type: area
     show if: wants_other_order
     required: False
+---
+comment: |
 ---
 id: seeking_child_support
 question: |
@@ -700,17 +710,17 @@ attachment:
     filename: A_Page_2
     pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
     fields: 
-      - "child1_name_full": ${ str(children[1-1]) }
-      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child1_name_full": ${ children[1-1].item(0).name }
       - "child2_name_full": ${ '' }
-      - "child2_age": ${ '' }
       - "child3_name_full": ${ '' }
-      - "child3_age": ${ '' }
       - "child4_name_full": ${ '' }
-      - "child4_age": ${ '' }
       - "child5_name_full": ${ '' }
-      - "child5_age": ${ '' }
       - "child6_name_full": ${ '' }
+      - "child1_age": ${ children[1-1].item(0).age_in_years() }
+      - "child2_age": ${ '' }
+      - "child3_age": ${ '' }
+      - "child4_age": ${ '' }
+      - "child5_age": ${ '' }
       - "child6_age": ${ '' }
       - "custody_case_yes": ${ custody_case_yes }
       - "custody_case_no": ${ custody_case_no }
@@ -765,8 +775,8 @@ attachment:
     filename: A_Page_2
     pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
     fields: 
-      - "child1_name_full": ${ str(children[1-1]) }
-      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child1_name_full": ${ children[1-1].item(0).name }
+      - "child1_age": ${ children[1-1].item(0).age_in_years() }
       - "child2_name_full": ${ '' }
       - "child2_age": ${ '' }
       - "child3_name_full": ${ '' }
