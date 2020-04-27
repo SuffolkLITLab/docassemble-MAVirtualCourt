@@ -345,38 +345,42 @@ code: |
     # Can ask for custody and other things if child of both
     children_of_both = children_of_parent.filter(defendant_is_parent = True)
 
-    if len(children_of_both) > 0:
-      wants_custody_of
-      for custody_child in wants_custody_of:
-        custody_child.seeking_custody = True
+    #if len(children_of_both) > 0:
+    #  wants_custody_of
+    #  for custody_child in wants_custody_of:
+    #    custody_child.seeking_custody = True
 
-    wants_no_contact_with
-    for contact_child in wants_no_contact_with:
-      contact_child.seeking_no_contact = True
+    #wants_no_contact_with
+    #for contact_child in wants_no_contact_with:
+    #  contact_child.seeking_no_contact = True
 
-    if len(wants_no_contact_with) > 0 and not defined('reasons_for_no_contact'):
-      # Technically redundant after use in `if`, but
-      # feels weird to not have something in here
-      reasons_for_no_contact
-    else:
-      reasons_for_no_contact = ''
+    
+    #if len(wants_no_contact_with) > 0:
+    #  # Technically redundant after use in `if`, but
+    #  # feels weird to not have something in here
+    #  hack_reasons_for_no_contact = reasons_for_no_contact
+    #  # Wat?!
+    #else:
+    #  hack_reasons_for_no_contact = ''
 
     #if schools_to_stay_away_from.there_are_any:
     #  schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
 
-    #actual_center_payer = ''
-    #actual_supervision_payer = ''
-    # if wants_visitation_orders:
-    #   if kind_of_visitation_wanted == "allow_visitation":
-    #     wants_center  # Asks all the questions
+    actual_center_payer = ''
+    actual_supervision_payer = ''
+    if wants_visitation_orders:
+      if kind_of_visitation_wanted == "allow_visitation":
+        wants_center  # Asks all the questions
 
-    #     if pays_for_center is "other":
-    #       actual_center_payer = other_pays_for_center
-    #     else: actual_center_payer = pays_for_center
+        if defined('pays_for_center'):
+          if pays_for_center is "other":
+            actual_center_payer = other_pays_for_center
+          else: actual_center_payer = pays_for_center
 
-    #     #if supervision_payer is "other":
-    #     #  actual_supervision_payer = other_supervision_payer
-    #     #else: actual_supervision_payer = supervision_payer
+        if defined('supervision_payer'):
+          if supervision_payer is "other":
+            actual_supervision_payer = other_supervision_payer
+          else: actual_supervision_payer = supervision_payer
 
     #wants_child_support_for
     #for support_child in wants_child_support_for:
@@ -516,7 +520,7 @@ question: |
   What are the reasons you need the court to tell the defendant not to contact them?
 fields:
   - no label: reasons_for_no_contact
-    input type: area
+    datatype: area
 ---
 id: plaintiff_wants_defendant_to_stay_away_from_schools_daycares
 question: |
@@ -587,7 +591,6 @@ fields:
     datatype: yesnoradio
   - What visitation center?: visitation_center_name
     show if: wants_center
-    required: False
   - Who should have to pay the visitation center’s fees?: pays_for_center
     input type: radio
     show if: wants_center
@@ -610,7 +613,6 @@ fields:
     show if: wants_supervision
     required: False
   - When should the visitation happen?: supervision_time
-    #datatype: time # not a friendly inteface. At least not for desktop
     show if: wants_supervision
     required: False
   - Professional supervisors charge fees.  Who should pay them?: supervision_payer
@@ -621,11 +623,11 @@ fields:
       - The defendant: "defendant"
       - Me: "plaintiff"
       - Someone else: "other"
-  - Who?: other_supervision_payer
-    show if:
-      variable: supervision_payer
-      is: "other"
-    required: False
+  #- Who?: other_supervision_payer
+  #  show if:
+  #    variable: supervision_payer
+  #    is: "other"
+  #  required: False
   - html: |
       <hr>
 
@@ -639,6 +641,9 @@ fields:
 
   - '**Do you need the Court to make some other order about visitation?**': wants_other_order
     datatype: yesnoradio
+---
+comment: |
+  #datatype: time # not a friendly inteface. At least not for desktop
   - What else do you need the court to order?: other_order
     input type: area
     show if: wants_other_order
