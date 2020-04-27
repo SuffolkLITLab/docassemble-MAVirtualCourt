@@ -442,7 +442,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts
+    choices: macourts.filter_courts(allowed_courts)
     default: local_housing_court
 continue button field: ask_court_question    
 #help: |
@@ -463,7 +463,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts
+    choices: macourts.filter_courts(allowed_courts)
 continue button field: ask_court_question    
 ---
 id: docket number
