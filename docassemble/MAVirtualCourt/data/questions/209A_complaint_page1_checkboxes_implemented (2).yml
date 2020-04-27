@@ -91,7 +91,7 @@ question: |
   Children
 fields:
   - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children_no
-    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
+    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (sometimes).
 ---
 question: |
   Other cases with Defendant
@@ -109,7 +109,9 @@ noyes: user_is_minor_plaintiff
 ---
 event: refer_to_258E_resources
 question: |
-  THIS IS PLACEHOLDER SCREEN FOR PEOPLE WHO SHOULD BE FILLING OUT 258E, NOT 209A. SME'S TO PROVIDE LANGUAGE. YOU GET HERE IF YOU CHECK 'NONE OF THE ABOVE' ON THE JURISDICTIONAL QUESTIONS OR YOU CLICK NONE OF THE ABOVE ON THE 'HOW DID THE DEFENDANT ABUSE YOU' QUESTIONS
+  CANNOT COMPLETE INTERVIEW
+subquestion: |
+  Unfortunately, based on your answer to the last question, it sounds like you are not eligible to get a 209A restraining order.  You might still be able to get a 258E harassment order, depending on your situation.  You can read more about filing for a 258E harassment order [here.](${https://www.mass.gov/harassment-prevention-orders}) 
 buttons:
   - Exit: exit
   - Restart: restart
@@ -190,7 +192,7 @@ fields:
 question: |
   Should the Defendant have to pay you money?
 subquestion: |
-  The Court can tell the defendant to pay for money you lost or spent as direct result of the abuse.  For example, the court might order the Defendant to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell the defendant to pay money to support you (as opposed to your children).
+  The Court can tell the Defendant to pay for money you lost or spent as direct result of the abuse.  For example, the court might order the Defendant to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell the defendant to pay money to support you.
 fields:
   - 'I want the Court to order the Defendant to pay me because of losses I have suffered': order_defendant_pay_yes
     datatype: yesno
@@ -212,13 +214,13 @@ fields:
 question: |
   Keeping your information secret
 subquestion: |
-  What information do you want to show up on the restraining order? The Defendant will see the restraining order.
+  What information do you want to keep secret from the Defendant?  If you do do not ask to keep the information secret, it may appear on the restraining order, where the defendant will see it.  
 fields: 
-  - "I do not want my home address to appear on the Court's order.": order_impound_plaintiff_address_residential_yes
+  - "I want to keep my home address secret from the Defendant.": order_impound_plaintiff_address_residential_yes
     datatype: yesno
-  - "I do not want my work address to appear on the Court's order.": order_impound_plaintiff_address_work_yes
+  - "I want to keep my work address secret from the Defendant.": order_impound_plaintiff_address_work_yes
     datatype: yesno
-  - "I do not want my school address to appear on the Court's order.": order_impound_plaintiff_address_school
+  - "I want to keep my school address secret from the Defendant.": order_impound_plaintiff_address_school
     datatype: yesno
 ---
 question: |
@@ -234,9 +236,9 @@ fields:
       is: True  
 ---
 question: |
-  PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
+  Do you need the restraining order right away?
 subquestion: |
-  PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
+  If you are in immediate danger, you should ask the court to give you the restraining order right away.  If you do not ask for the restraining order to be granted right away, it will probably take around ten days for the court to give you the restraining order.  The defendant will know you have asked for the restraining order in the meantime.  
 fields:      
   - 'I want the Court to make its order without advance notice to the Defendant': order_relief_ex_parte
     datatype: yesno
