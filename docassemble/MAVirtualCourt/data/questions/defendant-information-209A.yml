@@ -1,0 +1,593 @@
+mandatory: True
+code: |
+  interview_metadata # make sure we initialize the object
+  if not defined("interview_metadata['defendantinformation209A0008']"):
+    interview_metadata.initializeObject('defendantinformation209A0008')
+  interview_metadata['defendantinformation209A0008'].update({
+    'title': 'Defendant-information-209a',
+    'short title': 'Defendant-information-209a',
+    'description': 'Defendant-information-209a',
+    'original_form': 'https://www.mass.gov/doc/defendant-information-form-gl-c-209a-or-258e/download',
+    'allowed courts': [
+      'Boston Municipal Court',
+      'District Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ],
+    'preferred court': 'Any court (no preferred court)',
+    'categories': [
+      'Domestic Violence / Safety of self',
+      'Family Law',
+    ],
+    'logic block variable': 'defendantinformation209A0008',
+    'attachment block variable': 'defendantinformation209A0008_attachment',
+    'typical role': 'plaintiff',
+    'built_in_fields_used': [
+      {'variable': 'defendant_name',
+       'transformed_variable': 'str(defendants[0])',
+      },
+      {'variable': 'defendant_birthdate',
+       'transformed_variable': 'defendants[0].birthdate.format()',
+      },
+      {'variable': 'parent_name',
+       'transformed_variable': 'str(parents[0])',
+      },
+      {'variable': 'parent2_name',
+       'transformed_variable': 'str(parents[1])',
+      },
+      {'variable': 'defendant_phone',
+       'transformed_variable': 'defendants[0].phone_number',
+      },
+      {'variable': 'defendant_signature',
+       'transformed_variable': 'defendants[0].signature',
+      },
+      {'variable': 'signature_date',
+       'transformed_variable': 'signature_date',
+      },
+      ],
+    'fields': [
+      {'variable': '',
+       'transformed_variable': '',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_name_other',
+       'transformed_variable': 'defendants[0].name_other',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_birthplace',
+       'transformed_variable': 'defendants[0].birthplace',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_social_security_number',
+       'transformed_variable': 'defendants[0].social_security_number',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_gender_male_yes',
+       'transformed_variable': 'defendants[0].gender_male_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_photo_yes',
+       'transformed_variable': 'defendants[0].photo_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_photo_no',
+       'transformed_variable': 'defendants[0].photo_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_gender_female_yes',
+       'transformed_variable': 'defendants[0].gender_female_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_race',
+       'transformed_variable': 'defendants[0].race',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_eye_color',
+       'transformed_variable': 'defendants[0].eye_color',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_hair_color',
+       'transformed_variable': 'defendants[0].hair_color',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_height',
+       'transformed_variable': 'defendants[0].height',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_weight',
+       'transformed_variable': 'defendants[0].weight',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_physical_build',
+       'transformed_variable': 'defendants[0].physical_build',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_physical_other',
+       'transformed_variable': 'defendants[0].physical_other',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_address',
+       'transformed_variable': 'defendants[0].address',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_english_yes',
+       'transformed_variable': 'defendants[0].english_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_english_no',
+       'transformed_variable': 'defendants[0].english_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_address_apartment',
+       'transformed_variable': 'defendants[0].address_apartment',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_address_floor',
+       'transformed_variable': 'defendants[0].address_floor',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_name_door_mailbox',
+       'transformed_variable': 'defendants[0].name_door_mailbox',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_language_other',
+       'transformed_variable': 'defendants[0].language_other',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_employer',
+       'transformed_variable': 'defendants[0].employer',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_work_phone',
+       'transformed_variable': 'defendants[0].work_phone',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_work_title',
+       'transformed_variable': 'defendants[0].work_title',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_work_address',
+       'transformed_variable': 'defendants[0].work_address',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_work_hours',
+       'transformed_variable': 'defendants[0].work_hours',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_work_department',
+       'transformed_variable': 'defendants[0].work_department',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_location_best',
+       'transformed_variable': 'defendants[0].location_best',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_locations_other',
+       'transformed_variable': 'defendants[0].locations_other',
+      'field_type': 'area',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_best_times_find',
+       'transformed_variable': 'defendants[0].best_times_find',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_vehicle_license_plate',
+       'transformed_variable': 'defendants[0].vehicle_license_plate',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_vehicle_year',
+       'transformed_variable': 'defendants[0].vehicle_year',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_vehicle_make',
+       'transformed_variable': 'defendants[0].vehicle_make',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_vehicle_model',
+       'transformed_variable': 'defendants[0].vehicle_model',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_vehicle_color',
+       'transformed_variable': 'defendants[0].vehicle_color',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_police_violence_no',
+       'transformed_variable': 'defendants[0].police_violence_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_police_violence_yes',
+       'transformed_variable': 'defendants[0].police_violence_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_drug_alcohol_no',
+       'transformed_variable': 'defendants[0].drug_alcohol_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_drug_alcohol_yes',
+       'transformed_variable': 'defendants[0].drug_alcohol_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_drug_alcohol_abuse',
+       'transformed_variable': 'defendants[0].drug_alcohol_abuse',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_gun_license_carry_possess_no',
+       'transformed_variable': 'defendants[0].gun_license_carry_possess_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_gun_license_carry_possess_yes',
+       'transformed_variable': 'defendants[0].gun_license_carry_possess_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_gun_license_carry_possess',
+       'transformed_variable': 'defendants[0].gun_license_carry_possess',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_psychiatric_emotional_problems_no',
+       'transformed_variable': 'defendants[0].psychiatric_emotional_problems_no',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_psychiatric_emotional_problems_yes',
+       'transformed_variable': 'defendants[0].psychiatric_emotional_problems_yes',
+      'field_type': 'yesno',
+      },
+      {'variable': 'defendant_psychiatric_emotional_problems',
+       'transformed_variable': 'defendants[0].psychiatric_emotional_problems',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_location_information_other',
+       'transformed_variable': 'defendants[0].location_information_other',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      {'variable': 'defendant_name_print',
+       'transformed_variable': 'defendants[0].name_print',
+      'field_type': 'text',
+      'field_data_type': 'text',
+      },
+      ],
+  })
+---
+objects:
+  - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
+---
+question: |
+  Best places to find Defendant
+subquestion: |
+  This information helps the police find the Defendant to give them with a copy of the restraining order.
+fields:
+  - 'What is the best place and time to find Defendant? Are they staying somewhere else at the moment? Is there places or friends that they visit at a particular time?': other_parties[0].location_information_other
+    datatype: area
+---
+question: |
+  Defendant's Physical Appearance
+subquestion: |
+  Please describe what Defendant looks like by providing the following information.
+fields:
+  - 'Can you provide a photo of Defendant?': other_parties[0].photo_yes
+    datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.
+  - "What is the Defendant's race?": other_parties[0].race
+  - "What is the Defendant's eye color?": other_parties[0].eye_color
+  - "What is the Defendant's hair color?": other_parties[0].hair_color
+  - "What is the Defendant's height?": other_parties[0].height
+  - "What is the Defendant's weight?": other_parties[0].weight
+  - "What is Defendant's build (ex. lanky, stocky, skinny, muscular)": other_parties[0].physical_build
+  - 'Does Defendant have any other physical characteristics (ex. a beard, glasses, tattoo, scars)': other_parties[0].physical_other
+    required: False
+---
+question: |
+  Defendant's Physical Location
+subquestion: |
+  Please describe where the police can best find the Defendant by providing the following information.  This information is important so that the police can quickly find the Defendant to give them a copy of the restraining order.
+fields:
+  - "Defendant's Address": other_parties[0].address
+  - 'Defendant address apartment number': other_parties[0].address_apartment
+  - 'Defendant address floor': other_parties[0].address_floor
+  - "What name is on the mailbox at Defendant's address? (write None if none).": other_parties[0].name_door_mailbox
+  - "What is the name of Defendant's employer?": other_parties[0].employer
+  - "What is Defendant's work phone number?": other_parties[0].work_phone
+  - "What is Defendant's specific job/title at work?": other_parties[0].work_title
+  - "Defendant's work address": other_parties[0].work_address
+  - "Defendant's work hours": other_parties[0].work_hours
+  - 'What department does Defendant work in?': other_parties[0].work_department
+  - 'What is the best place to find Defendant?': other_parties[0].location_best
+  - 'What is the best place and time to find Defendant? Is he staying somewhere else at the moment? Is there a certain place or friend that he visits at a particular time? Where are the police most likely to find Defendant now?': other_parties[0].locations_other
+    input type: area
+  - 'What the best time to find the Defendant at the listed locations?': other_parties[0].best_times_find
+  - "Defendant's vehicle license plate number": other_parties[0].vehicle_license_plate
+  - 'Year': other_parties[0].vehicle_year
+  - 'Make': other_parties[0].vehicle_make
+  - 'Model': other_parties[0].vehicle_model
+  - 'Color': other_parties[0].vehicle_color
+---
+question: |
+  General Information About the Defendant
+subquestion: |
+  Please provide the following information about the Defendant.
+fields:
+  - 'Defendant Alias': other_parties[0].name_other
+    required: False
+  - 'Defendant Birthplace': other_parties[0].birthplace
+    required: False
+  - 'Defendant Social Security Number (Last Four)': other_parties[0].social_security_number
+    required: False
+  - 'Is Defendant Male': other_parties[0].gender_male_yes
+    datatype: yesnoradio
+  - 'Does Defendant understand English?': other_parties[0].english_yes
+    datatype: yesnoradio
+  - 'What languages other than English does Defendant speak?': other_parties[0].language_other
+    show if:
+      variable: other_parties[0].english_yes
+      is: False
+  - "What is the name of Defendant's mother, using her maiden name?": parents[0]
+    required: False
+    help: |
+      This information is used so the police can find the right Defendant if other people share his name
+  - "What is the name of Defendant's father?": parents[1]
+    required: False
+    help: |
+      This information is used so the police can find the right Defendant if other people share his name
+---
+question: |
+  Information for Service
+subquestion: |
+  The following information helps keep you and the police safe during this process. 
+fields:
+  - 'Does Defendant have a history of violence towards police officers?': other_parties[0].police_violence_yes
+    datatype: yesnoradio
+  - 'Does Defendant have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
+    datatype: yesnoradio
+  - 'What drugs or alcohol?': other_parties[0].drug_alcohol_abuse
+    show if:
+      variable: other_parties[0].drug_alcohol_yes
+      is: True
+  - 'Does Defendant have access to guns, ammunition, a license to carry, or an FID card?': other_parties[0].gun_license_carry_possess_yes
+    datatype: yesnoradio
+  - 'Describe which of the above Defendant has access to': other_parties[0].gun_license_carry_possess
+    show if:
+      variable: other_parties[0].gun_license_carry_possess_yes
+      is: True
+  - 'Does Defendant have any mental health problems?': other_parties[0].psychiatric_emotional_problems_yes
+    datatype: yesnoradio
+  - 'What type of mental health problems?': other_parties[0].psychiatric_emotional_problems
+    show if:
+      variable: other_parties[0].psychiatric_emotional_problems_yes
+      is: True
+---
+progress: 100
+mandatory: True
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+  
+  ### Next steps
+  
+  1. Step 1
+  1. Step 2
+  
+  Below is a preview of your form.
+  
+  ${defendantinformation209A0008_attachment }
+attachment code: defendantinformation209A0008_attachment
+---
+need: defendantinformation209A0008
+attachment:
+    variable name: defendantinformation209A0008_attachment
+    name: Defendant-information-209a
+    filename: Defendantinformation209a
+    pdf template file: defendant-information-209A.pdf
+    fields: 
+      - "defendant_name": ${ str(other_parties[0]) }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
+      - "parent_name": ${ str(parents[0]) }
+      - "parent2_name": ${ str(parents[2-1]) }
+      - "defendant_phone": ${ other_parties[0].phone_number }
+      - "defendant_signature": ${ users[0].signature }
+      - "signature_date": ${ signature_date }
+      - "": ${  }
+      - "defendant_name_other": ${ other_parties[0].name_other }
+      - "defendant_birthplace": ${ other_parties[0].birthplace }
+      - "defendant_social_security_number": ${ other_parties[0].social_security_number }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_photo_yes": ${ other_parties[0].photo_yes }
+      - "defendant_photo_no": ${ other_parties[0].photo_no }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
+      - "defendant_race": ${ other_parties[0].race }
+      - "defendant_eye_color": ${ other_parties[0].eye_color }
+      - "defendant_hair_color": ${ other_parties[0].hair_color }
+      - "defendant_height": ${ other_parties[0].height }
+      - "defendant_weight": ${ other_parties[0].weight }
+      - "defendant_physical_build": ${ other_parties[0].physical_build }
+      - "defendant_physical_other": ${ other_parties[0].physical_other }
+      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_english_yes": ${ other_parties[0].english_yes }
+      - "defendant_english_no": ${ other_parties[0].english_no }
+      - "defendant_address_apartment": ${ other_parties[0].address_apartment }
+      - "defendant_address_floor": ${ other_parties[0].address_floor }
+      - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
+      - "defendant_language_other": ${ other_parties[0].language_other }
+      - "defendant_employer": ${ other_parties[0].employer }
+      - "defendant_work_phone": ${ other_parties[0].work_phone }
+      - "defendant_work_title": ${ other_parties[0].work_title }
+      - "defendant_work_address": ${ other_parties[0].work_address }
+      - "defendant_work_hours": ${ other_parties[0].work_hours }
+      - "defendant_work_department": ${ other_parties[0].work_department }
+      - "defendant_location_best": ${ other_parties[0].location_best }
+      - "defendant_locations_other": ${ other_parties[0].locations_other }
+      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
+      - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
+      - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
+      - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
+      - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
+      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
+      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
+      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
+      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
+      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
+      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
+      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
+      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
+      - "defendant_name_print": ${ other_parties[0].name_print }
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: defendantinformation209A0008_intro
+question: |
+  Defendant Information
+subquestion: |
+  The  next questions are about the Defendant. This information is used to give (serve) Defendant a copy of the restraining order. The police need to give the Defendant a copy of the restraining order so that the Defendant knows the restraining order exists and so that the Defendant knows when the next court date is.  If the police can't serve the Defendant, you may have to come back to court every ten days until service is done. It is also much harder to prosecute the Defendant for violating the restraining order.  
+  
+  The more information you can provide about the Defendant's usual location, the sooner the order will be served.
+  
+  If you see the Defendant, and you know the order has not been served, call the police. The police should not arrest the Defendant, but they will be able to serve the Defendant. Call the police even if you are not afraid.
+---
+id: interview_order_defendantinformation209A0008
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.
+  basic_questions_intro_screen 
+  defendantinformation209A0008_intro
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
+  allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
+  other_parties[0].name_other
+  if not other_parties[0].gender_male_yes:
+    other_parties[0].gender_male_no = True
+  if not other_parties[0].english_yes:
+    other_parties[0].english_no = True
+  if not other_parties[0].photo_yes:
+    other_parties[0].photo_yes = True
+  other_parties[0].address
+  if not other_parties[0].police_violence_yes:
+    other_parties[0].police_violence_no = True
+  if not other_parties[0].drug_alcohol_yes:
+    other_parties[0].drug_alcohol_no = True
+  if not other_parties[0].gun_license_carry_possess_yes:
+    other_parties[0].gun_license_carry_possess_no = True
+  if not other_parties[0].psychiatric_emotional_problems_yes:
+    other_parties[0].psychiatric_emotional_problems_no = True
+  other_parties[0].location_information_other
+  str(other_parties[0])
+  other_parties[0].birthdate.format()
+  str(parents[0])
+  str(parents[1])
+  other_parties[0].phone_number # MB: do we want a phone number required here? It currently is.
+  signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
+  defendantinformation209A0008_preview_question # Pre-canned preview screen
+  basic_questions_signature_flow
+  other_parties[0].signature
+  defendantinformation209A0008 = True
+---
+continue button field: defendantinformation209A0008_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${defendantinformation209A0008_attachment_preview}
+---
+attachment:
+    variable name: defendantinformation209A0008_attachment_preview
+    name: Defendant-information-209a
+    filename: Defendantinformation209a
+    pdf template file: defendant-information-209A.pdf
+    fields: 
+      - "defendant_name": ${ str(other_parties[0]) }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
+      - "parent_name": ${ str(parents[0]) }
+      - "parent2_name": ${ str(parents[1]) }
+      - "defendant_phone": ${ other_parties[0].phone_number }
+      - "defendant_signature": ${ users[0].signature }
+      - "signature_date": ${ signature_date }
+      - "": ${  }
+      - "defendant_name_other": ${ other_parties[0].name_other }
+      - "defendant_birthplace": ${ other_parties[0].birthplace }
+      - "defendant_social_security_number": ${ other_parties[0].social_security_number }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_photo_yes": ${ other_parties[0].photo_yes }
+      - "defendant_photo_no": ${ other_parties[0].photo_no }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
+      - "defendant_race": ${ other_parties[0].race }
+      - "defendant_eye_color": ${ other_parties[0].eye_color }
+      - "defendant_hair_color": ${ other_parties[0].hair_color }
+      - "defendant_height": ${ other_parties[0].height }
+      - "defendant_weight": ${ other_parties[0].weight }
+      - "defendant_physical_build": ${ other_parties[0].physical_build }
+      - "defendant_physical_other": ${ other_parties[0].physical_other }
+      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_english_yes": ${ other_parties[0].english_yes }
+      - "defendant_english_no": ${ other_parties[0].english_no }
+      - "defendant_address_apartment": ${ other_parties[0].address_apartment }
+      - "defendant_address_floor": ${ other_parties[0].address_floor }
+      - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
+      - "defendant_language_other": ${ other_parties[0].language_other }
+      - "defendant_employer": ${ other_parties[0].employer }
+      - "defendant_work_phone": ${ other_parties[0].work_phone }
+      - "defendant_work_title": ${ other_parties[0].work_title }
+      - "defendant_work_address": ${ other_parties[0].work_address }
+      - "defendant_work_hours": ${ other_parties[0].work_hours }
+      - "defendant_work_department": ${ other_parties[0].work_department }
+      - "defendant_location_best": ${ other_parties[0].location_best }
+      - "defendant_locations_other": ${ other_parties[0].locations_other }
+      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
+      - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
+      - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
+      - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
+      - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
+      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
+      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
+      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
+      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
+      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
+      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
+      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
+      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
+      - "defendant_name_print": ${ other_parties[0].name_print }
