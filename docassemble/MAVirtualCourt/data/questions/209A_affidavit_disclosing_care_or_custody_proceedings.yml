@@ -1,6 +1,6 @@
 ---
 include:
-  #- docassemble.MAVirtualCourt:basic-questions.yml
+  #- docassemble.MAVirtualCourt:basic-questions.yml  
   - basic-questions.yml
 ---
 objects:
@@ -948,6 +948,9 @@ fields:
     show if:
       variable: attorneys_for_children[i].represented_all_children
       is: False
+validation code: |
+  if attorneys_for_children[i].represented_all_children:
+    attorneys_for_children[i].children = children
 ---
 question: |
   Law guardians and investigators for open (pending) cases representing your children
@@ -1066,19 +1069,14 @@ continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_in
 question: |
   Affidavit Disclosing Care or Custody Proceedings
 subquestion: |
-  If your children have been involved in court cases about their custody or care, then you must submit an Affidavit Disclosing Care or Custody Proceeding. The main purpose of this form is to find out about are any open or closed cases related to the care and/or custody of your children. This helps the court get a better picture of your childrens’ situations.
+  If your children have been involved in court cases about their custody or care, then you must submit an Affidavit Disclosing Care or Custody Proceeding. The main purpose of this form is to find out about any open or closed cases related to the care and/or custody of your children. This helps the court get a better picture of your childrens’ situations.
 ---
 continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question
 question: |
   Placeholder preview screen
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
-  
-  % for child in children:
-  * ${child} ${child.letter}
-  % endfor
-  
-   ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
+     ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
 ---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
@@ -1132,7 +1130,7 @@ attachment:
       - "other_case_3_letters": ${ other_care_custody_proceedings.item(2).child_letters()}
       - "other_case_3_court": ${ other_care_custody_proceedings.item(2).court_name }
       - "other_case_3_docket": ${ other_care_custody_proceedings.item(2).docket_number }
-      - "other_case_3_status": ${ other_care_custody_proceedings.item(0).status() }
+      - "other_case_3_status": ${ other_care_custody_proceedings.item(2).status() }
       - "other_case_other_parties_1_letters": ${ filter_letters(box8_people.item(0).child_letters) }
       - "other_case_other_parties_1_names": ${ box8_people.item(0) }
       - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line() }
@@ -1160,11 +1158,11 @@ attachment:
       - "attorney_for_children_3": |
           ${ str(attorneys_for_children.item(2)) + ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if not attorneys_for_children.item(2).represented_all_children else attorneys_for_children.item(2).represented_children}
       - "gals_investigators_1": |
-          ${ str(gals_investigators.item(0)) + ' (' + str(gals_investigators.item(0).gals_investigators) + ')' if not gals_investigators.item(0).represented_all_children else gals_investigators.item(0).represented_children}
+          ${ str(gals_investigators.item(0)) + ' (' + str(gals_investigators.item(0)) + ')' if not gals_investigators.item(0).represented_all_children else gals_investigators.item(0).represented_children}
       - "gals_investigators_2": |
-          ${ str(gals_investigators.item(1)) + ' (' + str(gals_investigators.item(1).gals_investigators) + ')' if not gals_investigators.item(1).represented_all_children else gals_investigators.item(1).represented_children}
+          ${ str(gals_investigators.item(1)) + ' (' + str(gals_investigators.item(1)) + ')' if not gals_investigators.item(1).represented_all_children else gals_investigators.item(1).represented_children}
       - "gals_investigators_3": |
-          ${ str(gals_investigators.item(2)) + ' (' + str(gals_investigators.item(2).gals_investigators) + ')' if not gals_investigators.item(2).represented_all_children else gals_investigators.item(2).represented_children}
+          ${ str(gals_investigators.item(2)) + ' (' + str(gals_investigators.item(2)) + ')' if not gals_investigators.item(2).represented_all_children else gals_investigators.item(2).represented_children}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
