@@ -259,161 +259,209 @@ comment: |
       datatype: yesno
     - 'Other visitation requests': visitation_other_requests
 ---
-id: A_complaint_for_protection_from_abuse_probation_copy0005
-code: |
-  #interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
-  #if children_involved_that_are_relevant:
-    # This is a placeholder to control logic flow in this interview
-    # It was generated from interview_generator.py as an 'interview order' type question.  # We list one variable from each screen here, in order to control the order of questions
-    # To change the order, you can rearrange, or make conditional. If you make conditional here,
-    # You must also make sure it's conditional in the attachment block, or assign each variable 
-    # on the optional screen to DAEmpty()
-    # basic_questions_intro_screen 
-    # A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip?
-    # children[1-1].age_in_years()
-    # # Make sure that Affidavit of care has these same var names
-    # # are set so that this gets asked only if it wasn't asked already
-    # custody_case_yes
-    # request_custody_yes
-
-    # if do_request_no_contact:
-    #   reasons_for_no_contact
-    # else:
-    #   reasons_for_no_contact = ''
-
-    # if not visitation:
-    #   visitation_at_location
-    #   order_defendant_remain_away_from_schools_daycares_yes
-    # else:  # All this stuff would not have been asked
-    #   # All the visitation question stuff for now (bools at top)
-    #   visitation_at_location = False
-    #   visitation_supervised = False
-    #   visitation_third_party_involvement = False
-    #   visitation_other = False
-    #   visitation_center_name = ''
-    #   visitation_payer_name_full = ''
-    #   #visitation_supervised
-    #   visitation_supervisor_name_full = ''
-    #   visitation_times = ''
-    #   visitation_payer2_name_full = ''
-    #   #visitation_third_party_involvement
-    #   visitation_third_party_name_full = ''
-    #   #visitation_other
-    #   visitation_other_requests = ''
-    #   # Separate question page
-    #   order_defendant_remain_away_from_schools_daycares_yes = False
-
-    # request_child_support_temporary_yes
-    # # str(children[2-1])
-    # # children[2-1].age_in_years()
-    # # str(children[3-1])
-    # # children[3-1].age_in_years()
-    # # str(children[4-1])
-    # # children[4-1].age_in_years()
-    # # str(children[5-1])
-    # # children[5-1].age_in_years()
-    # # str(children[6-1])
-    # # children[6-1].age_in_years()
-    # # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-    # # Comment out the line below if you don't want this behavior. 
-    # mark_unfilled_fields_empty(interview_metadata["A_complaint_for_protection_from_abuse_probation_copy0005"])
-    # user_signature_date  # signature_date
-    # A_complaint_for_protection_from_abuse_probation_copy0005_preview_question # Pre-canned preview screen
-    # basic_questions_signature_flow
-    # users[0].signature
-    
-    #######
-    # Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
-    #######
-  interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
-  if children_involved_that_are_relevant:
-    #basic_questions_intro_screen 
-    #A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
-    
-    #######
-    # Custom logic start
-    #######
-    number_of_children
-
-    # Placeholder for now
-    defendant_and_plaintiff_are_parents_of_child = True
-
-    # todo: Add warnings about 18+ to both and prohibit
-    # adding those children
-    children_of_parent[0].birthdate
-    children_of_custody[0].birthdate
-
-    # todo: This probably needs to be different in DA.
-    # Probably a lot of these list things do.
-    all_children = children_of_parent + children_of_custody
-
-    # Should ask for custody and other things if child of both
-    children_of_both = children_of_parent.filter(defendant_is_parent = True)
-
-    if len(children_of_both) > 0:
-      wants_custody_of
-      for custody_child in wants_custody_of:
-        custody_child.seeking_custody = True
-
-    wants_no_contact_with
-    for contact_child in wants_no_contact_with:
-      contact_child.seeking_no_contact = True
-
-    
-    if len(wants_no_contact_with) > 0:
-      # Wat?! Can't just use reasons_for_no_contact
-      hack_reasons_for_no_contact = reasons_for_no_contact
-    else:
-      hack_reasons_for_no_contact = ''
-
-    if schools_to_stay_away_from.there_are_any:
-      schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
-
-    actual_center_payer = ''
-    actual_supervision_payer = ''
-    if wants_visitation_orders:
-      if kind_of_visitation_wanted == "allow_visitation":
-        wants_center  # Asks all the questions
-
-        if defined('pays_for_center'):
-          if pays_for_center is "other":
-            actual_center_payer = other_pays_for_center
-          else: actual_center_payer = pays_for_center
-
-        if defined('supervision_payer'):
-          if supervision_payer is "other":
-            actual_supervision_payer = other_supervision_payer
-          else: actual_supervision_payer = supervision_payer
-
-    wants_child_support_for
-    for support_child in wants_child_support_for:
-      wants_child_support_for.seeking_child_support = True
-    
-    majors_needing_support[0].name.first
-
-    there_have_been_other_cases_for_children
-
-    # At the end
-    children = all_children
-
-    #########
-    # End custom logic basically
-    #########
-    user_signature_date = signature_date
-    # Pre-canned preview screen
-    A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
-    basic_questions_signature_flow
-    users[0].signature
-
-    mark_unfilled_fields_empty(interview_metadata[interview_id])
-  else:
-    mark_unfilled_fields_empty(interview_metadata[interview_id])
-
-  A_complaint_for_protection_from_abuse_probation_copy0005 = True
-reconsider: True
----
 comment: |
   Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
+---
+id: A_complaint_for_protection_from_abuse_probation_copy0005
+code: |
+  #######
+  # Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
+  #######
+  interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
+
+  ##if children_involved_that_are_relevant:
+  #basic_questions_intro_screen 
+  #A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
+
+  #######
+  # Custom logic start
+  #######
+  num_children_is_parent_of
+  num_children_has_care_of
+
+  # Placeholder for now
+  defendant_and_plaintiff_are_parents_of_child = True
+
+  # todo: Add warnings about 18+ to both and prohibit
+  # adding those children
+  num_children_is_parent_of
+  num_children_has_care_of
+  children_of_parent[0].birthdate
+  children_of_custody[0].birthdate
+
+  # todo: This probably needs to be different in DA.
+  # Probably a lot of these list things do.
+  all_children = children_of_parent + children_of_custody
+
+  # Should ask for custody and other things if child of both
+  children_of_both = children_of_parent.filter(defendant_is_parent = True)
+
+  if len(children_of_both) > 0:
+    wants_custody_of
+    for custody_child in wants_custody_of:
+      custody_child.seeking_custody = True
+
+  wants_no_contact_for
+  for contact_child in wants_no_contact_for:
+    contact_child.seeking_no_contact = True
+
+  if len(wants_no_contact_for) > 0:
+    # Wat?! Can't just use reasons_for_no_contact
+    hack_reasons_for_no_contact = reasons_for_no_contact
+  else:
+    hack_reasons_for_no_contact = ''
+
+  if schools_to_stay_away_from.there_are_any:
+    schools_to_stay_away_from[0].name.text  # `Organization`s have `.name.text`
+
+  actual_center_payer = ''
+  actual_supervision_payer = ''
+  if wants_visitation_orders:
+    if not prohibit_visitation:
+      wants_center  # Asks all the questions
+
+      if defined('pays_for_center'):
+        if pays_for_center == "other":
+          actual_center_payer = other_pays_for_center
+        else: actual_center_payer = pays_for_center
+
+      if defined('supervision_payer'):
+        if supervision_payer == "other":
+          actual_supervision_payer = other_supervision_payer
+        else: actual_supervision_payer = supervision_payer
+
+    # ends if not prohibit_visitation
+  # ends if wants_visitation_orders
+
+  wants_child_support_for
+  for support_child in wants_child_support_for:
+    wants_child_support_for.seeking_child_support = True
+
+  majors_needing_support[0].name.first
+
+  have_had_custody_cases
+  have_had_paternity_cases
+
+  # At the end
+  children = all_children
+
+  #########
+  # End custom logic basically
+  #########
+  user_signature_date = signature_date
+  # Pre-canned preview screen
+  A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
+  basic_questions_signature_flow
+  users[0].signature
+  
+  #mark_unfilled_fields_empty(interview_metadata[interview_id])
+
+  #else:
+  #  mark_unfilled_fields_empty(interview_metadata[interview_id])
+
+  A_complaint_for_protection_from_abuse_probation_copy0005 = True
+---
+id: ensure_attachment_values
+code: |
+
+  # If a value is defined, use it. Otherwise, use the
+  # default.
+  def valueOrDefault(valStr, defaultVal):
+    if defined( valStr ): return value( valStr )  # is this correct?
+    else: return defaultVal
+
+  #def valueOrEmptyWithoutTrigger(valStr):
+  #  if defined( valStr ): return value( valStr )  # is this correct?
+  #  else: return DAEmpty()  # is this correct?
+  
+  # Vars these attachments need
+  children = all_children
+
+  # How to do this len with possibly 0?
+  requests_custody_yes = len(wants_custody_of.elements) > 0
+  wants_custody_of1_name_full = str(wants_custody_of.item(1 - 1))
+  wants_custody_of1_age = wants_custody_of.item(1 - 1).age_in_years()
+  wants_custody_of2_name_full = str(wants_custody_of.item(2 - 1))
+  wants_custody_of2_age = wants_custody_of.item(2 - 1).age_in_years()
+  wants_custody_of3_name_full = str(wants_custody_of.item(3 - 1))
+  wants_custody_of3_age = wants_custody_of.item(3 - 1).age_in_years()
+  wants_custody_of4_name_full = str(wants_custody_of.item(4 - 1))
+  wants_custody_of4_age = wants_custody_of.item(4 - 1).age_in_years()
+  wants_custody_of5_name_full = str(wants_custody_of.item(5 - 1))
+  wants_custody_of5_age = wants_custody_of.item(5 - 1).age_in_years()
+  wants_custody_of6_name_full = str(wants_custody_of.item(6 - 1))
+  wants_custody_of6_age = wants_custody_of.item(6 - 1).age_in_years()
+  
+  wants_no_contact_for1_name_full = str(wants_no_contact_for.item(1-1))
+  wants_no_contact_for1_age = wants_no_contact_for.item(1-1).age_in_years()
+  wants_no_contact_for2_name_full = str(wants_no_contact_for.item(2-1))
+  wants_no_contact_for2_age = wants_no_contact_for.item(2-1).age_in_years()
+  wants_no_contact_for3_name_full = str(wants_no_contact_for.item(3-1))
+  wants_no_contact_for3_age = wants_no_contact_for.item(3-1).age_in_years()
+  wants_no_contact_for4_name_full = str(wants_no_contact_for.item(4-1))
+  wants_no_contact_for4_age = wants_no_contact_for.item(4-1).age_in_years()
+  wants_no_contact_for5_name_full = str(wants_no_contact_for.item(5-1))
+  wants_no_contact_for5_age = wants_no_contact_for.item(5-1).age_in_years()
+  wants_no_contact_for6_name_full = str(wants_no_contact_for.item(6-1))
+  wants_no_contact_for6_age = wants_no_contact_for.item(6-1).age_in_years()
+
+  hack_reasons_for_no_contact = valueOrDefault('hack_reasons_for_no_contact', '')
+  reasons_no_contact = hack_reasons_for_no_contact
+
+  keep_away_from_schools_daycares = schools_to_stay_away_from.there_are_any
+  # todo: Does this need special DA treatment
+  school_strings = []
+  for school in schools_to_stay_away_from:
+    school_strings.append( str(school) + ' ' + school.address.on_one_line() )
+  schools_to_stay_away_from_pdf = comma_and_list( school_strings )
+
+  wants_visitation_orders_pdf = valueOrDefault('wants_visitation_orders', False)
+  prohibit_visitation_pdf = valueOrDefault('prohibit_visitation', False)
+  #log(wants_visitation_orders_pdf, 'console')  # Logs bool (04/28 2:45)
+  #log(prohibit_visitation_pdf, 'console')  # Logs bool (04/28 2:45)
+  permit_visitation_yes = wants_visitation_orders_pdf
+  prohibit_visitation_yes = prohibit_visitation_pdf
+  
+  wants_center_pdf = valueOrDefault('wants_center', False)
+  visitation_center_name_pdf = valueOrDefault('visitation_center_name', '')
+  actual_center_payer_pdf = valueOrDefault('actual_center_payer', '')
+  wants_visitation_center_yes = wants_center_pdf
+  visitation_center_name = visitation_center_name_pdf
+  visitation_center_payor_name = actual_center_payer_pdf
+
+  wants_supervision_pdf = valueOrDefault('wants_supervision', False)
+  visitation_supervisor_name_full_pdf = valueOrDefault('visitation_supervisor_name_full', '')
+  supervision_time_pdf = valueOrDefault('supervision_time', '')
+  actual_supervision_payer_pdf = valueOrDefault('actual_supervision_payer', '')
+  wants_supervision_yes = wants_supervision_pdf
+  visitation_supervisor_name = visitation_supervisor_name_full_pdf
+  visitation_times = supervision_time_pdf
+  visitation_supervision_payor_name = actual_supervision_payer_pdf
+
+  wants_pickup_pdf = valueOrDefault('wants_pickup', False)
+  who_picks_up_pdf = valueOrDefault('who_picks_up', '')
+  third_party_name = wants_pickup_pdf
+  wants_third_party_yes = who_picks_up_pdf
+
+  wants_other_order_pdf = valueOrDefault('wants_other_order', False)
+  other_order_pdf = valueOrDefault('other_order', '')
+  wants_child_support_for_pdf = valueOrDefault('wants_child_support_for', '')
+  other_order_discription = wants_other_order_pdf
+  wants_other_order_yes = other_order_pdf
+  wants_child_support_yes = wants_child_support_for_pdf
+  
+  # Vars other forms' attachments need
+  # majors_needing_support  # is list
+
+  # Placeholders (to be answered elsewhere). todo: remove when stitching
+  have_had_custody_cases_yes = have_had_custody_cases
+  have_had_custody_cases_no = not have_had_custody_cases
+  have_had_paternity_cases_yes = have_had_paternity_cases
+  have_had_paternity_cases_no = not have_had_paternity_cases
+  # Important in question display logic in this form
+  #defendant_and_plaintiff_are_parents_of_child = True
+
+  normalized_vars_for_attchment = True
 ---
 id: custom_objects
 objects:
@@ -422,8 +470,8 @@ objects:
   - children_of_custody: PeopleList
   - children_of_both: PeopleList
   - wants_custody_of: PeopleList
-  - wants_no_contact_with: PeopleList
-  - schools_to_stay_away_from: DAList.using(object_type=Organization)
+  - wants_no_contact_for: PeopleList
+  - schools_to_stay_away_from: DAList.using(object_type=Person)
   - majors_needing_support: PeopleList
 ---
 comment: |
@@ -440,13 +488,15 @@ yesno: children_involved_that_are_relevant
 ---
 # todo: Where do we want to use this and how
 # do we want to handle it?
-id: number_of_children_under_18
+id: number_of_children_that_is_parent_of_under_18
 question: |
   How many children do you have under 18?
 subquestion: |
-   Include all children that are yours or that you have care or custody of. (add plain language later)
+  Include all children that are yours or that you have care or custody of. (add plain language later)
 fields:
-  - Number of children you have: number_of_children
+  - Number of children you are the parent of: num_children_is_parent_of
+    datatype: integer
+  - Number of children you have care or custody of: num_children_has_care_of
     datatype: integer
 ---
 # Nothing can be required because they might not
@@ -460,17 +510,13 @@ subquestion: |
 list collect: True
 fields:
   - First Name: children_of_parent[i].name.first
-    required: False
   - Middle Name: children_of_parent[i].name.middle
     required: False
   - Last Name: children_of_parent[i].name.last
-    required: False
   - Suffix: children_of_parent[i].name.suffix
     required: False
   - Birthdate: children_of_parent[i].birthdate
-    required: False
   - Is the defendant also a parent of this child?: children_of_parent[i].defendant_is_parent
-    required: False
     datatype: yesnoradio
     show if:
       code: |
@@ -490,17 +536,14 @@ subquestion: |
 list collect: True
 fields:
   - First Name: children_of_custody[i].name.first
-    required: False
   - Middle Name: children_of_custody[i].name.middle
     required: False
   - Last Name: children_of_custody[i].name.last
     required: False
   - Suffix: children_of_custody[i].name.suffix
-    required: False
   - Birthdate: children_of_custody[i].birthdate
-    required: False
+  # Is the below item required here? I didn't understand the final decision.
   - Is the defendant also a parent of this child?: children_of_custody[i].defendant_is_parent
-    required: False
     datatype: yesnoradio
     show if:
       code: |
@@ -524,7 +567,7 @@ id: no_contact_children
 question: |
   Which children do you need the court to tell the defendant **not to contact**?
 fields:
-  - no label: wants_no_contact_with
+  - no label: wants_no_contact_for
     datatype: object_checkboxes
     choices: |
       all_children
@@ -571,32 +614,22 @@ subquestion: |
   Do you want the court to make an order about the defendant’s visitation with the children as part of the restraining order?
 yesno: wants_visitation_orders
 ---
-id: kind_of_visitation_wanted
+id: prohibit_visitation
 question: |
   More About Visitation
 subquestion: |
   What do you need the court to order about the Defendant’s visitation? Pick all that apply.
 fields:
-  - no label: kind_of_visitation_wanted
+  - no label: prohibit_visitation
     input type: radio
     choices:
-    - I want the court to allow the Defendant to have visitation.   (If you pick this option, you will be able to ask for things like supervision and other protections on the next page.): "allow_visitation"
-    - I want the court to say the Defendant can’t have visitation.: "prohibit_visitation"
+    - I want the court to allow the Defendant to have visitation.   (If you pick this option, you will be able to ask for things like supervision and other protections on the next page.): False
+    - I want the court to say the Defendant can’t have visitation.: True
 ---
 id: safe_visits
 # Are we sure we want these all on the same page?
 # Note: have not yet looked into checkboxes with
 # `show if:`s between them.
-validation code: |
-  if wants_center:
-    log('1', 'console')
-    if (not defined('visitation_center_name') or not defined('pays_for_center')):
-      log('2', 'console')
-      validation_error("We need the visitation center details.")
-    elif (defined('pays_for_center') and pays_for_center == 'other' and not defined('other_pays_for_center')):
-      log('2', 'console')
-      validation_error("We need the visitation center details.")
-
 question: |
   Keeping the Visits Safe
 subquestion: |
@@ -607,6 +640,7 @@ fields:
     datatype: yesnoradio
   - What visitation center?: visitation_center_name
     show if: wants_center
+    required: False
   - Who should have to pay the visitation center’s fees?: pays_for_center
     input type: radio
     show if: wants_center
@@ -626,7 +660,7 @@ fields:
   - Who should the supervisor be?: visitation_supervisor_name_full
     show if: wants_supervision
   - When should the visitation happen?: supervision_time
-    #datatype: time # not a friendly inteface. At least not for desktop
+    #datatype: time # Need something more flexible
     show if: wants_supervision
   - Professional supervisors charge fees.  Who should pay them?: supervision_payer
     input type: radio
@@ -656,8 +690,6 @@ fields:
     input type: area
     show if: wants_other_order
     required: False
----
-comment: |
 ---
 id: seeking_child_support
 question: |
@@ -693,7 +725,12 @@ fields:
 id: have_there_been_other_cases
 question: |
   Have there ever been any court cases about the care and custody of ${comma_and_list(children_of_both.elements)}?
-yesno: there_have_been_other_cases_for_children
+yesno: have_had_custody_cases
+---
+id: paternity
+question: |
+  Have there ever been any cases between you and the Defendant about the paternity of a child?
+yesno: have_had_paternity_cases
 ---
 id: preview attachment
 continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
@@ -708,55 +745,112 @@ attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview
     name: 209A Page 2
     filename: A_Page_2
-    pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
+    pdf template file: 209A_complaint_page2.pdf
     fields: 
-      - "child1_name_full": ${ children[1-1].item(0).name }
-      - "child2_name_full": ${ '' }
-      - "child3_name_full": ${ '' }
-      - "child4_name_full": ${ '' }
-      - "child5_name_full": ${ '' }
-      - "child6_name_full": ${ '' }
-      - "child1_age": ${ children[1-1].item(0).age_in_years() }
-      - "child2_age": ${ '' }
-      - "child3_age": ${ '' }
-      - "child4_age": ${ '' }
-      - "child5_age": ${ '' }
-      - "child6_age": ${ '' }
-      - "custody_case_yes": ${ custody_case_yes }
-      - "custody_case_no": ${ custody_case_no }
-      - "paternity_case_no": ${ paternity_case_no }
-      - "paternity_case_yes": ${ paternity_case_yes }
-      - "request_custody_yes": ${ request_custody_yes }
-      - "child1_name_full__4": ${ '' }
-      - "child1_age__4": ${ '' }
-      - "child2_name_full__4": ${ '' }
-      - "child2_age__4": ${ '' }
-      - "child3_name_full__4": ${ '' }
-      - "child3_age__4": ${ '' }
-      - "child4_name_full__4": ${ '' }
-      - "child4_age__4": ${ '' }
-      - "child5_name_full__4": ${ '' }
-      - "child5_age__4": ${ '' }
-      - "child6_name_full__4": ${ '' }
-      - "child6_age__4": ${ '' }
-      - "custody_request_reasons": ${ reasons_for_no_contact }
-      - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
-      - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
-      - "visitation_yes": ${ visitation }
-      - "visitation_no": ${ not visitation }
-      - "visitation_at_location": ${ visitation_at_location }
+      - "signature_date": ${ signature_date }
+      - "signature_date__2": ${ signature_date }
+      - "have_had_custody_cases_yes": ${ have_had_custody_cases_yes }
+      - "have_had_custody_cases_no": ${ have_had_custody_cases_no }
+      - "have_had_paternity_cases_no": ${ have_had_paternity_cases_no }
+      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases_yes }
+      # todo: wrong boolean ('yes')
+      - "requests_custody_yes": ${ requests_custody_yes }
+      - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
+      - "wants_custody_of1_age": ${ wants_custody_of1_age }
+      - "wants_custody_of4_name_full": ${ wants_custody_of4_name_full }
+      - "wants_custody_of4_age": ${ wants_custody_of4_age }
+      - "wants_custody_of2_name_full": ${ wants_custody_of2_name_full }
+      - "wants_custody_of2_age": ${ wants_custody_of2_age }
+      - "wants_custody_of5_name_full": ${ wants_custody_of5_name_full }
+      - "wants_custody_of5_age": ${ wants_custody_of5_age }
+      - "wants_custody_of3_name_full": ${ wants_custody_of3_name_full }
+      - "wants_custody_of3_age": ${ wants_custody_of3_age }
+      - "wants_custody_of6_name_full": ${ wants_custody_of6_name_full }
+      - "wants_custody_of6_age": ${ wants_custody_of6_age }
+      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for1_name_full }
+      - "wants_no_contact_for1_age": ${ wants_no_contact_for1_age }
+      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for4_name_full }
+      - "wants_no_contact_for4_age": ${ wants_no_contact_for4_age }
+      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for2_name_full }
+      - "wants_no_contact_for2_age": ${ wants_no_contact_for2_age }
+      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for5_name_full }
+      - "wants_no_contact_for5_age": ${ wants_no_contact_for5_age }
+      - "wants_no_contact_for3_age": ${ wants_no_contact_for3_age }
+      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for6_name_full }
+      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
+      - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
+      - "reasons_no_contact": ${ reasons_no_contact }
+      - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
+      # todo: add '_yes'
+      - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
+      # todo: wrong field type?
+      # todo: better name? (wants_visitation_orders)
+      - "permit_visitation_yes": ${ permit_visitation_yes }
+      - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
-      - "visitation_payer_name_full": ${ visitation_payer_name_full }
-      - "visitation_supervised": ${ visitation_supervised }
-      - "visitation_supervisor_name_full": ${ visitation_supervisor_name_full }
+      - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
+      - "visitation_center_payor_name": ${ visitation_center_payor_name }
+      - "visitation_supervisor_name": ${ visitation_supervisor_name }
+      - "wants_supervision_yes": ${ wants_supervision_yes }
       - "visitation_times": ${ visitation_times }
-      - "visitation_payer2_name_full": ${ visitation_payer2_name_full }
-      - "visitation_third_party_involvement": ${ visitation_third_party_involvement }
-      - "visitation_third_party_name_full": ${ visitation_third_party_name_full }
-      - "visitation_other": ${ visitation_other }
-      - "visitation_other_requests": ${ visitation_other_requests }
-      - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
-      - "user_signature_date": ${ user_signature_date }
+      - "visitation_supervision_payor_name": ${ visitation_supervision_payor_name }
+      # todo: wrong field type?
+      - "third_party_name": ${ third_party_name }
+      - "wants_third_party_yes": ${ wants_third_party_yes }
+      # todo: wrong field type?
+      - "other_order_discription": ${ other_order_discription }
+      - "wants_other_order_yes": ${ wants_other_order_yes }
+      - "wants_child_support_yes": ${ wants_child_support_yes }
+      # Probation copy
+      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases_yes }
+      - "have_had_custody_cases_no__2": ${ have_had_custody_cases_no }
+      - "have_had_paternity_cases_no__2": ${ have_had_paternity_cases_no }
+      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases_yes }
+      - "requests_custody_yes__2": ${ requests_custody_yes }
+      - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
+      - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
+      - "wants_custody_of4_name_full__2": ${ wants_custody_of4_name_full }
+      - "wants_custody_of4_age__2": ${ wants_custody_of4_age }
+      - "wants_custody_of2_name_full__2": ${ wants_custody_of2_name_full }
+      - "wants_custody_of2_age__2": ${ wants_custody_of2_age }
+      - "wants_custody_of5_name_full__2": ${ wants_custody_of5_name_full }
+      - "wants_custody_of5_age__2": ${ wants_custody_of5_age }
+      - "wants_custody_of3_name_full__2": ${ wants_custody_of3_name_full }
+      - "wants_custody_of3_age__2": ${ wants_custody_of3_age }
+      - "wants_custody_of6_name_full__2": ${ wants_custody_of6_name_full }
+      - "wants_custody_of6_age__2": ${ wants_custody_of6_age }
+      - "wants_no_contact_for1_name_full__2": ${ wants_no_contact_for1_name_full }
+      - "wants_no_contact_for1_age__2": ${ wants_no_contact_for1_age }
+      - "wants_no_contact_for4_name_full__2": ${ wants_no_contact_for4_name_full }
+      - "wants_no_contact_for4_age__2": ${ wants_no_contact_for4_age }
+      - "wants_no_contact_for2_name_full__2": ${ wants_no_contact_for2_name_full }
+      - "wants_no_contact_for2_age__2": ${ wants_no_contact_for2_age }
+      - "wants_no_contact_for5_name_full__2": ${ wants_no_contact_for5_name_full }
+      - "wants_no_contact_for5_age__2": ${ wants_no_contact_for5_age }
+      - "wants_no_contact_for3_age__2": ${ wants_no_contact_for3_age }
+      - "wants_no_contact_for6_name_full__2": ${ wants_no_contact_for6_name_full }
+      - "wants_no_contact_for3_name_full__2": ${ wants_no_contact_for3_name_full }
+      - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
+      - "reasons_no_contact__2": ${ reasons_no_contact }
+      - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
+      - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf }
+      - "permit_visitation_yes__2": ${ permit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "visitation_center_name__2": ${ visitation_center_name }
+      - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
+      - "visitation_center_payor_name__2": ${ visitation_center_payor_name }
+      - "visitation_supervisor_name__2": ${ visitation_supervisor_name }
+      - "wants_supervision_yes__2": ${ wants_supervision_yes }
+      - "visitation_times__2": ${ visitation_times }
+      - "visitation_supervision_payor_name__2": ${ visitation_supervision_payor_name }
+      - "third_party_name__2": ${ third_party_name }
+      - "wants_third_party_yes__2": ${ wants_third_party_yes }
+      ###################
+      # todo: fix
+      ###################
+      - "other_order_discription": ${ other_order_discription }
+      - "wants_other_order_yes__2": ${ wants_other_order_yes }
+      - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
 mandatory: True
 question: |
@@ -773,54 +867,106 @@ attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
     name: 209A Page 2
     filename: A_Page_2
-    pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
+    pdf template file: 209A_complaint_page2.pdf
     fields: 
-      - "child1_name_full": ${ children[1-1].item(0).name }
-      - "child1_age": ${ children[1-1].item(0).age_in_years() }
-      - "child2_name_full": ${ '' }
-      - "child2_age": ${ '' }
-      - "child3_name_full": ${ '' }
-      - "child3_age": ${ '' }
-      - "child4_name_full": ${ '' }
-      - "child4_age": ${ '' }
-      - "child5_name_full": ${ '' }
-      - "child5_age": ${ '' }
-      - "child6_name_full": ${ '' }
-      - "child6_age": ${ '' }
       - "user_signature": ${ users[0].signature }
-      - "custody_case_yes": ${ custody_case_yes }
-      - "custody_case_no": ${ custody_case_no }
-      - "paternity_case_no": ${ paternity_case_no }
-      - "paternity_case_yes": ${ paternity_case_yes }
-      - "request_custody_yes": ${ request_custody_yes }
-      - "child1_name_full__4": ${ '' }
-      - "child1_age__4": ${ '' }
-      - "child2_name_full__4": ${ '' }
-      - "child2_age__4": ${ '' }
-      - "child3_name_full__4": ${ '' }
-      - "child3_age__4": ${ '' }
-      - "child4_name_full__4": ${ '' }
-      - "child4_age__4": ${ '' }
-      - "child5_name_full__4": ${ '' }
-      - "child5_age__4": ${ '' }
-      - "child6_name_full__4": ${ '' }
-      - "child6_age__4": ${ '' }
-      - "custody_request_reasons": ${ reasons_for_no_contact }
-      - "order_defendant_remain_away_from_schools_daycares_yes": ${ order_defendant_remain_away_from_schools_daycares_yes }
-      - "school_name_address_daycare_name_address": ${ school_name_address_daycare_name_address }
-      - "visitation_yes": ${ visitation }
-      - "visitation_no": ${ not visitation }
-      - "visitation_at_location": ${ visitation_at_location }
+      - "user_signature_probation_copy": ${ users[0].signature }
+      - "signature_date": ${ signature_date }
+      - "signature_date__2": ${ signature_date }
+      - "have_had_custody_cases_yes": ${ have_had_custody_cases_yes }
+      - "have_had_custody_cases_no": ${ have_had_custody_cases_no }
+      - "have_had_paternity_cases_no": ${ have_had_paternity_cases_no }
+      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases_yes }
+      - "requests_custody_yes": ${ requests_custody_yes }
+      - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
+      - "wants_custody_of1_age": ${ wants_custody_of1_age }
+      - "wants_custody_of4_name_full": ${ wants_custody_of4_name_full }
+      - "wants_custody_of4_age": ${ wants_custody_of4_age }
+      - "wants_custody_of2_name_full": ${ wants_custody_of2_name_full }
+      - "wants_custody_of2_age": ${ wants_custody_of2_age }
+      - "wants_custody_of5_name_full": ${ wants_custody_of5_name_full }
+      - "wants_custody_of5_age": ${ wants_custody_of5_age }
+      - "wants_custody_of3_name_full": ${ wants_custody_of3_name_full }
+      - "wants_custody_of3_age": ${ wants_custody_of3_age }
+      - "wants_custody_of6_name_full": ${ wants_custody_of6_name_full }
+      - "wants_custody_of6_age": ${ wants_custody_of6_age }
+      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for1_name_full }
+      - "wants_no_contact_for1_age": ${ wants_no_contact_for1_age }
+      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for4_name_full }
+      - "wants_no_contact_for4_age": ${ wants_no_contact_for4_age }
+      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for2_name_full }
+      - "wants_no_contact_for2_age": ${ wants_no_contact_for2_age }
+      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for5_name_full }
+      - "wants_no_contact_for5_age": ${ wants_no_contact_for5_age }
+      - "wants_no_contact_for3_age": ${ wants_no_contact_for3_age }
+      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for6_name_full }
+      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
+      - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
+      - "reasons_no_contact": ${ reasons_no_contact }
+      - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
+      - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
+      - "permit_visitation_yes": ${ permit_visitation_yes }
+      - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
-      - "visitation_payer_name_full": ${ visitation_payer_name_full }
-      - "visitation_supervised": ${ visitation_supervised }
-      - "visitation_supervisor_name_full": ${ visitation_supervisor_name_full }
+      - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
+      - "visitation_center_payor_name": ${ visitation_center_payor_name }
+      - "visitation_supervisor_name": ${ visitation_supervisor_name }
+      - "wants_supervision_yes": ${ wants_supervision_yes }
       - "visitation_times": ${ visitation_times }
-      - "visitation_payer2_name_full": ${ visitation_payer2_name_full }
-      - "visitation_third_party_involvement": ${ visitation_third_party_involvement }
-      - "visitation_third_party_name_full": ${ visitation_third_party_name_full }
-      - "visitation_other": ${ visitation_other }
-      - "visitation_other_requests": ${ visitation_other_requests }
-      - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
-      - "user_signature_date": ${ user_signature_date }
+      - "visitation_supervision_payor_name": ${ visitation_supervision_payor_name }
+      - "third_party_name": ${ third_party_name }
+      - "wants_third_party_yes": ${ wants_third_party_yes }
+      - "other_order_discription": ${ other_order_discription }
+      - "wants_other_order_yes": ${ wants_other_order_yes }
+      - "wants_child_support_yes": ${ wants_child_support_yes }
+      # Probation copy
+      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases_yes }
+      - "have_had_custody_cases_no__2": ${ have_had_custody_cases_no }
+      - "have_had_paternity_cases_no__2": ${ have_had_paternity_cases_no }
+      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases_yes }
+      - "requests_custody_yes__2": ${ requests_custody_yes }
+      - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
+      - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
+      - "wants_custody_of4_name_full__2": ${ wants_custody_of4_name_full }
+      - "wants_custody_of4_age__2": ${ wants_custody_of4_age }
+      - "wants_custody_of2_name_full__2": ${ wants_custody_of2_name_full }
+      - "wants_custody_of2_age__2": ${ wants_custody_of2_age }
+      - "wants_custody_of5_name_full__2": ${ wants_custody_of5_name_full }
+      - "wants_custody_of5_age__2": ${ wants_custody_of5_age }
+      - "wants_custody_of3_name_full__2": ${ wants_custody_of3_name_full }
+      - "wants_custody_of3_age__2": ${ wants_custody_of3_age }
+      - "wants_custody_of6_name_full__2": ${ wants_custody_of6_name_full }
+      - "wants_custody_of6_age__2": ${ wants_custody_of6_age }
+      - "wants_no_contact_for1_name_full__2": ${ wants_no_contact_for1_name_full }
+      - "wants_no_contact_for1_age__2": ${ wants_no_contact_for1_age }
+      - "wants_no_contact_for4_name_full__2": ${ wants_no_contact_for4_name_full }
+      - "wants_no_contact_for4_age__2": ${ wants_no_contact_for4_age }
+      - "wants_no_contact_for2_name_full__2": ${ wants_no_contact_for2_name_full }
+      - "wants_no_contact_for2_age__2": ${ wants_no_contact_for2_age }
+      - "wants_no_contact_for5_name_full__2": ${ wants_no_contact_for5_name_full }
+      - "wants_no_contact_for5_age__2": ${ wants_no_contact_for5_age }
+      - "wants_no_contact_for3_age__2": ${ wants_no_contact_for3_age }
+      - "wants_no_contact_for6_name_full__2": ${ wants_no_contact_for6_name_full }
+      - "wants_no_contact_for3_name_full__2": ${ wants_no_contact_for3_name_full }
+      - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
+      - "reasons_no_contact__2": ${ reasons_no_contact }
+      - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
+      - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf }
+      - "permit_visitation_yes__2": ${ permit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "visitation_center_name__2": ${ visitation_center_name }
+      - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
+      - "visitation_center_payor_name__2": ${ visitation_center_payor_name }
+      - "visitation_supervisor_name__2": ${ visitation_supervisor_name }
+      - "wants_supervision_yes__2": ${ wants_supervision_yes }
+      - "visitation_times__2": ${ visitation_times }
+      - "visitation_supervision_payor_name__2": ${ visitation_supervision_payor_name }
+      - "third_party_name__2": ${ third_party_name }
+      - "wants_third_party_yes__2": ${ wants_third_party_yes }
+      ###################
+      # todo: fix
+      ###################
+      - "other_order_discription": ${ other_order_discription }
+      - "wants_other_order_yes__2": ${ wants_other_order_yes }
+      - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
