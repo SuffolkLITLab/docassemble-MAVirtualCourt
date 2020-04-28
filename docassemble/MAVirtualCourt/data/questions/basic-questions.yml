@@ -92,6 +92,12 @@ question: |
   Will this form include any ${noun_plural(x.object_name())}?
 yesno: x.there_are_any
 ---
+id: who will be on this form
+generic object: VCBusinessList
+question: |
+  Will this form include any ${noun_plural(x.object_name())}?
+yesno: x.there_are_any
+---
 id: names of witnesses
 question: |
   List the name of each witness below
@@ -140,6 +146,17 @@ fields:
     show if:
       variable: x[i].person_type
       is: business
+---
+---
+id: names of businesses
+generic object: VCBusinessList
+question: |
+  Please list all ${x.object_name()} below
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - Name: x[i].name.text
 ---
 id: names of oppposing parties
 question: |
@@ -383,6 +400,22 @@ code: |
 #  Which children are you the parent of?
 #fields:
 #  - 
+---
+id: business address
+generic object: VCBusiness
+question: |
+  What is ${ x.possessive('address') }?
+fields:
+  - Street address: x.address.address
+    address autocomplete: True
+  - Unit: x.address.unit
+    required: False
+  - City: x.address.city
+  - State: x.address.state
+    default: MA   
+    code: |
+      states_list()   
+  - Zip: x.address.zip
 ---
 id: persons address
 generic object: Individual
@@ -653,8 +686,8 @@ subquestion: |
   
   If you have immediate questions about this form or the court process, 
   please call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm. 
-  
- fields:
+
+fields:
   - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
