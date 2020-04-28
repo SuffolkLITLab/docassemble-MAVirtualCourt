@@ -111,9 +111,9 @@ subquestion: |
 continue button field: domestic_violence_shelter_warning
 ---
 question: |
-  Former Address
+  Former or Prior Address
 subquestion: |
-  Fill in your prior address.
+  Provide the address you recently left
 fields: 
   - 'Former addresses you have left to avoid abuse': users[0].address_former
     required: False
@@ -132,7 +132,7 @@ continue button field: School
 question: |
   School
 subquestion: |
-  Tell us more about your school, if you have one. If you're not in school, hit 'Continue'.
+  If you're a student, provide your school name and address. If you're not a student, hit 'Continue'.
   
   Please don't include your childrens' schools.  There will be another place to give that information.
 fields:
@@ -143,9 +143,9 @@ fields:
 ---
 continue button field: Who_is_allowed_to_see_this_form
 question: |
-  Who is allowed to see this form?
+  Is there anyone you want to give permission to to see this form?
 subquestion: |
-  Please list other people who you want to be able to see the information on this form.  For example, you can list lawyers or domestic violence advocates who are helping you with this case. If you do not have an advocate and there is no one you want to share this with, then leave it blank.
+  Please list any people who you give permission to see the information on this form.  For example, you can list your lawyer or domestic violence advocate who is helping you. 
 fields:
   - 'Name(s)': persons_authorized_confidential_information
     required: False
@@ -154,9 +154,9 @@ continue button field: Workplace
 question: |
   Workplace
 subquestion: |
-  Tell us more about your job, if you have one. If you do not have a job, hit 'Continue'.
+  If you have a job, provide your employer's name and contact information. If you do not have a job, hit 'Continue'.
 fields:
-  - 'Name of your workplace': users[0].workplace_name
+  - 'Name of your employer/workplace': users[0].workplace_name
     required: False
   - 'Work address': users[0].workplace_address
     required: False
