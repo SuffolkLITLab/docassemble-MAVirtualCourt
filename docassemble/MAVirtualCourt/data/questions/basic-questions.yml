@@ -680,12 +680,15 @@ question: |
 subquestion: |
  
   This website can help you complete and file court forms in three steps:
-  STEP 1. Click through this guide to prefill your form.
-  STEP 2. Review the completed form.
-  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference. 
+  
+  STEP 1. Click through this guide to prefill your form.  
+  STEP 2. Review the completed form.  
+  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference.  
   
   If you have immediate questions about this form or the court process, 
-  please call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm. 
+  please call the Trial Court’s Emergency HelpLine.  
+  
+  833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm.
 
 fields:
   - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
