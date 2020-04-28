@@ -264,6 +264,14 @@ comment: |
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
+  # todo: Add ways to attach addenda for:
+  # 1. Children want custody of table
+  # 1. Chilren want no contact order for table
+  # 1. Reasons want no contact paragraph
+  # 1. School names/address paragraph
+  
+  # todo: check alignment of fields (and other todo field things)
+
   #######
   # Start of implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
   #######
@@ -337,12 +345,13 @@ code: |
   for support_child in wants_child_support_for:
     wants_child_support_for.seeking_child_support = True
 
-  majors_needing_support[0].name.first
+  if need_help_for_majors:
+    majors_needing_support[0].name.first
 
   have_had_custody_cases
   have_had_paternity_cases
 
-  # At the end
+  # DA way?
   children = all_children
 
   #########
@@ -440,20 +449,21 @@ code: |
 
   wants_pickup_pdf = valueOrDefault('wants_pickup', False)
   who_picks_up_pdf = valueOrDefault('who_picks_up', '')
-  third_party_name = wants_pickup_pdf
-  wants_third_party_yes = who_picks_up_pdf
+  wants_third_party_yes = wants_pickup_pdf
+  third_party_name = who_picks_up_pdf
 
   wants_other_order_pdf = valueOrDefault('wants_other_order', False)
   other_order_pdf = valueOrDefault('other_order', '')
   wants_child_support_for_pdf = valueOrDefault('wants_child_support_for', '')
-  other_order_discription = wants_other_order_pdf
-  wants_other_order_yes = other_order_pdf
-  wants_child_support_yes = wants_child_support_for_pdf
+  wants_other_order_yes = wants_other_order_pdf
+  other_order_discription = other_order_pdf
+  wants_child_support_yes = len(wants_child_support_for_pdf) > 0
   
   # Vars other forms' attachments need
   # majors_needing_support  # is list
 
-  # Placeholders (to be answered elsewhere). todo: remove when stitching
+  # Placeholders (to be answered elsewhere).
+  # todo: remove when stitching
   have_had_custody_cases_yes = have_had_custody_cases
   have_had_custody_cases_no = not have_had_custody_cases
   have_had_paternity_cases_yes = have_had_paternity_cases
@@ -488,7 +498,7 @@ yesno: children_involved_that_are_relevant
 ---
 # todo: Where do we want to use this and how
 # do we want to handle it?
-id: number_of_children_that_is_parent_of_under_18
+id: number_of_children_under_18
 question: |
   How many children do you have under 18?
 subquestion: |
@@ -502,6 +512,9 @@ fields:
 # Nothing can be required because they might not
 # have even one child they're the parent of, just
 # ones they have care of
+
+# todo: handle accidental over 18
+# todo: individual question for each child
 id: parent_children
 question: |
   Tell us about the children that you are the parent of.
@@ -528,6 +541,9 @@ validation code: |
 # Nothing can be required because they might not
 # have even one child they have care of, just
 # ones they are parents to
+
+# todo: handle accidental over 18
+# todo: individual question for each child
 id: non_parent_children
 question: |
   Tell us about the other children that are in your care or custody.
@@ -587,7 +603,7 @@ question: |
 yesno: schools_to_stay_away_from.there_are_any
 ---
 # For listing for each child (if we choose to do that), see
-# https://github.com/SuffolkLITLab/docassemble-MAVirtualCourt/blob/209a-affidavit-concerning-care-and-custody/docassemble/MAVirtualCourt/data/questions/209A_affidavit_disclosing_care_or_custody_proceedings.yml#L582
+# 209A_affidavit_disclosing_care_or_custody_proceedings.yml on its branch
 id: schools_and_daycares
 question:
   Please give us the information for the schools and daycares you want the court to tell the defendant not to go to.
@@ -596,6 +612,7 @@ fields:
   - School or daycare name: schools_to_stay_away_from[i].name.text
   - Street address: schools_to_stay_away_from[i].address.address
     address autocomplete: True
+  # needed?
   - Unit: schools_to_stay_away_from[i].address.unit
     required: False
   - City: schools_to_stay_away_from[i].address.city
@@ -639,8 +656,8 @@ fields:
   - '**Do you need the Defendant’s visits to happen at a supervision center?**': wants_center
     datatype: yesnoradio
   - What visitation center?: visitation_center_name
-    show if: wants_center
     required: False
+    show if: wants_center
   - Who should have to pay the visitation center’s fees?: pays_for_center
     input type: radio
     show if: wants_center
@@ -680,7 +697,6 @@ fields:
     datatype: yesnoradio
   - Who should pick up and drop off the child(ren)?: who_picks_up
     show if: wants_pickup
-    required: False
   - html: |
       <hr>
 
@@ -689,7 +705,6 @@ fields:
   - What else do you need the court to order?: other_order
     input type: area
     show if: wants_other_order
-    required: False
 ---
 id: seeking_child_support
 question: |
@@ -704,21 +719,24 @@ fields:
     none of the above: |
       None of them
 ---
-id: non_minors_needing_child_support
+id: do_non_minors_need_child_support
+# todo: similar to children, get number and then show
+# the right number of individual questions.
 question: |
   Are there any kids that are between 18 and and 22 that you need to add?
 subquestion: |
   Sometimes, you can ask for child support for kids you share with the defendant that are between 18 and 22. See [Child Support for Children 18-22](https://www.masslegalhelp.org/children-and-families/child-support-over-18) on MassLegalHelp.
-
+yesno: need_help_for_majors
+---
+id: non_minors_needing_child_support
+question: Tell us about the children you have that are between 18 and 22 (including the 22 year-olds).
   Click "${word("Add another")}" to add more.
 list collect: True
 fields:
   - First Name: majors_needing_support[i].name.first
-    required: False
   - Middle Name: majors_needing_support[i].name.middle
     required: False
   - Last Name: majors_needing_support[i].name.last
-    required: False
   - Suffix: majors_needing_support[i].name.suffix
     required: False
 ---
@@ -780,12 +798,13 @@ attachment:
       - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
       - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
       - "reasons_no_contact": ${ reasons_no_contact }
+      # todo: add '_yes' to field name
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
-      # todo: add '_yes'
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
-      # todo: wrong field type?
+      # todo: wrong field type for bool?
       # todo: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ permit_visitation_yes }
+      # todo: wrong field types for visitation bools?
       - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
@@ -794,12 +813,11 @@ attachment:
       - "wants_supervision_yes": ${ wants_supervision_yes }
       - "visitation_times": ${ visitation_times }
       - "visitation_supervision_payor_name": ${ visitation_supervision_payor_name }
-      # todo: wrong field type?
       - "third_party_name": ${ third_party_name }
       - "wants_third_party_yes": ${ wants_third_party_yes }
-      # todo: wrong field type?
       - "other_order_discription": ${ other_order_discription }
       - "wants_other_order_yes": ${ wants_other_order_yes }
+      # right bool type
       - "wants_child_support_yes": ${ wants_child_support_yes }
       # Probation copy
       - "have_had_custody_cases_yes__2": ${ have_had_custody_cases_yes }
@@ -868,7 +886,8 @@ attachment:
     name: 209A Page 2
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
-    fields: 
+    fields:
+      # todo: field needs re-doing?
       - "user_signature": ${ users[0].signature }
       - "user_signature_probation_copy": ${ users[0].signature }
       - "signature_date": ${ signature_date }
