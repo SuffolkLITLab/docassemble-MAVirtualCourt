@@ -1,7 +1,7 @@
 ---
 include:
-  #- docassemble.MAVirtualCourt:basic-questions.yml  
-  - basic-questions.yml
+  - docassemble.MAVirtualCourt:basic-questions.yml  
+  #- basic-questions.yml
 ---
 objects:
   - other_care_custody_proceedings: OtherProceedingList
