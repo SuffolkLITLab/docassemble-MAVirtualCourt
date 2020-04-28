@@ -22,7 +22,7 @@ code: |
 ---
 default screen parts:
   under: |
-    Found a bug? Don't close this page! But <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">do fill out this form</a>. Follow its instructions about [this link](${interview_url()}).
+    Have a problem with this website? <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">Please complete this feedback form.</a>. Follow its instructions about [this link](${interview_url()}).
 ---
 objects from file:
   - court_emails : court_emails.yml
@@ -92,6 +92,12 @@ question: |
   Will this form include any ${noun_plural(x.object_name())}?
 yesno: x.there_are_any
 ---
+id: who will be on this form
+generic object: VCBusinessList
+question: |
+  Will this form include any ${noun_plural(x.object_name())}?
+yesno: x.there_are_any
+---
 id: names of witnesses
 question: |
   List the name of each witness below
@@ -140,6 +146,17 @@ fields:
     show if:
       variable: x[i].person_type
       is: business
+---
+---
+id: names of businesses
+generic object: VCBusinessList
+question: |
+  Please list all ${x.object_name()} below
+subquestion: |
+  Click "${word("Add another")}" to add more.
+list collect: True
+fields:
+  - Name: x[i].name.text
 ---
 id: names of oppposing parties
 question: |
@@ -384,6 +401,22 @@ code: |
 #fields:
 #  - 
 ---
+id: business address
+generic object: VCBusiness
+question: |
+  What is ${ x.possessive('address') }?
+fields:
+  - Street address: x.address.address
+    address autocomplete: True
+  - Unit: x.address.unit
+    required: False
+  - City: x.address.city
+  - State: x.address.state
+    default: MA   
+    code: |
+      states_list()   
+  - Zip: x.address.zip
+---
 id: persons address
 generic object: Individual
 question: |
@@ -442,7 +475,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts
+    choices: macourts.filter_courts(allowed_courts)
     default: local_housing_court
 continue button field: ask_court_question    
 #help: |
@@ -645,24 +678,25 @@ id: basic questions intro screen
 question: |
   Mass Access Project
 subquestion: |
-  This project helps you file forms with the court 
-  in an emergency. 
+ 
+  This website can help you complete and file court forms in three steps:
   
-  We ask questions and use your answers to fill in the forms you need. When we finish, you can see the completed forms. You can file them with the court securely, keep a copy for yourself and email them. 
+  STEP 1. Click through this guide to prefill your form.  
+  STEP 2. Review the completed form.  
+  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference.  
   
-  If do not hear from the court in 1 business day, call the Trial
-  Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  If you have immediate questions about this form or the court process, 
+  please call the Trial Court’s Emergency HelpLine.  
   
-  The Emergency HelpLine is open:  
-  8:30am - 4:30pm,  
-  Monday - Friday.  
+  833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm.
+
 fields:
-  - I accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+  - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
     choices:
-      - I accept.
+      - I accept the terms of use.
     validation messages:
       minlength: |
         You cannot continue unless you agree to the terms of use.        

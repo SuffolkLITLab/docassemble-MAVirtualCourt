@@ -78,10 +78,10 @@ question: |
 subquestion: |
   Be specific about up to three expenses you had because of your landlord's actions or failure to act.
   
-  Even if you don't have any specific itemized expenses, your landlord may be 
-  liable for up to three months' rent as a penalty. 
+  Even if you don't have any specific itemized expenses, your landlord may have to pay 
+ for up to three months' rent as a penalty. 
   
-  Put in your best estimate. You will have a chance to prove the specific
+  Give your best estimate. You will have a chance to prove the specific
   amount in court.
   
 fields:
@@ -111,7 +111,7 @@ continue button field: ask_about_expenses
 question: |
   How much is your rent?
 subquestion: |
-  The amount your landlord owes you depend on how much your monthly rent
+  The amount your landlord owes you depends on how much your monthly rent
   is.
 fields:
   - Monthly rent: tenant_monthly_rent
@@ -148,7 +148,7 @@ fields:
 question: |
   ${other_parties[0].possessive('liability')}
 subquestion: |
-  Your landlord may be liable for 3 times your monthly rent, or the actual amount you paid because of your landlord's actions or failure to act. The court should give you whichever amount is larger. In this case, that amount is
+  Your landlord may be liable for 3 times your monthly rent or the actual amount you paid because of your landlord's actions or failure to act. The court should give you whichever amount is larger. In this case, that amount is
   **${currency(largest_liable_guess)}**.
   
   You told us that you had expenses totaling ${currency(expense_total)},
@@ -187,7 +187,7 @@ code: |
 question: |
   What is your name?
 subquestion: |
-  Put in your full legal name.
+  Enter your full legal name.
 fields:
   - First: users[0].name.first
   - Middle: users[0].name.middle
@@ -225,7 +225,7 @@ subquestion: |
   % endif
   
   We have already checked the boxes that make sense based on your earlier
-  answers, but you can make any changes needed.
+  answers, but you should review and make any changes as needed.
 
   Check the boxes that apply below.
 fields:
@@ -242,9 +242,9 @@ fields:
 question: |
   Your landlord's actions
 subquestion: |
-  This form allows you to get emergency help for something your landlord did or failed to do. Please give us some information about what your landlord did.
+  This form allows you to ask for emergency help for something your landlord did or failed to do. Please give us some information about what happened.
 fields:
-  - 'When did this take place?': incident_date
+  - 'When did the issue start?': incident_date
     datatype: date
   - 'My landlord illegally locked me out of the apartment': incident_locked_out
     datatype: yesno
@@ -255,6 +255,7 @@ fields:
   - 'Other breach of quiet enjoyment': incident_other
     datatype: yesno
   - 'Describe the other thing your landlord did wrong': incident_other_description
+    datatype: area
     show if: incident_other
 validation code: |
   if not incident_locked_out and not incident_utility and not incident_utility:
@@ -264,19 +265,18 @@ mandatory: True
 need: Housing_Temporary_Restraining_Order0002
 decoration: file-download
 question: |
-  Great job! You finished the interview
+  Great job! You filled out the form.
 subquestion: |
-  Thank you ${users[0]}. Your document is ready.  There is a preview
-  below.
+  Thank you ${users[0]}. Your form is ready to send to the court. After you submit, you will have an option to save the form and email it to yourself or someone else.
+  
   
   ${ Housing_Temporary_Restraining_Order0002_attachment }
   
     ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
   
-  1. You may want to download and print a copy of this form for your 
+  1. You should download and save or print a copy of this form for your 
   records.
-  1. You should hear back from the court about scheduling within 1 business day.
-  1. If  you don't hear back, please call the court's emergency number, 833-91-COURT.
+
 progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
 
@@ -404,11 +404,11 @@ continue button field: Housing_Temporary_Restraining_Order0002_intro
 question: |
   Housing temporary restraining order
 subquestion: |
-  This form lets you ask the court for emergency help if your landlord illegallly locked you out of your apartment, your utilities are shut off, or your landlord is doing something else to breach your right to "quiet enjoyment" of your home.
+  This form lets you ask the court for emergency help if your landlord illegallly locked you out of your apartment, shut off your utilities, or did something else to effect your right to "quiet enjoyment" of your home. That means TK INSERT DEFINITION.
   
   You will be asked about 10 questions. At the end, you will need to provide
-  your name and signature. We'll deliver your form to the court by secure
-  email.
+  your name and signature before the form is sent to the court. You can use this website to send the form to the court by secure email.
+  
 ---
 features:
   progress bar multiplier: 0.07
@@ -427,8 +427,8 @@ continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
   Nearly finished
 subquestion: |
-  You are almost done with the interview. On the next screen, you'll
-  be asked to sign the form below. Please review it for any mistakes.
+  You are almost done! Please click on the form below. It will open in a new window so you can review it and make sure it is correct.  the next screen, you'll
+  Don't forget to come back to this page to click to the final step of signing and sending the form to the court. 
   
    ${Housing_Temporary_Restraining_Order0002_attachment_preview}
 progress: 95
@@ -474,7 +474,7 @@ attachment:
       - "user_name_full__2": ${ users[0] }      
 ---
 question: |
-  What is the phone number for your landlord?
+  What is your landlord's phone number?
 subquestion: |
   The court may need to reach your landlord to schedule a hearing.
 fields:

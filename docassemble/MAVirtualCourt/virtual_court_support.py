@@ -1,6 +1,6 @@
 from docassemble.base.functions import define, defined, value, comma_and_list
 
-from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject
+from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
 
 class AddressList(DAList):
@@ -12,11 +12,32 @@ class AddressList(DAList):
   def __str__(self):
     return comma_and_list([item.on_on_line() for item in self])
 
+class VCBusiness(Person):
+  """A legal entity, like a school, that is not an individual. Has a .name.text attribute that must be defined to reduce to text."""
+  pass
+
+class VCBusinessList(DAList):
+  """Store a list of VCBusinesses. Includes method .names_and_addresses_on_one_line to reduce to a semicolon-separated list"""
+  def init(self, *pargs, **kwargs):
+    super(VCBusinessList, self).init(*pargs, **kwargs)
+    self.object_type = VCBusiness
+
+  def names_and_addresses_on_one_line(self, comma_string='; '):
+    """Returns the name of each business followed by their address, separated by a semicolon"""
+    return comma_and_list( [str(person) + ", " + person.address.on_one_line() for person in self], comma_string=comma_string)
+
 class PeopleList(DAList):
   """Used to represent a list of people. E.g., defendants, plaintiffs, children"""
   def init(self, *pargs, **kwargs):
     super(PeopleList, self).init(*pargs, **kwargs)
     self.object_type = VCIndividual
+
+  def names_and_addresses_on_one_line(self, comma_string='; '):
+    """Returns the name of each person followed by their address, separated by a semicolon"""
+    return comma_and_list([str(person) + ', ' + person.address.on_one_line() for person in self], comma_string=comma_string)
+
+  def familiar(self):
+    return comma_and_list([person.name.familiar() for person in self])
 
 class VCIndividual(Individual):
   """Used to represent an Individual on the assembly line/virtual court project.

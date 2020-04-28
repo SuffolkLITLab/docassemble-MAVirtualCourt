@@ -1,6 +1,10 @@
 ---
+include:
+  - basic-questions.yml
+---
+objects:
+  - orgs: PeopleList
+---
 mandatory: True
 question: |
-  ${user_privileges()}
-  
-  ${'clinic' in user_privileges()}
+  ${orgs.familiar() }
