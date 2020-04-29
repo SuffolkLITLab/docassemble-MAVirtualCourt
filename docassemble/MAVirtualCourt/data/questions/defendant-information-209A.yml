@@ -283,27 +283,26 @@ objects:
   - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
 ---
 question: |
-  Best places to find Defendant
+  Possible Places to find Defendant
 subquestion: |
   This information helps the police find the Defendant to give them with a copy of the restraining order.
 fields:
-  - 'What is the best place and time to find Defendant? Are they staying somewhere else at the moment? Is there places or friends that they visit at a particular time?': other_parties[0].location_information_other
+  - 'What is the address where police are most likely to find the defendant in the morning (8am-12pm)? What is the address where police are most likely to find the defendant in the afternoon (12-5pm)? Are there other addresses the defendant typically visits, and if so, what days/time?': other_parties[0].location_information_other
     datatype: area
 ---
 question: |
-  Defendant's Physical Appearance
-subquestion: |
-  Please describe what Defendant looks like by providing the following information.
+  What Defendant Looks Like
+
 fields:
   - 'Can you provide a photo of Defendant?': other_parties[0].photo_yes
     datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.
-  - "What is the Defendant's race?": other_parties[0].race
-  - "What is the Defendant's eye color?": other_parties[0].eye_color
-  - "What is the Defendant's hair color?": other_parties[0].hair_color
-  - "What is the Defendant's height?": other_parties[0].height
-  - "What is the Defendant's weight?": other_parties[0].weight
+  - "What is Defendant's race?": other_parties[0].race
+  - "What is Defendant's eye color?": other_parties[0].eye_color
+  - "What is Defendant's hair color?": other_parties[0].hair_color
+  - "What is Defendant's height?": other_parties[0].height
+  - "What is Defendant's weight?": other_parties[0].weight
   - "What is Defendant's build (ex. lanky, stocky, skinny, muscular)": other_parties[0].physical_build
-  - 'Does Defendant have any other physical characteristics (ex. a beard, glasses, tattoo, scars)': other_parties[0].physical_other
+  - 'Does Defendant have any other unique physical traits (ex. a beard, glasses, tattoo, scars)': other_parties[0].physical_other
     required: False
 ---
 question: |
@@ -332,15 +331,14 @@ fields:
   - 'Color': other_parties[0].vehicle_color
 ---
 question: |
-  General Information About the Defendant
-subquestion: |
-  Please provide the following information about the Defendant.
-fields:
-  - 'Defendant Alias': other_parties[0].name_other
+  General Information About Defendant
+ 
+ fields:
+  - 'Defendant's Other Names or Aliases': other_parties[0].name_other
     required: False
-  - 'Defendant Birthplace': other_parties[0].birthplace
+  - 'Defendant's Birthplace': other_parties[0].birthplace
     required: False
-  - 'Defendant Social Security Number (Last Four)': other_parties[0].social_security_number
+  - 'Defendant's Social Security Number (Last Four)': other_parties[0].social_security_number
     required: False
   - 'Is Defendant Male': other_parties[0].gender_male_yes
     datatype: yesnoradio
@@ -353,22 +351,22 @@ fields:
   - "What is the name of Defendant's mother, using her maiden name?": parents[0]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other people share his name
+      This information is used so the police can find the right Defendant if other people have the same name
   - "What is the name of Defendant's father?": parents[1]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other people share his name
+      This information is used so the police can find the right Defendant if other people have the same name
 ---
 question: |
-  Information for Service
-subquestion: |
-  The following information helps keep you and the police safe during this process. 
+  Keeping You and the Police Safe
+
+
 fields:
   - 'Does Defendant have a history of violence towards police officers?': other_parties[0].police_violence_yes
     datatype: yesnoradio
   - 'Does Defendant have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
     datatype: yesnoradio
-  - 'What drugs or alcohol?': other_parties[0].drug_alcohol_abuse
+  - 'What drugs or alcohol does Defendant typically use?': other_parties[0].drug_alcohol_abuse
     show if:
       variable: other_parties[0].drug_alcohol_yes
       is: True
@@ -475,11 +473,11 @@ continue button field: defendantinformation209A0008_intro
 question: |
   Defendant Information
 subquestion: |
-  The  next questions are about the Defendant. This information is used to give (serve) Defendant a copy of the restraining order. The police need to give the Defendant a copy of the restraining order so that the Defendant knows the restraining order exists and so that the Defendant knows when the next court date is.  If the police can't serve the Defendant, you may have to come back to court every ten days until service is done. It is also much harder to prosecute the Defendant for violating the restraining order.  
+  These questions are about Defendant so the police has the information they need to give him/her a copy of the restraining order. The police must give the order to Defendant so he/she knows about it and when the next court date is. If the police can't find Defendant, you may have to come back to court every ten days until they do. It is also much harder to prosecute Defendant if he/she violates the restraining order.  
   
-  The more information you can provide about the Defendant's usual location, the sooner the order will be served.
+  The more information you can provide about Defendant's usual contacts and locations, the sooner the order will be given to him/her.
   
-  If you see the Defendant, and you know the order has not been served, call the police. The police should not arrest the Defendant, but they will be able to serve the Defendant. Call the police even if you are not afraid.
+  If you see Defendant before the order has been given, call the police to tell them his/her location. Call the police even if you are not afraid. The purpose is to help the police find Defendant to give him/her the form.
 ---
 id: interview_order_defendantinformation209A0008
 code: |
