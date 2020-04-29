@@ -700,7 +700,7 @@ question: |
 subquestion: |
   If you know the docket number for this case, enter it below
 fields:
-  - I don't know the docket number: dont_know_docket_number
+  - I do not know the docket number: dont_know_docket_number
     datatype: yesno
   - Docket number: docket_numbers[0]
     hide if:  dont_know_docket_number
@@ -1000,7 +1000,7 @@ subquestion: |
   You told us about the following pending cases:  
   ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}  
 
-  Please list each **attorney** involved in any of the above cases who represented
+  List each **attorney** involved in any of the above cases who represented
   either you or ${other_parties}.
 
   Click ${word("Add another")} to add another attorney.
