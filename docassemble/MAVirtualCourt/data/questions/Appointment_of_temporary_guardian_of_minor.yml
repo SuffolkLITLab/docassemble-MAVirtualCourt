@@ -261,7 +261,7 @@ attachment:
     variable name: guardianship_minor_temp_order_attachment
     name: Appointment of temporary guardian of minor
     filename: Appointment_of_temporary_guardian_of_minor
-    pdf template file: guardianship_minor_temp_order.pdf
+    pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "docket_number": ${ docket_numbers[0] }
@@ -351,7 +351,7 @@ attachment:
     variable name: guardianship_minor_temp_order_attachment_preview
     name: Appointment of temporary guardian of minor
     filename: Appointment_of_temporary_guardian_of_minor
-    pdf template file: guardianship_minor_temp_order.pdf
+    pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "docket_number": ${ docket_numbers[0] }
