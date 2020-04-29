@@ -1,6 +1,9 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
+modules:
+  - .virtual_court_support
+---
 features:
   labels above fields: True
 ---
@@ -290,12 +293,23 @@ code: |
   # Placeholder for now
   defendant_and_plaintiff_are_parents_of_child = True
 
-  # todo: Add warnings about 18+ to both and prohibit
-  # adding those children
   num_children_is_parent_of
   num_children_has_care_of
-  children_of_parent[0].birthdate
-  children_of_custody[0].birthdate
+
+  # Abstract?
+  parent_children_index = 0
+  while parent_children_index < num_children_is_parent_of:
+    child_of_parent = children_of_parent[ parent_children_index ]
+    is_under_18(child_of_parent.birthdate
+    child_of_parent.plaintiff_is_parent = True
+    parent_children_index += 1
+
+  custody_children_index = 0
+  while custody_children_index < num_children_has_care_of:
+    child_of_custody = children_of_custody[ custody_children_index ]
+    child_of_custody.birthdate
+    child_of_custody.plaintiff_is_parent = False
+    custody_children_index += 1
 
   # todo: This probably needs to be different in DA.
   # Probably a lot of these list things do.
@@ -515,12 +529,12 @@ fields:
 
 # todo: handle accidental over 18
 # todo: individual question for each child
+
+# `ordinal()` says 'first', even if there's only one :(
 id: parent_children
 question: |
-  Tell us about the children that you are the parent of.
-subquestion: |
-  Click "${word("Add another")}" to add more.
-list collect: True
+  Tell us about the ${ordinal(i)} child that you are the parent of.
+#list collect: True
 fields:
   - First Name: children_of_parent[i].name.first
   - Middle Name: children_of_parent[i].name.middle
@@ -529,14 +543,19 @@ fields:
   - Suffix: children_of_parent[i].name.suffix
     required: False
   - Birthdate: children_of_parent[i].birthdate
+    datatype: date
+    # Should there be a default?
+    default: |
+      ${ today().minus(years=10) }
+    min: ${ today().minus(years=18) }
+    validation messages:
+      min: |
+        The child has to be less than 18 years old.
   - Is the defendant also a parent of this child?: children_of_parent[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
-        defendant_and_plaintiff_are_parents_of_child is True
-# means of any children
-validation code: |
-  children_of_parent[i].plaintiff_is_parent = True
+        defendant_and_plaintiff_are_parents_of_child is True # means parents of any children
 ---
 # Nothing can be required because they might not
 # have even one child they have care of, just
@@ -546,27 +565,37 @@ validation code: |
 # todo: individual question for each child
 id: non_parent_children
 question: |
-  Tell us about the other children that are in your care or custody.
-subquestion: |
-  Click "${word("Add another")}" to add more.
-list collect: True
+  % if ( num_children_has_care_of == 1 ):
+  Tell us about the child that is in your care or custody.
+  % else:
+  Tell us about the ${ordinal( i )} child that is in your care or custody.
+  % endif
 fields:
   - First Name: children_of_custody[i].name.first
   - Middle Name: children_of_custody[i].name.middle
     required: False
   - Last Name: children_of_custody[i].name.last
-    required: False
   - Suffix: children_of_custody[i].name.suffix
+    required: False
   - Birthdate: children_of_custody[i].birthdate
-  # Is the below item required here? I didn't understand the final decision.
+    datatype: date
+    # Should there be a default?
+    default: |
+      ${ today().minus(years=10) }
+    min: ${ today().minus(years=18) }
+    validation messages:
+      min: |
+        The child has to be less than 18 years old.
+  # todo: Is the below item required here? I didn't 
+  # understand the final decision.
   - Is the defendant also a parent of this child?: children_of_custody[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
-        defendant_and_plaintiff_are_parents_of_child is True
-# means of any children
-validation code: |
-  children_of_custody[i].plaintiff_is_parent = False
+        defendant_and_plaintiff_are_parents_of_child is True # means of any children
+
+#validation code: |
+#  children_of_custody[i].plaintiff_is_parent = False
 ---
 id: custody_children
 question: |

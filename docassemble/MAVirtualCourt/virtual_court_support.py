@@ -173,5 +173,3 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
       address_obj_name = map_names(field).partition('.block')[0]
       if not defined(address_obj_name+'.address'): # We check for an undefined street address
         define(address_obj_name, DAEmpty())
-
-
