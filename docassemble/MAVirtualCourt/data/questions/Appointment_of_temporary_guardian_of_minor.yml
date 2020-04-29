@@ -1,3 +1,7 @@
+objects:
+  MJFguardian: Individual
+  MJFchild: Individual
+---
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
@@ -28,13 +32,13 @@ code: |
        'transformed_variable': 'docket_numbers[0]',
       },
       {'variable': 'child_name_first',
-       'transformed_variable': 'children[0].name.first',
+       'transformed_variable': 'MJFchild.name.first',
       },
       {'variable': 'child_name_middle',
-       'transformed_variable': 'children[0].name.middle',
+       'transformed_variable': 'MJFchild.name.middle',
       },
       {'variable': 'child_name_last',
-       'transformed_variable': 'children[0].name.last',
+       'transformed_variable': 'MJFchild.name.last',
       },
       {'variable': 'user_name_first',
        'transformed_variable': 'users[0].name.first',
@@ -43,13 +47,13 @@ code: |
        'transformed_variable': 'users[0].name.last',
       },
       {'variable': 'guardian_name_first',
-       'transformed_variable': 'guardians[0].name.first',
+       'transformed_variable': 'MJFguardian.name.first',
       },
       {'variable': 'guardian_name_last',
-       'transformed_variable': 'guardians[0].name.last',
+       'transformed_variable': 'MJFguardian.name.last',
       },
       {'variable': 'guardian_name_middle',
-       'transformed_variable': 'guardians[0].name.middle',
+       'transformed_variable': 'MJFguardian.name.middle',
       },
       {'variable': 'user_signature',
        'transformed_variable': 'users[0].signature',
@@ -91,7 +95,7 @@ code: |
       'field_data_type': 'date',
       },
       {'variable': 'user_middle_initial',
-       'transformed_variable': 'users[0].middle_initial',
+       'transformed_variable': 'user_middle_initial',
       'field_type': 'text',
       'field_data_type': 'text',
       },
@@ -157,67 +161,162 @@ code: |
       ],
   })
 ---
-question: |
-  Screen one
+question: Information about the Minor
 subquestion: |
-  Placeholder text
+  Please specify the name of the Minor and the date of the petition filed:
 fields:
-  - 'Court division': courts[0].division
-  - 'Date of petition': petition_date
+  - First name: MJFchild.name.first
+  - Middle name: MJFchild.name.middle
+    required: False
+  - Last name: MJFchild.name.last
+  - on Petition filed: petition_date
     datatype: date
-  - 'User middle initial': users[0].middle_initial
+---
+# Title for the next three questions
+code: |
+  nature_of_circumstances = 'Nature of circumstances and action requested'
 ---
 question: |
-  Screen two
+  ${ nature_of_circumstances }
 subquestion: |
-  Placeholder text
+  The moving party, **${ str(users[0]) }**, states an emergency exists requiring
+  the appointment of a Temporary Guardian as any delay in the appointment will cause
+  immediate and substantial harm to the health, safety or welfare of the Minor
+  **${ str(MJFchild) }**, an no other person has authoroity to act in the cirumstances.
+  Placeholder text.
+
+  The nature of the circumstances requiring the appointment of a Temporary Guardian are:
 fields:
-  - 'Appointment circumstances': appointment_circumstances
-    input type: area
-  - 'Harm type': harm_type
-    input type: area
-  - 'Action type': action_type
-    input type: area
----
-question: |
-  Screen three
-subquestion: |
-  Placeholder text
-fields:
-  - 'Serve with': serve_with
-    datatype: yesno
-  - 'Serve without': serve_without
-    datatype: yesno
-  - 'Has no estate': has_no_estate
-    datatype: yesno
-  - 'Is other': is_other
-    datatype: yesno
-  - 'Reason other': reason_other
----
-question: |
-  Screen four
-subquestion: |
-  Placeholder text
-fields:
-  - 'Seek authorization': seek_authorization
-    datatype: yesno
-  - 'Authorization type': authorization_type
-    input type: area
-  - 'Request action': request_action
-    datatype: yesno
-  - 'Request type': request_type
+  - no label: appointment_circumstances
     input type: area
 ---
 question: |
-  Screen five
+  ${ nature_of_circumstances }
 subquestion: |
-  Placeholder text
+  The particular harm sought to be avoided is:
 fields:
-  - 'Attorney bbo number': attorneys[0].bbo_number---
+  - no label: harm_type
+    input type: area
+---
+question: |
+  ${ nature_of_circumstances }
+subquestion: |
+  The actions which need to be taken by a Temporary Guardian to avoid the harm are:
+fields:
+  - no label: action_type
+    input type: area
+---
+question: |
+  Appointment of Guardian
+subquestion: |
+  The Petitioner requests that this Honorable Court appoint the person listed below as Temporary Guardian of the Minor, **${ str(MJFchild) }**:
+fields:
+  - Guardian\'s First name: MJFguardian.name.first
+  - Guardian\'s Middle name: MJFguardian.name.middle
+  - Guardian\'s Last name: MJFguardian.name.last
+  - Temporary Guardian(s) to be appointed: MJFsureties
+    datatype: radio
+    choices:
+      - with sureties: True
+      - without sureties: False
+  - for the following reasons: MJFsureties_reasons
+    datatype: radio
+    choices:
+      - the minor has no estate: no_estate
+      - other: other
+  - Please supply reasons: reason_other
+    show if:
+      variable: MJFsureties_reasons
+      is: other
+---
+# Fill reason_other if MJFsureties_reasons is not 'other'
+code: |
+  if MJFsureties_reasons != 'other':
+    reason_other = ''
+---
+# Text to display for additional requests
+code: |
+  additional_requests = 'Appointment of Guardian - Additional Requests'
+---
+question: |
+  ${ additional_requests }
+fields:
+  - Does the moving party seek a specific court authorization?: seek_authorization
+    datatype: yesnoradio
+  - Authorization requested: authorization_type
+    input type: area
+    show if:
+      variable: seek_authorization
+      is: True
+---
+# Fill authorization_type if seek_authorization is false
+code: |
+  if not seek_authorization:
+    authorization_type = ''
+---
+question: |
+  ${ additional_requests }
+fields:
+  - Does the moving party seek any additional requests: request_action
+    datatype: yesnoradio
+  - Specify request: request_type
+    input type: area
+    show if:
+      variable: request_action
+      is: True
+---
+# Populate request_type if request_action is false
+code: |
+  if not request_action:
+    request_type = ''
+---
+# Set the serve_with and serve_without checkboxes
+code: |
+  if MJFsureties:
+    serve_with = True
+    serve_without = False
+  else:
+    serve_with = False
+    serve_without = True
+---
+# Set has_no_estate and is_other checkboxes
+code: |
+  if MJFsureties_reasons == 'no_estate':
+    has_no_estate = True
+    is_other = False
+  elif MJFsureties_reasons == 'other':
+    has_no_estate = False
+    is_other = True
+  else:
+    # We should never get here!
+    has_no_estate = True
+    is_other = True
+    reasons_other = "Error processing sureties reasons"
+---
+question: |
+  Attorney's details
+subquestion:
+  Enter the details for your attorney if you are represented by one.
+fields:
+  - I am represented by an attorney: MJFis_represented
+    datatype: yesnoradio
+---
+question: |
+  Please enter the BBO Number for your Attorney
+fields:
+  BBO Number: attorneys[0].bbo_number
+---
+# Extract the user's middle initial
+code: |
+  try: 
+    user_middle_initial = users[0].name.middle[0].upper()
+  except:
+    user_middle_initial = ''
+---
 progress: 100
 mandatory: True
 question: |
-  Placeholder download screen
+  Download your form
 subquestion: |
   Placeholder
   
@@ -226,7 +325,8 @@ subquestion: |
   1. Step 1
   1. Step 2
   
-  Below is a preview of your form.
+  Below is a preview of your form.  Click on the **PDF** link below to download
+  a copy, or use the email form to email a copy to yourself or someone else.
   
   ${guardianship_minor_temp_order0012_attachment }
 attachment code: guardianship_minor_temp_order0012_attachment
@@ -239,14 +339,14 @@ attachment:
     pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
     fields: 
       - "docket_number": ${ docket_numbers[0] }
-      - "child_name_first": ${ children[0].name.first }
-      - "child_name_middle": ${ children[0].name.middle }
-      - "child_name_last": ${ children[0].name.last }
+      - "child_name_first": ${ MJFchild.name.first }
+      - "child_name_middle": ${ MJFchild.name.middle }
+      - "child_name_last": ${ MJFchild.name.last }
       - "user_name_first": ${ users[0].name.first }
       - "user_name_last": ${ users[0].name.last }
-      - "guardian_name_first": ${ guardians[0].name.first }
-      - "guardian_name_last": ${ guardians[0].name.last }
-      - "guardian_name_middle": ${ guardians[0].name.middle }
+      - "guardian_name_first": ${ MJFguardian.name.first }
+      - "guardian_name_last": ${ MJFguardian.name.last }
+      - "guardian_name_middle": ${ MJFguardian.name.middle }
       - "user_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "attorney_name": ${ str(attorneys[0]) }
@@ -258,7 +358,7 @@ attachment:
       - "attorney_phone": ${ attorneys[0].phone_number }
       - "court_division": ${ courts[0].division }
       - "petition_date": ${ petition_date }
-      - "user_middle_initial": ${ users[0].middle_initial }
+      - "user_middle_initial": ${ user_middle_initial }
       - "appointment_circumstances": ${ appointment_circumstances }
       - "harm_type": ${ harm_type }
       - "action_type": ${ action_type }
@@ -295,30 +395,43 @@ code: |
   allowed_courts = interview_metadata["guardianship_minor_temp_order0012"]["allowed courts"]
   courts[0].division
   docket_numbers[0]
-  children[0].name.first
-  children[0].name.middle
-  children[0].name.last
+  MJFchild.name.first
+  MJFchild.name.last
+  petition_date
   users[0].name.first
   users[0].name.last
   appointment_circumstances
   harm_type
   action_type
-  guardians[0].name.first
-  guardians[0].name.last
-  guardians[0].name.middle
+  MJFguardian.name.first
+  MJFguardian.name.last
   serve_with
+  serve_without
+  has_no_estate
+  is_other
   seek_authorization
-  str(attorneys[0])
-  attorneys[0].address.unit
-  attorneys[0].address.address
-  attorneys[0].address.city
-  attorneys[0].address.state
-  attorneys[0].address.zip
-  attorneys[0].phone_number
-  attorneys[0].bbo_number
+  request_action
+  if MJFis_represented:
+    str(attorneys[0])
+    attorneys[0].address.unit
+    attorneys[0].address.address
+    attorneys[0].address.city
+    attorneys[0].address.state
+    attorneys[0].address.zip
+    attorneys[0].phone_number
+    attorneys[0].bbo_number
+  else:
+    attorneys[0].name = ''
+    attorneys[0].address.unit = ''
+    attorneys[0].address.address = ''
+    attorneys[0].address.city = ''
+    attorneys[0].address.state = ''
+    attorneys[0].address.zip = ''
+    attorneys[0].phone_number = ''
+    attorneys[0].bbo_number = ''
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["guardianship_minor_temp_order0012"])
+  # mark_unfilled_fields_empty(interview_metadata["guardianship_minor_temp_order0012"])
   guardianship_minor_temp_order0012_preview_question # Pre-canned preview screen
   basic_questions_signature_flow
   users[0].signature
@@ -339,14 +452,14 @@ attachment:
     pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
     fields: 
       - "docket_number": ${ docket_numbers[0] }
-      - "child_name_first": ${ children[0].name.first }
-      - "child_name_middle": ${ children[0].name.middle }
-      - "child_name_last": ${ children[0].name.last }
+      - "child_name_first": ${ MJFchild.name.first }
+      - "child_name_middle": ${ MJFchild.name.middle }
+      - "child_name_last": ${ MJFchild.name.last }
       - "user_name_first": ${ users[0].name.first }
       - "user_name_last": ${ users[0].name.last }
-      - "guardian_name_first": ${ guardians[0].name.first }
-      - "guardian_name_last": ${ guardians[0].name.last }
-      - "guardian_name_middle": ${ guardians[0].name.middle }
+      - "guardian_name_first": ${ MJFguardian.name.first }
+      - "guardian_name_last": ${ MJFguardian.name.last }
+      - "guardian_name_middle": ${ MJFguardian.name.middle }
       - "signature_date": ${ signature_date }
       - "attorney_name": ${ str(attorneys[0]) }
       - "attorney_address_street2": ${ attorneys[0].address.unit }
@@ -357,7 +470,7 @@ attachment:
       - "attorney_phone": ${ attorneys[0].phone_number }
       - "court_division": ${ courts[0].division }
       - "petition_date": ${ petition_date }
-      - "user_middle_initial": ${ users[0].middle_initial }
+      - "user_middle_initial": ${ user_middle_initial }
       - "appointment_circumstances": ${ appointment_circumstances }
       - "harm_type": ${ harm_type }
       - "action_type": ${ action_type }
