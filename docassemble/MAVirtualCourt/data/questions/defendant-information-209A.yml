@@ -287,7 +287,7 @@ question: |
 subquestion: |
   This information helps the police find the Defendant to give them with a copy of the restraining order.
 fields:
-  - 'What is the address where police are most likely to find the defendant in the morning (8am-12pm)? What is the address where police are most likely to find the defendant in the afternoon (12-5pm)? Are there other addresses the defendant typically visits, and if so, what days/time?': other_parties[0].location_information_other
+  - 'What is the address where police are most likely to find Defendant in the morning (8am-12pm)? What is the address where police are most likely to find Defendant in the afternoon (12-5pm)? Are there other addresses Defendant typically visits, and if so, what days/time?': other_parties[0].location_information_other
     datatype: area
 ---
 question: |
