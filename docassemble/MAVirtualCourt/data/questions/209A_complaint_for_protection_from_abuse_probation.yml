@@ -1,9 +1,6 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
-modules:
-  - .virtual_court_support
----
 features:
   labels above fields: True
 ---
@@ -287,8 +284,6 @@ code: |
   #######
   # Custom logic start
   #######
-  num_children_is_parent_of
-  num_children_has_care_of
 
   # Placeholder for now
   defendant_and_plaintiff_are_parents_of_child = True
@@ -300,9 +295,11 @@ code: |
   parent_children_index = 0
   while parent_children_index < num_children_is_parent_of:
     child_of_parent = children_of_parent[ parent_children_index ]
-    is_under_18(child_of_parent.birthdate
+    child_of_parent.birthdate
     child_of_parent.plaintiff_is_parent = True
     parent_children_index += 1
+
+  children_of_parent.there_is_another = False
 
   custody_children_index = 0
   while custody_children_index < num_children_has_care_of:
@@ -310,6 +307,8 @@ code: |
     child_of_custody.birthdate
     child_of_custody.plaintiff_is_parent = False
     custody_children_index += 1
+
+  children_of_custody.there_is_another = False
 
   # todo: This probably needs to be different in DA.
   # Probably a lot of these list things do.
@@ -367,6 +366,8 @@ code: |
 
   # DA way?
   children = all_children
+  
+  normalize_vars_for_attachment
 
   #########
   # End custom logic basically
@@ -376,11 +377,6 @@ code: |
   A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
   basic_questions_signature_flow
   users[0].signature
-  
-  #mark_unfilled_fields_empty(interview_metadata[interview_id])
-
-  #else:
-  #  mark_unfilled_fields_empty(interview_metadata[interview_id])
 
   A_complaint_for_protection_from_abuse_probation_copy0005 = True
 ---
@@ -485,7 +481,7 @@ code: |
   # Important in question display logic in this form
   #defendant_and_plaintiff_are_parents_of_child = True
 
-  normalized_vars_for_attchment = True
+  normalize_vars_for_attachment = True
 ---
 id: custom_objects
 objects:
