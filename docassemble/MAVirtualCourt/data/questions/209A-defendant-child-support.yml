@@ -264,7 +264,7 @@ fields:
     required: False
 ---
 progress: 100
-mandatory: True
+# mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

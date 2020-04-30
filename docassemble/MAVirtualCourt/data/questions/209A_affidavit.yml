@@ -31,7 +31,7 @@ features:
 ---
 comment: |
   Hopefully this screen will be unnecessary when merged in to parent
-mandatory: True
+# mandatory: True
 question: |
   Download your 209A Affidavit 
 buttons:
