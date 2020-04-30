@@ -689,14 +689,16 @@ attachment:
       # TODO: wrong field type for bool?
       # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ permit_visitation_yes }
-      # TODO: wrong field types for visitation bools?
+      # TODO: wrong field types for visitation bools or for non-visitation ones?
       - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_center_payor_name": ${ visitation_center_payor_name }
       - "visitation_supervisor_name": ${ visitation_supervisor_name }
       - "wants_supervision_yes": ${ wants_supervision_yes }
       - "visitation_times": ${ visitation_times }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_supervision_payor_name": ${ visitation_supervision_payor_name }
       - "third_party_name": ${ third_party_name }
       - "wants_third_party_yes": ${ wants_third_party_yes }
@@ -741,10 +743,12 @@ attachment:
       - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_center_payor_name__2": ${ visitation_center_payor_name }
       - "visitation_supervisor_name__2": ${ visitation_supervisor_name }
       - "wants_supervision_yes__2": ${ wants_supervision_yes }
       - "visitation_times__2": ${ visitation_times }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_supervision_payor_name__2": ${ visitation_supervision_payor_name }
       - "third_party_name__2": ${ third_party_name }
       - "wants_third_party_yes__2": ${ wants_third_party_yes }
@@ -812,10 +816,12 @@ attachment:
       - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_center_payor_name": ${ visitation_center_payor_name }
       - "visitation_supervisor_name": ${ visitation_supervisor_name }
       - "wants_supervision_yes": ${ wants_supervision_yes }
       - "visitation_times": ${ visitation_times }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_supervision_payor_name": ${ visitation_supervision_payor_name }
       - "third_party_name": ${ third_party_name }
       - "wants_third_party_yes": ${ wants_third_party_yes }
@@ -859,10 +865,12 @@ attachment:
       - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_center_payor_name__2": ${ visitation_center_payor_name }
       - "visitation_supervisor_name__2": ${ visitation_supervisor_name }
       - "wants_supervision_yes__2": ${ wants_supervision_yes }
       - "visitation_times__2": ${ visitation_times }
+      # 'plaintiff' and 'defendant' are both ok
       - "visitation_supervision_payor_name__2": ${ visitation_supervision_payor_name }
       - "third_party_name__2": ${ third_party_name }
       - "wants_third_party_yes__2": ${ wants_third_party_yes }
