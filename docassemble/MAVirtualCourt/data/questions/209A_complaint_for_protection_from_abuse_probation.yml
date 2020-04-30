@@ -1,9 +1,6 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
-features:
-  labels above fields: True
----
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
@@ -171,7 +168,6 @@ code: |
   children_of_parent.there_are_any = num_children_is_parent_of > 0
   num_children_has_care_of
   children_of_custody.there_are_any = num_children_has_care_of > 0
-  log(children_of_custody.there_are_any, 'console')
 
   # Abstract?
   parent_children_index = 0
@@ -344,20 +340,22 @@ code: |
 
   wants_other_order_pdf = valueOrDefault('wants_other_order', False)
   other_order_pdf = valueOrDefault('other_order', '')
-  wants_child_support_for_pdf = valueOrDefault('wants_child_support_for', '')
   wants_other_order_yes = wants_other_order_pdf
   other_order_discription = other_order_pdf
-  wants_child_support_yes = len(wants_child_support_for_pdf) > 0
+
+  wants_child_support_yes = len(wants_child_support_for) > 0
   
   # Vars other forms' attachments need
   # majors_needing_support  # is list
 
-  # Placeholders (to be answered in a previoius interview).
+  # Placeholders (to be answered in a previous interview).
   # todo: remove when stitching
-  have_had_custody_cases_yes = have_had_custody_cases
-  have_had_custody_cases_no = not have_had_custody_cases
-  have_had_paternity_cases_yes = have_had_paternity_cases
-  have_had_paternity_cases_no = not have_had_paternity_cases
+  have_had_custody_cases_yes = valueOrDefault('have_had_custody_cases', False)
+  have_had_custody_cases_no = not have_had_custody_cases_yes
+  log('-------', 'console')
+  log(type(have_had_custody_cases_yes), 'console')
+  have_had_paternity_cases_yes = valueOrDefault('have_had_paternity_cases', False)
+  have_had_paternity_cases_no = not have_had_paternity_cases_yes
   # Important in question display logic in this form
   defendant_and_plaintiff_are_parents_of_child = True
 
@@ -523,7 +521,7 @@ subquestion: |
 yesno: wants_visitation_orders
 ---
 id: more_info_about_visitation
-event: visitation_info
+field: visitation_info
 question: |
   Before you ask the judge to order Visitation
 subquestion: |
@@ -631,13 +629,12 @@ id: do_non_minors_need_child_support
 # the right number of individual questions.
 question: |
   Are there any kids that are between 18 and and 22 that you need to add?
-subquestion: |
-  Sometimes, you can ask for child support for kids you share with the defendant that are between 18 and 22 (inclusive).  [Child Support for Children 18-22 on MassLegalHelp](https://www.masslegalhelp.org/children-and-families/child-support-over-18).
-  **Do you need to add any kids that are between 18 and 22?**
 yesno: need_help_for_majors
 ---
 id: non_minors_needing_child_support
-question: Tell us about the children you have that are between 18 and 22 (including the 22 year-olds).
+question: |
+  Tell us about the children you have that are between 18 and 22 (including the 22 year-olds).
+subquestion: |
   Click "${word("Add another")}" to add more.
 list collect: True
 fields:
