@@ -218,6 +218,9 @@ code: |
 
     # ends if not prohibit_visitation
   # ends if wants_visitation_orders
+  
+  # Will allow visitation without restrictions perhaps?
+  no_visitation_restrictions = not wants_visitation_orders
 
   wants_child_support_for
   for support_child in wants_child_support_for:
@@ -293,7 +296,7 @@ code: |
 
   wants_visitation_orders_pdf = showifdef('wants_visitation_orders', False)
   prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
-  permit_visitation_yes = wants_visitation_orders_pdf
+  permit_visitation_yes = no_visitation_restrictions
   prohibit_visitation_yes = prohibit_visitation_pdf
   
   wants_center_pdf = showifdef('wants_center', False)
