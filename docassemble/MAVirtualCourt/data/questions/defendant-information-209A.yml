@@ -38,8 +38,8 @@ code: |
       {'variable': 'defendant_phone',
        'transformed_variable': 'defendants[0].phone_number',
       },
-      {'variable': 'defendant_signature',
-       'transformed_variable': 'defendants[0].signature',
+      {'variable': 'plaintiff_signature',
+       'transformed_variable': 'plaintiffs[0].signature',
       },
       {'variable': 'signature_date',
        'transformed_variable': 'signature_date',
@@ -540,9 +540,7 @@ attachment:
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
       - "defendant_phone": ${ other_parties[0].phone_number }
-      - "defendant_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      - "": ${  }
       - "defendant_name_other": ${ other_parties[0].name_other }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }

@@ -402,7 +402,6 @@ buttons:
   - Exit: exit
   - Restart: restart
 ---
----
 id: complaint_209A_labeled_page10003
 code: |
   allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
@@ -434,6 +433,8 @@ code: |
     relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
     if relationship_to_defendant_unmarried.all_false():
       refer_to_258E_resources
+  else:
+    defendant_relationship_to_plaintiff_is = DAEmpty()
   if court_selection == "Superior Court":
     district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
     municipal_court = DAEmpty()

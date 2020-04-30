@@ -67,9 +67,10 @@ code: |
   defendantinformation209A0008
   a_258e_motion_for_impoundment0019
   final_attachment_bundle
+  download_screen
 ---
 question: |
-  Who do you want protection from?
+  Who do you want protection from?  
 fields:
   - First name: other_parties[0].name.first
   - Middle name: other_parties[0].name.middle
@@ -80,3 +81,9 @@ fields:
     required: False
     code: |
       name_suffix()
+---
+question: |
+  Download screen
+subquestion: |
+  ${pdf_concatenate(final_attachment_bundle)}
+event: download_screen  
