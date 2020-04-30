@@ -9,7 +9,9 @@ objects:
   - children: PeopleList.using(complete_attribute='child_complete')
   - box8_people: PeopleList.using(auto_gather=False, gathered=True) # People named as parties in other care/custody. We'll filter to remove dupes
   - attorneys_for_children: PeopleList
+  - attorneys_for_children[i].represented_children: PeopleList
   - gals_investigators: PeopleList
+  - gals_investigators[i].represented_children: PeopleList
   - attorneys_for_parents: PeopleList
 ---
 code: |
@@ -90,6 +92,9 @@ code: |
   str(users[0])
   users[0].address.on_one_line()
   str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
+  need_past_address_appendix
+  need_children_appendix
+  need_other_parties_appendix
   A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
   basic_questions_signature_flow
   users[0].signature
@@ -933,11 +938,8 @@ question: |
   You told us about the following pending cases:
   ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}  
 
-  Please list each **attorney** involved in any of the above cases who represented
-  either ${comma_and_list(children, and_string=word("or"))}
-
-  Click ${word("Add another")} to add another attorney.
-list collect: True
+  Please tell us about the **attorney** involved in any of the above cases who represented either ${comma_and_list(children, and_string=word("or"))}
+list collect: False
 fields:
   - Name of attorney: attorneys_for_children[i].name.first
   - Did this attorney represent ALL children?: attorneys_for_children[i].represented_all_children
@@ -949,8 +951,16 @@ fields:
       variable: attorneys_for_children[i].represented_all_children
       is: False
 validation code: |
-  if attorneys_for_children[i].represented_all_children:
-    attorneys_for_children[i].children = children
+  for attorney in attorneys_for_children:
+    if attorney.represented_all_children:
+      attorney.represented_children = children
+---
+question: |
+  You told us about the following pending cases:
+  ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}
+  
+  Did any **attorney** other than ${comma_and_list(attorneys_for_children, and_string=word("or"))} represent ${comma_and_list(children, and_string=word("or"))}
+yesno: attorneys_for_children.there_is_another 
 ---
 question: |
   Law guardians and investigators for open (pending) cases representing your children
@@ -958,7 +968,7 @@ subquestion: |
   You told us about the following pending cases:
   ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}  
 
-  Did any law guardians (guardians ad litem, or GALs) or investigators work with either ${comma_and_list(children, and_string=word("or"))}
+  Did a law guardians (guardians ad litem, or GALs) or investigator work with either ${comma_and_list(children, and_string=word("or"))}
   for any of the above cases?
 yesno: gals_investigators.there_are_any
 ---
@@ -968,11 +978,11 @@ subquestion: |
   You told us about the following pending cases:
   ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}  
 
-  Please list each **guardian ad litem** (GAL) and **investigator** involved in any of the above cases who represented
+   Please tell us about the **guardian ad litem** (GAL) or **investigator** involved in any of the above cases who represented
   either ${comma_and_list(children, and_string=word("or"))}
 
   Click ${word("Add another")} to add another guardian ad litem or investigator.
-list collect: True
+list collect: False
 fields:
   - Name of GAL or investigator: gals_investigators[i].name.first
   - Did this GAL or investigator work with ALL children?: gals_investigators[i].represented_all_children
@@ -983,6 +993,16 @@ fields:
     show if:
       variable: gals_investigators[i].represented_all_children
       is: False
+validation code: |
+  if gals_investigators[i].represented_all_children:
+    gals_investigators[i].represented_children = children
+---
+question: |
+  You told us about the following pending cases:
+  ${other_care_custody_proceedings.filter(case_status="pending") + other_care_custody_proceedings.filter(case_status="adoption-pending")}
+  
+  Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children, and_string=word("or"))}
+yesno: gals_investigators.there_is_another 
 ---
 question: |
   Attorneys for open (pending) cases representing either you or ${other_parties}
@@ -1028,13 +1048,26 @@ code: |
 code: |
   need_past_address_appendix_temp = False
   for child in children:
-    if len(child.past_addresses) > 2:
+    if len(child.previous_addresses) > 2:
       need_past_address_appendix_temp = True
-      break
+      child.previous_addresses.put_on_appendix = True
+    else:
+      child.previous_addresses.put_on_appendix = False
   need_past_address_appendix = need_past_address_appendix_temp
 ---
 code: |
-  need_children_appendix = len(children) > 3
+  need_children_appendix_temp = False 
+  if len(children) > 3:
+    need_children_appendix_temp = True
+  need_children_appendix = need_children_appendix_temp
+---
+code: |
+  need_other_parties_appendix_temp = False
+  for proceeding in other_care_custody_proceedings:
+    if len(proceeding.other_parties) > 3:
+      need_other_parties_appendix_temp = True
+      proceeding.put_on_appendix = True
+  need_other_parties_appendix = need_other_parties_appendix_temp
 ---
 progress: 100
 mandatory: True
@@ -1051,7 +1084,17 @@ subquestion: |
   Below is a preview of your form.
   
   ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment }
+  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  ${care_or_custody_proceedings_appendix_variable }
+  % endif
 attachment code: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment
+---
+need: need_other_parties_appendix
+attachment:
+  variable name: care_or_custody_proceedings_appendix_variable
+  name: Affidavit Disclosing Care or Custody Proceedings Appendix
+  filename: Affidavit_Disclosing_Care_or_Custody_Appendix
+  docx template file: care_or_custody_proceedings_appendix.docx
 ---
 need: A_affidavit_disclosing_care_or_custody_proceedings0009
 attachment:
@@ -1085,9 +1128,9 @@ attachment:
       - "child2_name_last_first": ${ children.item(1).name.lastfirst() }
       - "child3_name_last_first": ${ children.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line } 
-      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line }
-      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line }
+      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
@@ -1121,24 +1164,18 @@ attachment:
       - "month": ${ month }
       - "year": ${ year }
       - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
-      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() }
-      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() }
-      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() }
-      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() }
-      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() }
-      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() }
-      - "attorney_for_children_1": |
-          ${ str(attorneys_for_children.item(0)) + ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if not attorneys_for_children.item(0).represented_all_children else attorneys_for_children.item(0).represented_children }
-      - "attorney_for_children_2": |
-          ${ str(attorneys_for_children.item(1)) + ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if not attorneys_for_children.item(1).represented_all_children else attorneys_for_children.item(1).represented_children}
-      - "attorney_for_children_3": |
-          ${ str(attorneys_for_children.item(2)) + ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if not attorneys_for_children.item(2).represented_all_children else attorneys_for_children.item(2).represented_children}
-      - "gals_investigators_1": |
-          ${ str(gals_investigators.item(0)) + ' (' + str(gals_investigators.item(0)) + ')' if not gals_investigators.item(0).represented_all_children else gals_investigators.item(0).represented_children}
-      - "gals_investigators_2": |
-          ${ str(gals_investigators.item(1)) + ' (' + str(gals_investigators.item(1)) + ')' if not gals_investigators.item(1).represented_all_children else gals_investigators.item(1).represented_children}
-      - "gals_investigators_3": |
-          ${ str(gals_investigators.item(2)) + ' (' + str(gals_investigators.item(2)) + ')' if not gals_investigators.item(2).represented_all_children else gals_investigators.item(2).represented_children}
+      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
+      - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}}
+      - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
+      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
+      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
+      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
@@ -1158,6 +1195,9 @@ question: |
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
      ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
+  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  ${care_or_custody_proceedings_appendix_variable }
+  % endif
 ---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
@@ -1190,9 +1230,9 @@ attachment:
       - "child2_name_last_first": ${ children.item(1).name.lastfirst() }
       - "child3_name_last_first": ${ children.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line } 
-      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line }
-      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line }
+      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
@@ -1226,24 +1266,18 @@ attachment:
       - "month": ${ month }
       - "year": ${ year }
       - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
-      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() }
-      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() }
-      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() }
-      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() }
-      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() }
-      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() }
-      - "attorney_for_children_1": |
-          ${ str(attorneys_for_children.item(0)) + ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if not attorneys_for_children.item(0).represented_all_children else attorneys_for_children.item(0).represented_children }
-      - "attorney_for_children_2": |
-          ${ str(attorneys_for_children.item(1)) + ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if not attorneys_for_children.item(1).represented_all_children else attorneys_for_children.item(1).represented_children}
-      - "attorney_for_children_3": |
-          ${ str(attorneys_for_children.item(2)) + ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if not attorneys_for_children.item(2).represented_all_children else attorneys_for_children.item(2).represented_children}
-      - "gals_investigators_1": |
-          ${ str(gals_investigators.item(0)) + ' (' + str(gals_investigators.item(0)) + ')' if not gals_investigators.item(0).represented_all_children else gals_investigators.item(0).represented_children}
-      - "gals_investigators_2": |
-          ${ str(gals_investigators.item(1)) + ' (' + str(gals_investigators.item(1)) + ')' if not gals_investigators.item(1).represented_all_children else gals_investigators.item(1).represented_children}
-      - "gals_investigators_3": |
-          ${ str(gals_investigators.item(2)) + ' (' + str(gals_investigators.item(2)) + ')' if not gals_investigators.item(2).represented_all_children else gals_investigators.item(2).represented_children}
+      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
+      - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
+      - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
+      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
+      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
+      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
