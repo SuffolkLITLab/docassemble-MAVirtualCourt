@@ -143,14 +143,14 @@ code: |
   # Implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
   #######
 
-  # todo:
+  # TODO:
   # Add ways to attach addenda for:
   # 1. Children want custody of table
   # 1. Chilren want no contact order for table
   # 1. Reasons want no contact paragraph
   # 1. School names/address paragraph
   # check text vertical alignment of pdf fields
-  # todos in rest of the document
+  # TODOs in rest of the document
 
   interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
 
@@ -164,32 +164,19 @@ code: |
   # Placeholder for now
   defendant_and_plaintiff_are_parents_of_child = True
 
-  num_children_is_parent_of
-  children_of_parent.there_are_any = num_children_is_parent_of > 0
-  num_children_has_care_of
-  children_of_custody.there_are_any = num_children_has_care_of > 0
+  # TODO: snippet contender
+  children_of_parent.target_number
+  children_of_custody.target_number
 
-  # Abstract?
-  parent_children_index = 0
-  while parent_children_index < num_children_is_parent_of:
-    # This works in DA...?
-    child_of_parent = children_of_parent[ parent_children_index ]
-    child_of_parent.birthdate
-    child_of_parent.plaintiff_is_parent = True
-    parent_children_index += 1
-  children_of_parent.there_is_another = False
+  children_of_parent.gather()  # .name.first completes the person
+  for child in children_of_parent:
+    child.plaintiff_is_parent = True
 
-  custody_children_index = 0
-  while custody_children_index < num_children_has_care_of:
-    # This works in DA...?
-    child_of_custody = children_of_custody[ custody_children_index ]
-    child_of_custody.birthdate
-    child_of_custody.plaintiff_is_parent = False
-    custody_children_index += 1
-  children_of_custody.there_is_another = False
+  children_of_custody.gather()  # .name.first completes the person
+  for child in children_of_custody:
+    child.plaintiff_is_parent = False
 
-  # todo: This probably needs to be different in DA.
-  # Probably a lot of these list things do.
+  # Works in DA
   all_children = children_of_parent + children_of_custody
 
   # Should ask for custody and other things if child of both
@@ -242,7 +229,7 @@ code: |
   have_had_custody_cases
   have_had_paternity_cases
 
-  # DA way?
+  # I think other interviews will be using this var name
   children = all_children
   
   normalize_vars_for_attachment
@@ -306,7 +293,7 @@ code: |
   reasons_no_contact = hack_reasons_for_no_contact
 
   keep_away_from_schools_daycares = schools_to_stay_away_from.there_are_any
-  # todo: Does this need special DA treatment
+  # TODO: Does this need special DA treatment
   school_strings = []
   for school in schools_to_stay_away_from:
     school_strings.append( str(school) + ' ' + school.address.on_one_line() )
@@ -349,8 +336,9 @@ code: |
   # majors_needing_support  # is list
 
   # Placeholders (to be answered in a previous interview).
-  # todo: remove when stitching
+  # TODO: remove when stitching
   have_had_custody_cases_yes = valueOrDefault('have_had_custody_cases', False)
+  have_had_custody_cases_yes = True
   have_had_custody_cases_no = not have_had_custody_cases_yes
   log('-------', 'console')
   log(type(have_had_custody_cases_yes), 'console')
@@ -363,9 +351,9 @@ code: |
 ---
 id: custom_objects
 objects:
-  - children: PeopleList
-  - children_of_parent: PeopleList
-  - children_of_custody: PeopleList
+  - children: PeopleList.using()
+  - children_of_parent: PeopleList.using(ask_number=True)
+  - children_of_custody: PeopleList.using(ask_number=True)
   - children_of_both: PeopleList
   - wants_custody_of: PeopleList
   - wants_no_contact_for: PeopleList
@@ -378,7 +366,7 @@ continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_
 question: |
   209A Complaint for Protection from Abuse pg 2
 subquestion: |
-  todo: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under 18.
+  TODO: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under 18.
 ---
 # Placeholder for complaint page 1's questions
 id: number_of_children_under_18
@@ -387,10 +375,10 @@ question: |
 subquestion: |
   Include all children that are yours or that you have care or custody of. (add plain language later)
 fields:
-  - Number of children you are the parent of: num_children_is_parent_of
+  - Number of children you are the parent of: children_of_parent.target_number
     datatype: integer
     default: 2
-  - Number of children you have care or custody of: num_children_has_care_of
+  - Number of children you have care or custody of: children_of_custody.target_number
     datatype: integer
     default: 1
 ---
@@ -399,6 +387,7 @@ id: parent_children
 question: |
   Tell us about the ${ordinal(i)} child that you are the parent of.
 #list collect: True
+# TODO: fix oridinal issues
 fields:
   - First Name: children_of_parent[i].name.first
   - Middle Name: children_of_parent[i].name.middle
@@ -423,7 +412,7 @@ fields:
 ---
 id: non_parent_children
 question: |
-  % if ( num_children_has_care_of == 1 ):
+  % if ( children_of_custody.target_number == 1 ):
   Tell us about the child that is in your care or custody.
   % else:
   Tell us about the ${ordinal( i )} child that is in your care or custody.
@@ -446,7 +435,7 @@ fields:
     validation messages:
       min: |
         The child has to be less than 18 years old.
-  # todo: Is the below item required here? I didn't 
+  # TODO: Is the below item required here? I didn't 
   # understand the final decision.
   - Is the defendant also a parent of this child?: children_of_custody[i].defendant_is_parent
     datatype: yesnoradio
@@ -625,7 +614,7 @@ fields:
       I don’t need court to order the Defendant to pay support
 ---
 id: do_non_minors_need_child_support
-# todo: similar to children, get number and then show
+# TODO: similar to children, get number and then show
 # the right number of individual questions.
 question: |
   Are there any kids that are between 18 and and 22 that you need to add?
@@ -676,7 +665,7 @@ attachment:
       - "have_had_custody_cases_no": ${ have_had_custody_cases_no }
       - "have_had_paternity_cases_no": ${ have_had_paternity_cases_no }
       - "have_had_paternity_cases_yes": ${ have_had_paternity_cases_yes }
-      # todo: pdf has wrong boolean ('yes')
+      # TODO: pdf has wrong boolean ('yes')
       - "requests_custody_yes": ${ requests_custody_yes }
       - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
       - "wants_custody_of1_age": ${ wants_custody_of1_age }
@@ -703,13 +692,13 @@ attachment:
       - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
       - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
       - "reasons_no_contact": ${ reasons_no_contact }
-      # todo: add '_yes' to field name
+      # TODO: add '_yes' to field name
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
-      # todo: wrong field type for bool?
-      # todo: better name? (wants_visitation_orders)
+      # TODO: wrong field type for bool?
+      # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ permit_visitation_yes }
-      # todo: wrong field types for visitation bools?
+      # TODO: wrong field types for visitation bools?
       - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
@@ -769,7 +758,7 @@ attachment:
       - "third_party_name__2": ${ third_party_name }
       - "wants_third_party_yes__2": ${ wants_third_party_yes }
       ###################
-      # todo: fix pdf fields?
+      # TODO: fix pdf fields?
       ###################
       - "other_order_discription": ${ other_order_discription }
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
@@ -887,7 +876,7 @@ attachment:
       - "third_party_name__2": ${ third_party_name }
       - "wants_third_party_yes__2": ${ wants_third_party_yes }
       ###################
-      # todo: fix
+      # TODO: fix
       ###################
       - "other_order_discription": ${ other_order_discription }
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
