@@ -416,7 +416,6 @@ attachment:
       - "defendant_phone": ${ other_parties[0].phone_number }
       - "defendant_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      - "": ${  }
       - "defendant_name_other": ${ other_parties[0].name_other }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }
