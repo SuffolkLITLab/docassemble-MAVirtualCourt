@@ -92,6 +92,9 @@ code: |
   str(users[0])
   users[0].address.on_one_line()
   str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
+  need_past_address_appendix
+  need_children_appendix
+  need_other_parties_appendix
   A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
   basic_questions_signature_flow
   users[0].signature
@@ -1045,13 +1048,26 @@ code: |
 code: |
   need_past_address_appendix_temp = False
   for child in children:
-    if len(child.past_addresses) > 2:
+    if len(child.previous_addresses) > 2:
       need_past_address_appendix_temp = True
-      break
+      child.previous_addresses.put_on_appendix = True
+    else:
+      child.previous_addresses.put_on_appendix = False
   need_past_address_appendix = need_past_address_appendix_temp
 ---
 code: |
-  need_children_appendix = len(children) > 3
+  need_children_appendix_temp = False 
+  if len(children) > 3:
+    need_children_appendix_temp = True
+  need_children_appendix = need_children_appendix_temp
+---
+code: |
+  need_other_parties_appendix_temp = False
+  for proceeding in other_care_custody_proceedings:
+    if len(proceeding.other_parties) > 3:
+      need_other_parties_appendix_temp = True
+      proceeding.put_on_appendix = True
+  need_other_parties_appendix = need_other_parties_appendix_temp
 ---
 progress: 100
 mandatory: True
@@ -1068,7 +1084,17 @@ subquestion: |
   Below is a preview of your form.
   
   ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment }
+  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  ${care_or_custody_proceedings_appendix_variable }
+  % endif
 attachment code: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment
+---
+need: need_other_parties_appendix
+attachment:
+  variable name: care_or_custody_proceedings_appendix_variable
+  name: Affidavit Disclosing Care or Custody Proceedings Appendix
+  filename: Affidavit_Disclosing_Care_or_Custody_Appendix
+  docx template file: care_or_custody_proceedings_appendix.docx
 ---
 need: A_affidavit_disclosing_care_or_custody_proceedings0009
 attachment:
@@ -1169,6 +1195,9 @@ question: |
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
      ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
+  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  ${care_or_custody_proceedings_appendix_variable }
+  % endif
 ---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
