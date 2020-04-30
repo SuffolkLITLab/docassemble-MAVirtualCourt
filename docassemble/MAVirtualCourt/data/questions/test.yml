@@ -2,6 +2,11 @@
 imports:
   - docassemble.MAVirtualCourt
 ---
+code: |
+  define('my_variable','')
+---
 mandatory: True
 question: |
   ${docassemble.MAVirtualCourt.__version__}
+  
+  ${my_variable}

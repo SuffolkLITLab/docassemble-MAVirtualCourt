@@ -167,9 +167,10 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
     # Also, don't set any signatures to DAEmpty
     # This will not work on a method call, other than the 3 we explicitly handle: 
     # address.line_two(), address.on_one_line(), and address.block()
-    if not map_names(field).endswith('.signature') and not '(' in map_names(field):
+    # Empty strings will break this
+    if field and not map_names(field).endswith('.signature') and not '(' in map_names(field):
       if not defined(map_names(field)):
-        define(map_names(field), '""') # set to an empty string 
+        define(map_names(field), '') # set to an empty string 
         #define(map_names(field), 'DAEmpty()') # set to special Docassemble empty object. Should work in DA > 1.1.4
     # Handle special case of an address that we skipped filling in on the form
     elif map_names(field).endswith('address.on_one_line()'):

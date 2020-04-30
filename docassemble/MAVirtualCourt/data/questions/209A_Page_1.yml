@@ -305,7 +305,8 @@ fields:
       - 'District Court': District Court
       - 'Probate and Family Court': Probate Court
       - 'Superior Court': Superior Court
-validation code: |     
+comment: |
+  validation code: |
   if ((court_selection == 'Superior Court') and
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
   (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
@@ -316,6 +317,7 @@ validation code: |
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
+
 ---
 question: |
   Your Age?
@@ -474,11 +476,11 @@ code: |
   abuse_suffered_date
   order_relief_ex_parte
   municipal_court
-  signature_date 
+  # signature_date 
   mark_unfilled_fields_empty(interview_metadata["complaint_209A_labeled_page10003"])
-  complaint_209A_labeled_page10003_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # complaint_209A_labeled_page10003_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   complaint_209A_labeled_page10003 = True
 ---
 continue button field: complaint_209A_labeled_page10003_preview_question
@@ -667,7 +669,7 @@ data:
     field_type: yesno
   - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together']
     field_type: yesno
-  - variable: relationship_to_defendant_unmarried[defendant_and_plaintiff_used_to_live_together]
+  - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together']
     field_type: yesno
   - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
     field_type: yesno

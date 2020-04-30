@@ -467,7 +467,8 @@ attachment:
       - "defendant_name_print": ${ other_parties[0].name_print }
 ---
 include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
+  #- docassemble.MAVirtualCourt:basic-questions.yml
+  - basic-questions.yml
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -496,7 +497,7 @@ code: |
   if not other_parties[0].english_yes:
     other_parties[0].english_no = True
   if not other_parties[0].photo_yes:
-    other_parties[0].photo_yes = True
+    other_parties[0].photo_no = True
   other_parties[0].address
   if not other_parties[0].police_violence_yes:
     other_parties[0].police_violence_no = True
