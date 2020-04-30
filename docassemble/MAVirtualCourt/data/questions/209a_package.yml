@@ -1,0 +1,89 @@
+---
+include:
+ - 209A_Page_1.yml
+ #- 209A_page_2.yml # This one is obsolete
+ - 209A-child-support.yml
+ - plaintiff-confidential.yml
+ - defendant-information-209A.yml
+ - 209A_affidavit.yml
+ - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
+ - 209A_complaint_for_protection_from_abuse_probation.yml
+ - motion-for-impoundment.yml
+---
+features:
+  navigation: True
+---
+sections:
+  - Introduction
+  - Basic information
+  - Your relationship
+  - Why do you need this order?
+  - Children  
+  - Other cases
+  - Custody
+  - Other party information
+  - Your information
+  - Keeping your information private
+---
+code: |
+  attachment_temp = []  
+  # Build the 209A package. Up to 8 total forms
+  # Page 1: complaint_209A_labeled_page10003_attachment
+  # Complaint Affidavit: complaint_209A_Affidavit_attachment
+  # Page 2: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
+  # Child support: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
+  # Affidavit care/custody: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment 
+  # Plaintiff info: A_Plaintiff_Confidential_Information0011_attachment
+  # Defendant info: defendantinformation209A0008_attachment
+  # motion to impound: a_258e_motion_for_impoundment0019_attachment
+  
+  # Always include page 1 
+  attachment_temp.append(complaint_209A_labeled_page10003_attachment)
+  # include page 2 only if there are children
+  if plaintiff_has_minor_children: 
+    attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
+  attachment_temp.append( complaint_209A_Affidavit_attachment )
+  if wants_child_support_yes:
+    attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
+  attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
+  attachment_temp.append(defendantinformation209A0008_attachment)
+  attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
+  
+  final_attachment_bundle = attachment_temp
+---
+mandatory: True
+code: |
+  basic_questions_intro_screen
+  users.there_is_another = False
+  other_parties.there_is_another = False
+  defendant = other_parties # We need this for Affidavit interview currently
+  complaint_209A_labeled_page10003
+  if plaintiff_has_minor_children: 
+    A_complaint_for_protection_from_abuse_probation_copy0005
+  complaint_209A_Affidavit
+  if wants_child_support_yes:
+    Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008  
+  A_Plaintiff_Confidential_Information0011
+  defendantinformation209A0008
+  a_258e_motion_for_impoundment0019
+  final_attachment_bundle
+  download_screen
+---
+question: |
+  Who do you want protection from?  
+fields:
+  - First name: other_parties[0].name.first
+  - Middle name: other_parties[0].name.middle
+    required: False
+  - Last name: other_parties[0].name.last
+    required: False
+  - Suffix: other_parties[0].name.suffix
+    required: False
+    code: |
+      name_suffix()
+---
+question: |
+  Download screen
+subquestion: |
+  ${pdf_concatenate(final_attachment_bundle)}
+event: download_screen  

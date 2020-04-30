@@ -759,7 +759,7 @@ attachment:
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
       - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
-mandatory: True
+# mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

@@ -1,6 +1,12 @@
 ---
+imports:
+  - docassemble.MAVirtualCourt
+---
+code: |
+  define('my_variable','')
+---
 mandatory: True
 question: |
-  ${user_privileges()}
+  ${docassemble.MAVirtualCourt.__version__}
   
-  ${'clinic' in user_privileges()}
+  ${my_variable}
