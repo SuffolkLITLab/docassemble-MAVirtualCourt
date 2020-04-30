@@ -294,48 +294,47 @@ code: |
     school_strings.append( str(school) + ' ' + school.address.on_one_line() )
   schools_to_stay_away_from_pdf = comma_and_list( school_strings )
 
-  wants_visitation_orders_pdf = showifdef('wants_visitation_orders', False)
-  prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
   permit_visitation_yes = no_visitation_restrictions
+  prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
   prohibit_visitation_yes = prohibit_visitation_pdf
   
   wants_center_pdf = showifdef('wants_center', False)
-  visitation_center_name_pdf = showifdef('visitation_center_name', '')
-  actual_center_payer_pdf = showifdef('actual_center_payer', '')
   wants_visitation_center_yes = wants_center_pdf
+  visitation_center_name_pdf = showifdef('visitation_center_name', '')
   visitation_center_name = visitation_center_name_pdf
+  actual_center_payer_pdf = showifdef('actual_center_payer', '')
   visitation_center_payor_name = actual_center_payer_pdf
 
   wants_supervision_pdf = showifdef('wants_supervision', False)
-  visitation_supervisor_name_full_pdf = showifdef('visitation_supervisor_name_full', '')
-  supervision_time_pdf = showifdef('supervision_time', '')
-  actual_supervision_payer_pdf = showifdef('actual_supervision_payer', '')
   wants_supervision_yes = wants_supervision_pdf
-  visitation_supervisor_name = visitation_supervisor_name_full_pdf
+  supervisor_name_pdf = showifdef('visitation_supervisor_name_full', '')
+  visitation_supervisor_name = supervisor_name_pdf
+  supervision_time_pdf = showifdef('supervision_time', '')
   visitation_times = supervision_time_pdf
+  actual_supervision_payer_pdf = showifdef('actual_supervision_payer', '')
   visitation_supervision_payor_name = actual_supervision_payer_pdf
 
   wants_pickup_pdf = showifdef('wants_pickup', False)
-  who_picks_up_pdf = showifdef('who_picks_up', '')
   wants_third_party_yes = wants_pickup_pdf
+  who_picks_up_pdf = showifdef('who_picks_up', '')
   third_party_name = who_picks_up_pdf
 
   wants_other_order_pdf = showifdef('wants_other_order', False)
-  other_order_pdf = showifdef('other_order', '')
   wants_other_order_yes = wants_other_order_pdf
+  other_order_pdf = showifdef('other_order', '')
   other_order_discription = other_order_pdf
 
   wants_child_support_yes = len(wants_child_support_for) > 0
   
-  # Vars other forms' attachments need
+  # Vars other interviews need
   # majors_needing_support  # is list
 
   # Placeholders (to be answered in a previous interview).
   # TODO: remove when stitching
-  have_had_custody_cases_yes = showifdef('have_had_custody_cases', False)
-  have_had_custody_cases_no = not have_had_custody_cases_yes
-  have_had_paternity_cases_yes = showifdef('have_had_paternity_cases', False)
-  have_had_paternity_cases_no = not have_had_paternity_cases_yes
+  have_had_custody_cases_yes = have_had_custody_cases
+  have_had_custody_cases_no = not have_had_custody_cases
+  have_had_paternity_cases_yes = have_had_paternity_cases
+  have_had_paternity_cases_no = not have_had_paternity_cases
   # Important in question display logic in this form
   defendant_and_plaintiff_are_parents_of_child = True
 
@@ -641,7 +640,7 @@ continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_
 question: |
   Placeholder preview screen
 subquestion: |
-  Here is a preview of the form you'll sign. 
+  Here is a preview of the form you'll sign. Take a look and make sure everything is marked correctly. If it's not marked correctly, please let us know and contact a lawyer for more help.
   
   ${A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview}
 ---
