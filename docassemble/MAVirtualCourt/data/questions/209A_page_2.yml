@@ -137,7 +137,7 @@ fields:
     datatype: yesno
   - 'Other visitation requests': visitation_other_requests
 ---
-mandatory: True
+#mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

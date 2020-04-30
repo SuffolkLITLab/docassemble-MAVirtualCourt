@@ -283,10 +283,10 @@ fields:
 question: |
   Your Income
 subquestion: |
-  What is your gross income? "Gross" means your income before taxes are taken out of your check.  You can enter either your weekly or monthly income.
+  What is your gross income? "Gross" means your income before taxes are taken
+  out of your check.  You can enter either your weekly or monthly income.
   
-   For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](${ https://www.mass.gov/doc/2018-child-support-guidelines/download }). 
- 
+  Click "Help" to learn more. 
 fields:
   - "What is your gross income (before taxes)?": users[0].gross_income
     datatype: currency
@@ -294,9 +294,11 @@ fields:
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+help: |      
+   For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
 ---
 progress: 100
-mandatory: True
+# mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

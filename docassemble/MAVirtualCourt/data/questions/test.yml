@@ -1,10 +1,12 @@
 ---
-include:
-  - basic-questions.yml
+imports:
+  - docassemble.MAVirtualCourt
 ---
-objects:
-  - orgs: PeopleList
+code: |
+  define('my_variable','')
 ---
 mandatory: True
 question: |
-  ${orgs.familiar() }
+  ${docassemble.MAVirtualCourt.__version__}
+  
+  ${my_variable}

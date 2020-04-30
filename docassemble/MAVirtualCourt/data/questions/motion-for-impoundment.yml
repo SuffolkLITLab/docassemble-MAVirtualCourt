@@ -125,7 +125,7 @@ subquestion: |
 yesno: impound_information_ex_parte
 ---
 progress: 100
-mandatory: True
+#mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

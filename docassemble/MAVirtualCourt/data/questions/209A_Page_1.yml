@@ -101,13 +101,13 @@ yesno: other_cases.there_is_another
 question: |
   Children
 fields:
-  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children_no
+  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
     datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
 ---
 question: |
-  Other cases with Defendant
+  Other cases with the Defendant
 subquestion: |
-  Have you ever had any other cases with the Defendant for divorce, annulment, separate support, or abuse prevention?
+  Have you ever had any other cases with ${other_parties.familiar()} for divorce, annulment, separate support, or abuse prevention?
 yesno: plaintiff_and_defendant_other_case_yes
 ---
 question: |
@@ -145,77 +145,91 @@ fields:
   - 'Who are you in relationship to the plaintiff?': plaintiff_assistant_relationship_to_plaintiff
 ---
 question: |
-  The Defendant
+  More facts about ${other_parties.familiar()}
 subquestion: |
-  Tell me some other things about ${ other_parties[0].name.full() }.
+  Tell me some other things about ${ other_parties.familiar() }.
 fields:
-  - 'Defendant Alias (if any)': defendant_alias
-    required: False
-  - 'Is the Defendant Male?': defendant_gender_male
+  - Has ${other_parties.familiar()} ever used a different first or last name?: defendant_has_alias
     datatype: yesnoradio
-  - 'Is the Defendant over eighteen?': defendant_is_major
+    help: |
+      For example, a last name used before marriage, a nickname, or other
+      name other than their current legal name.
+  - What other name(s) has ${other_parties.familiar()} used?: defendant_alias
+    show if: defendant_has_alias
+  - ${other_parties.familiar()}'s gender: other_parties[0].gender
+    choices:
+      - Female: female
+      - Male: male
+      - Non-binary: non-binary
+      - Prefer not to say: prefer-not-to-say
+    help: |
+      If you do not select either "Male" or "Female", both checkboxes
+      will be left unchecked on the form. This answer will be used to help
+      identify ${other_parties} to the police to allow them to enforce
+      your order.
+  - Is ${other_parties.familiar()} aged eighteen or older?: defendant_is_major
     datatype: yesnoradio
 ---
 question: |
   Did the Defendant do any of these things to you?
 subquestion: |
-  The Court needs to know how the Defendant abused you before it can give you a restraining order.
+  The Court needs to know how ${other_parties.familiar()} abused you before it can give you a restraining order.
 fields:
-  - 'The Defendant attempted to cause me physical harm': defendant_abuse_attempted_physical_harm
+  - '${other_parties.familiar()} attempted to cause me physical harm': defendant_abuse_attempted_physical_harm
     datatype: yesno
-  - 'The Defendant has placed me in fear of imminent serious physical harm': defendant_abuse_caused_fear_of_serious_physical_harm
+  - '${other_parties.familiar()} has placed me in fear of imminent serious physical harm': defendant_abuse_caused_fear_of_serious_physical_harm
     datatype: yesno
-  - 'The Defedant has harmed me': defendant_abuse_caused_physical_harm
+  - '${other_parties.familiar()} has harmed me': defendant_abuse_caused_physical_harm
     datatype: yesno
-  - 'The Defendant has caused me to engage in sexual relations by force, threat, or duress': defendant_abuse_caused_sexual_assault
+  - '${other_parties.familiar()} has caused me to engage in sexual relations by force, threat, or duress': defendant_abuse_caused_sexual_assault
     datatype: yesno
   - 'None of the above. SHOULD WE JUST REMOVE THIS?': no_abuse_checked
     datatype: yesno
 ---    
 question: |
-  When did the Defendant abuse you?
+  When did ${other_parties.familiar()} abuse you?
 fields:
-  - 'The Defendant abused me on the following dates': abuse_suffered_date
+  - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
 ---
 question: |
   What are you asking for?
 subquestion: |
   What do you want the Court to do?
 fields:
-  - 'I want the Court to order the Defendant to stop abusing me.': order_defendant_stop_abuse_yes
+  - 'I want the Court to order ${other_parties.familiar()} to stop abusing me.': order_defendant_stop_abuse_yes
     datatype: yesno
-  - 'I want the Court to order the Defendant to not have contact with me.': order_defendant_no_contact_unless_court_authorized_yes
+  - 'I want the Court to order ${other_parties.familiar()} to not have contact with me.': order_defendant_no_contact_unless_court_authorized_yes
     datatype: yesno
-  - 'I want the Court to order the Defendant to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
+  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
     datatype: yesno
   - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
     datatype: yesnoradio
     show if:
       variable: order_defendant_remain_away_plaintiff_residence_yes
       is: True
-  - 'I want the Court to order the Defendant to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
+  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
     datatype: yesno
-  - 'I want the Court to order the Defendant to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
+  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
     datatype: yesno
 ---
 question: |
-  Should the Defendant have to pay you money?
+  Should ${other_parties.familiar()} have to pay you money?
 subquestion: |
-  The Court can tell the defendant to pay for money you lost or spent as direct result of the abuse.  For example, the court might order the Defendant to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell the defendant to pay money to support you (as opposed to your children).
+  The Court can tell ${other_parties.familiar()} to pay for money you lost or spent as direct result of the abuse.  For example, the court might order ${other_parties.familiar()} to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell ${other_parties.familiar()} to pay money to support you (as opposed to your children).
 fields:
-  - 'I want the Court to order the Defendant to pay me because of losses I have suffered': order_defendant_pay_yes
+  - 'I want the Court to order ${other_parties.familiar()} to pay me because of losses I have suffered': order_defendant_pay_yes
     datatype: yesno
-  - 'The Court should order the Defendant to pay me:': order_defendant_pay_amount
+  - 'The Court should order ${other_parties.familiar()} to pay me:': order_defendant_pay_amount
     datatype: currency
     show if:
       variable: order_defendant_pay_yes
       is: True
-  - 'This is why the Court should order the Defendant to pay me:': losses_caused_by_defendant
+  - 'This is why the Court should order ${other_parties.familiar()} to pay me:': losses_caused_by_defendant
     input type: area
     show if:
       variable: order_defendant_pay_yes
       is: True
-  - 'The Court should pay the Defendant to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
+  - 'The Court should pay ${other_parties.familiar()} to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
     datatype: yesno
   - 'The Court should order the relief related to my minor children.': order_page_two_relief_yes # stretch goal: if someone who said they don't have kids under eighteen checks this, then ask about kids under eighteen again.
     datatype: yesno
@@ -223,7 +237,7 @@ fields:
 question: |
   Keeping your information secret
 subquestion: |
-  What information do you want to show up on the restraining order? The Defendant will see the restraining order.
+  What information do you want to show up on the restraining order? ${other_parties.familiar()} will see the restraining order.
 fields: 
   - "I do not want my home address to appear on the Court's order.": order_impound_plaintiff_address_residential_yes
     datatype: yesno
@@ -235,7 +249,7 @@ fields:
 question: |
   Is there anything else you want the court to order?
 subquestion: |
-  Is there anything else you want the court to order the defendant to do? (Don't include anything about your children here.  There will be a chance for that later).
+  Is there anything else you want the court to order ${other_parties.familiar()} to do? (Don't include anything about your children here.  There will be a chance for that later).
 fields:
   - 'I want the Court to order something else': order_other_relief_yes
     datatype: yesno
@@ -249,23 +263,50 @@ question: |
 subquestion: |
   PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
 fields:      
-  - 'I want the Court to make its order without advance notice to the Defendant': order_relief_ex_parte
+  - 'I want the Court to make its order without advance notice to ${other_parties.familiar()}': order_relief_ex_parte
     datatype: yesno
     default: True
 ---
+help: |
+  There are four courts that you can choose from to get a 209A Restraining order.
+  
+  1. The Boston Municipal Court or District court may be close to where you live.
+  2. There is only one Probate and Family Court and one Superior Court in
+  most counties, which may be further away from where you live.
+  
+  You can get a 209A restraining order at the District Court near where you live or the Probate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
+  
+  If you have moved to another town in Massachusetts since the abuse, you can go to the court where you live now or to the court for an address that you had to leave because of the abuse. 
+  
+  Some things to think about when you are deciding which court is better for you are:  
+  
+  #### If the other parent wants to visit your child  
+  The District Court is not supposed to order visitation between the other parent and your child as part of a 209A case. The Probate and Family Court can order visitation in a 209A case.  If you want to get visitation settled right away, you might want to go to the Probate and Family Court to file for the 209A restraining order. If you do not want the court to decide about visitation, you might want to go to the District Court for your 209A restraining order. 
+  
+  #### If the person who abused you is facing criminal charges  
+  If the person who abused you is facing criminal charges related to the domestic violence, you might want to file for your 209A restraining order at the District or Superior Court where that case is. That way, you may be able to work with the same Victim/Witness Advocate for both cases.
+  
+  Read more at: [https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a)
 question: |
   Where do you want to file your case?
 subquestion: |
-  Pick a court. There are advantages and disadvantages. SMEs TO PROVIDE MORE GUIDANCE
+  Which court do you plan to file your case in?
+  
+  Choosing the court will change the kind of help you can get on this form. 
+  Click "Help" to learn more.
+  
+  We will help you locate the right court based on your address later on
+  in this form. Give us your best guess now.
 fields:
   - I want to file my case in: court_selection
+    input type: radio
     choices:
       - 'Boston Municipal Court': Municipal Court
       - 'District Court': District Court
       - 'Probate and Family Court': Probate Court
       - 'Superior Court': Superior Court
-  - 'Short Name for the Court': court_name_short
-validation code: |     
+comment: |
+  validation code: |
   if ((court_selection == 'Superior Court') and
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
   (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
@@ -276,6 +317,7 @@ validation code: |
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
+
 ---
 question: |
   Your Age?
@@ -316,26 +358,26 @@ question: |
 subquestion: |
   Check the boxes for the things that are true.
 fields:
-  - 'Check the box that best describes your relationship to the Defendant': relationship_to_defendant_marriage_or_kids
+  - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_marriage_or_kids
     datatype: checkboxes
     choices:
-      - 'I am currently married to the defendant': defendant_and_plaintiff_relationship_married_to_each_other
-      - 'I was formerly married to the defendant': defendant_and_plaintiff_relationship_formerly_married_to_each_other
-      - 'I have a child with the Defendant': defendant_and_plaintiff_are_parents_of_child
+      - 'I am currently married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_married_to_each_other
+      - 'I was formerly married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_formerly_married_to_each_other
+      - 'I have a child with ${other_parties.familiar()}': defendant_and_plaintiff_are_parents_of_child
 ---
 question: |
    Your relationship to the Defendant
 subquestion: |
   Check the boxes for the things that are true.
 fields: 
-  - 'Check the box that best describes your relationship to the Defendant': relationship_to_defendant_unmarried
+  - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_unmarried
     datatype: checkboxes
     choices:
-      - 'I am not married to the Defendant, but we are related by blood or marriage': defendant_and_plaintiff_relationship_not_married_but_are_related
-      - 'I live with the Defendant': defendant_and_plaintiff_are_not_related_but_live_together
-      - 'I used to live with the Defendant': defendant_and_plaintiff_used_to_live_together
-      - 'I dated or used to date the Defendant': defendant_and_plaintiff_are_dating_or_dated
-      - 'I am or was engaged to the Defendant': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
+      - 'I am not married to ${other_parties.familiar()}, but we are related by blood or marriage': defendant_and_plaintiff_relationship_not_married_but_are_related
+      - 'I live with ${other_parties.familiar()}': defendant_and_plaintiff_are_not_related_but_live_together
+      - 'I used to live with ${other_parties.familiar()}': defendant_and_plaintiff_used_to_live_together
+      - 'I dated or used to date ${other_parties.familiar()}': defendant_and_plaintiff_are_dating_or_dated
+      - 'I am or was engaged to ${other_parties.familiar()}': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
 ---
@@ -360,17 +402,16 @@ buttons:
   - Exit: exit
   - Restart: restart
 ---
----
 id: complaint_209A_labeled_page10003
 code: |
   allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
   preferred_court = interview_metadata['complaint_209A_labeled_page10003']['preferred court']
   basic_questions_intro_screen 
-  complaint_209A_labeled_page10003_intro
+  # complaint_209A_labeled_page10003_intro
   user_saw_what_to_expect
   users[0].name.first
   other_parties[0].name.first
-  defendant_alias
+  defendant_has_alias
   if plaintiff_is_major_yes == True:
     plaintiff_is_major_no = False
     plaintiff_assistant_name = DAEmpty()
@@ -380,18 +421,20 @@ code: |
     if user_is_minor_plaintiff:
       refer_to_advocate
     plaintiff_assistant_name
-  defendant_alias
-  if defendant_gender_male == True:
-    defendant_gender_female = False
-  else:
-    defendant_gender_male = False
-    defendant_gender_female = True 
+  # defendant_alias
+  #if defendant_gender_male == True:
+  #  defendant_gender_female = False
+  #else:
+  #  defendant_gender_male = False
+  #  defendant_gender_female = True 
   if relationship_to_defendant_marriage_or_kids.all_false():
     if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
       defendant_relationship_to_plaintiff_is = DAEmpty()
     relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
     if relationship_to_defendant_unmarried.all_false():
       refer_to_258E_resources
+  else:
+    defendant_relationship_to_plaintiff_is = DAEmpty()
   if court_selection == "Superior Court":
     district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
     municipal_court = DAEmpty()
@@ -412,10 +455,11 @@ code: |
     municipal_court = DAEmpty()
     probate_court = True
     superior_court = DAEmpty()
-  if plaintiff_has_minor_children_no:
-    plaintiff_has_minor_children_yes = False
-  else:
-    plaintiff_has_minor_children_yes = True
+  plaintiff_has_minor_children
+  # if plaintiff_has_minor_children:
+  #   plaintiff_has_minor_children_yes = False
+  # else:
+  #   plaintiff_has_minor_children_yes = True
   other_cases.gather() 
   order_defendant_stop_abuse_yes
   if not order_defendant_remain_away_plaintiff_residence_yes:
@@ -433,11 +477,11 @@ code: |
   abuse_suffered_date
   order_relief_ex_parte
   municipal_court
-  signature_date 
+  # signature_date 
   mark_unfilled_fields_empty(interview_metadata["complaint_209A_labeled_page10003"])
-  complaint_209A_labeled_page10003_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # complaint_209A_labeled_page10003_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   complaint_209A_labeled_page10003 = True
 ---
 continue button field: complaint_209A_labeled_page10003_preview_question
@@ -458,19 +502,19 @@ attachment:
       - "defendant": ${ str(other_parties[0]) }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
-      - "municipal_court": ${ municipal_court }
-      - "district_court": ${ district_court }
-      - "probate_court": ${ probate_court }
-      - "superior_court": ${ superior_court }
-      - "court_name_short": ${ court_name_short }
-      - "defendant_alias": ${ defendant_alias }
+      - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
+      - "district_court": ${ courts[0].department == "District Court" }
+      - "probate_court": ${ courts[0].department == "Probate and Family Court" }
+      - "superior_court": ${ courts[0].department == "Superior Court" }
+      - "court_name_short": ${ courts[0].division }
+      - "defendant_alias": ${ defendant_alias if defendant_has_alias else '' }
       - "defendant_weapons_guns": ${ defendant_weapons_guns }
       - "defendant_weapons_ammunition": ${ defendant_weapons_ammunition }
       - "defendant_weapons_firearms_identification_card": ${ defendant_weapons_firearms_identification_card }
       - "defendant_weapons_license_to_carry": ${ defendant_weapons_license_to_carry }
       - "defendant_weapons_description": ${ defendant_weapons_description }
-      - "defendant_gender_male": ${ defendant_gender_male }
-      - "defendant_gender_female": ${ defendant_gender_female }
+      - "defendant_gender_male": ${ other_parties[0].gender_male }
+      - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
@@ -483,8 +527,8 @@ attachment:
       - "defendant_and_plaintiff_are_not_related_but_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] }
       - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
       - "defendant_and_plaintiff_are_dating_or_dated": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] }
-      - "plaintiff_has_minor_children_no": ${ plaintiff_has_minor_children_no }
-      - "plaintiff_has_minor_children_no": ${ plaintiff_has_minor_children_no }
+      - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
+      - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
       - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
@@ -509,7 +553,7 @@ attachment:
       - "other_relief": ${ other_relief }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
 ---
-mandatory: True
+#mandatory: True
 question: |
   Placeholder download screen
 subquestion: |
@@ -530,14 +574,14 @@ attachment:
       - "defendant": ${ str(other_parties[0]) } 
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
-      - "municipal_court": ${ municipal_court }
-      - "district_court": ${ district_court }
-      - "probate_court": ${ probate_court }
-      - "superior_court": ${ superior_court }
-      - "court_name_short": ${ court_name_short }
-      - "defendant_alias": ${ defendant_alias }
-      - "defendant_gender_male": ${ defendant_gender_male }
-      - "defendant_gender_female": ${ defendant_gender_female }
+      - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
+      - "district_court": ${ courts[0].department == "District Court" }
+      - "probate_court": ${ courts[0].department == "Probate and Family Court" }
+      - "superior_court": ${ courts[0].department == "Superior Court" }
+      - "court_name_short": ${ courts[0].division }
+      - "defendant_alias": ${ defendant_alias if defendant_has_alias else '' }
+      - "defendant_gender_male": ${ other_parties[0].gender_male }
+      - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
@@ -550,8 +594,8 @@ attachment:
       - "defendant_and_plaintiff_are_not_related_but_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] }
       - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
       - "defendant_and_plaintiff_are_dating_or_dated": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] }
-      - "plaintiff_has_minor_children_no": ${ plaintiff_has_minor_children_no }
-      - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children_yes }
+      - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
+      - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
       - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
@@ -626,11 +670,11 @@ data:
     field_type: yesno
   - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together']
     field_type: yesno
-  - variable: relationship_to_defendant_unmarried[defendant_and_plaintiff_used_to_live_together]
+  - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together']
     field_type: yesno
   - variable: relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
     field_type: yesno
-  - variable: plaintiff_has_minor_children_no
+  - variable: plaintiff_has_minor_children
     field_type: text
     field_data_type: text
   - variable: plaintiff_has_minor_children_yes

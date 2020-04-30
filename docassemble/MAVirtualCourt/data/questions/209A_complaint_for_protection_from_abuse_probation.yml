@@ -1,9 +1,6 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
-features:
-  labels above fields: True
----
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
@@ -852,7 +849,7 @@ attachment:
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
       - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
-mandatory: True
+# mandatory: True
 question: |
   Placeholder download screen
 subquestion: |

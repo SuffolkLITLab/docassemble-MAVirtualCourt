@@ -1037,7 +1037,7 @@ code: |
   need_children_appendix = len(children) > 3
 ---
 progress: 100
-mandatory: True
+# mandatory: True
 question: |
   Placeholder download screen
 subquestion: |
