@@ -1,4 +1,4 @@
-mandatory: True
+mandatory: True 
 code: |
   interview_metadata # make sure we initialize the object
   if not defined("interview_metadata['defendantinformation209A0008']"):
@@ -338,6 +338,8 @@ subquestion: |
 fields:
   - 'Defendant Alias': other_parties[0].name_other
     required: False
+    help: |
+      We filled in the information you gave us earlier
   - 'Defendant Birthplace': other_parties[0].birthplace
     required: False
   - 'Defendant Social Security Number (Last Four)': other_parties[0].social_security_number
@@ -515,7 +517,7 @@ code: |
   signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
+  # mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
   defendantinformation209A0008_preview_question # Pre-canned preview screen
   basic_questions_signature_flow
   other_parties[0].signature

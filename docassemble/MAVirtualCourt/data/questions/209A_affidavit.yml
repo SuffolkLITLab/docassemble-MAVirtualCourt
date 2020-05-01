@@ -63,7 +63,10 @@ question: |
 subquestion: |
   The judge needs to understand why you need a 209A order.
   
-  Use the Affidavit form to describe the abuse. 
+  The next few questions will be used to fill in the "209A Affidavit".
+
+  Use the Affidavit form to describe the abuse. The affidavit needs to be in the words
+  of the person who is being protected. [TODO: we can change pronouns if we want later]
    
   When you sign your name you are declaring, "under penalty of perjury" that what you wrote is true to the best of your knowledge.
 terms:
@@ -117,13 +120,13 @@ code: |
   
   saw_incidents
   
-  
-  str(users[0])
-  signature_date
-  mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
-  complaint_209A_Affidavit_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # Moved to umbrella 209a package
+  # str(users[0])
+  # signature_date
+  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
+  # complaint_209A_Affidavit_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   complaint_209A_Affidavit = True
 ---
 comment: |
@@ -247,10 +250,10 @@ subquestion: |
 fields:
   - no label: incidents_of_abuse[i].abuse
     choices:
-      - ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically
-      - ${ defendant } tried to physically hurt me
-      - ${ defendant } physically hurt me
-      - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }
+      - ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically: fear
+      - ${ defendant } tried to physically hurt me: attempted-physical
+      - ${ defendant } physically hurt me: physical
+      - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }: sex
     datatype: checkboxes
 help:
   label: Can you give me some examples?

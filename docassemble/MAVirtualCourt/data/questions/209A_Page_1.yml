@@ -42,7 +42,24 @@ code: |
   other_cases[i].date
   other_cases[i].docket_number
   other_cases[i].complete = True
-  
+---
+question: |
+  Getting a 209A Restraining Order
+subquestion: |
+  [Placeholder text from Caroline]  
+continue button field: main_209A_package_intro
+---
+comment: |
+  Screening question placeholder
+question: |
+  Who do you need this order to protect?
+fields:
+  - no label: who_protecting_screener
+    datatype: radio
+    choices:
+      - Myself: me
+      - Myself and my children: me and children
+      - Someone else: someone else
 ---
 comment: |
   Kate Barry, family law SME, has compiled a lot of bugs here: https://drive.google.com/drive/u/0/shared-with-me
@@ -53,7 +70,19 @@ comment: |
   As of April 15, 2020 at 5pm, the only real bug being reported on the above bug report form is one that produces this error. 
   Unfortunately, the reporters did not provide links to their interview sessions: Error
   There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
-  
+---
+question: |
+  Who do you need protection from?  
+fields:
+  - First name: other_parties[0].name.first
+  - Middle name: other_parties[0].name.middle
+    required: False
+  - Last name: other_parties[0].name.last
+    required: False
+  - Suffix: other_parties[0].name.suffix
+    required: False
+    code: |
+      name_suffix()  
 ---
 question: |
   What to expect.
@@ -128,14 +157,6 @@ buttons:
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
-comment: |
-  This question is used to introduce your interview. Please customize
-continue button field: complaint_209A_labeled_page10003_intro
-question: |
-  209A Complaint Page 1
-subquestion: |
-  209A Complaint Page 1
----
 question: |
   Relationship to Plaintiff
 subquestion: |
@@ -154,7 +175,7 @@ fields:
     help: |
       For example, a last name used before marriage, a nickname, or other
       name other than their current legal name.
-  - What other name(s) has ${other_parties.familiar()} used?: defendant_alias
+  - What other name(s) has ${other_parties.familiar()} used?: other_parties[0].name_other
     show if: defendant_has_alias
   - ${other_parties.familiar()}'s gender: other_parties[0].gender
     choices:
@@ -169,22 +190,23 @@ fields:
       your order.
   - Is ${other_parties.familiar()} aged eighteen or older?: defendant_is_major
     datatype: yesnoradio
----
-question: |
-  Did the Defendant do any of these things to you?
-subquestion: |
-  The Court needs to know how ${other_parties.familiar()} abused you before it can give you a restraining order.
-fields:
-  - '${other_parties.familiar()} attempted to cause me physical harm': defendant_abuse_attempted_physical_harm
-    datatype: yesno
-  - '${other_parties.familiar()} has placed me in fear of imminent serious physical harm': defendant_abuse_caused_fear_of_serious_physical_harm
-    datatype: yesno
-  - '${other_parties.familiar()} has harmed me': defendant_abuse_caused_physical_harm
-    datatype: yesno
-  - '${other_parties.familiar()} has caused me to engage in sexual relations by force, threat, or duress': defendant_abuse_caused_sexual_assault
-    datatype: yesno
-  - 'None of the above. SHOULD WE JUST REMOVE THIS?': no_abuse_checked
-    datatype: yesno
+# We never need to ask this question. It's filled in from the affidavit
+# ---
+# question: |
+#   Did the Defendant do any of these things to you?
+# subquestion: |
+#   The Court needs to know how ${other_parties.familiar()} abused you before it can give you a restraining order.
+# fields:
+#   - '${other_parties.familiar()} attempted to cause me physical harm': defendant_abuse_attempted_physical_harm
+#     datatype: yesno
+#   - '${other_parties.familiar()} has placed me in fear of imminent serious physical harm': defendant_abuse_caused_fear_of_serious_physical_harm
+#     datatype: yesno
+#   - '${other_parties.familiar()} has harmed me': defendant_abuse_caused_physical_harm
+#     datatype: yesno
+#   - '${other_parties.familiar()} has caused me to engage in sexual relations by force, threat, or duress': defendant_abuse_caused_sexual_assault
+#     datatype: yesno
+#   - 'None of the above. SHOULD WE JUST REMOVE THIS?': no_abuse_checked
+#     datatype: yesno
 ---    
 question: |
   When did ${other_parties.familiar()} abuse you?
@@ -194,30 +216,34 @@ fields:
 question: |
   What are you asking for?
 subquestion: |
-  What do you want the Court to do?
+  What do you need the Court to do?
 fields:
-  - 'I want the Court to order ${other_parties.familiar()} to stop abusing me.': order_defendant_stop_abuse_yes
+  # - 'I need the Court to order ${other_parties.familiar()} to stop abusing me.': order_defendant_stop_abuse_yes
+  #   datatype: yesno
+  - 'I need the Court to order ${other_parties.familiar()} to not have contact with me.': order_defendant_no_contact_unless_court_authorized_yes
     datatype: yesno
-  - 'I want the Court to order ${other_parties.familiar()} to not have contact with me.': order_defendant_no_contact_unless_court_authorized_yes
-    datatype: yesno
-  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
+  - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
     datatype: yesno
   - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
     datatype: yesnoradio
     show if:
       variable: order_defendant_remain_away_plaintiff_residence_yes
       is: True
-  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
+  - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
     datatype: yesno
-  - 'I want the Court to order ${other_parties.familiar()} to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
+  - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
     datatype: yesno
+---
+code: |
+  # This is silly to ask--the only reason Plaintiff wants the order
+  order_defendant_stop_abuse_yes = True
 ---
 question: |
   Should ${other_parties.familiar()} have to pay you money?
 subquestion: |
   The Court can tell ${other_parties.familiar()} to pay for money you lost or spent as direct result of the abuse.  For example, the court might order ${other_parties.familiar()} to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell ${other_parties.familiar()} to pay money to support you (as opposed to your children).
 fields:
-  - 'I want the Court to order ${other_parties.familiar()} to pay me because of losses I have suffered': order_defendant_pay_yes
+  - 'I need the Court to order ${other_parties.familiar()} to pay me because of losses I have suffered': order_defendant_pay_yes
     datatype: yesno
   - 'The Court should order ${other_parties.familiar()} to pay me:': order_defendant_pay_amount
     datatype: currency
@@ -229,7 +255,7 @@ fields:
     show if:
       variable: order_defendant_pay_yes
       is: True
-  - 'The Court should pay ${other_parties.familiar()} to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
+  - 'The Court should order ${other_parties.familiar()} to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
     datatype: yesno
   - 'The Court should order the relief related to my minor children.': order_page_two_relief_yes # stretch goal: if someone who said they don't have kids under eighteen checks this, then ask about kids under eighteen again.
     datatype: yesno
@@ -237,7 +263,7 @@ fields:
 question: |
   Keeping your information secret
 subquestion: |
-  What information do you want to show up on the restraining order? ${other_parties.familiar()} will see the restraining order.
+  What information do you need to show up on the restraining order? ${other_parties.familiar()} will see the restraining order.
 fields: 
   - "I do not want my home address to appear on the Court's order.": order_impound_plaintiff_address_residential_yes
     datatype: yesno
@@ -247,11 +273,11 @@ fields:
     datatype: yesno
 ---
 question: |
-  Is there anything else you want the court to order?
+  Is there anything else you need the court to order?
 subquestion: |
-  Is there anything else you want the court to order ${other_parties.familiar()} to do? (Don't include anything about your children here.  There will be a chance for that later).
+  Is there anything else you need the court to order ${other_parties.familiar()} to do? (Don't include anything about your children here.  There will be a chance for that later).
 fields:
-  - 'I want the Court to order something else': order_other_relief_yes
+  - 'I need the Court to order something else': order_other_relief_yes
     datatype: yesno
   - 'The something else is:': other_relief
     show if:
@@ -263,7 +289,7 @@ question: |
 subquestion: |
   PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
 fields:      
-  - 'I want the Court to make its order without advance notice to ${other_parties.familiar()}': order_relief_ex_parte
+  - 'I need the Court to make its order without advance notice to ${other_parties.familiar()}': order_relief_ex_parte
     datatype: yesno
     default: True
 ---
@@ -406,12 +432,14 @@ id: complaint_209A_labeled_page10003
 code: |
   allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
   preferred_court = interview_metadata['complaint_209A_labeled_page10003']['preferred court']
-  basic_questions_intro_screen 
-  # complaint_209A_labeled_page10003_intro
+  # basic_questions_intro_screen 
   user_saw_what_to_expect
-  users[0].name.first
-  other_parties[0].name.first
-  defendant_has_alias
+  # users[0].name.first
+  # plaintiff_is_major_yes # Ask for age
+  # other_parties[0].name.first
+
+  # defendant_has_alias # We ask this towards end
+
   if plaintiff_is_major_yes == True:
     plaintiff_is_major_no = False
     plaintiff_assistant_name = DAEmpty()
@@ -421,12 +449,6 @@ code: |
     if user_is_minor_plaintiff:
       refer_to_advocate
     plaintiff_assistant_name
-  # defendant_alias
-  #if defendant_gender_male == True:
-  #  defendant_gender_female = False
-  #else:
-  #  defendant_gender_male = False
-  #  defendant_gender_female = True 
   if relationship_to_defendant_marriage_or_kids.all_false():
     if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
       defendant_relationship_to_plaintiff_is = DAEmpty()
@@ -435,53 +457,59 @@ code: |
       refer_to_258E_resources
   else:
     defendant_relationship_to_plaintiff_is = DAEmpty()
-  if court_selection == "Superior Court":
-    district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
-    municipal_court = DAEmpty()
-    probate_court = DAEmpty()
-    superior_court = True
-  elif court_selection == "District Court":
-    district_court = True
-    municipal_court = DAEmpty()
-    probate_court = DAEmpty()
-    superior_court = DAEmpty()
-  elif court_selection == "Municipal Court":
-    district_court = DAEmpty()
-    municipal_court = True
-    probate_court = DAEmpty()
-    superior_court = DAEmpty()
-  elif court_selection == "Probate Court":
-    district_court = DAEmpty()
-    municipal_court = DAEmpty()
-    probate_court = True
-    superior_court = DAEmpty()
+
+  # if court_selection == "Superior Court":
+  #   district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
+  #   municipal_court = DAEmpty()
+  #   probate_court = DAEmpty()
+  #   superior_court = True
+  # elif court_selection == "District Court":
+  #   district_court = True
+  #   municipal_court = DAEmpty()
+  #   probate_court = DAEmpty()
+  #   superior_court = DAEmpty()
+  # elif court_selection == "Municipal Court":
+  #   district_court = DAEmpty()
+  #   municipal_court = True
+  #   probate_court = DAEmpty()
+  #   superior_court = DAEmpty()
+  # elif court_selection == "Probate Court":
+  #   district_court = DAEmpty()
+  #   municipal_court = DAEmpty()
+  #   probate_court = True
+  #   superior_court = DAEmpty()
+
   plaintiff_has_minor_children
-  # if plaintiff_has_minor_children:
-  #   plaintiff_has_minor_children_yes = False
-  # else:
-  #   plaintiff_has_minor_children_yes = True
-  other_cases.gather() 
-  order_defendant_stop_abuse_yes
-  if not order_defendant_remain_away_plaintiff_residence_yes:
-    If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = DAEmpty()
-  if not order_defendant_pay_yes:
-    losses_caused_by_defendant = DAEmpty()
-    order_defendant_pay_amount = DAEmpty()
-  order_impound_plaintiff_address_residential_yes
-  if no_abuse_checked:
-    refer_to_258E_resources
-  if not order_other_relief_yes:
-    other_relief = DAEmpty()
-  if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
-    defendant_weapons_description = DAEmpty()
-  abuse_suffered_date
-  order_relief_ex_parte
-  municipal_court
+
+  # other_cases.gather()  # Ask this later
+
+  # order_defendant_stop_abuse_yes
+  # if not order_defendant_remain_away_plaintiff_residence_yes:
+  #   If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = DAEmpty()
+  # if not order_defendant_pay_yes:
+  #   losses_caused_by_defendant = DAEmpty()
+  #   order_defendant_pay_amount = DAEmpty()
+
+  # order_impound_plaintiff_address_residential_yes
+
+  # if no_abuse_checked:
+  #   refer_to_258E_resources
+  # if not order_other_relief_yes:
+  #   other_relief = DAEmpty()
+  # if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
+  #   defendant_weapons_description = DAEmpty()
+
+  # This comes from the main affidavit    
+  # abuse_suffered_date
+  # order_relief_ex_parte
+
+  # Below are only used for standalone interview
   # signature_date 
-  mark_unfilled_fields_empty(interview_metadata["complaint_209A_labeled_page10003"])
+  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_labeled_page10003"])
   # complaint_209A_labeled_page10003_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
   # users[0].signature
+
   complaint_209A_labeled_page10003 = True
 ---
 continue button field: complaint_209A_labeled_page10003_preview_question
