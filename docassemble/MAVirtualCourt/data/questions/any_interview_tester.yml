@@ -19,14 +19,6 @@ include:
   - defendant-information-209A.yml
   - 209A_complaint_for_protection_from_abuse_probation.yml
 ---
-event: run_interview
-question: |
-  Download the only attachment
-attachment code: |
-  [value(interview_metadata[key]["attachment block variable"]) for key in interview_metadata.elements]
----metadata:
-  error action: on_error
----
 id: interview_id
 question: What is the id of the interview you want to run
 fields:
