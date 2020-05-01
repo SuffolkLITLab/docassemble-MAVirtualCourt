@@ -1,14 +1,4 @@
 ---
-metadata:
-  error action: on_error
----
-id: wrong_id
-event: on_error
-question: |
-  Sorry, no interview with the id "${ interview_id }" is currently set up for testing here.
-buttons:
-  - Restart: restart
----
 # INCLUDED FILES _MUST_ HAVE A CODE BLOCK WITH A VAR
 # NAMED `intervew_id_prerequisites` WHERE
 # "intervew_id" is the metatdata id. To find the id,
@@ -19,14 +9,23 @@ include:
   - defendant-information-209A.yml
   - 209A_complaint_for_protection_from_abuse_probation.yml
 ---
-id: interview_id
-question: What is the id of the interview you want to run
-fields:
-  - no label: interview_id
+metadata:
+  error action: on_error
+---
+id: wrong_id
+event: on_error
+question: |
+  Sorry, no interview with the id "${ interview_id }" is currently set up for testing here.
+buttons:
+  - Restart: restart
 ---
 id: logic_controller_block
 mandatory: True
 code: |
+
+  interview_choices = list(interview_metadata.elements.keys())
+  interview_choices.append("Other")
+
   interview_id
   basic_questions_intro_screen = True
   # TODO: Fill in info for other basic questions stuff (will
@@ -34,3 +33,15 @@ code: |
 
   value( interview_id + '_prerequisites' )
   value( interview_id + '_attachment' )
+
+---
+id: interview_id
+question: What is the ID of the interview you want to run?
+fields:
+  - no label: interview_id
+    code: |
+      interview_choices
+  - no label: interview_id
+    show if:
+      variable: interview_id
+      is: "Other"
