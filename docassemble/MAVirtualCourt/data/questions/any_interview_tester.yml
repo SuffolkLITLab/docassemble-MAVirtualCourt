@@ -1,11 +1,44 @@
 ---
+metadata:
+  error action: on_error
+---
+id: wrong_id
+event: on_error
+question: |
+  Sorry, no interview with the id "${ interview_id }" is currently set up for testing here.
+buttons:
+  - Restart: restart
+---
+# INCLUDED FILES _MUST_ HAVE A CODE BLOCK WITH A VAR
+# NAMED `intervew_id_prerequisites` WHERE
+# "intervew_id" is the metatdata id. To find the id,
+# look at the argument in `interview_metadata.initializeObject()`
+# in the interview file.
+
 include:
   - defendant-information-209A.yml
+  - 209A_complaint_for_protection_from_abuse_probation.yml
 ---
-mandatory: True
+event: run_interview
 question: |
   Download the only attachment
 attachment code: |
   [value(interview_metadata[key]["attachment block variable"]) for key in interview_metadata.elements]
-  
-  
+---metadata:
+  error action: on_error
+---
+id: interview_id
+question: What is the id of the interview you want to run
+fields:
+  - no label: interview_id
+---
+id: logic_controller_block
+mandatory: True
+code: |
+  interview_id
+  basic_questions_intro_screen = True
+  # TODO: Fill in info for other basic questions stuff (will
+  # this hide flow issues?)
+
+  value( interview_id + '_prerequisites' )
+  value( interview_id + '_attachment' )

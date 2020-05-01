@@ -521,6 +521,10 @@ code: |
   other_parties[0].signature
   defendantinformation209A0008 = True
 ---
+id: prerequisites_for_testing
+code: |
+  defendantinformation209A0008_prerequisites = True
+---
 continue button field: defendantinformation209A0008_preview_question
 question: |
   Placeholder preview screen

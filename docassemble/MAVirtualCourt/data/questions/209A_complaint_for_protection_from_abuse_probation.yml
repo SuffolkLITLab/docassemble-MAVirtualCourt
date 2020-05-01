@@ -340,6 +340,12 @@ code: |
 
   normalize_vars_for_attachment = True
 ---
+id: prerequisite_vars_for_this_interview
+code: |
+  defendant_and_plaintiff_are_parents_of_child = True
+  
+  A_complaint_for_protection_from_abuse_probation_copy0005_prerequisites = True
+---
 id: custom_objects
 objects:
   - children: PeopleList.using()
