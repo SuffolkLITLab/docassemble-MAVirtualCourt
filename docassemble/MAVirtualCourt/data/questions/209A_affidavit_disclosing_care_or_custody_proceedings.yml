@@ -6,7 +6,7 @@ include:
 objects:
   - other_care_custody_proceedings: OtherProceedingList
   - signing_attorney: VCIndividual
-  - children: PeopleList.using(complete_attribute='child_complete')
+  # - children: PeopleList.using(complete_attribute='child_complete')
   - box8_people: PeopleList.using(auto_gather=False, gathered=True) # People named as parties in other care/custody. We'll filter to remove dupes
   - attorneys_for_children: PeopleList
   - attorneys_for_children[i].represented_children: PeopleList
@@ -15,13 +15,36 @@ objects:
   - attorneys_for_parents: PeopleList
 ---
 code: |
+  # children_of_both should have objects pointing to the master children list
   children[i].address.address
   children[i].previous_addresses.gather()
   children[i].child_complete = True
 ---
+generic_object: VCIndividual
+question: |
+  Has ${x} lived anywhere else in the last 2 years?
+yesno: x.previous_addresses.there_are_any  
+---
 question: |
   Has ${children[i]} lived anywhere else in the last 2 years?
 yesno: children[i].previous_addresses.there_are_any  
+---
+generic object: VCIndividual
+question: |
+  Tell us about the ${ordinal(i)} previous address for ${x}
+subquestion: |
+  You'll have a chance to add more on the next screen
+#list collect: True # This breaks when list collect is turned on
+fields:
+  - Address: x.previous_addresses[i].address
+    address autocomplete: True
+  - Unit:     x.previous_addresses[i].unit
+    required: False
+  - City: x.previous_addresses[i].city
+  - State: x.previous_addresses[i].state
+    code: |
+      states_list()
+    default: "MA"
 ---
 question: |
   Tell us about the ${ordinal(j)} previous address for ${children[i]}
@@ -69,11 +92,13 @@ code: |
   fill_in_court_name
   defendants.there_are_any = True  
   case_name
-  children.there_are_any = True
-  children.gather()  
+  # children.there_are_any = True
+  # children.gather()  
+  for child in children_of_both:
+    child.child_complete
   # child1_name_last_first
   confidential_address
-  for child in children:
+  for child in children_of_both:
     child.address.on_one_line()  
   has_participated_custody_case
   other_care_custody_proceedings.gather()
@@ -95,9 +120,9 @@ code: |
   need_past_address_appendix
   need_children_appendix
   need_other_parties_appendix
-  A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   A_affidavit_disclosing_care_or_custody_proceedings0009 = True
 ---
 code: |
@@ -806,6 +831,7 @@ fields:
     default: ${'N' if not has_participated_custody_case_yes else ''}
   - Was ${other_parties} part of this case?: other_care_custody_proceedings[i].op_was_party
     datatype: yesnoradio
+  # We need to add more options to this list, and sync it up with the case.status() method
   - What is the best description of this case: other_care_custody_proceedings[i].case_status
     choices:
       - Adoption (closed): adoption-closed
@@ -1106,17 +1132,17 @@ attachment:
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }
-      - "child1_address_on_one_line": ${ children.item(0).address.on_one_line() if not confidential_address else ''}
-      - "child2_address_on_one_line": ${ children.item(1).address.on_one_line()  if not confidential_address else ''}
-      - "child3_address_on_one_line": ${ children.item(2).address.on_one_line()  if not confidential_address else ''}
+      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line() if not confidential_address else ''}
+      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line()  if not confidential_address else ''}
+      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line()  if not confidential_address else ''}
       - "user_address_on_one_line": ${ users[0].address.on_one_line()  if not confidential_address else ''}
       - "user_name_full__1": ${ str(users[0]) }
-      - "child1_address_street": ${ children.item(0).address.line_one() }
-      - "child1_address_city_state_zip": ${ children.item(0).address.line_two() }
-      - "child2_address_street": ${ children.item(1).address.line_one() }
-      - "child2_address_city_state_zip": ${ children.item(1).address.line_two() }
-      - "child3_address_street": ${ children.item(2).address.line_one() }
-      - "child3_address_city_state_zip": ${ children.item(2).address.line_two() }
+      - "child1_address_street": ${ children_of_both.item(0).address.line_one() }
+      - "child1_address_city_state_zip": ${ children_of_both.item(0).address.line_two() }
+      - "child2_address_street": ${ children_of_both.item(1).address.line_one() }
+      - "child2_address_city_state_zip": ${ children_of_both.item(1).address.line_two() }
+      - "child3_address_street": ${ children_of_both.item(2).address.line_one() }
+      - "child3_address_city_state_zip": ${ children_of_both.item(2).address.line_two() }
       - "user_address_on_one_line__2": ${ users[0].address.on_one_line() }
       - "case_name": ${ case_name }
       - "court_division_bmc": ${ showifdef('courts[0].division_bmc') }
@@ -1124,13 +1150,13 @@ attachment:
       - "court_division_juvenile_court": ${ showifdef('courts[0].division_juvenile_court') }
       - "court_division_family_court": ${ showifdef('courts[0].division_family_court') }
       - "court_division_superior_court": ${ showifdef('courts[0].division_superior_court') }
-      - "child1_name_last_first": ${ children.item(0).name.lastfirst() }
-      - "child2_name_last_first": ${ children.item(1).name.lastfirst() }
-      - "child3_name_last_first": ${ children.item(2).name.lastfirst() }
+      - "child1_name_last_first": ${ children_of_both.item(0).name.lastfirst() }
+      - "child2_name_last_first": ${ children_of_both.item(1).name.lastfirst() }
+      - "child3_name_last_first": ${ children_of_both.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line if not confidential_address else '' } 
-      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line if not confidential_address else '' }
-      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line if not confidential_address else '' }
+      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).past_addresses_on_one_line if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).past_addresses_on_one_line if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).past_addresses_on_one_line if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
@@ -1164,12 +1190,12 @@ attachment:
       - "month": ${ month }
       - "year": ${ year }
       - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
-      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
-      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
-      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_1": ${ children_of_both.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_2": ${ children_of_both.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_1": ${ children_of_both.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_2": ${ children_of_both.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_1": ${ children_of_both.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_2": ${ children_of_both.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
       - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
@@ -1187,7 +1213,7 @@ continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_in
 question: |
   Affidavit Disclosing Care or Custody Proceedings
 subquestion: |
-  If your children have been involved in court cases about their custody or care, then you must submit an Affidavit Disclosing Care or Custody Proceeding. The main purpose of this form is to find out about any open or closed cases related to the care and/or custody of your children. This helps the court get a better picture of your childrens’ situations.
+  If your children_of_both have been involved in court cases about their custody or care, then you must submit an Affidavit Disclosing Care or Custody Proceeding. The main purpose of this form is to find out about any open or closed cases related to the care and/or custody of your children_of_both. This helps the court get a better picture of your childrens’ situations.
 ---
 continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question
 question: |
@@ -1208,17 +1234,17 @@ attachment:
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }
-      - "child1_address_on_one_line": ${ children.item(0).address.on_one_line() if not confidential_address else ''}
-      - "child2_address_on_one_line": ${ children.item(1).address.on_one_line()  if not confidential_address else ''}
-      - "child3_address_on_one_line": ${ children.item(2).address.on_one_line()  if not confidential_address else ''}
+      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line() if not confidential_address else ''}
+      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line()  if not confidential_address else ''}
+      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line()  if not confidential_address else ''}
       - "user_address_on_one_line": ${ users[0].address.on_one_line()  if not confidential_address else ''}
       - "user_name_full__1": ${ str(users[0]) }
-      - "child1_address_street": ${ children.item(0).address.line_one() }
-      - "child1_address_city_state_zip": ${ children.item(0).address.line_two() }
-      - "child2_address_street": ${ children.item(1).address.line_one() }
-      - "child2_address_city_state_zip": ${ children.item(1).address.line_two() }
-      - "child3_address_street": ${ children.item(2).address.line_one() }
-      - "child3_address_city_state_zip": ${ children.item(2).address.line_two() }
+      - "child1_address_street": ${ children_of_both.item(0).address.line_one() }
+      - "child1_address_city_state_zip": ${ children_of_both.item(0).address.line_two() }
+      - "child2_address_street": ${ children_of_both.item(1).address.line_one() }
+      - "child2_address_city_state_zip": ${ children_of_both.item(1).address.line_two() }
+      - "child3_address_street": ${ children_of_both.item(2).address.line_one() }
+      - "child3_address_city_state_zip": ${ children_of_both.item(2).address.line_two() }
       - "user_address_on_one_line__2": ${ users[0].address.on_one_line() }
       - "case_name": ${ case_name }
       - "court_division_bmc": ${ showifdef('courts[0].division_bmc') }
@@ -1226,13 +1252,13 @@ attachment:
       - "court_division_juvenile_court": ${ showifdef('courts[0].division_juvenile_court') }
       - "court_division_family_court": ${ showifdef('courts[0].division_family_court') }
       - "court_division_superior_court": ${ showifdef('courts[0].division_superior_court') }
-      - "child1_name_last_first": ${ children.item(0).name.lastfirst() }
-      - "child2_name_last_first": ${ children.item(1).name.lastfirst() }
-      - "child3_name_last_first": ${ children.item(2).name.lastfirst() }
+      - "child1_name_last_first": ${ children_of_both.item(0).name.lastfirst() }
+      - "child2_name_last_first": ${ children_of_both.item(1).name.lastfirst() }
+      - "child3_name_last_first": ${ children_of_both.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children.item(0).past_addresses_on_one_line if not confidential_address else '' } 
-      - "child2_past_addresses_on_one_line": ${ children.item(1).past_addresses_on_one_line if not confidential_address else '' }
-      - "child3_past_addresses_on_one_line": ${ children.item(2).past_addresses_on_one_line if not confidential_address else '' }
+      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).past_addresses_on_one_line if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).past_addresses_on_one_line if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).past_addresses_on_one_line if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
@@ -1266,12 +1292,12 @@ attachment:
       - "month": ${ month }
       - "year": ${ year }
       - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
-      - "child1_past_addresses_1": ${ children.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child1_past_addresses_2": ${ children.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
-      - "child2_past_addresses_1": ${ children.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child2_past_addresses_2": ${ children.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
-      - "child3_past_addresses_1": ${ children.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
-      - "child3_past_addresses_2": ${ children.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_1": ${ children_of_both.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child1_past_addresses_2": ${ children_of_both.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_1": ${ children_of_both.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child2_past_addresses_2": ${ children_of_both.item(1).previous_addresses.item(1).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_1": ${ children_of_both.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
+      - "child3_past_addresses_2": ${ children_of_both.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
       - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}

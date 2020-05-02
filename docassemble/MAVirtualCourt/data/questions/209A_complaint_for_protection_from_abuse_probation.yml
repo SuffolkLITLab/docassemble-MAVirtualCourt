@@ -138,9 +138,9 @@ data:
     field_data_type: date
 ---
 code: |
-  children_of_both = children_of_parent.filter(defendant_is_parent = True)
-  children_of_both.auto_gather = False
+  children_of_both = children.filter(defendant_is_parent = True)
   children_of_both.gathered = True
+  build_children_of_both_list  = True
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
@@ -159,7 +159,7 @@ code: |
 
   interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
 
-  basic_questions_intro_screen 
+  # basic_questions_intro_screen 
   A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
 
   #######
@@ -167,24 +167,29 @@ code: |
   #######
 
   # Placeholder for now
-  defendant_and_plaintiff_are_parents_of_child = True
+  # defendant_and_plaintiff_are_parents_of_child = True
 
   # TODO: snippet contender
-  children_of_parent.target_number
-  children_of_custody.target_number
+  children.target_number
+  children_cares_for.target_number
 
-  children_of_parent.gather()  # .name.first completes the person
-  for child in children_of_parent:
+  children.gather()  # .name.first completes the person
+  for child in children:
     child.plaintiff_is_parent = True
 
-  children_of_custody.gather()  # .name.first completes the person
-  for child in children_of_custody:
+  children_cares_for.gather()  # .name.first completes the person
+  for child in children_cares_for:
     child.plaintiff_is_parent = False
 
-  # Works in DA
-  all_children = children_of_parent + children_of_custody
+  for child in children + children_cares_for:
+    if not defendant_and_plaintiff_are_parents_of_child:
+      child.defendant_is_parent = False
 
+  # Works in DA  
+  # all_children = children + children_cares_for
+  
   # Should ask for custody and other things if child of both
+  build_children_of_both_list
 
   if len(children_of_both) > 0:
     wants_custody_of
@@ -241,7 +246,7 @@ code: |
   have_had_paternity_cases
 
   # I think other interviews will be using this var name
-  children = all_children
+  # children = all_children
   
   normalize_vars_for_attachment # MB's code to set variables empty
 
@@ -262,7 +267,7 @@ code: |
   # NOTE: showifdef() is a DA form-filling function
   
   # Vars these attachments need
-  children = all_children
+  # children = all_children
 
   # How to do this len with possibly 0?
   requests_custody_yes = len(wants_custody_of.elements) > 0
@@ -344,16 +349,15 @@ code: |
   have_had_paternity_cases_yes = have_had_paternity_cases
   have_had_paternity_cases_no = not have_had_paternity_cases
   # Important in question display logic in this form
-  defendant_and_plaintiff_are_parents_of_child = True
+  # defendant_and_plaintiff_are_parents_of_child = True
 
   normalize_vars_for_attachment = True
 ---
 id: custom_objects
 objects:
-  - children: PeopleList.using()
-  - children_of_parent: PeopleList.using(ask_number=True)
-  - children_of_custody: PeopleList.using(ask_number=True)
-  - children_of_both: PeopleList
+  - children: PeopleList.using(ask_number=True)
+  - children_cares_for: PeopleList.using(ask_number=True)
+  - children_of_both: PeopleList.using(auto_gather=False)
   - wants_custody_of: PeopleList
   - wants_no_contact_for: PeopleList
   - schools_to_stay_away_from: DAList.using(object_type=Person)
@@ -376,52 +380,52 @@ question: |
 subquestion: |
   Include all children that are yours or that you have care or custody of. (add plain language later)
 fields:
-  - Number of children you are the parent of: children_of_parent.target_number
+  - Number of children you are the parent of: children.target_number
     datatype: integer
 #    default: 2
-  - Number of children you have care or custody of: children_of_custody.target_number
+  - Number of children you have care or custody of: children_cares_for.target_number
     datatype: integer
 #    default: 1
 ---
 # `ordinal()` says 'first', even if there's only one :(
-id: parent_children
+id: children user is parent of
 question: |
-  % if children_of_parent.target_number == 1:
+  % if children.target_number == 1:
   Tell us about your child
   % else:
   % if i == 0:
   Tell us about your oldest child first.
   % else:
   You have already told us
-  about ${children_of_parent.complete_elements()}.
+  about ${comma_and_list(children.elements)}.
 
   Tell us about your ${ordinal(i)} child. 
   % endif
   % endif
 #list collect: True
-# TODO: fix oridinal issues
+# TODO: fix ordinal issues
 fields:
-  - First Name: children_of_parent[i].name.first
-  - Middle Name: children_of_parent[i].name.middle
+  - First Name: children[i].name.first
+  - Middle Name: children[i].name.middle
     required: False
-  - Last Name: children_of_parent[i].name.last
-  - Suffix: children_of_parent[i].name.suffix
+  - Last Name: children[i].name.last
+  - Suffix: children[i].name.suffix
     required: False
-  - Birthdate: children_of_parent[i].birthdate
+  - Birthdate: children[i].birthdate
     datatype: date
     min: ${ today().minus(years=18) }
     validation messages:
       min: |
         The child has to be less than 18 years old.
-  - Is ${other_parties.familiar()} also a parent of this child?: children_of_parent[i].defendant_is_parent
+  - Is ${other_parties.familiar()} also a parent of this child?: children[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
-        defendant_and_plaintiff_are_parents_of_child is True # means parents of any children
+        defendant_and_plaintiff_are_parents_of_child # means parents of any children
 ---
 id: non_parent_children
 question: |
-  % if ( children_of_custody.target_number == 1 ):
+  % if ( children_cares_for.target_number == 1 ):
   Tell us about the child that is in your care or custody.
   % else:
   Tell us about the ${ordinal( i )} child that is in your care or custody.
@@ -429,29 +433,29 @@ question: |
 subquestion: |
   You said you look after children who are not your own. They also need to to be included in the protection order you are asking for.
 fields:
-  - First Name: children_of_custody[i].name.first
-  - Middle Name: children_of_custody[i].name.middle
+  - First Name: children_cares_for[i].name.first
+  - Middle Name: children_cares_for[i].name.middle
     required: False
-  - Last Name: children_of_custody[i].name.last
-  - Suffix: children_of_custody[i].name.suffix
+  - Last Name: children_cares_for[i].name.last
+  - Suffix: children_cares_for[i].name.suffix
     required: False
-  - Birthdate: children_of_custody[i].birthdate
+  - Birthdate: children_cares_for[i].birthdate
     datatype: date
     min: ${ today().minus(years=18) }
     validation messages:
       min: |
         The child has to be less than 18 years old.
-  - Is ${other_parties.familiar()} also this child's parent?: children_of_custody[i].defendant_is_parent
+  - Is ${other_parties.familiar()} also this child's parent?: children_cares_for[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
-        defendant_and_plaintiff_are_parents_of_child is True # means of any children
+        defendant_and_plaintiff_are_parents_of_child # means of any children
   - note: |
       It sounds like you care for a child is not yours but is ${other_parties.familiar()}'s.  
       In some cases, judges are allowed to forbid the Defendant from contacting these children
        in order to keep them safe, but it is very complicated.
       You might have to also file a guardianship case.  You should contact a lawyer if you want to do this.
-    show if: children_of_custody[i].defendant_is_parent
+    show if: children_cares_for[i].defendant_is_parent
 ---
 id: custody_children
 question: |
@@ -471,7 +475,7 @@ fields:
   - no label: wants_no_contact_for
     datatype: object_checkboxes
     choices: |
-      all_children
+      children + children_cares_for
     none of the above: |
       None of them
 ---

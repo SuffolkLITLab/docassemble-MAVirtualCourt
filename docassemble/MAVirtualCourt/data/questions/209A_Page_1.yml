@@ -160,9 +160,9 @@ include:
 question: |
   Relationship to Plaintiff
 subquestion: |
-  What is the relationship of the person filing this case to the plaintiff? For example, Mother, father, etc.
+  How are you related to the ${users.familiar()}?
 fields:
-  - 'Name of person filing the case': plaintiff_assistant_name
+  - 'What is your name?': plaintiff_assistant_name
   - 'Who are you in relationship to the plaintiff?': plaintiff_assistant_relationship_to_plaintiff
 ---
 question: |
@@ -343,7 +343,11 @@ comment: |
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
   (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
-
+---
+code: |
+  # Used to decide on page2 if we ask the person
+  # if defendant is also a parent of the child
+  defendant_and_plaintiff_are_parents_of_child = relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child']
 ---
 question: |
   Your Age?

@@ -323,10 +323,10 @@ attachment:
     fields: 
       - "plaintiff_name": ${ str(plaintiffs[0]) }
       - "other_party": ${ str(other_parties[0]) }
-      - "child1_name": ${ str(children[1-1]) }
-      - "child2_name": ${ str(children[2-1]) }
-      - "child3_name": ${ str(children[3-1]) }
-      - "child4_name": ${ str(children[4-1]) }
+      - "child1_name": ${ str(children_of_both[1-1]) }
+      - "child2_name": ${ str(children_of_both[2-1]) }
+      - "child3_name": ${ str(children_of_both[3-1]) }
+      - "child4_name": ${ str(children_of_both[4-1]) }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
       - "court_division": ${ courts[0] }
@@ -367,13 +367,14 @@ code: |
   # Set the preferred/allowed courts for this interview
   # preferred_court = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["preferred court"]
   allowed_courts = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["allowed courts"]
-  if existing_order:
-    mb_kick_out_user_existing_order # MB: kick out user if they are trying to enforce an existing child support order instead of getting a new one.
+  #if existing_order:
+  #  mb_kick_out_user_existing_order # MB: kick out user if they are trying to enforce an existing child support order instead of getting a new one.
+  #  # No, we don't want to kick out. Just tell them we're not filling out this form
   users[0].states_above_true
   courts[0] # should not show housing court had to comment this out because kept getting this error and didn't know how to resolve.
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
-  str(children[1-1]) # already gathered in a prior interview?
+  str(children_of_both[1-1]) # already gathered in a prior interview?
   users[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].child_care_expenses
@@ -386,13 +387,12 @@ code: |
   other_parties[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   other_parties[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   str(plaintiffs[0]) # already gathered in a prior interview?
-  signature_date
+  # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"])
-  Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008 = True
 ---
 question: |
@@ -423,10 +423,10 @@ attachment:
     fields: 
       - "plaintiff_name": ${ str(plaintiffs[0]) }
       - "other_party": ${ str(other_parties[0]) }
-      - "child1_name": ${ str(children[1-1]) }
-      - "child2_name": ${ str(children[2-1]) }
-      - "child3_name": ${ str(children[3-1]) }
-      - "child4_name": ${ str(children[4-1]) }
+      - "child1_name": ${ str(children_of_both[1-1]) }
+      - "child2_name": ${ str(children_of_both[2-1]) }
+      - "child3_name": ${ str(children_of_both[3-1]) }
+      - "child4_name": ${ str(children_of_both[4-1]) }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
       - "court_division": ${ courts[0] }

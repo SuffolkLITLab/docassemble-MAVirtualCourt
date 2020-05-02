@@ -269,6 +269,35 @@ help:
 comment: |
   Should get link for this
 ---
+comment: |
+  Used to build the affidavit incidents.
+  We need to use templates to allow translation
+template: text_fear
+content: |
+  ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically
+---
+template: text_attempted
+content: |
+  ${ defendant } tried to physically hurt me
+---
+template: text_physical
+content: |
+  ${ defendant } physically hurt me
+---
+template: text_sex
+content: |
+  ${ defendant } threatened, pressured or forced me to have sex with them  
+---
+code: |
+  # Create the placeholder text in a translateable way
+  var_map = {
+    'sex': text_sex.show(),
+    'physical': text_physical.show(),
+    'attempted-physical': text_attempted.show(),
+    'fear': text_fear.show()
+  }
+  incidents_of_abuse[i].description_placeholder = comma_and_list([var_map[key] for key in incidents_of_abuse[i].abuse.true_values()])
+---
 id: Affidavit description
 question: |
   Describe the incident  
@@ -280,7 +309,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } ${ ", ".join(incidents_of_abuse[i].abuse.true_values()) }.
+      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } ${ incidents_of_abuse[i].description_placeholder }.
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?

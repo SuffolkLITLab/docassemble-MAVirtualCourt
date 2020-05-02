@@ -238,10 +238,10 @@ code: |
   signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
-  A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
+  # A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   A_Plaintiff_Confidential_Information0011 = True
 ---
 continue button field: A_Plaintiff_Confidential_Information0011_preview_question

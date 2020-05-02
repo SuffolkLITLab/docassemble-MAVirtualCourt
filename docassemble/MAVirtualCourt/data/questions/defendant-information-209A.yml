@@ -344,13 +344,11 @@ fields:
     required: False
   - 'Defendant Social Security Number (Last Four)': other_parties[0].social_security_number
     required: False
-  - 'Is Defendant Male': other_parties[0].gender_male_yes
-    datatype: yesnoradio
-  - 'Does Defendant understand English?': other_parties[0].english_yes
+  - 'Does Defendant understand English?': other_parties[0].understands_english
     datatype: yesnoradio
   - 'What languages other than English does Defendant speak?': other_parties[0].language_other
     show if:
-      variable: other_parties[0].english_yes
+      variable: other_parties[0].understands_english
       is: False
   - "What is the name of Defendant's mother, using her maiden name?": parents[0]
     required: False
@@ -421,10 +419,10 @@ attachment:
       - "defendant_name_other": ${ other_parties[0].name_other }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }
-      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male }
       - "defendant_photo_yes": ${ other_parties[0].photo_yes }
       - "defendant_photo_no": ${ other_parties[0].photo_no }
-      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female }
       - "defendant_race": ${ other_parties[0].race }
       - "defendant_eye_color": ${ other_parties[0].eye_color }
       - "defendant_hair_color": ${ other_parties[0].hair_color }
@@ -433,8 +431,8 @@ attachment:
       - "defendant_physical_build": ${ other_parties[0].physical_build }
       - "defendant_physical_other": ${ other_parties[0].physical_other }
       - "defendant_address": ${ other_parties[0].address }
-      - "defendant_english_yes": ${ other_parties[0].english_yes }
-      - "defendant_english_no": ${ other_parties[0].english_no }
+      - "defendant_english_yes": ${ other_parties[0].understands_english }
+      - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ other_parties[0].address_apartment }
       - "defendant_address_floor": ${ other_parties[0].address_floor }
       - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
@@ -465,7 +463,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties[0].name_print }
+      - "defendant_name_print": ${ other_parties }
 ---
 include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
@@ -493,10 +491,9 @@ code: |
   preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
   allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
   other_parties[0].name_other
-  if not other_parties[0].gender_male_yes:
-    other_parties[0].gender_male_no = True
-  if not other_parties[0].english_yes:
-    other_parties[0].english_no = True
+  if other_parties[0].understands_english:
+    other_parties[0].language_other = ''
+
   if not other_parties[0].photo_yes:
     other_parties[0].photo_no = True
   other_parties[0].address
@@ -504,10 +501,13 @@ code: |
     other_parties[0].police_violence_no = True
   if not other_parties[0].drug_alcohol_yes:
     other_parties[0].drug_alcohol_no = True
+    other_parties[0].drug_alcohol_abuse = ''
   if not other_parties[0].gun_license_carry_possess_yes:
     other_parties[0].gun_license_carry_possess_no = True
+    other_parties[0].gun_license_carry_possess = ''
   if not other_parties[0].psychiatric_emotional_problems_yes:
     other_parties[0].psychiatric_emotional_problems_no = True
+    other_parties[0].psychiatric_emotional_problems = ''
   other_parties[0].location_information_other
   str(other_parties[0])
   other_parties[0].birthdate.format()
@@ -518,9 +518,9 @@ code: |
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
   # mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
-  defendantinformation209A0008_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  other_parties[0].signature
+  # defendantinformation209A0008_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # other_parties[0].signature
   defendantinformation209A0008 = True
 ---
 continue button field: defendantinformation209A0008_preview_question
@@ -546,10 +546,10 @@ attachment:
       - "defendant_name_other": ${ other_parties[0].name_other }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }
-      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male }
       - "defendant_photo_yes": ${ other_parties[0].photo_yes }
       - "defendant_photo_no": ${ other_parties[0].photo_no }
-      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female }
       - "defendant_race": ${ other_parties[0].race }
       - "defendant_eye_color": ${ other_parties[0].eye_color }
       - "defendant_hair_color": ${ other_parties[0].hair_color }
@@ -558,8 +558,8 @@ attachment:
       - "defendant_physical_build": ${ other_parties[0].physical_build }
       - "defendant_physical_other": ${ other_parties[0].physical_other }
       - "defendant_address": ${ other_parties[0].address }
-      - "defendant_english_yes": ${ other_parties[0].english_yes }
-      - "defendant_english_no": ${ other_parties[0].english_no }
+      - "defendant_english_yes": ${ other_parties[0].understands_english }
+      - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ other_parties[0].address_apartment }
       - "defendant_address_floor": ${ other_parties[0].address_floor }
       - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
@@ -590,4 +590,4 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties[0].name_print }
+      - "defendant_name_print": ${ other_parties }
