@@ -283,15 +283,15 @@ objects:
   - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
 ---
 question: |
-  Possible Places to find Defendant
+  Possible Places to Find Defendant
 subquestion: |
-  This information helps the police find the Defendant to give them with a copy of the restraining order.
+  This information helps the police find the Defendant to give them a copy of the restraining order.
 fields:
   - 'What is the address where police are most likely to find Defendant in the morning (8am-12pm)? What is the address where police are most likely to find Defendant in the afternoon (12-5pm)? Are there other addresses Defendant typically visits, and if so, what days/time?': other_parties[0].location_information_other
     datatype: area
 ---
 question: |
-  What Defendant Looks Like
+  Defendant's Physical Appearance
 
 fields:
   - 'Can you provide a photo of Defendant?': other_parties[0].photo_yes
@@ -333,12 +333,12 @@ fields:
 question: |
   General Information About Defendant
  
- fields:
-  - 'Defendant's Other Names or Aliases': other_parties[0].name_other
+fields:
+  - Defendant's Other Names or Aliases: other_parties[0].name_other
     required: False
-  - 'Defendant's Birthplace': other_parties[0].birthplace
+  - Defendant's Birthplace: other_parties[0].birthplace
     required: False
-  - 'Defendant's Social Security Number (Last Four)': other_parties[0].social_security_number
+  - Defendant's Social Security Number (Last Four): other_parties[0].social_security_number
     required: False
   - 'Is Defendant Male': other_parties[0].gender_male_yes
     datatype: yesnoradio
@@ -386,7 +386,7 @@ fields:
 progress: 100
 mandatory: True
 question: |
-  Placeholder download screen
+  Download Form
 subquestion: |
   Placeholder
   
@@ -405,7 +405,7 @@ attachment:
     variable name: defendantinformation209A0008_attachment
     name: Defendant-information-209a
     filename: Defendantinformation209a
-    pdf template file: defendant-information-209A.pdf
+    pdf template file: defendant-information-209A.pdf.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
@@ -465,7 +465,8 @@ attachment:
       - "defendant_name_print": ${ other_parties[0].name_print }
 ---
 include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
+  #- docassemble.MAVirtualCourt:basic-questions.yml
+  - basic-questions.yml
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -521,7 +522,7 @@ code: |
 ---
 continue button field: defendantinformation209A0008_preview_question
 question: |
-  Placeholder preview screen
+  Preview Form
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
@@ -531,7 +532,7 @@ attachment:
     variable name: defendantinformation209A0008_attachment_preview
     name: Defendant-information-209a
     filename: Defendantinformation209a
-    pdf template file: defendant-information-209A.pdf
+    pdf template file: defendant-information-209A.pdf.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
