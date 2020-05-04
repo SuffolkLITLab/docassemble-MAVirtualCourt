@@ -251,14 +251,35 @@ fields:
     datatype: yesno
   - 'Explain what utility was shut off, and when': incident_utility_description
     show if: incident_utility
-  - 'Other breach of quiet enjoyment': incident_other
+  - 'Other (breach of my quiet enjoyment)': incident_other
     datatype: yesno
   - 'Describe the other thing your landlord did wrong': incident_other_description
     datatype: area
     show if: incident_other
+    help: |
+      You can include anything here that is a breach of your right to
+      "quiet enjoyment" of your home. For example: an unsafe living condition;
+      an odor or noise that makes your home unlivable; or anything that 
+      makes you unable to use your home safely and peacefully.
 validation code: |
-  if not incident_locked_out and not incident_utility and not incident_utility:
+  if not incident_locked_out and not incident_utility and not incident_other:
     validation_error("You must select at least one incident.")
+help: |
+  #### What is a breach of quiet enjoyment?
+  A breach of quiet enjoyment is something that your landlord did or should
+  have done that makes your home unlivable. This can cover a lot of different
+  issues. The problem needs to be serious and you can get help for issues
+  that the court agrees are emergencies with this form.
+  
+  Examples might include:
+  
+  * A sewage backup in your basement
+  * A strong unpleasant odor
+  * Constant noise at unreasonable times of day (remember, even if you are
+  working from home, permitted construction may still be allowed)
+  * Unsafe living conditions that your landlord isn't fixing
+  
+  [Read more](https://www.masslegalhelp.org/housing/lt1-chapter-8-rights-decent-place-live)
 ---
 mandatory: True
 need: Housing_Temporary_Restraining_Order0002
@@ -403,7 +424,11 @@ continue button field: Housing_Temporary_Restraining_Order0002_intro
 question: |
   Housing temporary restraining order
 subquestion: |
-  This form lets you ask the court for emergency help if your landlord illegallly locked you out of your apartment, shut off your utilities, or did something else to effect your right to "quiet enjoyment" of your home. That means TK INSERT DEFINITION.
+  This form lets you ask the court for emergency help if your landlord illegally locked you out of your apartment, shut off your utilities, or most
+  other emergency issues related to your ability to live in your home
+  safely and peacefully. 
+  
+  You read more about your rights [here](https://www.masslegalhelp.org/housing/lt1-chapter-8-rights-decent-place-live).
   
   You will be asked about 10 questions. At the end, you will need to provide
   your name and signature before the form is sent to the court. You can use this website to send the form to the court by secure email.
