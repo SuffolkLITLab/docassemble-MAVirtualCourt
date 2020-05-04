@@ -59,13 +59,12 @@ content: |
     suffix += 1;
     
     // Add to navbar
-    var after = doc.getElementById( 'danavbar-collapse' );
+    var after = doc.getElementById( 'damobile-toggler' );
     after.parentNode.insertBefore( inner, after );
     
   </script>
   
   <style>
-  
     .escape-inner {
       position: relative;
     }
@@ -78,6 +77,24 @@ content: |
     
     .escape {
       margin: 0;
+    }
+    
+    @media only screen and (max-width: 30em) {
+      .navbar-brand {
+        margin-right: .3rem;
+      }
+      
+      #dapagetitle {
+        margin-right: .1em;
+      }
+      
+      #dapagetitle .ma_icon {
+        margin-right: 0;
+      }
+      
+      .escape {
+        margin-left: .4em;
+      }
     }
   </style>
 ---
