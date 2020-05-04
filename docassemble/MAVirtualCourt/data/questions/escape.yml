@@ -1,6 +1,10 @@
 comment: |
   Quick exit button for sensitive interviews.
   
+  Inserts into navbar instead of lying on top of it
+  so it (ideally) won't cover other buttons if they're
+  in there, as happened on mobile.
+  
   Should be compatible with all browsers, but
   more testing needed
   Browser support:
@@ -52,36 +56,12 @@ content: |
     if (suffix !== 1) {
       escaper.classList.add( 'escape-overlap' );
     }
-    
     suffix += 1;
     
-    //var one_escape = doc.getElementsByClassName( 'escape-unhandled' )[0];
-    //inner.appendChild( one_escape );
-    //one_escape.classList = one_escape.classList.replace( 'escape-unhandled', '');
-    
     // Add to navbar
-    // More supported than getting classes
     var after = doc.getElementById( 'danavbar-collapse' );
-    //after.parentNode.insertBefore( escaper, after );
     after.parentNode.insertBefore( inner, after );
     
-    
-    //var navbar_right = doc.getElementsByClassName( 'damynavbar-right' )[0];
-    //navbar_right.insertAfter();
-    
-
-    // Add to the navbar
-    //var children = doc.getElementById( 'dabody' ).childNodes;
-    //for ( child of children ) {
-      //if ( child.getAttribute ) {
-        //let classes = child.getAttribute('class');
-        //let classList = classes.split(' ');
-        //if ( classList.indexOf( 'navbar' ) > -1 ) {
-          //child.appendChild( outer );
-        //}
-        //break
-      //}  // ends if .getAttribute is defined
-    //}  // ends for every child
   </script>
   
   <style>
@@ -99,30 +79,6 @@ content: |
     .escape {
       margin: 0;
     }
-
-    /*
-    .escape-inner {
-      position: relative;
-      /*left: -50%;*/
-    }
-    
-    .escape-outer {
-      position: absolute;
-      left: 50%;
-    }
-    
-    @media screen and (max-width: 30em) { 
-      .escape-outer {
-        position: absolute;
-        left: 55%;
-      }
-    }
-    
-    .escape {
-      position: relative;
-      left: 0;
-    }
-    */
   </style>
 ---
 default screen parts:
