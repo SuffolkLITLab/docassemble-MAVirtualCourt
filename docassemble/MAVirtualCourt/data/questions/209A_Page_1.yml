@@ -539,7 +539,7 @@ attachment:
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }
       - "superior_court": ${ courts[0].department == "Superior Court" }
       - "court_name_short": ${ courts[0].division }
-      - "defendant_alias": ${ defendant_alias if defendant_has_alias else '' }
+      - "defendant_alias": ${ other_parties[0].name_other if defendant_has_alias else '' }
       - "defendant_weapons_guns": ${ defendant_weapons_guns }
       - "defendant_weapons_ammunition": ${ defendant_weapons_ammunition }
       - "defendant_weapons_firearms_identification_card": ${ defendant_weapons_firearms_identification_card }
@@ -611,7 +611,7 @@ attachment:
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }
       - "superior_court": ${ courts[0].department == "Superior Court" }
       - "court_name_short": ${ courts[0].division }
-      - "defendant_alias": ${ defendant_alias if defendant_has_alias else '' }
+      - "defendant_alias": ${ other_parties[0].name_other if defendant_has_alias else '' }
       - "defendant_gender_male": ${ other_parties[0].gender_male }
       - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }

@@ -1,12 +1,107 @@
 ---
-imports:
-  - docassemble.MAVirtualCourt
----
-code: |
-  define('my_variable','')
+include:
+  - basic-questions.yml
 ---
 mandatory: True
+code: |  
+  other_parties[0].name.first = "Bob Abuser"
+  other_parties.there_is_another = False
+  if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
+    photo_upload
+  results
+---
+event: results
+mandatory: True
 question: |
-  ${docassemble.MAVirtualCourt.__version__}
-  
-  ${my_variable}
+  ${other_parties[0].photo_yes}
+---
+---
+question: |
+  ${other_parties.familiar()}'s Physical Appearance
+subquestion: |
+  The police will need to be able to identify ${other_parties.familiar()}.
+  Answer the questions below to tell us more about how they look.
+fields:
+  - 'Can you provide a photo of ${other_parties.familiar()}?': other_parties[0].photo_yes
+    datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.
+  - Are you ready to upload one now?: other_parties[0].photo_yes_can_upload  
+    datatype: yesnoradio
+    help: |
+      If it is safe, you can use your phone's camera to take
+      a picture of a photo album. We'll attach this to your
+      form to give to the police.
+    show if: other_parties[0].photo_yes  
+  - note: |
+      Great, we'll ask you to upload a photo on the next page.    
+    show if: other_parties[0].photo_yes_can_upload      
+  - "What is  ${other_parties.familiar()}'s race or ethnicity? (check any that apply)": other_parties[0].race
+    datatype: checkboxes
+    choices:
+      - White: White
+      - Black or African American: Black
+      - American Indian or Alaska Native: Native American
+      - Asian: Asian
+      - Native Hawaiian or Other Pacific Islander: Pacific Islander
+      - Hispanic or Latino: Hispanic
+      - Other: other
+  - Other race: other_parties[0].race_other
+    show if: other_parties[0].race["other"]
+  - "What is ${other_parties.familiar()}'s eye color?": other_parties[0].eye_color
+    choices:
+      - Amber: Amber
+      - Blue: Blue
+      - Brown: Brown
+      - Gray: Gray
+      - Green: Green
+      - Hazel: Hazel
+      - Red: Red
+  - Other details about ${other_parties.familiar()}'s eyes: other_parties[0].eye_other
+    required: False
+  - "What is ${other_parties.familiar()}'s hair color?": other_parties[0].hair_color
+    choices:
+      - Brown: Brown
+      - Blond: Blond
+      - Black: Black
+      - Gray: Gray
+      - Red: Red
+      - White: White
+      - Other: other
+  - Other hair color: other_parties[0].hair_color_other
+    show if: other_parties[0].hair_color == "other"
+  - What is the style of ${other_parties.familiar()}'s hair?: other_parties[0].hair_other_style
+    required: False
+    hint: e.g., balding, short, long, sideburns, etc.
+  - "How tall is ${other_parties.familiar()}?": other_parties[0].height
+    hint: e.g., 5 foot 10 inches
+  - "What is ${other_parties.familiar()}'s weight?": other_parties[0].weight
+    hint: e.g., 180 pounds
+  - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
+    help: |
+      You can choose more than one if that is helpful to describe ${other_parties.familiar()}.
+    datatype: checkboxes
+    choices:
+      - Small: Small
+      - Medium: Medium
+      - Large: Large
+      - Lanky: Lanky
+      - Stocky: Stocky
+      - Husky: Husky
+      - Muscular: Muscular
+      - Fat: Fat
+      - Thin: Thin
+  - 'Does ${other_parties.familiar()} have any of the following?': other_parties[0].physical_other
+    required: False
+    datatype: checkboxes
+    choices:
+      - Full beard: Full beard
+      - Goatee: Goatee
+      - Thin mustasche: Thin mustasche
+      - Thick mustache: Thick mustasche
+      - Glasses: Glasses
+      - Tattoo (describe below): Tattooo
+      - Scars: Scars
+      - Acne: Acne
+  - note: |
+      Using your own words, briefly describe anything that would help the police identify ${other_parties.familiar()} that we haven't covered
+  - no label: other_parties[0].physical_other_details      
+    hint: e.g., details about tattoo, unusual walk, etc.

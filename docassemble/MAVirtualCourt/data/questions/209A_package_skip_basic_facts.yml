@@ -1,0 +1,69 @@
+---
+mandatory: True
+code: |
+  main_209A_package_intro = True
+  who_protecting_screener = "me"
+  users[0].name.first = "Jane"
+  users[0].name.last = "Survivor"
+  plaintiff_is_major_yes = True
+  other_parties[0].name.first = "George"
+  other_parties[0].name.last = "Abuser"
+  plaintiff_has_minor_children = True
+  relationship_to_defendant_marriage_or_kids = DADict(there_are_any=True, there_is_another=False)
+  relationship_to_defendant_unmarried = DADict(there_are_any=True, there_is_another=False)
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_married_to_each_other"] = True
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_formerly_married_to_each_other"] = True
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_dating_or_dated'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
+  relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_relationship_not_married_but_are_related'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_used_to_live_together'] = True
+  user_saw_what_to_expect = True
+  basic_questions_intro_screen = True
+  acknowledged_information_use = True
+  
+  incidents_of_abuse.auto_gather=False
+  incidents_of_abuse[0].date = "Last week"  
+  incidents_of_abuse[0].complete = True
+  incidents_of_abuse[0].summary = "Example affidavit text"
+  incidents_of_abuse[0].abuse = "fear"
+  incidents_of_abuse.gathered = True
+  affidavit_summary = "Example affidavit text"
+  
+  basic_questions_intro_screen  = True
+  complaint_209A_Affidavit_intro= True
+  complaint_209A_Affidavit_intro_2= True
+  complaint_209A_Affidavit_intro_3= True
+  saw_incidents = True
+  
+  children.target_number = 2
+  children_cares_for.target_number = 1
+  
+  children[0].name.first = "Bobby"
+  children[0].name.last =  "User Only"
+  children[0].birthdate = as_datetime("2020-05-01")
+  children[0].defendant_is_parent = False
+  children[1].name.first = "Junie"
+  children[1].name.last = "Joint"
+  children[1].birthdate= as_datetime("2019-04-01")
+  children[1].defendant_is_parent = True
+  children_cares_for[0].name.first = "Nelly"
+  children_cares_for[0].name.last = "Nibling"
+  children_cares_for[0].birthdate = as_datetime("2018-03-01")
+  children_cares_for[0].defendant_is_parent = False
+  
+  wants_custody_of = DAList(there_are_any=False)
+  wants_no_contact_for = DAList(there_are_any=False)
+  wants_child_support_for = DAList(there_are_any=False)
+  need_help_for_majors = False
+  
+  schools_to_stay_away_from.there_are_any = False
+  visitation_info = True
+  wants_to_request_visitation_details = True
+  
+  
+---
+include:
+  - 209a_package.yml

@@ -160,7 +160,7 @@ code: |
   interview_id = "A_complaint_for_protection_from_abuse_probation_copy0005"
 
   # basic_questions_intro_screen 
-  A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
+  # A_complaint_for_protection_from_abuse_probation_copy0005_intro  # Need a way to skip intro to every form?
 
   #######
   # Custom logic start
@@ -378,12 +378,13 @@ id: number_of_children_under_18
 question: |
   How many children do you have under 18?
 subquestion: |
-  Include all children that are yours or that you have care or custody of. (add plain language later)
+  Include all children that are yours or that you have care or custody of. 
+  (add plain language later)
 fields:
-  - Number of children you are the parent of: children.target_number
+  - How many children are you the parent of?: children.target_number
     datatype: integer
 #    default: 2
-  - Number of children you have care or custody of: children_cares_for.target_number
+  - How many children do you take care of but are not the parent of?: children_cares_for.target_number
     datatype: integer
 #    default: 1
 ---

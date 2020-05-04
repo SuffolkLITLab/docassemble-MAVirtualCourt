@@ -1213,7 +1213,11 @@ continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_in
 question: |
   Affidavit Disclosing Care or Custody Proceedings
 subquestion: |
-  If your children_of_both have been involved in court cases about their custody or care, then you must submit an Affidavit Disclosing Care or Custody Proceeding. The main purpose of this form is to find out about any open or closed cases related to the care and/or custody of your children_of_both. This helps the court get a better picture of your childrens’ situations.
+  If your children have been involved in court cases about their custody or care, 
+  then you must submit an Affidavit Disclosing Care or Custody Proceeding. 
+  The main purpose of this form is to find out about any open or closed cases 
+  related to the care and/or custody of your children. This helps the court get a 
+  better picture of your childrens’ situations.
 ---
 continue button field: A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question
 question: |

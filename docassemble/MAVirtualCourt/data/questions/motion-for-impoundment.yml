@@ -179,29 +179,27 @@ code: |
   # It was generated from interview_generator.py as an 'interview order' type question.
   basic_questions_intro_screen
   # If the user needs to fill out the form
-  if a_258e_motion_for_impoundment0019_intro:
-    # Set the preferred/allowed courts for this interview
-    preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
-    allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
-    impound_personal_information
-    # Wrong type of pdf field
-    if not impound_case_record_information:
-      case_record_information_to_be_impounded = ''
-    # Wrong type of pdf field
-    impound_information_ex_parte
-    request_based_on
-    signature_date
-    # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-    # Comment out the line below if you don't want this behavior. 
-    # I think we can get rid of this inside the if statement:
-    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
-    a_258e_motion_for_impoundment0019_preview_question # Pre-canned preview screen
-    basic_questions_signature_flow
-    users[0].signature
-
-  # If they don't need to do this at all, skip everything
-  else:
-    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  #if a_258e_motion_for_impoundment0019_intro:
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
+  allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
+  impound_personal_information
+  # Wrong type of pdf field
+  if not impound_case_record_information:
+    case_record_information_to_be_impounded = ''
+  # Wrong type of pdf field
+  impound_information_ex_parte
+  request_based_on
+  signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  # I think we can get rid of this inside the if statement:
+  # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  # a_258e_motion_for_impoundment0019_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
+  # else: # If they don't need to do this at all, skip everything
+  #  # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
   a_258e_motion_for_impoundment0019 = True
 ---
 continue button field: a_258e_motion_for_impoundment0019_preview_question
