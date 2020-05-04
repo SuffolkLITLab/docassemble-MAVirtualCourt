@@ -113,14 +113,21 @@ continue button field: domestic_violence_shelter_warning
 question: |
   Former or Prior Address
 subquestion: |
-  Provide the address you recently left
+  Provide any address you recently left to avoid abuse from ${other_parties.familiar()}
+
+  If you would need to add more than one, click "${word("Add another")}" to add more.
 fields: 
-  - 'Former addresses you have left to avoid abuse': users[0].address_former
+  - 'Former addresses you have left to avoid abuse': users[0].previous_addresses[i].address
     required: False
-  # gather as a group of addresses because there could be many.
-    # hide if:
-      # variable: is_209A # dummy variable. Will need to change when we put the interviews together.
-      # is: True
+  - Address: users[0].previous_addresses[i].address
+    address autocomplete: True
+  - Unit:     users[0].previous_addresses[i].unit
+    required: False
+  - City: users[0].previous_addresses[i].city
+  - State: users[0].previous_addresses[i].state
+    code: |
+      states_list()
+    default: "MA"    
 ---
 question: |
   Apartment building or multi-family home
@@ -149,6 +156,7 @@ subquestion: |
 fields:
   - 'Name(s)': persons_authorized_confidential_information
     required: False
+    datatype: area
 ---
 continue button field: Workplace
 question: |
@@ -194,7 +202,7 @@ attachment:
       - "signature_date": ${ signature_date }
       - "plainitff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
-      - "plaintiff_address_former": ${ users[0].address_former }
+      - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
       - "plaintiff_workplace_address": ${ users[0].workplace_address }
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
@@ -229,7 +237,8 @@ code: |
   users[0].address.address
   users[0].apartment_yes
   if abuser_caused_plaintiff_to_leave_home:
-    users[0].address_former
+    users[0].previous_addresses.there_are_any = True
+    users[0].previous_addresses.gather()
   users[0].apartment_yes
   Workplace
   School
@@ -265,7 +274,7 @@ attachment:
       - "signature_date": ${ signature_date }
       #- "plainitff_address_residential": ${ plainitff_address_residential }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
-      - "plaintiff_address_former": ${ users[0].address_former }
+      - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
       - "plaintiff_workplace_address": ${ users[0].workplace_address }
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }

@@ -285,7 +285,7 @@ objects:
 question: |
   Best places to find ${other_parties.familiar()}
 subquestion: |
-  This information helps the police find the ${other_parties.familiar()} to give them with a copy of the restraining order.
+  This information helps the police find ${other_parties.familiar()} to give them with a copy of the restraining order.
 fields:
   - 'What is the best place and time to find ${other_parties.familiar()}? Are they staying somewhere else at the moment? Is there places or friends that they visit at a particular time?': other_parties[0].location_information_other
     datatype: area
@@ -311,9 +311,6 @@ fields:
 ---
 question: |
   ${other_parties.familiar()}'s Physical Appearance
-subquestion: |
-  The police will need to be able to identify ${other_parties.familiar()}.
-  Answer the questions below and on the next few screens to tell us more about how they look.
 fields:
   - "What is  ${other_parties.familiar()}'s race or ethnicity? (check any that apply)": other_parties[0].race
     datatype: checkboxes
@@ -357,9 +354,6 @@ fields:
 ---
 question: |
   ${other_parties.familiar()}'s Physical Appearance
-subquestion: |
-  The police will need to be able to identify ${other_parties.familiar()}.
-  Answer the questions below and on the next few screens to tell us more about how they look.
 fields:
   - "How tall is ${other_parties.familiar()}?": other_parties[0].height
     hint: e.g., 5 foot 10 inches
@@ -405,7 +399,7 @@ code: |
 question: |
   ${other_parties.familiar()}'s Physical Location
 subquestion: |
-  Please describe where the police can best find the ${other_parties.familiar()} by providing the following information.  This information is important so that the police can quickly find the ${other_parties.familiar()} to give them a copy of the restraining order.
+  Please describe where the police can best find ${other_parties.familiar()} by providing the following information.  This information is important so that the police can quickly find ${other_parties.familiar()} to give them a copy of the restraining order.
 fields:
   - 'What floor is "${other_parties[0].address.on_one_line()}" on?': other_parties[0].address_floor
   - "What name is on the mailbox at ${other_parties.familiar()}'s address? (write None if none).": other_parties[0].name_door_mailbox
@@ -587,7 +581,7 @@ code: |
   other_parties[0].photo_yes
   other_parties[0].race
   other_parties[0].height
-  
+
   other_parties[0].address
   if not other_parties[0].police_violence_yes:
     other_parties[0].police_violence_no = True
