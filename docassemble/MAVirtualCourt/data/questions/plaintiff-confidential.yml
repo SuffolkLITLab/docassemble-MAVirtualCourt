@@ -239,6 +239,8 @@ code: |
   if abuser_caused_plaintiff_to_leave_home:
     users[0].previous_addresses.there_are_any = True
     users[0].previous_addresses.gather()
+  else:
+    users[0].previous_addresses.there_are_any = False    
   users[0].apartment_yes
   Workplace
   School
