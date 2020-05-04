@@ -3,6 +3,7 @@ metadata:
     MassAccess
   short title: |
     MassAccess
+  title url: https://massaccess.suffolklitlab.org/
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
 ---
@@ -22,7 +23,7 @@ code: |
 ---
 default screen parts:
   under: |
-    Have a problem with this website? <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">Please complete this feedback form.</a>. Follow its instructions about [this link](${interview_url()}).
+    Have a problem with this website? <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">Please complete this feedback form</a>. Follow its instructions about [this link](${interview_url()}).
 ---
 objects from file:
   - court_emails : court_emails.yml
