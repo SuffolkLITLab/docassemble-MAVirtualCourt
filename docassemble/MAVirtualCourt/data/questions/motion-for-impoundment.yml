@@ -108,7 +108,9 @@ subquestion: |
 yesno: impound_personal_information
 ---
 question: |
-  Why are you asking for this?
+  Why do you want to keep this form private?
+subquestion: |
+  Be specific. Include facts about your safety.  
 fields:
   - no label: request_based_on
     input type: area
@@ -184,12 +186,12 @@ code: |
   preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
   allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
   impound_personal_information
+  request_based_on  
   # Wrong type of pdf field
   if not impound_case_record_information:
     case_record_information_to_be_impounded = ''
   # Wrong type of pdf field
   impound_information_ex_parte
-  request_based_on
   signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 

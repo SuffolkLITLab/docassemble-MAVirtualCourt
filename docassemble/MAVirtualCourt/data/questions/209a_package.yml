@@ -45,7 +45,8 @@ code: |
   # include page 2 only if there are children
   if plaintiff_has_minor_children: 
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
-    attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
+    if have_had_custody_cases:
+      attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
     
   if wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
@@ -108,17 +109,20 @@ code: |
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
 
   # Care or custody proceedings
-  A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
+  if plaintiff_has_minor_children:
+    if have_had_custody_cases:
+      A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
   # From page 1
   other_cases.gather()
 
   ############################## Defendant info
   # From page 1
   # This is redundant to defendant information question
+  defendantinformation209A0008_intro
+
   defendant_has_alias # redundant to def. information section
   if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
     defendant_weapons_description = DAEmpty()
-
   defendantinformation209A0008
 
   ########################## Plaintiff info

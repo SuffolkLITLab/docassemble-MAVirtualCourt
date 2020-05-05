@@ -1,43 +1,64 @@
 ---
+question: |
+  Which sections should we skip?
+fields:
+  - Choose a section to skip: skip_sections
+    datatype: checkboxes
+    choices:
+      - Intro: skip_intro
+      - Parties: skip_parties
+      - Children: skip_children
+      - Relationship: skip_relationship
+      - Affidavit: skip_affidavit
+      - Custody and no-contact: skip_custody_no_contact
+      - Visitation: skip_visitation
+      - Past custody cases: skip_custody_cases
+      - Orders: skip_orders
+      - Court: skip_court
+      - Address: skip_address
+---
 mandatory: True
 code: |
+  relationship_to_defendant_marriage_or_kids = DADict('relationship_to_defendant_marriage_or_kids',there_are_any=True, there_is_another=False)
+  relationship_to_defendant_unmarried = DADict('relationship_to_defendant_unmarried',there_are_any=True, there_is_another=False)    
+---
+mandatory: True
+code: |
+  for section in skip_sections.true_values():
+    value(section)
+---
+sets: skip_intro
+scan for variables: False
+code: |
+  basic_questions_intro_screen  = True
   main_209A_package_intro = True
+  acknowledged_information_use = True
+  user_saw_what_to_expect = True
+  
+  skip_intro = True
+---
+sets: skip_parties
+scan for variables: False
+code: |
   who_protecting_screener = "me"
   users[0].name.first = "Jane"
   users[0].name.last = "Survivor"
   plaintiff_is_major_yes = True
+  defendant_is_major = True
   other_parties[0].name.first = "George"
   other_parties[0].name.last = "Abuser"
+  defendant_has_alias = True
+  other_parties[0].name_other = "Alias"
+  other_parties[0].gender = "male"
+  
+  
+  skip_parties = True
+  
+---
+sets: skip_children
+scan for variables: False
+code: |
   plaintiff_has_minor_children = True
-  relationship_to_defendant_marriage_or_kids = DADict(there_are_any=True, there_is_another=False)
-  relationship_to_defendant_unmarried = DADict(there_are_any=True, there_is_another=False)
-  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_married_to_each_other"] = True
-  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_formerly_married_to_each_other"] = True
-  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
-  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_dating_or_dated'] = True
-  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
-  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
-  relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = True
-  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_relationship_not_married_but_are_related'] = True
-  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_used_to_live_together'] = True
-  user_saw_what_to_expect = True
-  basic_questions_intro_screen = True
-  acknowledged_information_use = True
-  
-  incidents_of_abuse.auto_gather=False
-  incidents_of_abuse[0].date = "Last week"  
-  incidents_of_abuse[0].complete = True
-  incidents_of_abuse[0].summary = "Example affidavit text"
-  incidents_of_abuse[0].abuse = "fear"
-  incidents_of_abuse.gathered = True
-  affidavit_summary = "Example affidavit text"
-  
-  basic_questions_intro_screen  = True
-  complaint_209A_Affidavit_intro= True
-  complaint_209A_Affidavit_intro_2= True
-  complaint_209A_Affidavit_intro_3= True
-  saw_incidents = True
-  
   children.target_number = 2
   children_cares_for.target_number = 1
   
@@ -52,8 +73,48 @@ code: |
   children_cares_for[0].name.first = "Nelly"
   children_cares_for[0].name.last = "Nibling"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
-  children_cares_for[0].defendant_is_parent = False
+  children_cares_for[0].defendant_is_parent = False  
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
   
+  skip_children = True
+---
+sets: skip_relationship
+scan for variables: False
+code: |
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_married_to_each_other"] = True
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_formerly_married_to_each_other"] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_dating_or_dated'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
+  relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_relationship_not_married_but_are_related'] = True
+  relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_used_to_live_together'] = True
+  relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
+  
+  skip_relationship = True
+---
+sets: skip_affidavit
+scan for variables: False
+code: |
+  incidents_of_abuse.auto_gather=False
+  incidents_of_abuse[0].date = "Last week"  
+  incidents_of_abuse[0].complete = True
+  incidents_of_abuse[0].summary = "Example affidavit text"
+  incidents_of_abuse[0].abuse = "fear"
+  incidents_of_abuse.gathered = True
+  affidavit_summary = incidents_of_abuse[0].summary
+  affidavit_body = affidavit_summary
+  
+  complaint_209A_Affidavit_intro= True
+  complaint_209A_Affidavit_intro_2= True
+  complaint_209A_Affidavit_intro_3= True
+  saw_incidents = True
+  
+  skip_affidavit = True
+---
+sets: skip_custody_no_contact
+scan for variables: False
+code: |
   wants_custody_of = DAList(there_are_any=False)
   wants_no_contact_for = DAList(there_are_any=False)
   wants_child_support_for = DAList(there_are_any=False)
@@ -61,9 +122,69 @@ code: |
   
   schools_to_stay_away_from.there_are_any = False
   visitation_info = True
-  wants_to_request_visitation_details = True
+  wants_to_request_visitation_details = False
   
+  skip_custody_no_contact = True  
+---
+sets: skip_visitation
+scan for variables: False
+code: |
+  wants_visitation_orders = False
+  skip_visitation = True
+---
+code: |
+  have_had_custody_cases = False
+  have_had_paternity_cases = False
+  A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
+  plaintiff_and_defendant_other_case_yes = False
+  skip_custody_cases = True
+---
+code: |
+  order_defendant_no_contact_unless_court_authorized_yes = True
+  order_defendant_remain_away_plaintiff_residence_yes = True
+  If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = True
+  order_defendant_remain_away_plaintiff_residence_yes = True
+  order_defendant_remain_away_plaintiff_workplace_yes = True
+  order_defendant_remain_away_plaintiff_school_yes = True
   
+  order_defendant_pay_yes = True
+  order_defendant_pay_amount = 0
+  losses_caused_by_defendant = ""
+  order_defendant_pay_temporary_support_to_plaintiff_yes = True
+  order_page_two_relief_yes = True
+  order_other_relief_yes = True
+  order_impound_plaintiff_address_residential_yes = True
+  order_impound_plaintiff_address_work_yes = True
+  order_impound_plaintiff_address_school = True
+  order_other_relief_yes = True
+  other_relief = ''
+  order_relief_ex_parte = True
+  skip_orders = True
+---
+code: |
+  courts[0] = macourts[0]
+  skip_court = True
+---
+code: |
+  users[0].address.address = "120 Tremont St"
+  users[0].address.city = "Boston"
+  users[0].address.state = "MA"
+  users[0].address.zip = "02108"
+  
+  other_parties[0].address.address = "121 Tremont St"
+  other_parties[0].address.city = "Boston"
+  other_parties[0].address.state = "MA"
+  other_parties[0].address.zip = "02108"
+  users[0].phone_number = "555-1234"
+  
+  users[0].address.geolocate()
+  other_parties[0].address.geolocate()
+  
+  skip_address = True
+---
+code: |
+  
+  skip_weapons = True
 ---
 include:
   - 209a_package.yml
