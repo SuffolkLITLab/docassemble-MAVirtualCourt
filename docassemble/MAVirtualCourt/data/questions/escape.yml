@@ -28,7 +28,7 @@ comment: |
 id: escape_button_and_its_placement
 template: escape_button
 content: |
-  ${ action_button_html("https://docassemble.org", id_tag="escape", classname="escape escape-unhandled", label="Escape", color="danger", size="md") }
+  ${ action_button_html("https://google.com", id_tag="escape", classname="escape escape-unhandled", label="Escape", color="danger", size="md") }
 
   <script>
     // Can't use `let` in here as it exists on the page
