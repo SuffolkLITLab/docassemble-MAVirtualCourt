@@ -291,7 +291,7 @@ fields:
     datatype: area
 ---
 question: |
-  What does Defendant look like?
+  What Does Defendant Look Like?
 
 fields:
   - 'Can you provide a photo of Defendant?': other_parties[0].photo_yes
