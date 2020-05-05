@@ -456,8 +456,9 @@ under: |
   ${x}
 progress: 99  
 ---
+# Temporarily disable
 if: |
-  preferred_court == 'Housing Court'
+  False # preferred_court == 'Housing Court'
 id: court information
 sets:
   - courts[0].name
@@ -488,8 +489,9 @@ continue button field: ask_court_question
 #  ${quote_paragraphs(local_housing_court.description)}
 #  % endif
 ---
+# Temporarily always use this form
 if: |
-  not defined('preferred_court') or preferred_court != 'Housing Court'
+  True # not defined('preferred_court') or preferred_court != 'Housing Court'
 id: court information
 sets:
   - courts[0].name
