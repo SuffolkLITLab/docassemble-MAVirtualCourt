@@ -67,6 +67,7 @@ content: |
   <style>
     .escape-inner {
       position: relative;
+      margin-left: .4em;
     }
   
     #escaper_2, .escape-overlap {
@@ -90,6 +91,10 @@ content: |
       
       #dapagetitle .ma_icon {
         margin-right: 0;
+      }
+
+      .escape-inner {
+        margin-left: 0;
       }
       
       .escape {
