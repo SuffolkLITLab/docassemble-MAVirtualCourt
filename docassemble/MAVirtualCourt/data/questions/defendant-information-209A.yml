@@ -452,8 +452,8 @@ subquestion: |
 fields:
   - ${other_parties.familiar()} does not have a car or other vehicle: other_parties[0].does_not_have_car
     datatype: yesno
+    disable others: True
   - 'Color (choose or type different answer)': other_parties[0].vehicle_color
-    hide if: other_parties[0].does_not_have_car
     datatype: combobox
     choices:
       - Black: Black
@@ -469,17 +469,13 @@ fields:
       - Orange: Orange
   - 'Make': other_parties[0].vehicle_make
     hint: e.g., Honda
-    hide if: other_parties[0].does_not_have_car    
   - 'Model': other_parties[0].vehicle_model
     hint: e.g., Civic
-    hide if: other_parties[0].does_not_have_car
   - 'Year': other_parties[0].vehicle_year
     datatype: combobox
     code: recent_years(20)
-    hide if: other_parties[0].does_not_have_car
   - "${other_parties.familiar()}'s vehicle license plate number": other_parties[0].vehicle_license_plate
     required: False
-    hide if: other_parties[0].does_not_have_car
 ---
 question: |
   General Information About ${other_parties.familiar()}
@@ -613,7 +609,7 @@ attachment:
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
       - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
-      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
@@ -660,8 +656,8 @@ code: |
   other_parties[0].race
   other_parties[0].height
 
-  if not other_parties[0].police_violence_yes:
-    other_parties[0].police_violence_no = True
+  other_parties[0].police_violence_yes
+  
   if not other_parties[0].drug_alcohol_yes:
     other_parties[0].drug_alcohol_no = True
     other_parties[0].drug_alcohol_abuse = ''
@@ -758,7 +754,7 @@ attachment:
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
       - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
-      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
