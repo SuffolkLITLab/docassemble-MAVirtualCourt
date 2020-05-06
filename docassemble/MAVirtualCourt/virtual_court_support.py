@@ -10,7 +10,7 @@ class AddressList(DAList):
     self.object_type = Address
 
   def __str__(self):
-    return comma_and_list([item.on_on_line() for item in self])
+    return comma_and_list([item.on_one_line() for item in self])
 
 class VCBusiness(Person):
   """A legal entity, like a school, that is not an individual. Has a .name.text attribute that must be defined to reduce to text."""
