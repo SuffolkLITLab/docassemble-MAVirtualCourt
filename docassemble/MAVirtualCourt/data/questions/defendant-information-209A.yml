@@ -411,10 +411,10 @@ fields:
     required: False
 ---
 code: |
-  defendant_race = str(other_parties[0].race) + " " + showifdef('other_parties[0].race_other')
+  defendant_race = str(other_parties[0].race.true_values()) + " " + showifdef('other_parties[0].race_other')
   defendant_eye_color = other_parties[0].eye_color
-  defendant_hair_details = "Color: " + other_parties[0].hair_color + showifdef('other_parties[0].hair_color_other') + showifdef('other_parties[0].hair_other_style')
-  defendant_other_description = str(other_parties[0].physical_other) + " " + showifdef('other_parties[0].physical_other_details')
+  defendant_hair_details = other_parties[0].hair_color + showifdef('other_parties[0].hair_color_other') + showifdef('other_parties[0].hair_other_style')
+  defendant_other_description = str(other_parties[0].physical_other.true_values()) + " " + showifdef('other_parties[0].physical_other_details')
 ---
 question: |
   ${other_parties.familiar()}'s Physical Location
@@ -472,13 +472,17 @@ fields:
       - Green: Green
       - Tan: Tan
       - Orange: Orange
+    required: False      
   - 'Make': other_parties[0].vehicle_make
     hint: e.g., Honda
+    required: False
   - 'Model': other_parties[0].vehicle_model
     hint: e.g., Civic
+    required: False
   - 'Year': other_parties[0].vehicle_year
     datatype: combobox
     code: recent_years(20)
+    required: False
   - "${other_parties.familiar()}'s vehicle license plate number": other_parties[0].vehicle_license_plate
     required: False
 ---
@@ -545,7 +549,11 @@ fields:
     code: |
       states_list()   
   - Zip: other_parties[0].address.zip  
-  - Phone number: other_parties[0].phone_number
+  - Cell phone: other_parties[0].mobile_number
+    required: False
+  - Other phone number: other_parties[0].phone_number
+    required: False
+  - Email: other_parties[0].email
     required: False
 ---
 progress: 100
@@ -576,8 +584,8 @@ attachment:
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age }
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[2-1]) }
-      - "defendant_phone": ${ other_parties[0].phone_number }
-      - "defendant_signature": ${ users[0].signature }
+      - "defendant_phone_home": ${ other_parties[0].phone_number }
+      - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "defendant_name_other": ${ other_parties[0].name_other if defendant_has_alias else '' }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
@@ -591,7 +599,7 @@ attachment:
       - "defendant_hair_color": ${ defendant_hair_details }
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
-      - "defendant_physical_build": ${ other_parties[0].physical_build }
+      - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
@@ -606,9 +614,10 @@ attachment:
       - "defendant_work_address": ${ other_parties[0].work_address }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
-      - "defendant_location_best": ${ other_parties[0].location_best }
-      - "defendant_locations_other": ${ other_parties[0].locations_other }
-      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      # - "defendant_location_best": ${ other_parties[0].location_best }
+      # - "defendant_locations_other": ${ other_parties[0].locations_other }
+      # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_location_information_other": ${ defendant_location_information_other }
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
@@ -625,8 +634,9 @@ attachment:
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
-      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties }
+      - "plaintiff_name": ${ users }
+      - defendant_phone : ${defendants[0].phone_number}
+      - defendant_email: ${defendants[0].email}
 ---
 include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
@@ -753,7 +763,7 @@ attachment:
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
-      - "defendant_phone": ${ other_parties[0].phone_number }
+      - "defendant_phone_home": ${ other_parties[0].phone_number }
       - "signature_date": ${ signature_date }
       - "defendant_name_other": ${ other_parties[0].name_other  if defendant_has_alias else '' }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
@@ -767,7 +777,7 @@ attachment:
       - "defendant_hair_color": ${ defendant_hair_details }
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
-      - "defendant_physical_build": ${ other_parties[0].physical_build }
+      - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
@@ -782,9 +792,10 @@ attachment:
       - "defendant_work_address": ${ other_parties[0].work_address }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
-      - "defendant_location_best": ${ other_parties[0].location_best }
-      - "defendant_locations_other": ${ other_parties[0].locations_other }
-      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      # - "defendant_location_best": ${ other_parties[0].location_best }
+      # - "defendant_locations_other": ${ other_parties[0].locations_other }
+      # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_location_information_other": ${ defendant_location_information_other }      
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
@@ -801,5 +812,14 @@ attachment:
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
-      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties }
+      - "plaintiff_name": ${ users }
+      - defendant_phone : ${defendants[0].phone_number}
+      - defendant_email: ${defendants[0].email}
+
+---
+code: |
+  defendant_location_information_other = ("Best place to find: "
+    + other_parties[0].location_best \
+    + ". Best times to find: " + other_parties[0].best_times_find \
+    + ". Other places to find: " + other_parties[0].locations_other \
+    + ". Other information: " + other_parties[0].location_information_other)

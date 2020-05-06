@@ -1,6 +1,10 @@
 ---
 question: |
   Which sections should we skip?
+subquestion: |
+  Skipping a section will provide answers to some of the questions.
+  It's not a guarantee of testing, but it can help you quickly
+  advance to the right screen to test.
 fields:
   - Choose a section to skip: skip_sections
     datatype: checkboxes
@@ -18,11 +22,15 @@ fields:
       - Address: skip_address
       - Defendant information: skip_defendant_information
       - Plaintiff confidential information: skip_plaintiff_information
+      - Motion to impound: skip_impound
 ---
 mandatory: True
 code: |
   relationship_to_defendant_marriage_or_kids = DADict('relationship_to_defendant_marriage_or_kids',there_are_any=True, there_is_another=False)
-  relationship_to_defendant_unmarried = DADict('relationship_to_defendant_unmarried',there_are_any=True, there_is_another=False)    
+  relationship_to_defendant_unmarried = DADict('relationship_to_defendant_unmarried',there_are_any=True, there_is_another=False)
+  other_parties[0].race = DADict('other_parties[0].race', there_are_any=True,there_is_another=False)
+  other_parties[0].physical_other = DADict('other_parties[0].physical_other', there_are_any=True, there_is_another=False)
+  other_parties[0].physical_build = DADict('other_parties[0].physical_build', there_are_any=True, there_is_another=False)
 ---
 mandatory: True
 code: |
@@ -202,16 +210,18 @@ code: |
   parents[0] = "Mother maiden name"
   parents[1] = "Father name"
   other_parties[0].phone_number = "555-4567"
+  other_parties[0].mobile_number = "555-4567"
+  other_parties[0].email = "george@example.com"
   signature_date = today()
   other_parties[0].gender = "male"
   other_parties[0].photo_yes = False
-  other_parties[0].race = "Other"
+  other_parties[0].race["White"] = True
   other_parties[0].eye_color = "Orange"
   other_parties[0].hair_color = "Black"
   other_parties[0].height = "6 foot 1 inch"
   other_parties[0].weight = "180 pounds"
-  other_parties[0].physical_build = "lanky"
-  other_parties[0].physical_other = "Other physical"
+  other_parties[0].physical_build["Lanky"] = True
+  other_parties[0].physical_other["Scars"] = True
   defendant_other_description = "Has a scar on right leg"
   other_parties[0].understands_english = True
   other_parties[0].address_floor = "First floor"
@@ -259,6 +269,11 @@ code: |
   persons_authorized_confidential_information = "My best friend"
   Who_is_allowed_to_see_this_form = True
   skip_plaintiff_information = True
+---
+sets: skip_impound
+scan for variables: False
+code: |
+  skip_impound = True
 ---
 include:
   - 209a_package.yml
