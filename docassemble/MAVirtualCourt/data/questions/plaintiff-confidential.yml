@@ -117,8 +117,6 @@ subquestion: |
 
   If you would need to add more than one, click "${word("Add another")}" to add more.
 fields: 
-  - 'Former addresses you have left to avoid abuse': users[0].previous_addresses[i].address
-    required: False
   - Address: users[0].previous_addresses[i].address
     address autocomplete: True
   - Unit:     users[0].previous_addresses[i].unit
@@ -128,6 +126,7 @@ fields:
     code: |
       states_list()
     default: "MA"    
+list collect: True    
 ---
 question: |
   Apartment building or multi-family home
@@ -168,6 +167,7 @@ fields:
     required: False
   - 'Work address': users[0].workplace_address
     required: False
+    address autocomplete: True
   - 'Work phone number': users[0].workplace_phone
     required: False
 ---

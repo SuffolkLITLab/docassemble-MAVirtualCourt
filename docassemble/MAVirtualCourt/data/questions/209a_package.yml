@@ -9,6 +9,7 @@ include:
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
+ - 209A-review.yml
  #- escape.yml
 ---
 features:
@@ -23,7 +24,13 @@ sections:
   - section_other_cases: Other cases
   - section_custody: Custody
   - section_child_support: Child Support
-  - section_defendant_info: Other party information
+  - Other party information:
+    - section_defendant_info_demographics: Demographics
+    - section_defendant_info_appearance: Appearance
+    - section_defendant_info_safety: Safety concerns
+    - section_defendant_info_finding: Finding Defendant
+    - section_defendant_info_employer: Employer
+    - section_defendant_info_car: Car
   - section_your_info: Your information
   - section_privacy: Keeping your information private
 ---
@@ -121,8 +128,6 @@ code: |
   defendantinformation209A0008_intro
 
   defendant_has_alias # redundant to def. information section
-  if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
-    defendant_weapons_description = DAEmpty()
   defendantinformation209A0008
 
   ########################## Plaintiff info

@@ -503,6 +503,12 @@ yesno: incidents_of_abuse.there_is_another
 ---
 question: |
   This is what will go into your Affidavit: 
+subquestion: |
+  The affidavit will start with this text:
+
+  > The following is a brief summary of the events 
+  > and does not attempt to capture all the detail 
+  > of the abuse  
 fields:
   - no label: affidavit_body
     input type: area
@@ -511,14 +517,17 @@ fields:
     rows: 10
 field: saw_incidents
 ---
+code: |
+  affidavit_intro = "The following is a brief summary of the events and does not attempt to capture all the detail of the abuse: "
+---
 attachment:
     variable name: complaint_209A_Affidavit_attachment_preview
     name: 209A Complaint Affidavit
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
-      - "affidavit_body": ${ affidavit_body }
-      - "incident_date": ${ incidents_of_abuse[0].date }
+      - "affidavit_body": ${ affidavit_intro + affidavit_body }
+      - "incident_date": ${ incident_date }
 ---
 need: complaint_209A_Affidavit
 attachment:
@@ -529,6 +538,8 @@ attachment:
     fields: 
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
-      - "affidavit_body": ${ affidavit_body }
-      - "incident_date": ${ incidents_of_abuse[0].date }
+      - "affidavit_body": ${ affidavit_intro + affidavit_body }
+      - "incident_date": ${ incident_date }
 ---
+code: |
+  incident_date = str(incidents_of_abuse[0].year) + ", " + incidents_of_abuse[0].date

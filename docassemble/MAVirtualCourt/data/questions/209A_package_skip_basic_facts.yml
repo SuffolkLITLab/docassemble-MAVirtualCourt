@@ -16,6 +16,8 @@ fields:
       - Orders: skip_orders
       - Court: skip_court
       - Address: skip_address
+      - Defendant information: skip_defendant_information
+      - Plaintiff confidential information: skip_plaintiff_information
 ---
 mandatory: True
 code: |
@@ -97,7 +99,8 @@ sets: skip_affidavit
 scan for variables: False
 code: |
   incidents_of_abuse.auto_gather=False
-  incidents_of_abuse[0].date = "Last week"  
+  incidents_of_abuse[0].date = "Last week" 
+  incidents_of_abuse[0].year = "2020" 
   incidents_of_abuse[0].complete = True
   incidents_of_abuse[0].summary = "Example affidavit text"
   incidents_of_abuse[0].abuse = "fear"
@@ -132,6 +135,8 @@ code: |
   wants_visitation_orders = False
   skip_visitation = True
 ---
+sets: skip_custody_cases
+scan for variables: False
 code: |
   have_had_custody_cases = False
   have_had_paternity_cases = False
@@ -139,6 +144,8 @@ code: |
   plaintiff_and_defendant_other_case_yes = False
   skip_custody_cases = True
 ---
+scan for variables: False
+sets: skip_orders
 code: |
   order_defendant_no_contact_unless_court_authorized_yes = True
   order_defendant_remain_away_plaintiff_residence_yes = True
@@ -165,6 +172,8 @@ code: |
   courts[0] = macourts[0]
   skip_court = True
 ---
+scan for variables: False
+sets: skip_address
 code: |
   users[0].address.address = "120 Tremont St"
   users[0].address.city = "Boston"
@@ -182,9 +191,69 @@ code: |
   
   skip_address = True
 ---
+scan for variables: False
+sets: skip_defendant_information
 code: |
+  defendantinformation209A0008_intro = True
+  other_parties[0].birthdate = "2000-01-01"
+  parents[0] = "Mother maiden name"
+  parents[1] = "Father name"
+  other_parties[0].phone_number = "555-4567"
+  signature_date = "Today"
+  other_parties[0].gender = "male"
+  other_parties[0].photo_yes = False
+  other_parties[0].race = "Other"
+  other_parties[0].eye_color = "Orange"
+  other_parties[0].hair_color = "Black"
+  other_parties[0].height = "6 foot 1 inch"
+  other_parties[0].weight = "180 pounds"
+  other_parties[0].physical_build = "lanky"
+  defendant_other_description = "Has a scar on right leg"
+  other_parties[0].understands_english = True
+  other_parties[0].address_floor = "First floor"
+  other_parties[0].name_door_mailbox = "George"
+  defendant_not_employed = True
+  other_parties[0].employer = "N/A"
+  other_parties[0].does_not_have_car = True
+  other_parties[0].police_violence_yes = True
+  other_parties[0].drug_alcohol_yes = False
+  defendant_weapons_guns = True
+  defendant_weapons_ammunition = True
+  defendant_weapons_firearms_identification_card = True
+  defendant_weapons_license_to_carry = True
+  defendant_weapons_description = "A normal gun"
   
-  skip_weapons = True
+  other_parties[0].gun_license_carry_possess_yes = True
+  other_parties[0].gun_license_carry_possess = "a license"
+  other_parties[0].psychiatric_emotional_problems_yes = True
+  other_parties[0].psychiatric_emotional_problems = "Borderline personality"
+  other_parties[0].location_information_other = "A long description of where to find George"
+  other_parties[0].location_best = "Bar"
+  other_parties[0].best_times_find = "Noon"
+  other_parties[0].locations_other = "Library"
+  
+  skip_defendant_information = True
+---
+scan for variables: false
+sets: skip_plaintiff_information
+code: |
+  A_Plaintiff_Confidential_Information0011_intro = True
+  lives_in_domestic_violence_shelter = True
+  domestic_violence_shelter_warning = True
+  users[0].apartment_yes = True
+  abuser_caused_plaintiff_to_leave_home = False
+  users[0].birthdate = "1996-02-29"
+  users[0].phone_number = "555-12345"
+  signature_date = "Today"
+  users[0].apartment_yes = "True"
+  users[0].previous_addresses.there_are_any=False
+  users[0].workplace_name = "Plaintiff workplace"
+  users[0].workplace_address = "123 Main St, Boston, MA"
+  users[0].workplace_phone = "555-7777"
+  users[0].school_name = "Greendale"
+  users[0].school_address = "123 Fake St, Boston, MA"
+  persons_authorized_confidential_information = "My best friend"
+  skip_plaintiff_information = True
 ---
 include:
   - 209a_package.yml

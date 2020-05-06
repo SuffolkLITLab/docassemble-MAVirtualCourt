@@ -638,6 +638,27 @@ subquestion: |
   The more information you can provide about ${other_parties.familiar()}'s usual location, the sooner the order will be served.
   
   If you see ${other_parties.familiar()}, and you know the order has not been served, call the police. The police should not arrest ${other_parties.familiar()}, but they will be able to serve ${other_parties.familiar()}. Call the police even if you are not afraid.
+# ---
+# question: |
+#   Weapons
+# subquestion: |
+#   Check the following if they are true.
+# fields:
+#   - 'Defendant has a gun': defendant_weapons_guns
+#     datatype: yesno
+#   - 'Defendant has ammunition': defendant_weapons_ammunition
+#     datatype: yesno
+#   - 'Defendant has a firearms identification card': defendant_weapons_firearms_identification_card
+#     datatype: yesno
+#   - 'Defendant has a license to carry': defendant_weapons_license_to_carry
+#     datatype: yesno
+#   - 'Describe the gun(s)': defendant_weapons_description
+#     show if:
+#       variable: defendant_weapons_guns
+#       is: True
+# under: |
+#   This is important so the police can take Defendant's guns.
+# Not sure how to handle this: it's in page 1 but is really defendant information question
 ---
 id: interview_order_defendantinformation209A0008
 code: |
@@ -649,13 +670,18 @@ code: |
   preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
   allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
   # other_parties[0].name_other
+  nav.set_section('section_defendant_info_demographics')
   if other_parties[0].understands_english:
     other_parties[0].language_other = ''
 
+  nav.set_section('section_defendant_info_appearance')
   other_parties[0].photo_yes
   other_parties[0].race
   other_parties[0].height
 
+  nav.set_section('section_defendant_info_safety')
+  if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
+    defendant_weapons_description = DAEmpty()
   other_parties[0].police_violence_yes
   
   if not other_parties[0].drug_alcohol_yes:
@@ -668,10 +694,13 @@ code: |
     other_parties[0].psychiatric_emotional_problems_no = True
     other_parties[0].psychiatric_emotional_problems = ''
 
+  nav.set_section('section_defendant_info_location')
   other_parties[0].address.address
   other_parties[0].address_floor  
   other_parties[0].location_best    
   other_parties[0].location_information_other
+
+  nav.set_section('section_defendant_info_employer')
   if defendant_not_employed:
     other_parties[0].employer = "N/A"
     other_parties[0].work_address = ''
@@ -679,6 +708,8 @@ code: |
     other_parties[0].work_title = ''
     other_parties[0].work_department = ''
     other_parties[0].work_hours = ''
+
+  nav.set_section('section_defendant_info_car')    
   if other_parties[0].does_not_have_car:
     other_parties[0].vehicle_make = "N/A"
     other_parties[0].vehicle_color = "N/A"
