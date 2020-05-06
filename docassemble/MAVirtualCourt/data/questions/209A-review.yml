@@ -1,0 +1,226 @@
+##########
+# Review screens for the 209A Package
+# See: https://docassemble.org/docs/fields.html#review
+# I like this style: https://docassemble.org/docs/fields.html#review%20customization
+# Each screen is linked to a section heading on the left menu
+---
+event: section_basic
+question: |
+  Basic facts
+subquestion: |
+  Click below to edit your answers
+review:
+  - Edit who protecting: who_protecting_screener
+    button: |
+      You said this form is to protect
+      % if who_protecting_screener == 'me':
+      You
+      % elif who_protecting_screener == "me and children":
+      You and your children
+      % else:
+      Someone else
+      % endif
+  - Edit name: plaintiff_assistant_relationship_to_plaintiff
+    button: |
+      You said your relationship to ${users} is
+      ${plaintiff_assistant_relationship_to_plaintiff}
+      and your name is ${plaintiff_assistant_name}.
+  - Edit age: plaintiff_is_major_yes
+    button: |
+      You said you
+      % if plaintiff_is_major_yes:
+      are
+      % else:
+      are not
+      % endif
+      18 years or older.      
+  - Edit name:  users[0].name.first
+    button: |
+      Person protected is ${users}
+  - Edit name: other_parties[0].name.first
+    button: |
+      Person you need protection from is ${other_parties}
+  - Edit alias: defendant_has_alias
+    button: |
+      ${other_parties.familiar()}
+      % if defendant_has_alias:
+      has the alias ${other_parties[0].name_other}
+      % else:
+      does not have any other names they go by
+      % endif
+  - Edit age: defendant_is_major
+    button: |
+      You said ${other_parties.familiar()}
+      % if defendant_is_major:
+      is
+      % else:
+      is not
+      % endif
+      18 years or older.
+  - Edit gender:       other_parties[0].gender
+    button: |
+      You said ${other_parties.familiar()}'s
+      gender is "${other_parties[0].gender}".
+---
+continue button field: section_children
+continue button label: ${word("Resume")}
+question: |
+  Review information about your children
+subquestion: |
+  You told us that you
+  % if plaintiff_has_minor_children:
+  do
+  % else:
+  do not
+  % endif
+  have children.
+
+  [Change response](${url_action('plaintiff_has_minor_children')}).
+
+  % if plaintiff_has_minor_children:
+
+  You said you have **[${children.target_number} (change)](${url_action('children.target_number')})**
+  children you are the parent of.
+
+  You said you have **[${children_cares_for.target_number} (change)](${url_action('children_cares_for.target_number')})**
+  children you take care of but are not the parent of.
+
+  #### Children you are the parent of
+  ${children.table}
+
+  ${children.add_action()}
+
+  % endif
+
+  % if defined('children_cares_for.target_number') and children_cares_for.target_number > 0:
+  #### Children who you take care of that you are not the parent of
+  ${children_cares_for.table}
+
+  ${ children_cares_for.add_action() }
+  % endif
+---
+table: children.table
+rows: children
+columns:
+  - Name: |
+      str(row_item)
+  - Birthdate: |
+      row_item.birthdate.format()
+  - Child of ${other_parties.familiar()}: |
+      yesno(row_item.defendant_is_parent).title()
+edit:
+  - name.first
+  - birthdate
+  - defendant_is_parent
+---
+table: children_cares_for.table
+rows: children_cares_for
+columns:
+  - Name: |
+      str(row_item)
+  - Birthdate: |
+      row_item.birthdate.format()
+  - Child of ${other_parties.familiar()}: |
+      yesno(row_item.defendant_is_parent).title()
+edit:
+  - name.first
+  - birthdate
+  - defendant_is_parent  
+---
+event: section_affidavit  
+question: |
+  Your statement
+subquestion: |
+review:
+  - Edit your statement: affidavit_body
+    button: |
+      Here is what your affidavit says right now:
+
+      > ${affidavit_body}
+  - Edit date of abuse: incidents_of_abuse[0].date
+    recompute:
+      - incident_date
+    button: |
+      You told us that the first incident of abuse happened on
+      ${incidents_of_abuse[0].date} in ${incidents_of_abuse[0].year}.
+---
+event: section_defendant_info_demographics
+question: |
+  Demographic information about ${other_parties.familiar()}
+review:
+  - Edit birthdate: dont_know_birthdate
+    button: |
+      You said ${other_parties.familiar()}
+      % if dont_know_birthdate:
+      is about other_parties[0].age years old.
+      % else:
+      is other_parties[0].birthdate.format().
+      % endif
+  - Edit birthplace: other_parties[0].birthplace
+    button: |
+      Birthplace: ${other_parties[0].birthplace}
+  - Edit name: parents[0]
+    button: |
+      Mother's maiden name/Name of parent 1: ${parents[0]}
+  - Edit name: parents[1]
+    button: |
+      Father's name/Name of parent 2: ${parents[1]}
+  - Edit SSN: other_parties[0].social_security_number
+    button: |
+      You said the last 4 digits of ${other_parties.familiar()}'s
+      SSN are ${other_parties[0].social_security_number}.
+  - Edit language: other_parties[0].understands_english
+    button: |
+      ${other_parties.familiar()}
+      % if other_parties[0].understands_english:
+      understands English.
+      % else:
+      does not understand English, and prefers ${other_parties[0].language_other}.
+      % endif
+---
+event: section_defendant_info_appearance
+question: |
+  What ${other_parties.familiar()} looks like
+review:
+  - Edit race: other_parties[0].race
+    recompute:
+      - defendant_race
+    button: |
+      ${defendant_race}
+  - Edit eye color: other_parties[0].eye_color
+    recompute:
+      - defendant_eye_color
+    button: |
+      ${defendant_eye_color}
+  - Edit hair color:    other_parties[0].hair_color
+    recompute:
+      - defendant_hair_details
+  - Edit description: other_parties[0].physical_other
+    recompute:
+      - defendant_other_description
+    button: |
+      ${defendant_other_description}            
+---
+event: section_defendant_info_safety
+question: |
+  Safety information about ${other_parties.familiar()}
+review:
+  - Edit: variable
+    button: |
+      test  
+---
+event: section_defendant_info_finding
+question: |
+  Finding ${other_parties.familiar()}
+review:
+  - Edit: variable
+    button: |
+      test  
+---
+event: section_defendant_info_car
+question: |
+  Demographic information about ${other_parties.familiar()}
+review:
+  - Edit: variable
+    button: |
+      test                          
