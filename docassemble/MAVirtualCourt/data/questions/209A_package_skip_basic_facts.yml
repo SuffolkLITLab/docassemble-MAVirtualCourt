@@ -196,6 +196,7 @@ sets: skip_defendant_information
 code: |
   defendantinformation209A0008_intro = True
   other_parties[0].birthdate = "2000-01-01"
+  dont_know_birthdate = False
   parents[0] = "Mother maiden name"
   parents[1] = "Father name"
   other_parties[0].phone_number = "555-4567"

@@ -242,8 +242,8 @@ code: |
   else:
     users[0].previous_addresses.there_are_any = False    
   users[0].apartment_yes
-  Workplace
-  School
+  users[0].workplace_name
+  users[0].school_name
   Who_is_allowed_to_see_this_form
   # users[0].birthdate
   signature_date

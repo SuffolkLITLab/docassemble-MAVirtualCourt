@@ -200,7 +200,11 @@ fields:
 question: |
   Defendant is not working
 subquestion: |
-  Generally, parents have a responsibility to contribute to the support of their children. So the court can order a parent to pay a minimum amount of child support recommended by the Child Support Guidelines, even when that parent has no income. The court can also take other factors and circumstances into account and deviate from the recommended minimum amount.
+  Generally, parents have a responsibility to contribute to the 
+  support of their children. So the court can order a parent to pay a 
+  minimum amount of child support recommended by the Child Support Guidelines, 
+  even when that parent has no income. The court can also take other factors 
+  and circumstances into account and deviate from the recommended minimum amount.
 
 continue button field: defendant_not_working_warning_given
 ---
@@ -211,7 +215,10 @@ subquestion: |
 fields:
   - 'Occupation': other_parties[0].occupation
   - 'Employer': other_parties[0].employer
-  - 'Employer Address': other_parties[0].address
+    required: False
+  - 'Employer Address': other_parties[0].work_address
+    address autocomplete: True
+    required: False
 ---
 question: |
   Signing Under Oath
@@ -333,7 +340,7 @@ attachment:
       - "user_name_print": ${ users[0].name.full()}
       - "other_party_occupation": ${ other_parties[0].occupation }
       - "other_party_employer": ${ other_parties[0].employer }
-      - "other_party_address": ${ other_parties[0].address }
+      - "other_party_address": ${ other_parties[0].work_address }
       - "user_gross_income": ${ currency(users[0].gross_income ) }
       - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
       - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
@@ -433,7 +440,7 @@ attachment:
       - "user_name_print": ${ users[0].name_print }
       - "other_party_occupation": ${ other_parties[0].occupation }
       - "other_party_employer": ${ other_parties[0].employer }
-      - "other_party_address": ${ other_parties[0].address }
+      - "other_party_address": ${ other_parties[0].work_address }
       - "user_gross_income": ${ currency(users[0].gross_income ) }
       - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
       - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }

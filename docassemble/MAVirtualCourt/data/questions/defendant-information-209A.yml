@@ -408,6 +408,7 @@ fields:
       Using your own words, briefly describe anything that would help the police identify ${other_parties.familiar()} that we haven't covered
   - no label: other_parties[0].physical_other_details      
     hint: e.g., details about tattoo, unusual walk, etc.
+    required: False
 ---
 code: |
   defendant_race = str(other_parties[0].race) + " " + showifdef('other_parties[0].race_other')
@@ -437,11 +438,15 @@ fields:
   - Name of employer: other_parties[0].employer
   - Address of employer: other_parties[0].work_address
     address autocomplete: True
+    required: False
   - Work phone: other_parties[0].work_phone
+    required: False
   - Job title / position: other_parties[0].work_title
+    required: False
   - Department: other_parties[0].work_department
     required: False  
   - Work hours: other_parties[0].work_hours
+    required: False
 ---
 question: |
   Information about ${other_parties.familiar()}'s car
