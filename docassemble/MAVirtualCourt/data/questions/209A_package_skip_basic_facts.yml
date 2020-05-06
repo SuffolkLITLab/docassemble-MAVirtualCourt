@@ -202,7 +202,7 @@ code: |
   parents[0] = "Mother maiden name"
   parents[1] = "Father name"
   other_parties[0].phone_number = "555-4567"
-  signature_date = "Today"
+  signature_date = today()
   other_parties[0].gender = "male"
   other_parties[0].photo_yes = False
   other_parties[0].race = "Other"
@@ -248,7 +248,7 @@ code: |
   abuser_caused_plaintiff_to_leave_home = False
   users[0].birthdate = "1996-02-29"
   users[0].phone_number = "555-12345"
-  signature_date = "Today"
+  signature_date = today()
   users[0].apartment_yes = "True"
   users[0].previous_addresses.there_are_any=False
   users[0].workplace_name = "Plaintiff workplace"
