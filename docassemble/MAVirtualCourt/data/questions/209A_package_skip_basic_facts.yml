@@ -197,6 +197,8 @@ code: |
   defendantinformation209A0008_intro = True
   other_parties[0].birthdate = "2000-01-01"
   dont_know_birthdate = False
+  other_parties[0].birthplace = "Atlanta"
+  other_parties[0].social_security_number = "5555"
   parents[0] = "Mother maiden name"
   parents[1] = "Father name"
   other_parties[0].phone_number = "555-4567"
@@ -209,6 +211,7 @@ code: |
   other_parties[0].height = "6 foot 1 inch"
   other_parties[0].weight = "180 pounds"
   other_parties[0].physical_build = "lanky"
+  other_parties[0].physical_other = "Other physical"
   defendant_other_description = "Has a scar on right leg"
   other_parties[0].understands_english = True
   other_parties[0].address_floor = "First floor"
@@ -254,6 +257,7 @@ code: |
   users[0].school_name = "Greendale"
   users[0].school_address = "123 Fake St, Boston, MA"
   persons_authorized_confidential_information = "My best friend"
+  Who_is_allowed_to_see_this_form = True
   skip_plaintiff_information = True
 ---
 include:

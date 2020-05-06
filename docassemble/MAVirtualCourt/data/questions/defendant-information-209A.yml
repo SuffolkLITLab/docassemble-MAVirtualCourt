@@ -619,10 +619,10 @@ attachment:
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
-      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
-      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "defendant_location_information_other": ${ other_parties[0].location_information_other }
@@ -795,10 +795,10 @@ attachment:
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
-      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
-      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "defendant_location_information_other": ${ other_parties[0].location_information_other }
