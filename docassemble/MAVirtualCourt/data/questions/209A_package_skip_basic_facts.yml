@@ -1,4 +1,7 @@
 ---
+objects:
+  - placeholder_signature: DAStaticFile.using(filename='mass_icon.png')
+---
 question: |
   Which sections should we skip?
 subquestion: |
@@ -23,6 +26,7 @@ fields:
       - Defendant information: skip_defendant_information
       - Plaintiff confidential information: skip_plaintiff_information
       - Motion to impound: skip_impound
+      - Signature: skip_signature
 ---
 mandatory: True
 code: |
@@ -273,7 +277,18 @@ code: |
 sets: skip_impound
 scan for variables: False
 code: |
+  impound_personal_information = True
+  impound_case_record_information = True
+  case_record_information_to_be_impounded = "All information about the case"
+  impound_information_ex_parte = True
+  request_based_on = "I need this because"
   skip_impound = True
+---
+sets: skip_signature
+scan for variables: False
+code: |
+  users[0].signature = placeholder_signature
+  skip_signature = True
 ---
 include:
   - 209a_package.yml

@@ -36,7 +36,7 @@ code: |
        'transformed_variable': 'str(parents[1])',
       },
       {'variable': 'defendant_phone',
-       'transformed_variable': 'defendants[0].phone_number',
+       'transformed_variable': 'other_parties[0].phone_number',
       },
       {'variable': 'plaintiff_signature',
        'transformed_variable': 'plaintiffs[0].signature',
@@ -635,8 +635,8 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${defendants[0].phone_number}
-      - defendant_email: ${defendants[0].email}
+      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].phone_number}
 ---
 include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
@@ -813,8 +813,8 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${defendants[0].phone_number}
-      - defendant_email: ${defendants[0].email}
+      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].phone_number}
 
 ---
 code: |
