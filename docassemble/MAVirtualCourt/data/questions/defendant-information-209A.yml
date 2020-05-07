@@ -300,6 +300,7 @@ fields:
   - Where _else_ can you find ${other_parties.familiar()}?: other_parties[0].locations_other
   - Write down any other facts that could help police find ${other_parties.familiar()}: other_parties[0].location_information_other
     datatype: area
+    required: False
 ---
 question: |
   ${other_parties.familiar()}'s Physical Appearance
