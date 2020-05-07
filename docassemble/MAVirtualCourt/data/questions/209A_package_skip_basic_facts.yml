@@ -150,6 +150,9 @@ code: |
 sets: skip_custody_cases
 scan for variables: False
 code: |
+  has_participated_custody_case = False
+  has_participated_custody_case_yes = False
+  know_of_other_custody_case_yes = False
   have_had_custody_cases = False
   have_had_paternity_cases = False
   A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
@@ -181,7 +184,11 @@ code: |
   skip_orders = True
 ---
 code: |
-  courts[0] = macourts[0]
+  courts[0] = macourts[26] # Should be BMC East Boston Division
+  docket_numbers[0] = ' '
+  docket_numbers.there_is_another = False
+  docket_numbers.there_are_any=True
+  dont_know_docket_number = True
   skip_court = True
 ---
 scan for variables: False

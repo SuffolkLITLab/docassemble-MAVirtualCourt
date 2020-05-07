@@ -21,7 +21,8 @@ sections:
   - section_relationship: Your relationship
   - section_affidavit: Your statement
   - section_children: Children  
-  - section_other_cases: Other cases
+  - section_care_custody: Past Care or Custody Cases
+  - section_cases_with_defendant: Other Cases with Defendant
   - section_custody: Custody
   - section_child_support: Child Support
   - Other party information:
@@ -52,10 +53,10 @@ code: |
   # include page 2 only if there are children
   if plaintiff_has_minor_children: 
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
-    if have_had_custody_cases:
+    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
       attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
     
-  if plaintiff_has_minor_children and wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
   attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
   attachment_temp.append(defendantinformation209A0008_attachment)
@@ -115,19 +116,27 @@ code: |
     if not existing_order:
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
 
+  have_had_paternity_cases = False # We'll reevaluate below
   # Care or custody proceedings
-  if plaintiff_has_minor_children:
-    if have_had_custody_cases:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
+    if has_participated_custody_case or know_of_other_custody_case_yes:
+      have_had_custody_cases = True # Skip this for stitchup
+      needs_attorney_signature = False # TODO: double-check this
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
+      for case in other_care_custody_proceedings:
+        if case.case_status == "paternity":
+          have_had_paternity_cases = True          
+          break # One match is good enough
+  
   # From page 1
+  # Other cases involving P/D but not about the children
   other_cases.gather()
 
   ############################## Defendant info
   # From page 1
-  # This is redundant to defendant information question
   defendantinformation209A0008_intro
-
   defendant_has_alias # redundant to def. information section
+  
   defendantinformation209A0008
 
   ########################## Plaintiff info
@@ -140,7 +149,9 @@ code: |
   # mark_unfilled_fields_empty( interview_metadata["A_Plaintiff_Confidential_Information0011"])
   # mark_unfilled_fields_empty(interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"])
     # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
-
+  docket_numbers[0]
+  users[0].signature
+  
   final_attachment_bundle
   download_screen
 ---

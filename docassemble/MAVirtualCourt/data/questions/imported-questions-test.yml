@@ -233,7 +233,7 @@ continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
   Nearly finished
 subquestion: |
-  You are almost done with the interview. On the next screen, you'll
+  You are almost done with the interview. On the next question, you'll
   be asked to sign the form below. Please review it for any mistakes.
   
    ${Housing_Temporary_Restraining_Order0002_attachment_preview}

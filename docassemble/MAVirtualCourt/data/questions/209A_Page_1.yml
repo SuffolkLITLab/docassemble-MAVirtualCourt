@@ -101,29 +101,34 @@ subquestion: |
 continue button field: user_saw_what_to_expect
 ---
 question: |
-  Tell me about the ${ ordinal(i) } other case. WHERE ON THE .pdf SHOULD THIS INFORMATION GO? THERE'S NOT ENOUGH ROOM IN THE SPACE PROVIDED.
+  Tell us about the other cases you have had with ${other_parties.familiar()}
+subquestion: |  
+  If you need to add more, click ${word("Add another")}.
+list collect: True
 fields:
   - Court name: other_cases[i].court_name
     required: False
   - Type of case: other_cases[i].type_of_case
     choices:
-      - Divorce
-      - Annulment
-      - Separate Support
-      - Legal Separation
-      - Abuse Prevention (Restraining Order)
+      - Divorce: divorce
+      - Annulment: annulment
+      - Separate Support: separate support
+      - Legal Separation: legal separation
+      - Abuse Prevention (Restraining Order): abuse prevention
   - Date of case: other_cases[i].date
     required: False
   - Docket number of case: other_cases[i].docket_number
     required: False
 ---
 question: |
+  Other cases involving you and ${other_parties.familiar()}
+subquestion: |
   You've told us about the following cases:
-  
-  % for case in other_cases:
+  i  
+  % for case in other_cases.complete_elements():
   * ${ case.type_of_case }
   % endfor
-subquestion: |
+
   Do you want to add another case?
 yesno: other_cases.there_is_another
 ---
@@ -257,8 +262,22 @@ fields:
       is: True
   - 'The Court should order ${other_parties.familiar()} to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
     datatype: yesno
-  - 'The Court should order the relief related to my minor children.': order_page_two_relief_yes # stretch goal: if someone who said they don't have kids under eighteen checks this, then ask about kids under eighteen again.
-    datatype: yesno
+---
+code: |
+  # has requested any of the kids of relief listed on Page 2
+  # (custody, no contact, visitation, support).
+  requested_relief_for_minors = requests_custody_yes or wants_other_order_yes or \
+    len(wants_custody_of) > 0 or len(wants_no_contact_for) > 0 or len(schools_to_stay_away_from) > 0 \
+    or len(majors_needing_support) > 0 or len(wants_child_support_for) > 0 or \
+    wants_visitation_orders
+---
+code: |
+  # This box should always be checked if the person 
+  # has requested any of the kids of relief listed on Page 2
+  # (custody, no contact, visitation, support).
+  order_page_two_relief_yes = plaintiff_has_minor_children and requested_relief_for_minors
+  # - 'The Court should order the relief related to my minor children.': order_page_two_relief_yes # stretch goal: if someone who said they don't have kids under eighteen checks this, then ask about kids under eighteen again.
+  # datatype: yesno    
 ---
 question: |
   Keeping your information secret
@@ -275,7 +294,7 @@ fields:
 question: |
   Is there anything else you need the court to order?
 subquestion: |
-  Is there anything else you need the court to order ${other_parties.familiar()} to do? (Don't include anything about your children here.  There will be a chance for that later).
+  Is there anything else you need the court to order ${other_parties.familiar()} to do?
 fields:
   - 'I need the Court to order something else': order_other_relief_yes
     datatype: yesno

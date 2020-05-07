@@ -242,8 +242,9 @@ code: |
   if need_help_for_majors:
     majors_needing_support[0].name.first
 
-  have_had_custody_cases
-  have_had_paternity_cases
+  # REMOVED in stitchup -- ask these later
+  # have_had_custody_cases
+  # have_had_paternity_cases
 
   # I think other interviews will be using this var name
   # children = all_children
@@ -344,10 +345,10 @@ code: |
 
   # Placeholders (to be answered in a previous interview).
   # TODO: remove when stitching
-  have_had_custody_cases_yes = have_had_custody_cases
-  have_had_custody_cases_no = not have_had_custody_cases
-  have_had_paternity_cases_yes = have_had_paternity_cases
-  have_had_paternity_cases_no = not have_had_paternity_cases
+  # have_had_custody_cases_yes = have_had_custody_cases
+  # have_had_custody_cases_no = not have_had_custody_cases
+  # have_ha                                                                                  d_paternity_cases_yes = have_had_paternity_cases
+  # have_had_paternity_cases_no = not have_had_paternity_cases
   # Important in question display logic in this form
   # defendant_and_plaintiff_are_parents_of_child = True
 
@@ -391,6 +392,8 @@ fields:
 # `ordinal()` says 'first', even if there's only one :(
 id: children user is parent of
 question: |
+  Children you are the parent of
+subquestion: |  
   % if children.target_number == 1:
   Tell us about your child
   % else:
@@ -649,26 +652,27 @@ fields:
   - Last Name: majors_needing_support[i].name.last
   - Suffix: majors_needing_support[i].name.suffix
     required: False
----
-id: have_there_been_other_cases
-question: |
-  Affidavit of Care or Custody
-subquestion: |
-  The next section is about any cases involving your children that you share with ${other_parties.familiar()}.
+# ---
+# id: have_there_been_other_cases
+# question: |
+#   Affidavit of Care or Custody
+# subquestion: |
+#   The next section is about any cases involving your children that you share with ${other_parties.familiar()}.
 
-  You said that you and ${other_parties.familiar()} share these children in common: ${children_of_both}.
+#   You said that you and ${other_parties.familiar()} share these children in common: ${children_of_both}.
 
-  Do your children have any past or ongoing cases?
+#   Do your children have any past or ongoing cases?
 
-  * Divorce
-  * CRA etc. [TODO: Caroline will fill this in]
+#   * Divorce
+#   * CRA etc. [TODO: Caroline will fill this in]
 
-yesno: have_had_custody_cases
----
-id: paternity
-question: |
-  Have there ever been any cases between you and the Defendant about the paternity of a child?
-yesno: have_had_paternity_cases
+# yesno: have_had_custody_cases
+# ---
+# id: paternity
+# question: |
+#   Have there ever been any cases between you and the Defendant about the paternity of a child?
+# yesno: have_had_paternity_cases
+# REMOVED in stitchup
 ---
 id: preview attachment
 continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
@@ -687,10 +691,10 @@ attachment:
     fields: 
       - "signature_date": ${ signature_date }
       - "signature_date__2": ${ signature_date }
-      - "have_had_custody_cases_yes": ${ have_had_custody_cases_yes }
-      - "have_had_custody_cases_no": ${ have_had_custody_cases_no }
-      - "have_had_paternity_cases_no": ${ have_had_paternity_cases_no }
-      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases_yes }
+      - "have_had_custody_cases_yes": ${ have_had_custody_cases }
+      - "have_had_custody_cases_no": ${ not have_had_custody_cases }
+      - "have_had_paternity_cases_no": ${ not have_had_paternity_cases }
+      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases }
       # TODO: pdf has wrong boolean ('yes')
       - "requests_custody_yes": ${ requests_custody_yes }
       - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
@@ -742,10 +746,10 @@ attachment:
       # right bool type
       - "wants_child_support_yes": ${ wants_child_support_yes }
       # Probation copy
-      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases_yes }
-      - "have_had_custody_cases_no__2": ${ have_had_custody_cases_no }
-      - "have_had_paternity_cases_no__2": ${ have_had_paternity_cases_no }
-      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases_yes }
+      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases }
+      - "have_had_custody_cases_no__2": ${ not have_had_custody_cases }
+      - "have_had_paternity_cases_no__2": ${ not have_had_paternity_cases }
+      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases }
       - "requests_custody_yes__2": ${ requests_custody_yes }
       - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
       - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
@@ -815,10 +819,10 @@ attachment:
       - "user_signature_probation_copy": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "signature_date__2": ${ signature_date }
-      - "have_had_custody_cases_yes": ${ have_had_custody_cases_yes }
-      - "have_had_custody_cases_no": ${ have_had_custody_cases_no }
-      - "have_had_paternity_cases_no": ${ have_had_paternity_cases_no }
-      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases_yes }
+      - "have_had_custody_cases_yes": ${ have_had_custody_cases }
+      - "have_had_custody_cases_no": ${ not have_had_custody_cases }
+      - "have_had_paternity_cases_no": ${ not have_had_paternity_cases }
+      - "have_had_paternity_cases_yes": ${ have_had_paternity_cases }
       - "requests_custody_yes": ${ requests_custody_yes }
       - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
       - "wants_custody_of1_age": ${ wants_custody_of1_age }
@@ -864,10 +868,10 @@ attachment:
       - "wants_other_order_yes": ${ wants_other_order_yes }
       - "wants_child_support_yes": ${ wants_child_support_yes }
       # Probation copy
-      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases_yes }
-      - "have_had_custody_cases_no__2": ${ have_had_custody_cases_no }
-      - "have_had_paternity_cases_no__2": ${ have_had_paternity_cases_no }
-      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases_yes }
+      - "have_had_custody_cases_yes__2": ${ have_had_custody_cases }
+      - "have_had_custody_cases_no__2": ${ not have_had_custody_cases }
+      - "have_had_paternity_cases_no__2": ${ not have_had_paternity_cases }
+      - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases }
       - "requests_custody_yes__2": ${ requests_custody_yes }
       - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
       - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
