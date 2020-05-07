@@ -398,13 +398,11 @@ question: |
   Tell us about your oldest child first.
   % else:
   You have already told us
-  about ${comma_and_list(children.elements)}.
+  about ${comma_and_list(children.complete_elements())}. 
 
   Tell us about your ${ordinal(i)} child. 
   % endif
   % endif
-#list collect: True
-# TODO: fix ordinal issues
 fields:
   - First Name: children[i].name.first
   - Middle Name: children[i].name.middle

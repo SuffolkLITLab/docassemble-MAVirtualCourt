@@ -14,9 +14,9 @@ fields:
     choices:
       - Intro: skip_intro
       - Parties: skip_parties
-      - Children: skip_children
       - Relationship: skip_relationship
       - Affidavit: skip_affidavit
+      - Children: skip_children      
       - Custody and no-contact: skip_custody_no_contact
       - Visitation: skip_visitation
       - Past custody cases: skip_custody_cases

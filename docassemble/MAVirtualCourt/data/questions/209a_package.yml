@@ -55,7 +55,7 @@ code: |
     if have_had_custody_cases:
       attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
     
-  if wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
   attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
   attachment_temp.append(defendantinformation209A0008_attachment)
@@ -111,7 +111,7 @@ code: |
 
   ####################### Child support
   nav.set_section('section_child_support')
-  if wants_child_support_yes:
+  if plaintiff_has_minor_children and wants_child_support_yes:
     if not existing_order:
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
 

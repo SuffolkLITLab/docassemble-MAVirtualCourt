@@ -381,7 +381,8 @@ code: |
   courts[0] # should not show housing court had to comment this out because kept getting this error and didn't know how to resolve.
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
-  str(children_of_both[1-1]) # already gathered in a prior interview?
+  children.gather()
+  # str(children_of_both[1-1]) # already gathered in a prior interview?
   users[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].child_care_expenses
