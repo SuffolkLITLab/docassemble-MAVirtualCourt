@@ -426,8 +426,11 @@ continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
   Nearly finished
 subquestion: |
-  You are almost done! Please click on the form below. It will open in a new window so you can review it and make sure it is correct.  the next screen, you'll
-  Don't forget to come back to this page to click to the final step of signing and sending the form to the court. 
+  You are almost done! Please click on the form below. It will open in a new window so you 
+  can review it and make sure it is correct.
+  
+  Don't forget to come back to this page to click to the final step of signing and sending 
+  the form to the court. 
   
    ${Housing_Temporary_Restraining_Order0002_attachment_preview}
 progress: 95

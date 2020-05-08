@@ -306,7 +306,7 @@ question: |
   ${other_parties.familiar()}'s Physical Appearance
 subquestion: |
   The police will need to be able to identify ${other_parties.familiar()}.
-  Answer the questions below and on the next few screens to tell us more about how they look.
+  Answer the questions below and in the next few questions to tell us more about how they look.
 fields:
   - 'Can you provide a photo of ${other_parties.familiar()}?': other_parties[0].photo_yes
     datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.

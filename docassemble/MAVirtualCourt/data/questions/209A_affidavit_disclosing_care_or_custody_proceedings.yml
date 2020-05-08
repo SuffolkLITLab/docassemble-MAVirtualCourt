@@ -103,6 +103,7 @@ code: |
   case_name
   # children.there_are_any = True
   # children.gather()
+  assigned_letters # Give each "children_of_both" a letter from A-Z
   explain_addresses_of_children  # Take out for standalone
   for child in children_of_both:
     child.child_complete
@@ -799,7 +800,7 @@ subquestion: |
   case, visitation case, adoption, juvenile delinquency, DCF case involving
   care and protection. If you're not sure, it's safer to answer yes.
   
-  We'll ask you more about any cases in the next question.
+  We'll ask you more about any cases in the next few questions.
 fields:
 # TODO: We need to change the list of children to OR instead of AND
   - 'I have been part of another case involving ${comma_and_list(children_of_both, and_string=word("or"))}': has_participated_custody_case_yes
@@ -882,7 +883,7 @@ validation code: |
     other_care_custody_proceedings[i].children = children_of_both
 ---
 question: |
-  Who was involved in this case?
+  Who else was involved in this case?
 subquestion: |
   For the ${ordinal(i)} case, ${other_care_custody_proceedings[i]}:
   Is there anyone _other than_ you or ${other_parties.familiar()} who 
@@ -1035,6 +1036,10 @@ fields:
     show if:
       variable: attorneys_for_children[i].represented_all_children
       is: False
+validation code: |
+  for attorney in attorneys_for_children:    
+    if attorney.represented_all_children:
+      attorney.represented_children = children_of_both  
 ---
 question: |
   You told us about the following pending cases:
@@ -1078,15 +1083,16 @@ fields:
       variable: gals_investigators[i].represented_all_children
       is: False
 validation code: |
-  if gals_investigators[i].represented_all_children:
-    gals_investigators[i].represented_children = children
+  for gal in gals_investigators:    
+    if gal.represented_all_children:
+      gal.represented_children = children_of_both
 ---
 question: |
-  You told us about the following pending cases:
+  Guardians ad litem and Investigators
+subquestion: |
+  So far you told us about ${comma_and_list(gals_investigators, and_string=word("or"))}.
 
-  ${other_care_custody_proceedings.table}  
-
-  Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children_of_both, and_string=word("or"))}
+  Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children_of_both, and_string=word("or"))}?
 yesno: gals_investigators.there_is_another 
 ---
 question: |
@@ -1132,6 +1138,7 @@ code: |
   # for someone with more than 26 children
   for index, child in enumerate(children_of_both):
     child.letter = number_to_letter(index+1)
+  assigned_letters = True    
 ---
 code: |
   need_past_address_appendix_temp = False

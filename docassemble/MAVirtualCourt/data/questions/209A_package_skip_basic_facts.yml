@@ -150,14 +150,68 @@ code: |
 sets: skip_custody_cases
 scan for variables: False
 code: |
-  has_participated_custody_case = False
-  has_participated_custody_case_yes = False
-  know_of_other_custody_case_yes = False
-  have_had_custody_cases = False
-  have_had_paternity_cases = False
+  has_participated_custody_case = True
+  has_participated_custody_case_yes = True
+  know_of_other_custody_case_yes = True
+  explain_addresses_of_children = True
+  explain_why_asking_about_attorneys  = True
+  # have_had_custody_cases = True
+  # have_had_paternity_cases = True
+  for child in children_of_both:
+    child.address = users[0].address
+    child.previous_addresses.auto_gather=False
+    child.previous_addresses[0] = other_parties[0].address 
+    child.previous_addresses.gathered = True
+  
+  other_care_custody_proceedings.auto_gather = False
+  if not defined('other_care_custody_proceedings.gathered') or not other_care_custody_proceedings.gathered:
+    new_case = other_care_custody_proceedings.appendObject()
+    new_case.court_name = 'Suffolk Probate and Family Court'
+    new_case.docket_number = '12-CV-0001'
+    new_case.children = children_of_both
+    new_case.case_status = "paternity"
+    new_case.is_open = True
+    new_case.user_role = 'P'
+    other_care_custody_proceedings.auto_gather = False
+    other_care_custody_proceedings.gathered = True
+  
+  if not defined('new_case.other_parties.gathered') or not new_case.other_parties.gathered:
+    new_case.other_parties.auto_gather = False
+    other_party = new_case.other_parties.appendObject()
+    other_party.name.first = "Greta Grandmother"
+    other_party.address.address = "123 Fake St"
+    other_party.address.city = "Boston"
+    new_case.other_parties.gathered = True
+  
+  if not defined('gals_investigators.gathered') or not gals_investigators.gathered:
+    gals_investigators.auto_gather = False
+    new_gal = gals_investigators.appendObject()
+    new_gal.name.first = "Gallant Guardian"
+    new_gal.represented_children = children_of_both
+    gals_investigators.gathered = True
+  
+  attorneys_for_parents.auto_gather = False
+  if not defined('attorneys_for_parents.gathered') or not attorneys_for_parents.gathered:
+    atty1 = attorneys_for_parents.appendObject()
+    atty1.name.first = "Ardent Advocate"
+    atty1.represented_party = users[0]
+    attorneys_for_parents.gathered = True
+  
+  if not defined('attorneys_for_children.gathered') or not attorneys_for_children.gathered:
+    attorneys_for_children.auto_gather=False
+    atty2 = attorneys_for_children.appendObject()
+    atty2.name.first = "Childs Advocate"
+    atty2.represented_children = children_of_both
+    attorneys_for_children.gathered = True
+    
   A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
   plaintiff_and_defendant_other_case_yes = False
   skip_custody_cases = True
+---
+scan for variables: False
+sets: skip_atty_for_children
+code: |
+  
 ---
 scan for variables: False
 sets: skip_orders

@@ -3,6 +3,8 @@
 # See: https://docassemble.org/docs/fields.html#review
 # I like this style: https://docassemble.org/docs/fields.html#review%20customization
 # Each screen is linked to a section heading on the left menu
+
+################################### Basic Facts
 ---
 event: section_basic
 question: |
@@ -61,6 +63,27 @@ review:
     button: |
       You said ${other_parties.familiar()}'s
       gender is "${other_parties[0].gender}".
+########################################### Statement
+---
+event: section_affidavit  
+question: |
+  Your statement
+subquestion: |
+review:
+  - Edit your statement: affidavit_body
+    button: |
+      Here is what your affidavit says right now:
+
+      > ${affidavit_body}
+  - Edit date of abuse: 
+      - incidents_of_abuse[0].date
+      - recompute:
+        - incident_date
+    button: |
+      You told us that the first incident of abuse happened on
+      ${incidents_of_abuse[0].date} in ${incidents_of_abuse[0].year}.
+
+#################################### Children
 ---
 continue button field: section_children
 continue button label: ${word("Resume")}
@@ -78,21 +101,10 @@ subquestion: |
   [Change response](${url_action('plaintiff_has_minor_children')}).
 
   % if plaintiff_has_minor_children:
-
-  You said you have **[${children.target_number} (change)](${url_action('children.target_number')})**
-  children you are the parent of.
-
-  You said you have **[${children_cares_for.target_number} (change)](${url_action('children_cares_for.target_number')})**
-  children you take care of but are not the parent of.
-
   #### Children you are the parent of
   ${children.table}
 
   ${children.add_action()}
-
-  % endif
-
-  % if defined('children_cares_for.target_number') and children_cares_for.target_number > 0:
   #### Children who you take care of that you are not the parent of
   ${children_cares_for.table}
 
@@ -108,10 +120,41 @@ columns:
       row_item.birthdate.format()
   - Child of ${other_parties.familiar()}: |
       yesno(row_item.defendant_is_parent).title()
+  - Address: |
+      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if defined('children[' + str(row_index) + '].address') else 'N/A'
+  - Past addresses: |
+      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
 edit:
   - name.first
   - birthdate
   - defendant_is_parent
+---
+table: children.aff_table
+rows: children_of_both
+columns:
+  - Name: |
+      row_item
+  - Address: |
+      row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))
+  - Past addresses: |
+      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
+---
+continue button field: children[i].previous_addresses.review_table
+question: |
+  ${children[i].name.familiar()}'s Past Addresses
+subquestion: |
+  ${children[i].previous_addresses.table}
+
+  ${children[i].previous_addresses.add_action()}
+---
+table: children[i].previous_addresses.table
+rows: children[i].previous_addresses
+columns:
+  - Address: |
+      row_item.on_one_line()
+edit:
+  - address
+  - city
 ---
 table: children_cares_for.table
 rows: children_cares_for
@@ -126,23 +169,108 @@ edit:
   - name.first
   - birthdate
   - defendant_is_parent  
+############################# Past care or custody cases
 ---
-event: section_affidavit  
+continue button field: section_care_custody
 question: |
-  Your statement
+  Review Care or Custody Proceedings
 subquestion: |
-review:
-  - Edit your statement: affidavit_body
-    button: |
-      Here is what your affidavit says right now:
 
-      > ${affidavit_body}
-  - Edit date of abuse: incidents_of_abuse[0].date
-    recompute:
-      - incident_date
-    button: |
-      You told us that the first incident of abuse happened on
-      ${incidents_of_abuse[0].date} in ${incidents_of_abuse[0].year}.
+  % if defined('ask_impound_affidavit'):
+  You said you 
+  % if ask_impound_affidavit:
+  do
+  % else:
+  do not
+  % endif
+  want to have the adoption information "impounded" or kept private. ${action_button_html(url_action('ask_impound_affidavit'))}
+  % endif
+
+  #### Addresses for joint children
+  ${children.aff_table}
+
+  #### Past and pending cases involving care or custody
+  ${other_care_custody_proceedings.review_table}
+
+  ${other_care_custody_proceedings.add_action()}
+
+  % if defined('attorneys_for_parents'):
+  #### Attorneys representing a parent in pending cases
+  ${attorneys_for_parents.table}
+  % endif
+
+  % if defined('attorneys_for_children'):
+  #### Attorneys representing a child in pending cases
+  ${attorneys_for_children.table}
+  % endif
+
+  % if defined('gals_investigators'):
+  ${attorneys_for_children.add_action()}
+  #### Guardians ad litem and Investigators working with a child in pending cases
+  ${gals_investigators.table}
+  % endif
+---
+table: attorneys_for_children.table
+rows: attorneys_for_children
+columns:
+  - Name: |
+      row_item
+  - Children representing: |
+      row_item.represented_children
+---
+table: attorneys_for_parents.table
+rows: attorneys_for_parents
+columns:
+  - Name: |
+      row_item
+  - Parent representing: |
+      row_item.represented_party
+---
+table: gals_investigators.table
+rows: gals_investigators
+columns:
+  - Name: |
+      row_item
+  - Children working with: |
+      row_item.represented_children
+---
+table: other_care_custody_proceedings.review_table
+rows: other_care_custody_proceedings
+columns:
+  - Court: |
+      row_item.court_name
+  - Docket: |
+      row_item.docket_number
+  - Status: |
+      row_item.status()
+  - Children: |
+      row_item.children
+  - Other parties: |
+      action_button_html(url_action('other_care_custody_proceedings[' + str(row_index) +' ].review_parties'), label=( str(row_item.other_parties) if len(str(row_item.other_parties)) else word('Edit') ) )
+edit:
+  - court_name
+  - docket_number
+  - is_open
+---
+question: |
+  Review parties for ${other_care_custody_proceedings[i]}
+subquestion: |
+  ${other_care_custody_proceedings[i].review_parties_table}
+
+  ${other_care_custody_proceedings[i].other_parties.add_action()}
+continue button field: other_care_custody_proceedings[i].review_parties
+---
+table: other_care_custody_proceedings[i].review_parties_table
+rows: other_care_custody_proceedings[i].other_parties
+columns:
+  - Name: |
+      str(row_item)
+  - Address: |
+      row_item.address.on_one_line()
+edit:
+  - name.first
+  - address.address            
+###################################### Other party information
 ---
 event: section_defendant_info_demographics
 question: |
@@ -152,9 +280,9 @@ review:
     button: |
       You said ${other_parties.familiar()}
       % if dont_know_birthdate:
-      is about other_parties[0].age years old.
+      is about ${other_parties[0].age} years old.
       % else:
-      is other_parties[0].birthdate.format().
+      is ${other_parties[0].birthdate.format()}.
       % endif
   - Edit birthplace: other_parties[0].birthplace
     button: |
@@ -182,8 +310,9 @@ event: section_defendant_info_appearance
 question: |
   What ${other_parties.familiar()} looks like
 review:
-  - Edit race: other_parties[0].race
-    recompute:
+  - Edit race: 
+    - other_parties[0].race
+    - recompute:
       - defendant_race
     button: |
       ${defendant_race}
@@ -192,11 +321,13 @@ review:
       - defendant_eye_color
     button: |
       ${defendant_eye_color}
-  - Edit hair color:    other_parties[0].hair_color
-    recompute:
+  - Edit hair color:    
+    - other_parties[0].hair_color
+    - recompute:
       - defendant_hair_details
-  - Edit description: other_parties[0].physical_other
-    recompute:
+  - Edit description: 
+    - other_parties[0].physical_other
+    - recompute:
       - defendant_other_description
     button: |
       ${defendant_other_description}            
