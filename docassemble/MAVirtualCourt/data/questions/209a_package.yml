@@ -60,7 +60,8 @@ code: |
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
   attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
   attachment_temp.append(defendantinformation209A0008_attachment)
-  attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
+  if asked_for_impoundment:
+    attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
   
   final_attachment_bundle = attachment_temp
 ---
@@ -117,6 +118,7 @@ code: |
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
 
   have_had_paternity_cases = False # We'll reevaluate below
+  have_had_custody_cases = False
   # Care or custody proceedings
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
     if has_participated_custody_case or know_of_other_custody_case_yes:
@@ -141,7 +143,10 @@ code: |
 
   ########################## Plaintiff info
   A_Plaintiff_Confidential_Information0011
-  a_258e_motion_for_impoundment0019
+  
+  impoundment_intro
+  if asked_for_impoundment:
+    a_258e_motion_for_impoundment0019
 
   # Set unfilled fields empty, if needed
   # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])

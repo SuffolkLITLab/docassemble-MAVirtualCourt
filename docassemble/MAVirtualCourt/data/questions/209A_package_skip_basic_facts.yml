@@ -338,6 +338,7 @@ code: |
 sets: skip_impound
 scan for variables: False
 code: |
+  impoundment_intro
   impound_personal_information = True
   impound_case_record_information = True
   case_record_information_to_be_impounded = "All information about the case"

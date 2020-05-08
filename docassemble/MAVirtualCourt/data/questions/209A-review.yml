@@ -270,6 +270,12 @@ columns:
 edit:
   - name.first
   - address.address            
+############################# Other cases with Defendant
+---
+continue button field: section_cases_with_defendant
+question: |
+  Other cases you had with ${other_parties.familiar()}
+
 ###################################### Other party information
 ---
 event: section_defendant_info_demographics
