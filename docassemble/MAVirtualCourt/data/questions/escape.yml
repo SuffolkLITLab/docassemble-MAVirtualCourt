@@ -1,85 +1,66 @@
 comment: |
-  Quick exit button for sensitive interviews.
+  Inserts quick exit button for sensitive interviews into
+  the page header.
   
-  Inserts into navbar instead of lying on top of it
-  so it (ideally) won't cover other buttons if they're
-  in there, as happened on mobile.
+  Will not be compatible with all browsers. JQuery doesn't
+  offer that kind of support.
   
-  Should be compatible with all browsers, but
-  more testing needed
-  Browser support:
-    https://caniuse.com/#search=createElement
-    https://caniuse.com/#search=setAttribute
-    https://caniuse.com/#search=appendChild
-    https://caniuse.com/#search=getElementById
-    https://caniuse.com/#search=childNodes
-    Attempt to research inserting in nav bar
-    https://caniuse.com/#search=lastChild
-    https://developer.mozilla.org/en-US/docs/Web/API/Node/lastChild
+  Why is this js in here, in `right:` instead of the static folder?
+  Because when I tried that, the escape button only got
+  created on the first page and then never again.
   
-  Note:
-    This is run twice on every page.
-    `right:` is rightbottom when on mobile.
-    Every screen creates two buttons, one for the
-    right for desktop and one for the bottom for mobile.
-    This runs the code twice, so we need to handle ids
-    to make them unique.
+  Why is the css in here in that case?
+  Because then they're both in the same file and I don't have
+  to dig to find each and then jump around between them. If
+  problems come up, we can deal with them.
+---
+default screen parts:
+  right: ${ escape_button }
 ---
 id: escape_button_and_its_placement
 template: escape_button
 content: |
-  ${ action_button_html("https://docassemble.org", id_tag="escape", classname="escape escape-unhandled", label="Escape", color="danger", size="md") }
-
   <script>
-    // Can't use `let` in here as it exists on the page
-    // multiple times. Could put it in a namespace, I
-    // suppose.
-    // To shorten this code, find a way to access jQuery
-    
-    var doc = document;  // Need space!
 
-    var outer = outer || doc.createElement( 'div' );
-    var inner = inner || doc.createElement( 'div' );
-    outer.appendChild( inner );
+    // Can't use `let` in here
+    var escaper = escaper || document.createElement( 'div' );
+    escaper.setAttribute( 'class', 'escape btn btn-danger' );
+    escaper.setAttribute( 'target', '_blank' );
+    escaper.setAttribute( 'href', 'https://google.com' );
+    escaper.innerHTML = 'Escape';
 
-    outer.setAttribute( 'class', 'escape-outer' );
-    inner.setAttribute( 'class', 'escape-inner' );
-
-    // Give a unique id to each escaper so we can add only
-    // one per outer/inner pair
-    var suffix = suffix || 1;  // Use `suffix` if it already exists
-    var unique_id = 'escaper_' + suffix;
-    var escaper = doc.getElementById( 'escape' );
-    escaper.setAttribute( 'id', unique_id );
-    inner.appendChild( escaper );
-    
-    if (suffix !== 1) {
-      escaper.classList.add( 'escape-overlap' );
-    }
-    suffix += 1;
-    
     // Add to navbar
-    var after = doc.getElementById( 'danavbar-collapse' );
-    after.parentNode.insertBefore( inner, after );
-    
+    var after = document.getElementById( 'damobile-toggler' );
+    after.parentNode.insertBefore( escaper, after );
+
   </script>
-  
+
   <style>
-  
-    .escape-inner {
-      position: relative;
-    }
-  
-    #escaper_2, .escape-overlap {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
     
     .escape {
       margin: 0;
+      margin-left: .4em;
+    }
+    
+    @media only screen and (max-width: 30em) {
+      .navbar-brand {
+        margin-right: .3rem;
+      }
+      
+      #dapagetitle {
+        margin-right: .4em;
+      }
+      
+      #dapagetitle .ma_icon {
+        margin-right: 0;
+      }
+
+      .escape {
+        margin-left: .6em;
+      }
+      
+      #dahelptoggle {
+        padding: 0;
+      }
     }
   </style>
----
-default screen parts:
-  right: ${ escape_button }
