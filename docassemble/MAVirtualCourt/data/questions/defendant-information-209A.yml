@@ -428,7 +428,7 @@ subquestion: |
   at ${other_parties[0].address.on_one_line()}.
 fields:
   - 'What floor is "${other_parties[0].address.on_one_line()}" on?': other_parties[0].address_floor
-    default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and isnumeric(other_parties[0].address.unit) else ''}
+    default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
     required: False
   - "What name is on the mailbox at ${other_parties.familiar()}'s address? (write None if none).": other_parties[0].name_door_mailbox
 ---

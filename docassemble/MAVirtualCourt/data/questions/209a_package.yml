@@ -118,7 +118,6 @@ code: |
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
 
   have_had_paternity_cases = False # We'll reevaluate below
-  have_had_custody_cases = False
   # Care or custody proceedings
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
     if has_participated_custody_case or know_of_other_custody_case_yes:
