@@ -99,17 +99,20 @@ subquestion: |
 continue button field: impoundment_intro
 ---
 code: |
+  # Used to trigger asking the rest of the questions on this form in the 209A_package
   asked_for_impoundment =  impound_personal_information or impound_case_record_information
 ---
 question: |
   Keeping information private (impoundment)
 subquestion: |
-  Draft: The defendant will still see all of this information. Privacy reasons are not enough. Sexual abuse information can sometimes be a good reason. todo: SMEs
+  Draft: The defendant will still see all of this information. Privacy reasons
+  are not enough. Sexual abuse information can sometimes be a good reason. todo:
+  SMEs
 fields:
-  - Is there any information on this form that you need to keeep private?: impound_case_record_information
+  - Is there any information on this form that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
   - note: |
-      Explain what you want kept private, and why, below.
+      Explain what you want kept private below
     show if: impound_case_record_information      
   - no label: case_record_information_to_be_impounded
     show if: impound_case_record_information
