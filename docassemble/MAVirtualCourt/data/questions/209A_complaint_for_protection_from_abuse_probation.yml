@@ -637,7 +637,10 @@ subquestion: |
 
   Are there any children that are between 18 and and 22 that you want to get
   child support for with this form?
-yesno: need_help_for_majors
+yesno: majors_needing_support.there_are_any
+---
+code: |
+  need_help_for_majors = majors_needing_support.there_are_any
 ---
 id: non_minors_needing_child_support
 question: |

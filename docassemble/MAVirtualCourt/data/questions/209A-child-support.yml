@@ -326,18 +326,18 @@ attachment:
     variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
     name: Plaintiff 209A Child Support Affidavit
     filename: Plaintiff_209A_Child_Support_Affidavit
-    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order_-_Laura_Gal_edited_Damico_first_quality_check_ready_for_upload.pdf
+    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     fields: 
-      - "plaintiff_name": ${ str(plaintiffs[0]) }
-      - "other_party": ${ str(other_parties[0]) }
-      - "child1_name": ${ str(children_of_both[1-1]) }
-      - "child2_name": ${ str(children_of_both[2-1]) }
-      - "child3_name": ${ str(children_of_both[3-1]) }
-      - "child4_name": ${ str(children_of_both[4-1]) }
+      - "plaintiff_name": ${ users }
+      - "other_party": ${ other_parties }
+      - "child1_name": ${ all_support_children.item(0) }
+      - "child2_name": ${ all_support_children.item(1) }
+      - "child3_name": ${ all_support_children.item(2) }
+      - "child4_name": ${ all_support_children.item(3) }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
       - "court_division": ${ courts[0] }
-      - "user_name_print": ${ users[0].name.full()}
+      - "user_name_print": ${ users }
       - "other_party_occupation": ${ other_parties[0].occupation }
       - "other_party_employer": ${ other_parties[0].employer }
       - "other_party_address": ${ other_parties[0].work_address }
@@ -345,14 +345,16 @@ attachment:
       - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
       - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
       - "user_child_care_expenses": ${ currency(users[0].child_care_expenses ) }
-      - "user_child_care_other": ${ currency(users[0].child_care_other ) }
+      - "user_child_care_other": ${ currency(users[0].child_care_other) }
       - "other_party_gross_income": ${ currency(other_parties[0].gross_income ) }
-      - "other_party_health_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
+      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance_payment ) }
       - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
       - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
-      - "other_party_child_care_other": ${ currency(users[0].child_care_other ) }
+      - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
       - "user_states_above_true": ${ users[0].states_above_true }
-      - "user_name_print": ${ users[0].name.full()}
+      - "user_name_print": ${ users }
+      - "user_signature": ${ users[0].signature }
+
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -369,7 +371,8 @@ subquestion: |
 id: interview_order_Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
 code: |
   # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
+  # It was generated from interview_generator.py as an 'interview order' type question.  
+  basic_questions_intro_screen 
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_intro
   # Set the preferred/allowed courts for this interview
   # preferred_court = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["preferred court"]
@@ -382,18 +385,22 @@ code: |
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
   children.gather()
-  # str(children_of_both[1-1]) # already gathered in a prior interview?
   users[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   users[0].child_care_expenses
-  if pays_child_support:
-    users[0].child_care_other = 0
+  if not pays_child_support:
+    users[0].child_care_other = DAEmpty()
+    users[0].child_care_other_weekly_or_monthly = ''
   if not other_parties[0].gainfully_employed:
     defendant_not_working_warning_given
+    other_parties[0].occupation = ''
   else:
     other_parties[0].occupation
   other_parties[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   other_parties[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
+  if not defendant_pays_child_support:
+    other_parties[0].child_care_other =''
+    other_parties[0].child_care_other_is_weekly_or_monthly = ''
   str(plaintiffs[0]) # already gathered in a prior interview?
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -406,7 +413,9 @@ code: |
 question: |
   Do you have an existing child support order with regards to any of these children?
 subquestion: |
-  [TK list of all the children who are a) named and b) biological issue of Defendant. This is the world of kids who COULD be eligible for a new child support order but MIGHT not be, because there is already one in existence.
+  [TK list of all the children who are a) named and b) biological issue of
+  Defendant. This is the world of kids who COULD be eligible for a new child
+  support order but MIGHT not be, because there is already one in existence.
 yesno: existing_order
 ---
 event: mb_kick_out_user_existing_order
@@ -427,18 +436,18 @@ attachment:
     variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview
     name: Plaintiff 209A Child Support Affidavit
     filename: Plaintiff_209A_Child_Support_Affidavit
-    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order_-_Laura_Gal_edited_Damico_first_quality_check_ready_for_upload.pdf
+    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     fields: 
-      - "plaintiff_name": ${ str(plaintiffs[0]) }
-      - "other_party": ${ str(other_parties[0]) }
-      - "child1_name": ${ str(children_of_both[1-1]) }
-      - "child2_name": ${ str(children_of_both[2-1]) }
-      - "child3_name": ${ str(children_of_both[3-1]) }
-      - "child4_name": ${ str(children_of_both[4-1]) }
+      - "plaintiff_name": ${ users }
+      - "other_party": ${ other_parties }
+      - "child1_name": ${ all_support_children.item(0) }
+      - "child2_name": ${ all_support_children.item(1) }
+      - "child3_name": ${ all_support_children.item(2) }
+      - "child4_name": ${ all_support_children.item(3) }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
       - "court_division": ${ courts[0] }
-      - "user_name_print": ${ users[0].name_print }
+      - "user_name_print": ${ users }
       - "other_party_occupation": ${ other_parties[0].occupation }
       - "other_party_employer": ${ other_parties[0].employer }
       - "other_party_address": ${ other_parties[0].work_address }
@@ -453,4 +462,7 @@ attachment:
       - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
       - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
       - "user_states_above_true": ${ users[0].states_above_true }
-      - "user_name_print": ${ users[0].name_print }
+      - "user_name_print": ${ users }
+---
+code: |
+  all_support_children = wants_custody_of + majors_needing_support
