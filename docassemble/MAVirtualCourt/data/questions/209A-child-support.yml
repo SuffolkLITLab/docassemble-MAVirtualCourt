@@ -141,6 +141,14 @@ code: |
       ],
   })
 ---
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_intro
+question: |
+  Plaintiff's Affidavit in Support of Request for Child support Order
+subquestion: |
+  If you legally have legal custody of your child,  then you can ask the court to order the other parent to pay child support. To do that, you need to fill out this Affidavit in Support of Request for a Child Support Order. The following questions will ask you about the other parent's job, their employer, and their income and expenses (to the best of your knowledge). You will also provide your income and expenses. This way, the court can look at each parents' financial situation to calculate how much the child support will be. 
+---
 id: mother_or_father
 question: |
   Is ${ other_parties[0] } the mother or father of the children?
@@ -325,14 +333,19 @@ fields:
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
 ---
-comment: |
-  This question is used to introduce your interview. Please customize
-continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_intro
 question: |
-  Plaintiff's Affidavit in Support of Request for Child support Order
+  Do you have an existing child support order with regards to any of these children?
 subquestion: |
-  If you legally have legal custody of your child,  then you can ask the court to order the other parent to pay child support. To do that, you need to fill out this Affidavit in Support of Request for a Child Support Order. The following questions will ask you about the other parent's job, their employer, and their income and expenses (to the best of your knowledge). You will also provide your income and expenses. This way, the court can look at each parents' financial situation to calculate how much the child support will be. 
-
+  [TK list of all the children who are a) named and b) biological issue of
+  Defendant. This is the world of kids who COULD be eligible for a new child
+  support order but MIGHT not be, because there is already one in existence.
+yesno: existing_order
+---
+event: mb_kick_out_user_existing_order
+question: |
+  We are sorry.
+subquestion: |
+  This interview is not for you. DOES ANYONE NEED TO SEE THIS SCREEN OR WILL THE LOGIC JUST MAKE IT SO YOU NEVER SEE THIS INTERVIEW IF YOU AREN'T ELIGIBLE?
 ---
 id: interview_order_Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
 code: |
@@ -342,18 +355,19 @@ code: |
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_intro
   # Set the preferred/allowed courts for this interview
   # preferred_court = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["preferred court"]
-  allowed_courts = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["allowed courts"]
+  # allowed_courts = interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"]["allowed courts"]
+  # todo: What should be we doing here?
   #if existing_order:
-  #  mb_kick_out_user_existing_order # MB: kick out user if they are trying to enforce an existing child support order instead of getting a new one.
-  #  # No, we don't want to kick out. Just tell them we're not filling out this form
+  #  mb_kick_out_user_existing_order
+  #  We don't want to kick out user if they are trying
+  # to enforce an existing child support order instead
+  # of getting a new one. Just tell them we're not
+  # filling out this form.
   users[0].states_above_true
-  courts[0] # should not show housing court had to comment this out because kept getting this error and didn't know how to resolve.
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
   other_parties[0].defendant_parental_role
-  log( type(users[0].gross_income), 'console' )  # 'float'
-  log( users[0].gross_income, 'console' )  # Can't be empty right now
-  users[0].gross_income = users[0].gross_income
+  users[0].gross_income
   #users[0].gross_income_interval = showifdef('users[0].gross_income_interval')
   users[0].health_insurance
   users[0].child_care_expenses
@@ -374,7 +388,9 @@ code: |
     other_parties[0].child_care_other = DAEmpty()
     other_parties[0].child_care_other_interval = ''
 
-  # # Previous ending logic
+  # Previous ending logic below here that is
+  # controlled by the umbrella now
+  
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
@@ -386,20 +402,6 @@ code: |
 ---
 code: |
   all_support_children = wants_custody_of + majors_needing_support
----
-question: |
-  Do you have an existing child support order with regards to any of these children?
-subquestion: |
-  [TK list of all the children who are a) named and b) biological issue of
-  Defendant. This is the world of kids who COULD be eligible for a new child
-  support order but MIGHT not be, because there is already one in existence.
-yesno: existing_order
----
-event: mb_kick_out_user_existing_order
-question: |
-  We are sorry.
-subquestion: |
-  This interview is not for you. DOES ANYONE NEED TO SEE THIS SCREEN OR WILL THE LOGIC JUST MAKE IT SO YOU NEVER SEE THIS INTERVIEW IF YOU AREN'T ELIGIBLE?
 ---
 continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question
 question: |
