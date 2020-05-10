@@ -23,9 +23,8 @@ content: |
   <script>
 
     // Can't use `let` in here
-    var escaper = escaper || document.createElement( 'div' );
+    var escaper = escaper || document.createElement( 'a' );
     escaper.setAttribute( 'class', 'escape btn btn-danger' );
-    escaper.setAttribute( 'target', '_blank' );
     escaper.setAttribute( 'href', 'https://google.com' );
     escaper.innerHTML = 'Escape';
 
