@@ -236,8 +236,17 @@ fields:
 question: |
   Signing Under Oath
 subquestion: |
-  This form must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form. If you hit continue here, a box will be marked on your final form that says you are signing "under penalties of perjury."
-continue button field: users[0].states_above_true
+  This form must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form.
+fields:
+  - no label: users[0].states_above_true
+    datatype: checkboxes
+    minlength: 1
+    choices:
+      - I promise that my answers on this form are the truth under penalties of purjury
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to tell the truth.
+#validation code: |
 ---
 comment: |
   question: |
@@ -341,6 +350,7 @@ code: |
   courts[0] # should not show housing court had to comment this out because kept getting this error and didn't know how to resolve.
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
+  other_parties[0].defendant_parental_role
   log( type(users[0].gross_income), 'console' )  # 'float'
   log( users[0].gross_income, 'console' )  # Can't be empty right now
   users[0].gross_income = users[0].gross_income
@@ -405,7 +415,7 @@ attachment:
     filename: Plaintiff_affidavit_in_support_of_request_for_child_support_order
     pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     fields:
-      - "user_states_above_true": ${ users.item(0).states_above_true }
+      - "user_states_above_true": ${ True } # Must be True to finish
       - "user_name": ${ users[0] }
       - "other_party": ${ other_parties[0] }
       - "court_division": ${ courts.item(0).division }
@@ -491,7 +501,7 @@ attachment:
     filename: Plaintiff_209A_Child_Support_Affidavit
     pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     fields:
-      - "user_states_above_true": ${ users.item(0).states_above_true }
+      - "user_states_above_true": ${ True } # Must be True to finish
       - "user_name": ${ users[0] }
       - "other_party": ${ other_parties[0] }
       - "court_division": ${ courts.item(0).division }
