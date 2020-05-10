@@ -16,6 +16,7 @@ objects:
 id: test_child_support
 mandatory: True
 code: |
+  # log( item.dependents, 'console' )  # works without error on undefined
   # Skipping parts
   basic_questions_intro_screen = True
   courts[0] = macourts[0]

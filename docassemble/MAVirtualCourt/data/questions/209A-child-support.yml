@@ -165,27 +165,40 @@ question: |
 subquestion: |
   Tell us more about the defendant's expenses, the best that you can.
 fields:
-  - 'How much does the defendant pay for health insurance?': other_parties[0].health_insurance
+  - note: |
+      **How much does the defendant pay for health insurance?**
+  - no label: other_parties[0].health_insurance
     datatype: currency
   - "Weekly or Monthly": other_parties[0].health_insurance_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-  - 'How much does the defendant pay for dental and/or vision insurance?': other_parties[0].dental_vision_insurance
+  - note: |
+      <hr/>
+      **How much does the defendant pay for dental and/or vision insurance?**
+  - no label: other_parties[0].dental_vision_insurance
     datatype: currency
   - "Weekly or Monthly": other_parties[0].dental_vision_insurance_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-  - 'How much does the defendant pay for child care expenses for the children you share?': other_parties[0].child_care_expenses
+  - note: |
+      <hr/>
+      **How much does the defendant pay for child care expenses for the children you share?**
+  - no label: other_parties[0].child_care_expenses
     datatype: currency
   - "Weekly or Monthly": other_parties[0].child_care_expenses_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-  - 'Does the Defendant pay child support?': defendant_pays_child_support
+  - note: |
+      <hr/>
+      **Does the Defendant pay child support?**
+  - no label: defendant_pays_child_support
     datatype: yesnoradio
-  - 'How much does the defendant pay in other child support obligations?': other_parties[0].child_care_other
+  - note: |
+      **How much does the defendant pay in other child support obligations?**
+  - no label: other_parties[0].child_care_other
     datatype: currency
     show if:
       variable: defendant_pays_child_support
@@ -203,7 +216,9 @@ question: |
 subquestion: |
   As far as you know, what is the defendant's gross income? Reminder, "gross" means before taxes.  You can give either weekly or monthly income.
 fields:
-  - "What is the defendant's gross (pre-tax) income? # add weekly or monthly variable SMEs to give examples of non-work income": other_parties[0].gross_income
+  - note: |
+      **What is the defendant's gross (pre-tax) income? todo: add weekly or monthly variable SMEs to give examples of non-work income**
+  - no label: other_parties[0].gross_income
     datatype: currency
   - "Weekly or monthly": other_parties[0].gross_income_interval
     choices:
@@ -212,10 +227,9 @@ fields:
 ---
 question: |
   Defendant's Work
-subquestion: |
-  You will now be asked about Defendant’s work, income, and expenses. 
 fields:
-  - "Is the Defendant gainfully employed (earning money from their work)?": other_parties[0].gainfully_employed
+  - note: "Is the Defendant gainfully employed (earning money from their work)?"
+  - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---
 question: |
@@ -266,16 +280,19 @@ comment: |
 ---
 question: |
   Your Insurance Expenses
-subquestion: |
-  What are your insurance expenses?  You can give either weekly or monthly answers.
 fields:
-  - 'How much in total do you pay for health insurance?': users[0].health_insurance
+  - note: |
+      **How much in total do you pay for health insurance?**
+  - no label: users[0].health_insurance
     datatype: currency
   - "Weekly or monthly": users[0].health_insurance_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-  - 'How much do you pay for dental and/or vision insurance?': users[0].dental_vision_insurance
+  - note: |
+      <hr/>
+      **How much do you pay for dental and/or vision insurance?**
+  - no label: users[0].dental_vision_insurance
     datatype: currency
   - "Weekly or monthly": users[0].dental_vision_insurance_interval
     choices:
@@ -285,11 +302,12 @@ fields:
 question: |
   Expenses related to your children
 subquestion: |
-   What are your expenses related to your children?  You can give either weekly or monthly answers.
-
    This amount includes reasonable childcare costs due to a parent’s gainful employment or training or education of the parent necessary to obtain gainful employment. E.g. daycare, babysitting, and private school costs
 fields:
-  - 'How much do you pay for childcare for the children that you share with the Defendant?': users[0].child_care_expenses
+  - note: |
+      <hr/>
+      **How much do you pay for childcare for the children that you share with the Defendant?**
+  - no label: users[0].child_care_expenses
     datatype: currency
   - "Weekly or monthly": users[0].child_care_expenses_interval
     choices:
@@ -303,7 +321,9 @@ subquestion: |
 fields:
   - no label: pays_child_support
     datatype: yesnoradio
-  - 'How much do you pay in child support obligations?': users[0].child_care_other
+  - note: |
+      **How much do you pay in child support obligations?**
+  - no label: users[0].child_care_other
     datatype: currency
     show if:
       variable: pays_child_support
@@ -324,7 +344,10 @@ subquestion: |
   
   Click "Help" to learn more. 
 fields:
-  - "What is your gross income (before taxes)?": users[0].gross_income
+  - note: |
+      <hr/>
+      **What is your gross income (before taxes)?**
+  - no label: users[0].gross_income
     datatype: currency
   - "Weekly or monthly": users[0].gross_income_interval
     choices:
