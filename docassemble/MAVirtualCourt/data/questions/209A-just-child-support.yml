@@ -23,6 +23,7 @@ code: |
   users[0].name.first = "Pat"
   users[0].name.last = "Kim"
   other_parties[0].name.first = "Sam"
+  other_parties.there_is_another = False
   # auto kids
   wants_custody_of[0].name.first = "Lee"
   wants_custody_of.there_is_another = False
@@ -33,6 +34,8 @@ code: |
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
   signature_date
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question
+
   basic_questions_signature_flow
   users[0].signature
-  Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
+
+  child_support_download_screen
