@@ -1,3 +1,6 @@
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
 comment: |
   We need to add labels to this form to capture weekly or monthly information.
 mandatory: True
@@ -174,8 +177,7 @@ fields:
       - "Monthly": monthly
     show if:
       variable: defendant_pays_child_support
-      is: True
-    
+      is: True 
 ---
 question: |
   Defendant Income
@@ -284,9 +286,7 @@ fields:
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-  
 ---
-
 question: |
   Your Income
 subquestion: |
@@ -303,61 +303,6 @@ fields:
       - "Monthly": monthly
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
----
-progress: 100
-# mandatory: True
-question: |
-  Placeholder download screen
-subquestion: |
-  Placeholder
-  
-  ### Next steps
-  
-  1. Step 1
-  1. Step 2
-  
-  Below is a preview of your form.
-  
-  ${Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment }
-attachment code: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
----
-need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
-attachment:
-    variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
-    name: Plaintiff 209A Child Support Affidavit
-    filename: Plaintiff_209A_Child_Support_Affidavit
-    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
-    fields: 
-      - "plaintiff_name": ${ users }
-      - "other_party": ${ other_parties }
-      - "child1_name": ${ all_support_children.item(0) }
-      - "child2_name": ${ all_support_children.item(1) }
-      - "child3_name": ${ all_support_children.item(2) }
-      - "child4_name": ${ all_support_children.item(3) }
-      - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
-      - "court_division": ${ courts[0] }
-      - "user_name_print": ${ users }
-      - "other_party_occupation": ${ other_parties[0].occupation }
-      - "other_party_employer": ${ other_parties[0].employer }
-      - "other_party_address": ${ other_parties[0].work_address }
-      - "user_gross_income": ${ currency(users[0].gross_income ) }
-      - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
-      - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
-      - "user_child_care_expenses": ${ currency(users[0].child_care_expenses ) }
-      - "user_child_care_other": ${ currency(users[0].child_care_other) }
-      - "other_party_gross_income": ${ currency(other_parties[0].gross_income ) }
-      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance_payment ) }
-      - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
-      - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
-      - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
-      - "user_states_above_true": ${ users[0].states_above_true }
-      - "user_name_print": ${ users }
-      - "user_signature": ${ users[0].signature }
-
----
-include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
 ---
 comment: |
   This question is used to introduce your interview. Please customize
@@ -396,6 +341,7 @@ code: |
     other_parties[0].occupation = ''
   else:
     other_parties[0].occupation
+  
   other_parties[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   other_parties[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
   if not defendant_pays_child_support:
@@ -409,6 +355,9 @@ code: |
   # basic_questions_signature_flow
   # users[0].signature
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008 = True
+---
+code: |
+  all_support_children = wants_custody_of + majors_needing_support
 ---
 question: |
   Do you have an existing child support order with regards to any of these children?
@@ -464,5 +413,53 @@ attachment:
       - "user_states_above_true": ${ users[0].states_above_true }
       - "user_name_print": ${ users }
 ---
-code: |
-  all_support_children = wants_custody_of + majors_needing_support
+progress: 100
+# mandatory: True
+question: |
+  Placeholder download screen
+subquestion: |
+  Placeholder
+  
+  ### Next steps
+  
+  1. Step 1
+  1. Step 2
+  
+  Below is a preview of your form.
+  
+  ${Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment }
+attachment code: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
+---
+need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
+attachment:
+    variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
+    name: Plaintiff 209A Child Support Affidavit
+    filename: Plaintiff_209A_Child_Support_Affidavit
+    pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
+    fields: 
+      - "plaintiff_name": ${ users }
+      - "other_party": ${ other_parties }
+      - "child1_name": ${ all_support_children.item(0) }
+      - "child2_name": ${ all_support_children.item(1) }
+      - "child3_name": ${ all_support_children.item(2) }
+      - "child4_name": ${ all_support_children.item(3) }
+      - "signature_date": ${ signature_date }
+      - "user_signature": ${ users[0].signature }
+      - "court_division": ${ courts[0] }
+      - "user_name_print": ${ users }
+      - "other_party_occupation": ${ other_parties[0].occupation }
+      - "other_party_employer": ${ other_parties[0].employer }
+      - "other_party_address": ${ other_parties[0].work_address }
+      - "user_gross_income": ${ currency(users[0].gross_income ) }
+      - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
+      - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
+      - "user_child_care_expenses": ${ currency(users[0].child_care_expenses ) }
+      - "user_child_care_other": ${ currency(users[0].child_care_other) }
+      - "other_party_gross_income": ${ currency(other_parties[0].gross_income ) }
+      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance_payment ) }
+      - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
+      - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
+      - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
+      - "user_states_above_true": ${ users[0].states_above_true }
+      - "user_name_print": ${ users }
+      - "user_signature": ${ users[0].signature }
