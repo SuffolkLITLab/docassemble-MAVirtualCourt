@@ -148,19 +148,19 @@ subquestion: |
 fields:
   - 'How much does the defendant pay for health insurance?': other_parties[0].health_insurance_payment
     datatype: currency
-  - "Weekly or Monthly": other_parties[0].health_insurance_payment_is_weekly_or_monthly
+  - "Weekly or Monthly": other_parties[0].health_insurance_payment_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - 'How much does the defendant pay for dental and/or vision insurance?': other_parties[0].dental_vision_insurance_payment
     datatype: currency
-  - "Weekly or Monthly": other_parties[0].dental_vision_insurance_payment_is_weekly_or_monthly
+  - "Weekly or Monthly": other_parties[0].dental_vision_insurance_payment_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - 'How much does the defendant pay for child care expenses for the children you share?': other_parties[0].child_care_expenses
     datatype: currency
-  - "Weekly or Monthly": other_parties[0].child_care_expenses_is_weekly_or_monthly
+  - "Weekly or Monthly": other_parties[0].child_care_expenses_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -171,7 +171,7 @@ fields:
     show if:
       variable: defendant_pays_child_support
       is: True
-  - "Weekly or Monthly": other_parties[0].child_care_other_is_weekly_or_monthly
+  - "Weekly or Monthly": other_parties[0].child_care_other_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -186,7 +186,7 @@ subquestion: |
 fields:
   - "What is the defendant's gross (pre-tax) income? # add weekly or monthly variable SMEs to give examples of non-work income": other_parties[0].gross_income
     datatype: currency
-  - "Weekly or monthly": other_parties[0].gross_income_is_weekly_or_monthly
+  - "Weekly or monthly": other_parties[0].gross_income_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -242,13 +242,13 @@ subquestion: |
 fields:
   - 'How much in total do you pay for health insurance?': users[0].health_insurance_payment
     datatype: currency
-  - "Weekly or monthly": users[0].health_insurance_payment_weekly_or_monthly
+  - "Weekly or monthly": users[0].health_insurance_payment_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - 'How much do you pay for dental and/or vision insurance?': users[0].dental_vision_insurance_payment
     datatype: currency
-  - "Weekly or monthly": users[0].dental_vision_insurance_payment_weekly_or_monthly
+  - "Weekly or monthly": users[0].dental_vision_insurance_payment_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -262,7 +262,7 @@ subquestion: |
 fields:
   - 'How much do you pay for childcare for the children that you share with the Defendant?': users[0].child_care_expenses
     datatype: currency
-  - "Weekly or monthly": users[0].child_care_expenses_weekly_or_monthly
+  - "Weekly or monthly": users[0].child_care_expenses_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -279,7 +279,7 @@ fields:
     show if:
       variable: pays_child_support
       is: True
-  - "Weekly or monthly": users[0].child_care_other_weekly_or_monthly
+  - "Weekly or monthly": users[0].child_care_other_interval
     show if:
       variable: pays_child_support
       is: True
@@ -297,7 +297,7 @@ subquestion: |
 fields:
   - "What is your gross income (before taxes)?": users[0].gross_income
     datatype: currency
-  - "Weekly or monthly": users[0].income_weekly_or_monthly
+  - "Weekly or monthly": users[0].gross_income_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -329,31 +329,38 @@ code: |
   courts[0] # should not show housing court had to comment this out because kept getting this error and didn't know how to resolve.
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
-  children.gather()
-  users[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
-  users[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
-  users[0].child_care_expenses
-  if not pays_child_support:
-    users[0].child_care_other = DAEmpty()
-    users[0].child_care_other_weekly_or_monthly = ''
+  log( type(users[0].gross_income), 'console' )
+  log( users[0].gross_income, 'console' )
+  users[0].gross_income = users[0].gross_income
+  log( users[0].gross_income_interval, 'console' )
+  # users[0].gross_income_interval = ''
+  #users[0].health_insurance_payment
+  #users[0].child_care_expenses
+  #if not pays_child_support:
+  #  users[0].child_care_other = DAEmpty()
+  #  users[0].child_care_other_interval = ''
   if not other_parties[0].gainfully_employed:
     defendant_not_working_warning_given
     other_parties[0].occupation = ''
+    other_parties[0].employer = ''
+    other_parties[0].work_address = ''
   else:
     other_parties[0].occupation
   
-  other_parties[0].gross_income # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
-  other_parties[0].health_insurance_payment # user can choose between weekly and monthly. There needs to be a field added to the .pdf for this.
-  if not defendant_pays_child_support:
-    other_parties[0].child_care_other =''
-    other_parties[0].child_care_other_is_weekly_or_monthly = ''
-  str(plaintiffs[0]) # already gathered in a prior interview?
+  #other_parties[0].gross_income
+  #other_parties[0].health_insurance_payment
+  #if not defendant_pays_child_support:
+  #  other_parties[0].child_care_other =''
+  #  other_parties[0].child_care_other_interval = ''
+
+  # # Previous ending logic
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
   # Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
   # users[0].signature
+
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008 = True
 ---
 code: |
@@ -377,96 +384,96 @@ continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_suppo
 question: |
   Placeholder preview screen
 subquestion: |
-  Here is a preview of the form you'll sign on the next page. 
+  Here is a preview of the form you'll sign in the next section. 
   
-   ${Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview}
+   ${ Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview }
+---
+comment: |
+  attachment:
+      variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview
+      name: Plaintiff 209A Child Support Affidavit
+      filename: Plaintiff_209A_Child_Support_Affidavit
+      pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
+      fields: 
+        - "plaintiff_name": ${ users }
+        - "other_party": ${ other_parties }
+        - "child1_name": ${ all_support_children.item(0) }
+        - "child2_name": ${ all_support_children.item(1) }
+        - "child3_name": ${ all_support_children.item(2) }
+        - "child4_name": ${ all_support_children.item(3) }
+        - "signature_date": ${ signature_date }
+        - "court_division": ${ courts[0] }
+        - "user_name_print": ${ users }
+        - "other_party_occupation": ${ other_parties[0].occupation }
+        - "other_party_employer": ${ other_parties[0].employer }
+        - "other_party_address": ${ other_parties[0].work_address }
+        - "user_gross_income": ${ currency(users[0].gross_income ) }
+        - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
+        - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
+        - "user_child_care_expenses": ${ currency(users[0].child_care_expenses ) }
+        - "user_child_care_other": ${ currency(users[0].child_care_other) }
+        - "other_party_gross_income": ${ currency(other_parties[0].gross_income ) }
+        - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance_payment ) }
+        - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
+        - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
+        - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
+        - "user_states_above_true": ${ users[0].states_above_true }
+        - "user_name_print": ${ users }
 ---
 attachment:
     variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview
-    name: Plaintiff 209A Child Support Affidavit
-    filename: Plaintiff_209A_Child_Support_Affidavit
+    name: Plaintiff affidavit in support of request for child support order
+    filename: Plaintiff_affidavit_in_support_of_request_for_child_support_order
     pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     fields: 
-      - "plaintiff_name": ${ users }
-      - "other_party": ${ other_parties }
-      - "child1_name": ${ all_support_children.item(0) }
-      - "child2_name": ${ all_support_children.item(1) }
-      - "child3_name": ${ all_support_children.item(2) }
-      - "child4_name": ${ all_support_children.item(3) }
-      - "signature_date": ${ signature_date }
-      - "court_division": ${ courts[0] }
-      - "user_name_print": ${ users }
+      - "user_name": ${ users[0] }
+      - "other_party": ${ other_parties[0] }
+      - "court_division": ${ courts.item(0).division }
+      - "user_name_print": ${ users[0] }
+      #- "other_party_is_mother": ${ other_parties[0].is_mother }
+      #- "other_party_is_father": ${ other_parties[0].is_father }
+      - "child_name": ${ all_support_children.item(0) }
+      - "child2_name": ${ all_support_children.item(2-1) }
+      - "child3_name": ${ all_support_children.item(3-1) }
+      - "child4_name": ${ all_support_children.item(4-1) }
       - "other_party_occupation": ${ other_parties[0].occupation }
       - "other_party_employer": ${ other_parties[0].employer }
-      - "other_party_address": ${ other_parties[0].work_address }
-      - "user_gross_income": ${ currency(users[0].gross_income ) }
-      - "user_health_insurance_payment": ${ currency(users[0].health_insurance_payment ) }
-      - "user_dental_vision_insurance_payment": ${ currency(users[0].dental_vision_insurance_payment ) }
-      - "user_child_care_expenses": ${ currency(users[0].child_care_expenses ) }
-      - "user_child_care_other": ${ currency(users[0].child_care_other) }
-      - "other_party_gross_income": ${ currency(other_parties[0].gross_income ) }
-      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance_payment ) }
-      - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance_payment ) }
-      - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses ) }
-      - "other_party_child_care_other": ${ currency(other_parties[0].child_care_other ) }
-      - "user_states_above_true": ${ users[0].states_above_true }
-      - "user_name_print": ${ users }
+      - "other_party_employer_address": ${ other_parties[0].work_address }
+      - "user_gross_income": ${ users[0].gross_income }
+      - "user_gross_income_is_per_month": ${ users[0].gross_income_interval == 'monthly' }
+      - "user_gross_income_is_per_week": ${ users[0].gross_income_interval == 'weekly' }
 ---
 comment: |
-  need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0033
-  attachment:
-      variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0033_attachment
-      name: Plaintiff affidavit in support of request for child support order
-      filename: Plaintiff_affidavit_in_support_of_request_for_child_support_order
-      pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
-      fields: 
-        - "user_name": ${ users.item(0) }
-        - "other_party": ${ other_parties.item(0) }
-        - "child_name": ${ children.item(0) }
-        - "child2_name": ${ children.item(2-1) }
-        - "child3_name": ${ children.item(3-1) }
-        - "child4_name": ${ children.item(4-1) }
-        - "signature_date": ${ signature_date }
-        - "user_signature": ${ users.item(0).signature }
-        - "court_division": ${ courts.item(0).division }
-        - "user_name_print": ${ users.item(0).name_print }
-        - "other_party_is_mother": ${ other_parties[0].is_mother }
-        - "other_party_is_father": ${ other_parties[0].is_father }
-        - "other_party_occupation": ${ other_parties[0].occupation }
-        - "other_party_employer": ${ other_parties[0].employer }
-        - "other_party_employer_address": ${ other_parties[0].employer_address }
-        - "user_gross_income_is_per_month": ${ users.item(0).gross_income_is_per_month }
-        - "user_gross_income_is_per_week": ${ users.item(0).gross_income_is_per_week }
-        - "user_gross_income": ${ users.item(0).gross_income }
-        - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_payment_is_per_month }
-        - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_payment_is_per_week }
-        - "user_health_insurance_payment": ${ users.item(0).health_insurance_payment }
-        - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_payment_is_per_month }
-        - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_payment_is_per_week }
-        - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance_payment }
-        - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_is_per_week }
-        - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_is_per_month }
-        - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
-        - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_is_per_month }
-        - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_is_per_week }
-        - "user_child_care_other": ${ users.item(0).child_care_other }
-        - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_is_per_week }
-        - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_is_per_month }
-        - "other_party_gross_income": ${ other_parties[0].gross_income }
-        - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_payment_is_per_week }
-        - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_payment_is_per_month }
-        - "other_party_health_insurance_payment": ${ other_parties[0].health_insurance_payment }
-        - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_payment_is_per_week }
-        - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_payment_is_per_month }
-        - "other_party_dental_vision_insurance_payment": ${ other_parties[0].dental_vision_insurance_payment }
-        - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_is_per_week }
-        - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_is_per_month }
-        - "other_party_child_care_expenses": ${ other_parties[0].child_care_expenses }
-        - "other_party_child_care_other_is_per_month": ${ other_parties[0].child_care_other_is_per_month }
-        - "other_party_child_care_other_is_per_week": ${ other_parties[0].child_care_other_is_per_week }
-        - "other_party_child_care_other": ${ other_parties[0].child_care_other }
-        - "user_states_above_true": ${ users.item(0).states_above_true }
-        - "user_name_print__2": ${ users.item(0).name_print }
+      - "signature_date": ${ signature_date }
+      - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_payment_is_per_month }
+      - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_payment_is_per_week }
+      - "user_health_insurance_payment": ${ users.item(0).health_insurance_payment }
+      - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_payment_is_per_month }
+      - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_payment_is_per_week }
+      - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance_payment }
+      - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_is_per_week }
+      - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_is_per_month }
+      - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
+      - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_is_per_month }
+      - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_is_per_week }
+      - "user_child_care_other": ${ users.item(0).child_care_other }
+      - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_is_per_week }
+      - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_is_per_month }
+      - "other_party_gross_income": ${ other_parties[0].gross_income }
+      - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_payment_is_per_week }
+      - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_payment_is_per_month }
+      - "other_party_health_insurance_payment": ${ other_parties[0].health_insurance_payment }
+      - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_payment_is_per_week }
+      - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_payment_is_per_month }
+      - "other_party_dental_vision_insurance_payment": ${ other_parties[0].dental_vision_insurance_payment }
+      - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_is_per_week }
+      - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_is_per_month }
+      - "other_party_child_care_expenses": ${ other_parties[0].child_care_expenses }
+      - "other_party_child_care_other_is_per_month": ${ other_parties[0].child_care_other_is_per_month }
+      - "other_party_child_care_other_is_per_week": ${ other_parties[0].child_care_other_is_per_week }
+      - "other_party_child_care_other": ${ other_parties[0].child_care_other }
+      - "user_states_above_true": ${ users.item(0).states_above_true }
+      - "user_name_print__2": ${ users.item(0).name_print }
 ---
 progress: 100
 # mandatory: True
@@ -482,7 +489,7 @@ subquestion: |
   
   Below is a preview of your form.
   
-  ${Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment }
+  ${ Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment }
 attachment code: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
 ---
 need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
@@ -520,55 +527,59 @@ attachment:
       - "user_signature": ${ users[0].signature }
 ---
 comment: |
+  need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
   attachment:
-      variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0033_attachment_preview
+      variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
       name: Plaintiff affidavit in support of request for child support order
       filename: Plaintiff_affidavit_in_support_of_request_for_child_support_order
       pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
       fields: 
         - "user_name": ${ users.item(0) }
         - "other_party": ${ other_parties.item(0) }
-        - "child_name": ${ children.item(0) }
-        - "child2_name": ${ children.item(2-1) }
-        - "child3_name": ${ children.item(3-1) }
-        - "child4_name": ${ children.item(4-1) }
+        - "child_name": ${ all_support_children.item(0) }
+        - "child2_name": ${ all_support_children.item(2-1) }
+        - "child3_name": ${ all_support_children.item(3-1) }
+        - "child4_name": ${ all_support_children.item(4-1) }
         - "signature_date": ${ signature_date }
-        - "court_division": ${ courts.item(0).division }
-        - "user_name_print": ${ users.item(0).name_print }
-        - "other_party_is_mother": ${ other_parties[0].is_mother }
-        - "other_party_is_father": ${ other_parties[0].is_father }
-        - "other_party_occupation": ${ other_parties[0].occupation }
-        - "other_party_employer": ${ other_parties[0].employer }
-        - "other_party_employer_address": ${ other_parties[0].employer_address }
-        - "user_gross_income_is_per_month": ${ users.item(0).gross_income_is_per_month }
-        - "user_gross_income_is_per_week": ${ users.item(0).gross_income_is_per_week }
-        - "user_gross_income": ${ users.item(0).gross_income }
-        - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_payment_is_per_month }
-        - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_payment_is_per_week }
-        - "user_health_insurance_payment": ${ users.item(0).health_insurance_payment }
-        - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_payment_is_per_month }
-        - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_payment_is_per_week }
-        - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance_payment }
-        - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_is_per_week }
-        - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_is_per_month }
-        - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
-        - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_is_per_month }
-        - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_is_per_week }
-        - "user_child_care_other": ${ users.item(0).child_care_other }
-        - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_is_per_week }
-        - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_is_per_month }
-        - "other_party_gross_income": ${ other_parties[0].gross_income }
-        - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_payment_is_per_week }
-        - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_payment_is_per_month }
-        - "other_party_health_insurance_payment": ${ other_parties[0].health_insurance_payment }
-        - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_payment_is_per_week }
-        - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_payment_is_per_month }
-        - "other_party_dental_vision_insurance_payment": ${ other_parties[0].dental_vision_insurance_payment }
-        - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_is_per_week }
-        - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_is_per_month }
-        - "other_party_child_care_expenses": ${ other_parties[0].child_care_expenses }
-        - "other_party_child_care_other_is_per_month": ${ other_parties[0].child_care_other_is_per_month }
-        - "other_party_child_care_other_is_per_week": ${ other_parties[0].child_care_other_is_per_week }
-        - "other_party_child_care_other": ${ other_parties[0].child_care_other }
-        - "user_states_above_true": ${ users.item(0).states_above_true }
-        - "user_name_print__2": ${ users.item(0).name_print }
+---
+comment: |
+      - "user_signature": ${ users.item(0).signature }
+      - "court_division": ${ courts.item(0).division }
+      - "user_name_print": ${ users.item(0).name_print }
+      - "other_party_is_mother": ${ other_parties[0].is_mother }
+      - "other_party_is_father": ${ other_parties[0].is_father }
+      - "other_party_occupation": ${ other_parties[0].occupation }
+      - "other_party_employer": ${ other_parties[0].employer }
+      - "other_party_employer_address": ${ other_parties[0].employer_address }
+      - "user_gross_income_is_per_month": ${ users.item(0).gross_income_is_per_month }
+      - "user_gross_income_is_per_week": ${ users.item(0).gross_income_is_per_week }
+      - "user_gross_income": ${ users.item(0).gross_income }
+      - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_payment_is_per_month }
+      - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_payment_is_per_week }
+      - "user_health_insurance_payment": ${ users.item(0).health_insurance_payment }
+      - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_payment_is_per_month }
+      - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_payment_is_per_week }
+      - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance_payment }
+      - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_is_per_week }
+      - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_is_per_month }
+      - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
+      - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_is_per_month }
+      - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_is_per_week }
+      - "user_child_care_other": ${ users.item(0).child_care_other }
+      - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_is_per_week }
+      - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_is_per_month }
+      - "other_party_gross_income": ${ other_parties[0].gross_income }
+      - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_payment_is_per_week }
+      - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_payment_is_per_month }
+      - "other_party_health_insurance_payment": ${ other_parties[0].health_insurance_payment }
+      - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_payment_is_per_week }
+      - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_payment_is_per_month }
+      - "other_party_dental_vision_insurance_payment": ${ other_parties[0].dental_vision_insurance_payment }
+      - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_is_per_week }
+      - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_is_per_month }
+      - "other_party_child_care_expenses": ${ other_parties[0].child_care_expenses }
+      - "other_party_child_care_other_is_per_month": ${ other_parties[0].child_care_other_is_per_month }
+      - "other_party_child_care_other_is_per_week": ${ other_parties[0].child_care_other_is_per_week }
+      - "other_party_child_care_other": ${ other_parties[0].child_care_other }
+      - "user_states_above_true": ${ users.item(0).states_above_true }
+      - "user_name_print__2": ${ users.item(0).name_print }
