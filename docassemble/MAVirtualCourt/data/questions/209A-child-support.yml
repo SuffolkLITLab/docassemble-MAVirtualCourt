@@ -141,6 +141,17 @@ code: |
       ],
   })
 ---
+id: mother_or_father
+question: |
+  Is ${ other_parties[0] } the mother or father of the children?
+fields:
+  - no label: other_parties[0].defendant_parental_role
+    input type: radio
+    choices:
+      - Mother: "mother"
+      - Father: "father"
+      - I don't want to say: "neither"
+---
 question: |
   Defendant Expenses
 subquestion: |
@@ -228,12 +239,13 @@ subquestion: |
   This form must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form. If you hit continue here, a box will be marked on your final form that says you are signing "under penalties of perjury."
 continue button field: users[0].states_above_true
 ---
-question: |
-  What court division are you filing in?
-subquestion: |
-  Enter the appropriate court division.
-fields:
-  - 'Court Division': courts[0].d
+comment: |
+  question: |
+    What court division are you filing in?
+  subquestion: |
+    Enter the appropriate court division.
+  fields:
+    - 'Court Division': courts[0].d
 ---
 question: |
   Your Insurance Expenses
@@ -398,8 +410,8 @@ attachment:
       - "other_party": ${ other_parties[0] }
       - "court_division": ${ courts.item(0).division }
       - "user_name_print": ${ users[0] }
-      #- "other_party_is_mother": ${ other_parties[0].is_mother }
-      #- "other_party_is_father": ${ other_parties[0].is_father }
+      - "other_party_is_mother": ${ other_parties[0].defendant_parental_role == 'mother' }
+      - "other_party_is_father": ${ other_parties[0].defendant_parental_role == 'father' }
       - "child_name": ${ all_support_children.item(0) }
       - "child2_name": ${ all_support_children.item(2-1) }
       - "child3_name": ${ all_support_children.item(3-1) }
@@ -484,8 +496,8 @@ attachment:
       - "other_party": ${ other_parties[0] }
       - "court_division": ${ courts.item(0).division }
       - "user_name_print": ${ users[0] }
-      #- "other_party_is_mother": ${ other_parties[0].is_mother }
-      #- "other_party_is_father": ${ other_parties[0].is_father }
+      - "other_party_is_mother": ${ other_parties[0].defendant_parental_role == 'mother' }
+      - "other_party_is_father": ${ other_parties[0].defendant_parental_role == 'father' }
       - "child_name": ${ all_support_children.item(0) }
       - "child2_name": ${ all_support_children.item(2-1) }
       - "child3_name": ${ all_support_children.item(3-1) }
