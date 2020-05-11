@@ -161,33 +161,57 @@ fields:
       - I don't want to say: "neither"
 ---
 question: |
-  Defendant Expenses
+  Defendant Insurance Expenses
 subquestion: |
   Tell us more about the defendant's expenses, the best that you can.
 fields:
   - note: |
-      **How much does the defendant pay for health insurance?**
+      **Does ${ other_parties[0] } pay for health insurance?**
+  - no label: other_has_health_insurance
+    datatype: yesnoradio
+  - note: |
+      How much does ${ other_parties[0] } pay for health insurance?
+    show if: other_has_health_insurance
   - no label: other_parties[0].health_insurance
     datatype: currency
+    show if: other_has_health_insurance
   - "Weekly or Monthly": other_parties[0].health_insurance_interval
+    show if: other_has_health_insurance
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - note: |
       <hr/>
-      **How much does the defendant pay for dental and/or vision insurance?**
+      **Does ${ other_parties[0] } pay for dental and/or vision insurance?**
+  - no label: other_has_dental
+    datatype: yesnoradio
+  - note: |
+      How much does ${ other_parties[0] } pay for dental and/or vision insurance?
+    show if: other_has_dental
   - no label: other_parties[0].dental_vision_insurance
     datatype: currency
+    show if: other_has_dental
   - "Weekly or Monthly": other_parties[0].dental_vision_insurance_interval
+    show if: other_has_dental
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+---
+question: |
+  Defendant's childcare expenses
+fields:
   - note: |
-      <hr/>
-      **How much does the defendant pay for child care expenses for the children you share?**
+      **Does ${ other_parties[0] } pay for childcare expenses for the children you share?**
+  - no label: other_has_childcare
+    datatype: yesnoradio
+  - note: |
+      How much does ${ other_parties[0] } pay for those expenses?
+    show if: other_has_childcare
   - no label: other_parties[0].child_care_expenses
     datatype: currency
+    show if: other_has_childcare
   - "Weekly or Monthly": other_parties[0].child_care_expenses_interval
+    show if: other_has_childcare
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -197,27 +221,26 @@ fields:
   - no label: defendant_pays_child_support
     datatype: yesnoradio
   - note: |
-      **How much does the defendant pay in other child support obligations?**
+      How much does the defendant pay in other child support obligations?
+    show if: defendant_pays_child_support
   - no label: other_parties[0].child_care_other
     datatype: currency
-    show if:
-      variable: defendant_pays_child_support
-      is: True
+    show if: defendant_pays_child_support
   - "Weekly or Monthly": other_parties[0].child_care_other_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
-    show if:
-      variable: defendant_pays_child_support
-      is: True 
+    show if: defendant_pays_child_support
 ---
 question: |
   Defendant Income
 subquestion: |
-  As far as you know, what is the defendant's gross income? Reminder, "gross" means before taxes.  You can give either weekly or monthly income.
+  "Gross income" means your income before taxes are taken
+  out of your check.  You can enter either your weekly or monthly income. Click "Help" to learn more. 
+  As far as you know, what is the defendant's gross income? "gross" means before taxes.  You can give either weekly or monthly income.
 fields:
   - note: |
-      **What is the defendant's gross (pre-tax) income? todo: add weekly or monthly variable SMEs to give examples of non-work income**
+      **As far as you know, what is the defendant's gross (pre-tax) income? todo: add weekly or monthly variable SMEs to give examples of non-work income**
   - no label: other_parties[0].gross_income
     datatype: currency
   - "Weekly or monthly": other_parties[0].gross_income_interval
@@ -228,7 +251,8 @@ fields:
 question: |
   Defendant's Work
 fields:
-  - note: "Is the Defendant gainfully employed (earning money from their work)?"
+  - note: |
+      **Is the Defendant gainfully employed (earning money from their work)?**
   - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---
@@ -282,22 +306,36 @@ question: |
   Your Insurance Expenses
 fields:
   - note: |
-      **How much in total do you pay for health insurance?**
+      **Do you pay for health insurance?**
+  - no label: user_has_health_insurance
+    datatype: yesnoradio
+  - note: |
+      How much in total do you pay for health insurance?
+    show if: user_has_health_insurance
   - no label: users[0].health_insurance
     datatype: currency
+    show if: user_has_health_insurance
   - "Weekly or monthly": users[0].health_insurance_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+    show if: user_has_health_insurance
   - note: |
       <hr/>
-      **How much do you pay for dental and/or vision insurance?**
+      **Do you pay for dental and/or vision insurance?**
+  - no label: user_has_dental_insurance
+    datatype: yesnoradio
+  - note: |
+      How much do you pay for dental and/or vision insurance?
+    show if: user_has_dental_insurance
   - no label: users[0].dental_vision_insurance
     datatype: currency
+    show if: user_has_dental_insurance
   - "Weekly or monthly": users[0].dental_vision_insurance_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+    show if: user_has_dental_insurance
 ---
 question: |
   Expenses related to your children
@@ -305,33 +343,37 @@ subquestion: |
    This amount includes reasonable childcare costs due to a parent’s gainful employment or training or education of the parent necessary to obtain gainful employment. E.g. daycare, babysitting, and private school costs
 fields:
   - note: |
-      <hr/>
-      **How much do you pay for childcare for the children that you share with the Defendant?**
+      **Do you pay for childcare for the children that you share with the defendant?**
+  - no label: user_has_child_care_expenses
+    datatype: yesnoradio
+  - note: |
+      How much do you pay for those childcare expenses?
+    show if: user_has_child_care_expenses
   - no label: users[0].child_care_expenses
     datatype: currency
+    show if: user_has_child_care_expenses
   - "Weekly or monthly": users[0].child_care_expenses_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+    show if: user_has_child_care_expenses
 ---
+# ${ str(all_support_children) }
 question: |
   Child support
-subquestion: |
-  Are you ordered to pay child support for  any children other than [TK child(ren) from list of children tagged for this interview]
 fields:
+  - note: |
+      **Are you ordered to pay child support for  any children other than [TK child(ren) from list of children tagged for this interview]**
   - no label: pays_child_support
     datatype: yesnoradio
   - note: |
-      **How much do you pay in child support obligations?**
+      How much do you pay in child support obligations?
+    show if: pays_child_support
   - no label: users[0].child_care_other
     datatype: currency
-    show if:
-      variable: pays_child_support
-      is: True
+    show if: pays_child_support
   - "Weekly or monthly": users[0].child_care_other_interval
-    show if:
-      variable: pays_child_support
-      is: True
+    show if: pays_child_support
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
@@ -339,20 +381,24 @@ fields:
 question: |
   Your Income
 subquestion: |
-  What is your gross income? "Gross" means your income before taxes are taken
-  out of your check.  You can enter either your weekly or monthly income.
-  
-  Click "Help" to learn more. 
+  "Gross income" means your income before taxes are taken
+  out of your check.  You can enter either your weekly or monthly income. Click "Help" to learn more. 
 fields:
   - note: |
-      <hr/>
-      **What is your gross income (before taxes)?**
+      **Do you have income?**
+  - no label: user_has_income
+    datatype: yesnoradio
+  - note: |
+      What is your gross income (before taxes)?
+    show if: user_has_income
   - no label: users[0].gross_income
     datatype: currency
+    show if: user_has_income
   - "Weekly or monthly": users[0].gross_income_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+    show if: user_has_income
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
 ---
@@ -386,27 +432,54 @@ code: |
   # to enforce an existing child support order instead
   # of getting a new one. Just tell them we're not
   # filling out this form.
+
   users[0].states_above_true
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
   other_parties[0].defendant_parental_role
-  users[0].gross_income
-  #users[0].gross_income_interval = showifdef('users[0].gross_income_interval')
-  users[0].health_insurance
-  users[0].child_care_expenses
+  
+  ## User finances
+  if not user_has_income:
+    users[0].gross_income = DAEmpty()
+    users[0].gross_income_interval = ''
+  # insurance
+  if not user_has_health_insurance:
+    users[0].health_insurance = DAEmpty()
+    users[0].health_insurance_interval = ''
+  if not user_has_dental_insurance:
+    users[0].dental_vision_insurance = DAEmpty()
+    users[0].dental_vision_insurance_interval = ''
+  # child care
+  if not user_has_child_care_expenses:
+    users[0].child_care_expenses = DAEmpty()
+    users[0].child_care_expenses_interval = ''
   if not pays_child_support:
     users[0].child_care_other = DAEmpty()
     users[0].child_care_other_interval = ''
+  
+  # Defendant finances
   if not other_parties[0].gainfully_employed:
     defendant_not_working_warning_given
     other_parties[0].occupation = ''
     other_parties[0].employer = ''
     other_parties[0].work_address = ''
+    other_parties[0].gross_income = DAEmpty()
+    other_parties[0].gross_income_interval = ''
   else:
     other_parties[0].occupation
-  
-  other_parties[0].gross_income
-  other_parties[0].health_insurance
+    other_parties[0].gross_income
+    other_parties[0].gross_income_interval
+  # insurance
+  if not other_has_health_insurance:
+    other_parties[0].health_insurance = DAEmpty()
+    other_parties[0].health_insurance_interval = ''
+  if not other_has_dental:
+    other_parties[0].dental_vision_insurance = DAEmpty()
+    other_parties[0].dental_vision_insurance_interval = ''
+  # childcare
+  if not other_has_childcare:
+    other_parties[0].child_care_expenses = DAEmpty()
+    other_parties[0].child_care_expenses_interval = ''
   if not defendant_pays_child_support:
     other_parties[0].child_care_other = DAEmpty()
     other_parties[0].child_care_other_interval = ''
