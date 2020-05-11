@@ -264,7 +264,6 @@ subquestion: |
   minimum amount of child support recommended by the Child Support Guidelines, 
   even when that parent has no income. The court can also take other factors 
   and circumstances into account and deviate from the recommended minimum amount.
-
 continue button field: defendant_not_working_warning_given
 ---
 question: |
@@ -292,15 +291,6 @@ fields:
     validation messages:
       minlength: |
         You cannot continue unless you agree to tell the truth.
-#validation code: |
----
-comment: |
-  question: |
-    What court division are you filing in?
-  subquestion: |
-    Enter the appropriate court division.
-  fields:
-    - 'Court Division': courts[0].d
 ---
 question: |
   Your Insurance Expenses
@@ -402,19 +392,21 @@ fields:
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
 ---
-question: |
-  Do you have an existing child support order with regards to any of these children?
-subquestion: |
-  [TK list of all the children who are a) named and b) biological issue of
-  Defendant. This is the world of kids who COULD be eligible for a new child
-  support order but MIGHT not be, because there is already one in existence.
-yesno: existing_order
+comment: |
+  question: |
+    Do you have an existing child support order with regards to any of these children?
+  subquestion: |
+    [TK list of all the children who are a) named and b) biological issue of
+    Defendant. This is the world of kids who COULD be eligible for a new child
+    support order but MIGHT not be, because there is already one in existence.
+  yesno: existing_order
 ---
-event: mb_kick_out_user_existing_order
-question: |
-  We are sorry.
-subquestion: |
-  This interview is not for you. DOES ANYONE NEED TO SEE THIS SCREEN OR WILL THE LOGIC JUST MAKE IT SO YOU NEVER SEE THIS INTERVIEW IF YOU AREN'T ELIGIBLE?
+comment: |
+  event: mb_kick_out_user_existing_order
+  question: |
+    We are sorry.
+  subquestion: |
+    This interview is not for you. DOES ANYONE NEED TO SEE THIS SCREEN OR WILL THE LOGIC JUST MAKE IT SO YOU NEVER SEE THIS INTERVIEW IF YOU AREN'T ELIGIBLE?
 ---
 id: interview_order_Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
 code: |
