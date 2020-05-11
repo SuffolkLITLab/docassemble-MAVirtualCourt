@@ -161,16 +161,16 @@ fields:
       - I don't want to say: "neither"
 ---
 question: |
-  Defendant Insurance Expenses
+  Defendant's Insurance Expenses
 subquestion: |
   Tell us more about the defendant's expenses, the best that you can.
 fields:
   - note: |
-      **Does ${ other_parties[0] } pay for health insurance?**
+      **Does ${other_parties.familiar()} pay for health insurance?**
   - no label: other_has_health_insurance
     datatype: yesnoradio
   - note: |
-      How much does ${ other_parties[0] } pay for health insurance?
+      How much does ${other_parties.familiar()} pay for health insurance?
     show if: other_has_health_insurance
   - no label: other_parties[0].health_insurance
     datatype: currency
@@ -182,11 +182,11 @@ fields:
       - "Monthly": monthly
   - note: |
       <hr/>
-      **Does ${ other_parties[0] } pay for dental and/or vision insurance?**
+      **Does ${other_parties.familiar()} pay for dental and/or vision insurance?**
   - no label: other_has_dental
     datatype: yesnoradio
   - note: |
-      How much does ${ other_parties[0] } pay for dental and/or vision insurance?
+      How much does ${other_parties.familiar()} pay for dental and/or vision insurance?
     show if: other_has_dental
   - no label: other_parties[0].dental_vision_insurance
     datatype: currency
@@ -201,11 +201,11 @@ question: |
   Defendant's childcare expenses
 fields:
   - note: |
-      **Does ${ other_parties[0] } pay for childcare expenses for the children you share?**
+      **Does ${other_parties.familiar()} pay for childcare expenses for the children you share?**
   - no label: other_has_childcare
     datatype: yesnoradio
   - note: |
-      How much does ${ other_parties[0] } pay for those expenses?
+      How much does ${other_parties.familiar()} pay for those expenses?
     show if: other_has_childcare
   - no label: other_parties[0].child_care_expenses
     datatype: currency
@@ -217,11 +217,11 @@ fields:
       - "Monthly": monthly
   - note: |
       <hr/>
-      **Does the Defendant pay child support?**
+      **Does ${other_parties.familiar()} pay child support?**
   - no label: defendant_pays_child_support
     datatype: yesnoradio
   - note: |
-      How much does the defendant pay in other child support obligations?
+      How much does ${other_parties.familiar()} pay in other child support obligations?
     show if: defendant_pays_child_support
   - no label: other_parties[0].child_care_other
     datatype: currency
@@ -233,31 +233,34 @@ fields:
     show if: defendant_pays_child_support
 ---
 question: |
-  Defendant Income
+  Defendant's Income
 subquestion: |
-  "Gross income" means your income before taxes are taken
-  out of your check.  You can enter either your weekly or monthly income. Click "Help" to learn more. 
   As far as you know, what is the defendant's gross income? "gross" means before taxes.  You can give either weekly or monthly income.
+  
+  Put in the best information you know, even if you do not know the
+  exact amount. Click "I don't know" if you don't have any idea.
 fields:
-  - note: |
-      **As far as you know, what is the defendant's gross (pre-tax) income? todo: add weekly or monthly variable SMEs to give examples of non-work income**
-  - no label: other_parties[0].gross_income
+  - I don't know ${other_parties.familiar()}'s income amount.: dont_know_op_income
+    datatype: yesno
+  - Income: other_parties[0].gross_income
     datatype: currency
+    hide if: dont_know_op_income
   - "Weekly or monthly": other_parties[0].gross_income_interval
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
+    hide if: dont_know_op_income      
 ---
 question: |
   Defendant's Work
 fields:
   - note: |
-      **Is the Defendant gainfully employed (earning money from their work)?**
+      **Is ${other_parties.familiar()} gainfully employed (earning money from their work)?**
   - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---
 question: |
-  Defendant is not working
+  ${other_parties.familiar()} is not working
 subquestion: |
   Generally, parents have a responsibility to contribute to the 
   support of their children. So the court can order a parent to pay a 
@@ -269,7 +272,7 @@ continue button field: defendant_not_working_warning_given
 question: |
   Defendant's Work
 subquestion: |
-  What is the defendant's...
+  Where and how does ${other_parties.familiar()} work?
 fields:
   - 'Occupation': other_parties[0].occupation
   - 'Employer': other_parties[0].employer
@@ -281,13 +284,13 @@ fields:
 question: |
   Signing Under Oath
 subquestion: |
-  This form must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form.
+  Your child support affidavit must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form.
 fields:
   - no label: users[0].states_above_true
     datatype: checkboxes
     minlength: 1
     choices:
-      - I promise that my answers on this form are the truth under penalties of purjury
+      - I promise that my answers on this form are the truth under penalties of perjury
     validation messages:
       minlength: |
         You cannot continue unless you agree to tell the truth.
@@ -353,11 +356,11 @@ question: |
   Child support
 fields:
   - note: |
-      **Are you ordered to pay child support for  any children other than [TK child(ren) from list of children tagged for this interview]**
+      **Are you ordered to pay child support for  any children other than ${all_support_children}?**
   - no label: pays_child_support
     datatype: yesnoradio
   - note: |
-      How much do you pay in child support obligations?
+      How much do you pay in child support?
     show if: pays_child_support
   - no label: users[0].child_care_other
     datatype: currency
@@ -393,12 +396,18 @@ help: |
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
 ---
 question: |
-  Do you have an existing child support order with regards to any of these children?
+  Did a judge already approve a child support order for any of these children?
 subquestion: |
-  [TK list of all the children who are a) named and b) biological issue of
-  Defendant. This is the world of kids who COULD be eligible for a new child
-  support order but MIGHT not be, because there is already one in existence.
+  ${comma_and_list(all_support_children, and_string=word("or"))}
 yesno: existing_order
+---
+question: |
+  It looks like you can't request child support in this interview
+subquestion: |
+  If a judge already made a child support order for 
+  ${comma_and_list(all_support_children, and_string=word("or"))},
+  you can't use this form to change it.
+continue button field: explain_no_child_support
 ---
 comment: |
   event: mb_kick_out_user_existing_order
@@ -457,9 +466,12 @@ code: |
     other_parties[0].gross_income = DAEmpty()
     other_parties[0].gross_income_interval = ''
   else:
-    other_parties[0].occupation
-    other_parties[0].gross_income
-    other_parties[0].gross_income_interval
+    other_parties[0].occupation  
+    if dont_know_op_income:
+      other_parties[0].gross_income = DAEmpty()
+      other_parties[0].gross_income_interval = DAEmpty()
+    # other_parties[0].gross_income
+    # other_parties[0].gross_income_interval
   # insurance
   if not other_has_health_insurance:
     other_parties[0].health_insurance = DAEmpty()
