@@ -352,15 +352,21 @@ fields:
       - 'Superior Court': Superior Court
 comment: |
   validation code: |
-  if ((court_selection == 'Superior Court') and
-  (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
-  (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
-  (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] == False) and
-  (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] == False) and
-  (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
-  (relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] == False) and
-  (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
-  (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
+  if ((court_selection == 'Superior Court') 
+  and defendant_and_plaintiff_are_dating_or_dated 
+  and not defendant_and_plaintiff_are_parents_of_child
+  and related_by_household.all_false()
+  and not related_as_couple.any_true('engaged','past_engaged')
+  and relationship_to_defendant_married.all_false()
+  and not defendant_and_plaintiff_relationship_not_married_but_are_related:
+  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
+  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
+  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] == False) and
+  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] == False) and
+  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
+  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] == False) and
+  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
+  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
 ---
 code: |
@@ -430,6 +436,85 @@ fields:
   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
 ---
+id: 209A page 1 relationship kids
+question: |
+  Do you and ${ other_parties.familiar() } have any children together?
+yesno: defendant_and_plaintiff_are_parents_of_child
+---
+id: 209A page 1 relationship household
+question: |
+  Do you and ${ other_parties.familiar() } live in the {same household}?
+fields: 
+  - no label: related_by_household
+    datatype: checkboxes
+    choices:
+      - 'I live in the same household with ${ other_parties.familiar() } **now**': now
+      - 'I **used** to live in the same household with ${ other_parties.familiar() }': past
+    none of the above: |
+      I **never** lived in the same household with ${ other_parties.familiar() }
+terms:
+  - same household: |
+      You live in the "same household" if you:
+    
+      * live together,
+      * are roommates, or
+      * live in the same house or apartment.   
+---
+id: 209A page 1 couple relationship
+question: |
+  Were you ever a 'couple'?
+subquestion: |
+   ${ users.familiar() }, check the boxes next to any of the relationships you have with ${ other_parties.familiar() }.
+fields:
+  - no label: related_as_couple
+    datatype: checkboxes
+    choices:
+      - 'I have been dating ${ other_parties.familiar() }': dating
+      - 'We **used** to date': dated
+      - 'We are engaged': engaged
+      - 'We **used** to be engaged': past_engaged
+    none of the above: False
+  - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
+    datatype: checkboxes
+    choices:
+      - 'We are married now': now
+      - 'We used to be married': past
+    none of the above: |
+      I was never married to ${ other_parties.familiar() }.
+---
+id: 209A page 1 in-law relationship
+question: |
+  Related by marriage
+subquestion: |
+  You said you were never married to ${ other_parties.familiar() }. Do you have any kind of {in-law relationship}? 
+fields:
+  - 'Are you related by marriage?': related_by_marriage
+    datatype: yesnoradio
+  - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
+    show if: related_by_marriage
+terms:
+  in-law relationship: |
+    Examples of being related by marriage are in-law relationships like:
+    - * Your in-laws and steps are all related to you by marriage.
+    - * Your son-in-law and daughter-in-law are related to you by marriage.      
+    - * Your stepfather and stepmother are related to you by marriage.
+    - * Also, your your sibling's spouse is related to you by marriage.
+---
+id: 209A page 1 blood relationship
+question: |
+  Related by blood
+subquestion: |
+  Is ${ other_parties.familiar() } a {blood relative}?
+fields:
+  - '${ other_parties.familiar() } and I are {blood relative}s': related_by_blood
+    datatype: yesnoradio
+  - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
+    show if: related_by_blood
+terms: 
+  - blood relative: |
+    Examples of blood relatives:
+      Your grandparents, aunts and uncles, cousins, and grandchildren are all blood relatives. If you are a grandparent, you are related to **both** parents of your grandchild - even if they are not married.
+---
 question: |
   Other Cases
 subquestion: |
@@ -472,14 +557,54 @@ code: |
     if user_is_minor_plaintiff:
       refer_to_advocate
     plaintiff_assistant_name
-  if relationship_to_defendant_marriage_or_kids.all_false():
-    if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
-      defendant_relationship_to_plaintiff_is = DAEmpty()
-    relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
-    if relationship_to_defendant_unmarried.all_false():
-      refer_to_258E_resources
+
+  # plaintiff defendant relationship
+  defendant_and_plaintiff_are_parents_of_child
+  related_by_household
+  related_as_couple 
+  if relationship_to_defendant_married['past']:
+    defendant_and_plaintiff_relationship_not_married_but_are_related = True
+    if defendant_and_plaintiff_are_parents_of_child:
+      defendant_relationship_to_plaintiff_is = "child's other parent and "
+    else:
+      defendant_relationship_to_plaintiff_is = ''
+    defendant_relationship_to_plaintiff_is += "ex-spouse." 
+  if relationship_to_defendant_married['now']:
+    defendant_and_plaintiff_relationship_not_married_but_are_related = False
+    defendant_relationship_to_plaintiff_is = ''
+  if relationship_to_defendant_married.all_false():
+    if defendant_and_plaintiff_are_parents_of_child:
+      defendant_and_plaintiff_relationship_not_married_but_are_related = True
+      defendant_relationship_to_plaintiff_is = "child's other parent."
+    else:
+      defendant_and_plaintiff_relationship_not_married_but_are_related = related_by_marriage
+      if not related_by_marriage:
+        defendant_and_plaintiff_relationship_not_married_but_are_related = related_by_blood
+        if not related_by_blood:
+          defendant_relationship_to_plaintiff_is = ''
+  if related_by_household['now']:
+    if not relationship_to_defendant_married['now'] and not defendant_and_plaintiff_relationship_not_married_but_are_related:
+      defendant_and_plaintiff_are_not_related_but_live_together = True
+    else:
+      defendant_and_plaintiff_are_not_related_but_live_together = False
   else:
-    defendant_relationship_to_plaintiff_is = DAEmpty()
+    defendant_and_plaintiff_are_not_related_but_live_together = False
+
+  defendant_and_plaintiff_used_to_live_together = related_by_household['past']
+  
+  if related_as_couple.any_true('dating','dated','engaged','past_engaged'):
+    defendant_and_plaintiff_are_dating_or_dated = True
+  else:
+    defendant_and_plaintiff_are_dating_or_dated = False
+
+  # if relationship_to_defendant_marriage_or_kids.all_false():
+  #   if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
+  #     defendant_relationship_to_plaintiff_is = DAEmpty()
+  #   relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
+  #   if relationship_to_defendant_unmarried.all_false():
+  #     refer_to_258E_resources
+  # else:
+  #   defendant_relationship_to_plaintiff_is = DAEmpty()
 
   # if court_selection == "Superior Court":
   #   district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
@@ -568,16 +693,16 @@ attachment:
       - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
-      - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
-      - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] }
+      - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
+      - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
       - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
-      - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] }
+      - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
       - "defendant_is_major": ${ defendant_is_major }
-      - "defendant_and_plaintiff_are_parents_of_child": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] }
-      - "defendant_and_plaintiff_are_not_related_but_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] }
-      - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
-      - "defendant_and_plaintiff_are_dating_or_dated": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] }
+      - "defendant_and_plaintiff_are_parents_of_child": ${ defendant_and_plaintiff_are_parents_of_child }
+      - "defendant_and_plaintiff_are_not_related_but_live_together": ${ defendant_and_plaintiff_are_not_related_but_live_together }
+      - "defendant_and_plaintiff_used_to_live_together": ${defendant_and_plaintiff_used_to_live_together }
+      - "defendant_and_plaintiff_are_dating_or_dated": ${ defendant_and_plaintiff_are_dating_or_dated }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
@@ -635,16 +760,16 @@ attachment:
       - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
-      - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
-      - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] }
+      - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
+      - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
       - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
-      - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] }
+      - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
       - "defendant_is_major": ${ defendant_is_major }
-      - "defendant_and_plaintiff_are_parents_of_child": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] }
-      - "defendant_and_plaintiff_are_not_related_but_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] }
-      - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
-      - "defendant_and_plaintiff_are_dating_or_dated": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] }
+      - "defendant_and_plaintiff_are_parents_of_child": ${ defendant_and_plaintiff_are_parents_of_child }
+      - "defendant_and_plaintiff_are_not_related_but_live_together": ${ defendant_and_plaintiff_are_not_related_but_live_together }
+      - "defendant_and_plaintiff_used_to_live_together": ${ defendant_and_plaintiff_used_to_live_together }
+      - "defendant_and_plaintiff_are_dating_or_dated": ${ defendant_and_plaintiff_are_dating_or_dated }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
