@@ -100,7 +100,7 @@ code: |
 
   ########################## Page 1
   defendant_and_plaintiff_are_parents_of_child
-  relationship_to_defendant_unmarried
+  # relationship_to_defendant_unmarried
   
   complaint_209A_labeled_page10003 # Page 1
 
@@ -135,6 +135,8 @@ code: |
   if plaintiff_has_minor_children and wants_child_support_yes:
     if not existing_order:
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
+    else:
+      explain_no_child_support
 
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False

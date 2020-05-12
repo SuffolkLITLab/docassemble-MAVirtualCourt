@@ -29,6 +29,8 @@ objects:
 features:
   question help button: True
 ---
+id: isolated_test_download
+event: affidavit_download
 comment: |
   Hopefully this screen will be unnecessary when merged in to parent
 # mandatory: True

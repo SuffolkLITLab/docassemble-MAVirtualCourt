@@ -100,7 +100,9 @@ continue button field: impoundment_intro
 ---
 code: |
   # Used to trigger asking the rest of the questions on this form in the 209A_package
-  asked_for_impoundment =  impound_personal_information or impound_case_record_information
+  impound_personal_information
+  impound_case_record_information
+  asked_for_impoundment = impound_personal_information or impound_case_record_information
 ---
 question: |
   Keeping information private (impoundment)
@@ -198,6 +200,7 @@ subquestion: |
 yesno: impound_information_ex_parte
 ---
 progress: 100
+event: download_impoundment
 #mandatory: True
 question: |
   Placeholder download screen

@@ -1,0 +1,26 @@
+include:
+ - 209A_affidavit.yml
+---
+mandatory: True
+id: logic_controller
+code: |
+  # Parts we're skipping
+  basic_questions_intro_screen = True
+  users[0].name.first = "Pat"
+  users[0].name.last = "Kim"
+  other_parties[0].name.first = "Sam"
+  other_parties.there_is_another = False
+  defendant = other_parties[0]
+  
+  # Not skipping
+  complaint_209A_Affidavit
+  signature_date
+  complaint_209A_Affidavit_preview_question # Pre-canned preview screen
+  basic_questions_signature_flow
+  users[0].signature
+  
+  # Final screen
+  affidavit_download
+  
+  # Access from outside (remove `mandatory`)
+  affidavit_test_complete = True

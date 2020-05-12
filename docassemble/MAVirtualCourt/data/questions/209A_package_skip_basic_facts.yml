@@ -32,9 +32,9 @@ mandatory: True
 code: |
   relationship_to_defendant_marriage_or_kids = DADict('relationship_to_defendant_marriage_or_kids',there_are_any=True, there_is_another=False)
   relationship_to_defendant_unmarried = DADict('relationship_to_defendant_unmarried',there_are_any=True, there_is_another=False)
-  other_parties[0].race = DADict('other_parties[0].race', there_are_any=True,there_is_another=False)
-  other_parties[0].physical_other = DADict('other_parties[0].physical_other', there_are_any=True, there_is_another=False)
-  other_parties[0].physical_build = DADict('other_parties[0].physical_build', there_are_any=True, there_is_another=False)
+  other_parties[0].race = DADict('other_parties[0].race', auto_gather=False, gathered=True)
+  other_parties[0].physical_other = DADict('other_parties[0].physical_other', auto_gather=False, gathered=True)
+  other_parties[0].physical_build = DADict('other_parties[0].physical_build', auto_gather=False, gathered=True)
 ---
 mandatory: True
 code: |
@@ -338,7 +338,7 @@ code: |
 sets: skip_impound
 scan for variables: False
 code: |
-  impoundment_intro
+  impoundment_intro = True
   impound_personal_information = True
   impound_case_record_information = True
   case_record_information_to_be_impounded = "All information about the case"
