@@ -43,23 +43,49 @@ code: |
   other_cases[i].docket_number
   other_cases[i].complete = True
 ---
+Comment: |
+  Placeholder sentence for escape button.  
+  Text to go in Basic Questions intro: 
+  We can help you ask the court for a {209A restraining order}. We will ask you questions and use your answers to put together {all the forms} you need.
+  If you are not safe at any time you are on this website, use the [FILE: MAVirtualCourts.esc-en.png](https://google.com:kittens) to jump to Google.com.
+
 question: |
-  Getting a 209A Restraining Order
-subquestion: |
-  [Placeholder text from Caroline]  
+   Ask the court for a 209A Prevention of Abuse Order
+subquestion: | 
+  **If you are in danger right now, call 911.**
+  
+  Please make sure you are in a {safe place}.
+  
+  An Abuse Prevention Order can help protect you from an abusive partner, a family member, or someone in your household. In Massachusetts, we often call this order a {209A restraining order}.
+ 
+    
+  If the abusive person does not obey the order, they  “violate” it. It is a crime to violate a 209A restraining order and the police can arrest them. This order can also order the abusive person to do things like pay utility bills or child support.
+  
+    A restraining order is only a part of your overall safety plan. Speak with a domestic violence advocate for more help with safety planning. Call [Safelink](https://www.casamyrna.org/get-support/safelink): 1-877-785-2020.
+terms:
+ - 209A restraining order: |
+    People call these court orders, "Abuse Prevention Orders","restraining orders", "209A orders" and "protective orders".
+    See [How can a 209A order help me?](https://www.masslegalhelp.org/domestic-violence/how-can-209a-help-me)
+ - all the forms: |
+    See the checklists on MassLegalHelp for a list of the forms you need to ask the court for protection:
+    * [Asking for a 209A restraining order](https://www.masslegalhelp.org/domestic-violence/209a-forms-checklist), or
+    * [Asking for a 209A restraining order if you have children under 18](https://www.masslegalhelp.org/domestic-violence/209a-w-children-forms-checklist)
+ - safe place: |
+     Please be sure you are on a safe computer, that you cannot be interrupted and you will be ok to spend about an hour answering questions.
+  
 continue button field: main_209A_package_intro
 ---
-comment: |
-  Screening question placeholder
+# comment: |
+#  Screening question placeholder
 question: |
-  Who do you need this order to protect?
+  Who needs a 209A restraining order in this case?
 fields:
   - no label: who_protecting_screener
     datatype: radio
     choices:
-      - Myself: me
-      - Myself and my children: me and children
-      - Someone else: someone else
+      - I need this order to protect me.: me
+      - I need the order to protect me and my children.: me and children
+      - I am helping someone else ask for this order.: someone else
 ---
 comment: |
   Kate Barry, family law SME, has compiled a lot of bugs here: https://drive.google.com/drive/u/0/shared-with-me
@@ -72,7 +98,7 @@ comment: |
   There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
 ---
 question: |
-  Who do you need protection from?  
+  Who do you need the order to protect you from?  
 fields:
   - First name: other_parties[0].name.first
   - Middle name: other_parties[0].name.middle
@@ -85,20 +111,23 @@ fields:
       name_suffix()  
 ---
 question: |
-  What to expect.
+  What to expect
 subquestion: |
-  When you ask the court for an abuse prevention order, the judge can do three things.
+  When you ask the court for an abuse prevention order, the judge can do 3 things.
 
-  1.  Deny your request. Refuse to give you a restraining order.  The Defendant will not get any notice that you asked the court for a restraining order.
+  **1.  Deny your request.** Refuse to give you a restraining order. ${other_parties.familiar()} will not get any notice that you asked the court for a restraining order.
 
-  2. Make a temporary order. The judge will decide what you need to protect you from  the Defendant until the 2nd hearing.  
-  The judge will not order  the Defendant  to pay support or other money at this 1st hearing.  
-  The 2nd hearing will be within 10 days of the temporary order. At the 2nd hearing the judge can hear from both you and the Defendant  at the same time.
+  **2. {Make a temporary order}.** The 2nd hearing will be within 10 days of the temporary order. At the 2nd hearing the judge can hear from both you and ${other_parties.familiar()} at the same time.
 
-  3.  Not make any order until they can hear from both you and the Defendant at the same time.  The judge may decide not to make an order at the first hearing if they think you will be safe from  "immediate danger of abuse" from  the Defendant.  If the judge decides not to make an order and you decide to go to a hearing where the judge can hear from both of you,  the Defendant will find out you have asked for a restraining order.
+  **3. {Not make any order}** until they can hear from both you and ${other_parties.familiar()} at the same time.  If the judge decides **not** to make an order and you decide to go to a hearing where the judge can hear from both of you,  ${other_parties.familiar()} will find out you have asked for a restraining order.
   
-  Please contact a domestic violence advocate at (877) 785-2020 if you want to talk to someone more about what to expect in this process.
+  Talk to a domestic violence advocate to learn more about what to expect. Call [SafeLink](https://www.casamyrna.org/get-support/safelink): 877-785-2020.
 continue button field: user_saw_what_to_expect
+Terms:
+  Make a temporary order: |
+    The judge will decide what you need to protect you from ${other_parties.familiar()} until the 2nd hearing. The judge will not order ${other_parties.familiar()} to pay support or other money at this 1st hearing. The 2nd hearing will be within 10 days of the temporary order. At the 2nd hearing the judge can hear from both you and ${other_parties.familiar()} at the same time.
+  Not make any order: |
+    The judge may decide not to make an order at the first hearing if they think you will be safe from "immediate danger of abuse" from ${other_parties.familiar()}.  If the judge decides not to make an order and you decide to go to a hearing where the judge can hear from both of you, ${other_parties.familiar()} will find out you have asked for a restraining order.
 ---
 question: |
   Tell us about the other cases you have had with ${other_parties.familiar()}
@@ -144,17 +173,44 @@ subquestion: |
   Have you ever had any other cases with ${other_parties.familiar()} for divorce, annulment, separate support, or abuse prevention?
 yesno: plaintiff_and_defendant_other_case_yes
 ---
-question: |
-  Parent or Guardian
-subquestion: |
-  When a plaintiff is under 18, the courts usually want their parent or guardian to file their request for a restraining order for them.
-  Are you the Plaintiff's parent or guardian?
-noyes: user_is_minor_plaintiff
 
+# question: |
+#  Parent or Guardian
+# subquestion: |
+#  When a plaintiff is under 18, the courts usually want their parent or guardian to file their request for a restraining order for them.
+#  Are you the Plaintiff's parent or guardian?
+# noyes: user_is_minor_plaintiff
 ---
-event: refer_to_258E_resources
+code: |
+  if who_protecting_screener != 'someone else' and plaintiff_is_major_no:
+    user_is_minor_plaintiff = True
+---
+# event: refer_to_258E_resources
+# question: |
+ # THIS IS PLACEHOLDER SCREEN FOR PEOPLE WHO SHOULD BE FILLING OUT 258E, NOT 209A. SME'S TO PROVIDE LANGUAGE. YOU GET HERE IF YOU CHECK 'NONE OF THE ABOVE' ON THE JURISDICTIONAL QUESTIONS OR YOU CLICK NONE OF THE ABOVE ON THE 'HOW DID THE DEFENDANT ABUSE YOU' QUESTIONS
+event: relationship_does_not_qualify # refer_to_258E_resources
 question: |
-  THIS IS PLACEHOLDER SCREEN FOR PEOPLE WHO SHOULD BE FILLING OUT 258E, NOT 209A. SME'S TO PROVIDE LANGUAGE. YOU GET HERE IF YOU CHECK 'NONE OF THE ABOVE' ON THE JURISDICTIONAL QUESTIONS OR YOU CLICK NONE OF THE ABOVE ON THE 'HOW DID THE DEFENDANT ABUSE YOU' QUESTIONS
+  Your relationship with ${other_parties.familiar()} may not be the kind a 209A restraining order covers. 
+
+  Speak with a domestic violence advocate to be sure. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. They may suggest that you ask the court for a [258E Harassment Prevention Order](https://www.masslegalhelp.org/domestic-violence/harassment-prevention-orders)."
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+Comment: |
+  This question should probably go in the Affidavit .yml if we decide to KEEP the none of the above option when listing types of abuse.
+event: abuse_does_not_qualify
+question: |
+  In Massachusetts the law about abuse focuses on **physical** abuse. 
+
+  People **can** abuse you emotionally, financially, psychologically, and spiritually, but you can only ask the court for a 209A restraining order if the abusive person:    
+
+  - **hurt** you physically;
+  - **tried** to hurt you physically;
+  - **made you scared** of getting physically hurt; or
+  - **forced you** to have sex or sexual contact, or **made you** have sex or sexual contact by threatening you or making you feel that you have no choice.
+
+   A 209A restraining order is not the only way to stop someone from abusing you. If someone is abusing you in **any** way, speak with a domestic violence advocate for help. They can help you find ways to be safe. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. 
 buttons:
   - Exit: exit
   - Restart: restart
@@ -163,12 +219,25 @@ include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
 question: |
-  Relationship to Plaintiff
-subquestion: |
-  How are you related to the ${users.familiar()}?
+  How are you related to ${users.familiar()}?
 fields:
-  - 'What is your name?': plaintiff_assistant_name
-  - 'Who are you in relationship to the plaintiff?': plaintiff_assistant_relationship_to_plaintiff
+  - "I am  ${users.familiar()}'s": plaintiff_assistant_relationship_to_plaintiff
+    datatype: radio
+    choices:
+      - Parent: parent
+      - Guardian: guardian
+      - Advocate: advocate
+      - Other: other
+  #- 'How are you related?': plaintiff_assistant_relationship_to_plaintiff
+  #  show if:
+  #    code: |
+  #      plaintiff_assistant_relationships_to_plaintiff == 'other'
+  - 'My name is': plaintiff_assistant_name   
+---
+# code: |
+#  if plaintiff_is_major_no:
+#    if not plaintiff_assistant_relationships_to_plaintiff == 'other':
+#      plaintiff_assistant_relationship_to_plaintiff = plaintiff_assistant_relationships_to_plaintiff
 ---
 question: |
   More facts about ${other_parties.familiar()}
@@ -369,12 +438,22 @@ code: |
   defendant_and_plaintiff_are_parents_of_child = relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child']
 ---
 question: |
-  Your Age?
-subquestion: |
-  Are you eighteen or older?
-fields:
-  - 'I am eighteen or older': plaintiff_is_major_yes
-    datatype: yesnoradio # consensus seems to be that if plaintiff is under 18 AND ISN'T DOING THIS WITH A PARENT OR GUARDIAN, they should get kicked out and referred to an advocate. Wait to hear from KB after talking to CR and LG. doing these for minors is a whole other can of worms and there is a big risk that doing it wrong does more harm than good. Also, the consensus is that the population of kids trying to do 209As without their parents is small.
+  % if who_protecting_screener == "someone else":
+  Is ${users.familiar()} at least 18?
+  % else:
+  Are you at least 18 years old?
+  % endif
+yesno: plaintiff_is_major_yes
+help:
+  label: Why does this matter?
+  heading: We can only help people under 18 if a parent, guardian, or advocate files for them
+  content: |
+    Our guide can only help if a parent, guardian, or advocate is also helping and files for you.
+   
+
+#fields:
+#  - 'I am eighteen or older': plaintiff_is_major_yes
+#    datatype: yesnoradio # consensus seems to be that if plaintiff is under 18 AND ISN'T DOING THIS WITH A PARENT OR GUARDIAN, they should get kicked out and referred to an advocate. Wait to hear from KB after talking to CR and LG. doing these for minors is a whole other can of worms and there is a big risk that doing it wrong does more harm than good. Also, the consensus is that the population of kids trying to do 209As without their parents is small.
 ---
 question: |
   Weapons
@@ -397,10 +476,28 @@ under: |
   This is important so the police can take Defendant's guns.
 ---
 question: |
-  You are seeing this screen because the Plaintiff is under 18.  
+  % if who_protecting_screener == 'someone else':
+  Because ${users.familiar()} is under 18
+  % else:
+  Because you are under 18
+  % endif
 subquestion: |
-  Judges and other court employees are called "mandated reporters."  That means that if they think a child under 18 is being abused or neglected, they are supposed to report the case to the Department of Children and Families.  It is possible that this will happen in your case. 
+  Judges and other court employees are "mandated reporters." 
+  
+  If they think someone under 18 is being abused, they must report it to the Department of Children and Families.
+  
+  % if who_protecting_screener == 'someone else':
+  It is possible this will happen in ${users.familiar()}'s case.
+  % else:
+  It is possible this will happen in ${users.familiar()}'s case.
+  % endif
 continue button field: dcf_warning_given
+---
+#question: |
+ # You are seeing this screen because the Plaintiff is under 18.  
+# subquestion: |
+ # Judges and other court employees are called "mandated reporters."  That means that if they think a child under 18 is being abused or neglected, they are supposed to report the case to the Department of Children and Families.  It is possible that this will happen in your case. 
+# continue button field: dcf_warning_given
 ---
 question: |
   Your relationship to the Defendant
@@ -442,36 +539,63 @@ fields:
 ---
 event: refer_to_advocate
 question: |
-  We are sorry, you should complete this interview with an advocate.
+ Since
+ % if who_protecting_screener == "someone else":
+ ${users.familiar()} is not 18: 
+ % else:
+ you are not 18:
+ % endif.
 subquestion: |
-  Unfortunately, this tool is not currently available to plaintiffs under 18 filing unless they are filing with a parent or guardian.  You may still be able to file directly by calling your local courthouse or police station when the courts are closed, but it could be complicated.
-under: |
-  Since you are under 18, the Department of Children and Families may get involved if you file a restraining order. You can read more about getting a restraining order while you are under 18 at https://www.masslegalhelp.org/domestic-violence/abuse-prevention-orders/under-18.  You can also contact a 24/7 domestic violence hotline at (877) 785-2020 to talk to someone about what's going on.  # Someone at Children's Law Center is getting me some additional child appropriate resources here. 
+  Our guide can only help if a parent, guardian, or advocate is helping 
+  % if who_protecting_screener == "someone else":
+   ${users.familiar()} answer the questions we ask and files for ${users.familiar()}.
+  % else:
+  you answer the questions we ask and files for you.
+  % endif
+  
+  To get help from an advocate, call [Safelink](https://www.casamyrna.org/get-support/safelink): 
+
+  (877) 785-2020. 
+  They have a 24-hour hotline. 
+  
+  To learn more about  [getting a restraining order while you are under 18](https://www.masslegalhelp.org/domestic-violence/abuse-prevention-orders/under-18), see MassLegalHelp. 
 buttons:
   - Exit: exit
   - Restart: restart
+---
+# event: refer_to_advocate
+# question: |
+ # We are sorry, you should complete this interview with an advocate.
+# subquestion: |
+#  Unfortunately, this tool is not currently available to plaintiffs under 18 filing unless they are filing with a parent or guardian.  You may still be able to file directly by calling your local courthouse or police station when the courts are closed, but it could be complicated.
+# under: |
+#  Since you are under 18, the Department of Children and Families may get involved if you file a restraining order. You can read more about getting a restraining order while you are under 18 at https://www.masslegalhelp.org/domestic-violence/abuse-prevention-orders/under-18.  You can also contact a 24/7 domestic violence hotline at (877) 785-2020 to talk to someone about what's going on.  # Someone at Children's Law Center is getting me some additional child appropriate resources here. 
+# buttons:
+#  - Exit: exit
+#  - Restart: restart
 ---
 id: complaint_209A_labeled_page10003
 code: |
   allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
   preferred_court = interview_metadata['complaint_209A_labeled_page10003']['preferred court']
   # basic_questions_intro_screen 
-  user_saw_what_to_expect
+  # user_saw_what_to_expect
   # users[0].name.first
   # plaintiff_is_major_yes # Ask for age
   # other_parties[0].name.first
 
   # defendant_has_alias # We ask this towards end
 
-  if plaintiff_is_major_yes == True:
-    plaintiff_is_major_no = False
-    plaintiff_assistant_name = DAEmpty()
-  else:
-    plaintiff_is_major_no = True
-    dcf_warning_given
-    if user_is_minor_plaintiff:
-      refer_to_advocate
-    plaintiff_assistant_name
+  # if plaintiff_is_major_yes == True:
+  #  plaintiff_is_major_no = False
+  #  plaintiff_assistant_name = DAEmpty()
+  # else:
+  #  plaintiff_is_major_no = True
+  #  dcf_warning_given
+  #  if user_is_minor_plaintiff:
+  #    refer_to_advocate
+  #  plaintiff_assistant_name
+  
   if relationship_to_defendant_marriage_or_kids.all_false():
     if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
       defendant_relationship_to_plaintiff_is = DAEmpty()
@@ -571,6 +695,7 @@ attachment:
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] }
       - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
       - "defendant_is_major": ${ defendant_is_major }
@@ -638,6 +763,7 @@ attachment:
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] }
       - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
       - "defendant_is_major": ${ defendant_is_major }
