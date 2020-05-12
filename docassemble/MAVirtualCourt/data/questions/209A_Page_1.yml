@@ -136,7 +136,6 @@ subquestion: |
 list collect: True
 fields:
   - Court name: other_cases[i].court_name
-    required: False
   - Type of case: other_cases[i].type_of_case
     choices:
       - Divorce: divorce
@@ -160,12 +159,6 @@ subquestion: |
 
   Do you want to add another case?
 yesno: other_cases.there_is_another
----
-#question: |
-#  Children
-#fields:
-#  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
-#    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
 ---
 code: |
   plaintiff_has_minor_children = plaintiff_has_children_parent_of or plaintiff_has_children_cares_for
@@ -472,6 +465,8 @@ help:
 question: |
   Weapons
 subquestion: |
+  The police need to know if ${users.familiar()} has guns for their safety.
+
   Check the following if they are true.
 fields:
   - 'Defendant has a gun': defendant_weapons_guns
@@ -486,8 +481,6 @@ fields:
     show if:
       variable: defendant_weapons_guns
       is: True
-under: |
-  This is important so the police can take Defendant's guns.
 ---
 question: |
   % if who_protecting_screener == 'someone else':
@@ -512,34 +505,34 @@ continue button field: dcf_warning_given
 # subquestion: |
  # Judges and other court employees are called "mandated reporters."  That means that if they think a child under 18 is being abused or neglected, they are supposed to report the case to the Department of Children and Families.  It is possible that this will happen in your case. 
 # continue button field: dcf_warning_given
----
-question: |
-  Your relationship to the Defendant
-subquestion: |
-  Check the boxes for the things that are true.
-fields:
-  - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_marriage_or_kids
-    datatype: checkboxes
-    choices:
-      - 'I am currently married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_married_to_each_other
-      - 'I was formerly married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_formerly_married_to_each_other
-      - 'I have a child with ${other_parties.familiar()}': defendant_and_plaintiff_are_parents_of_child
----
-question: |
-   Your relationship to the Defendant
-subquestion: |
-  Check the boxes for the things that are true.
-fields: 
-  - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_unmarried
-    datatype: checkboxes
-    choices:
-      - 'I am not married to ${other_parties.familiar()}, but we are related by blood or marriage': defendant_and_plaintiff_relationship_not_married_but_are_related
-      - 'I live with ${other_parties.familiar()}': defendant_and_plaintiff_are_not_related_but_live_together
-      - 'I used to live with ${other_parties.familiar()}': defendant_and_plaintiff_used_to_live_together
-      - 'I dated or used to date ${other_parties.familiar()}': defendant_and_plaintiff_are_dating_or_dated
-      - 'I am or was engaged to ${other_parties.familiar()}': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
-  - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
-    show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
+# ---
+# question: |
+#   Your relationship to the Defendant
+# subquestion: |
+#   Check the boxes for the things that are true.
+# fields:
+#   - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_marriage_or_kids
+#     datatype: checkboxes
+#     choices:
+#       - 'I am currently married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_married_to_each_other
+#       - 'I was formerly married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_formerly_married_to_each_other
+#       - 'I have a child with ${other_parties.familiar()}': defendant_and_plaintiff_are_parents_of_child
+# ---
+# question: |
+#    Your relationship to the Defendant
+# subquestion: |
+#   Check the boxes for the things that are true.
+# fields: 
+#   - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_unmarried
+#     datatype: checkboxes
+#     choices:
+#       - 'I am not married to ${other_parties.familiar()}, but we are related by blood or marriage': defendant_and_plaintiff_relationship_not_married_but_are_related
+#       - 'I live with ${other_parties.familiar()}': defendant_and_plaintiff_are_not_related_but_live_together
+#       - 'I used to live with ${other_parties.familiar()}': defendant_and_plaintiff_used_to_live_together
+#       - 'I dated or used to date ${other_parties.familiar()}': defendant_and_plaintiff_are_dating_or_dated
+#       - 'I am or was engaged to ${other_parties.familiar()}': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
+#   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
+#     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
 ---
 id: 209A page 1 relationship kids
 question: |
@@ -579,6 +572,7 @@ fields:
       - 'We are engaged': engaged
       - 'We **used** to be engaged': past_engaged
     none of the above: False
+    required: False
   - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
     datatype: checkboxes
     choices:
@@ -808,6 +802,13 @@ code: |
 
   complaint_209A_labeled_page10003 = True
 ---
+code: |
+  plaintiff_and_defendant_other_case_description = \
+    comma_and_list([case.court_name + ' (' + \
+      case.type_of_case + ') ' + \
+      showifdef('case.date') + ' ' + \
+      showifdef('case.docket_number') for case in other_cases])
+---
 continue button field: complaint_209A_labeled_page10003_preview_question
 question: |
   Placeholder preview screen
@@ -877,6 +878,8 @@ attachment:
       - "order_other_relief_yes": ${ order_other_relief_yes }
       - "other_relief": ${ other_relief }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
+      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description}
+
 ---
 #mandatory: True
 question: |
@@ -913,7 +916,6 @@ attachment:
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
       - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
       - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
-      - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
       - "defendant_is_major": ${ defendant_is_major }
@@ -924,6 +926,7 @@ attachment:
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
+      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description}
       - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }

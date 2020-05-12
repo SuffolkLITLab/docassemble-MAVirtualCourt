@@ -494,10 +494,6 @@ question: |
 subquestion: |
   Please provide the following information about ${other_parties.familiar()}.
 fields:
-  - ${other_parties.familiar()}'s Birthplace: other_parties[0].birthplace
-    required: False
-  - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
-    required: False
   - 'Does ${other_parties.familiar()} understand English?': other_parties[0].understands_english
     datatype: yesnoradio
   - 'What languages other than English does ${other_parties.familiar()} speak?': other_parties[0].language_other
@@ -512,6 +508,10 @@ fields:
     required: False
     help: |
       This information is used so the police can find the right ${other_parties.familiar()} if other people share his name
+  - ${other_parties.familiar()}'s Birthplace: other_parties[0].birthplace
+    required: False
+  - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
+    required: False
 ---
 question: |
   Information for Service
@@ -528,10 +528,12 @@ fields:
       is: True
   - 'Does ${other_parties.familiar()} have access to guns, ammunition, a license to carry, or an FID card?': other_parties[0].gun_license_carry_possess_yes
     datatype: yesnoradio
+    default: ${already_know_defendant_has_guns}
   - 'Describe which of the above ${other_parties.familiar()} has access to': other_parties[0].gun_license_carry_possess
     show if:
       variable: other_parties[0].gun_license_carry_possess_yes
       is: True
+    default: ${gun_description}
   - 'Does ${other_parties.familiar()} have any mental health problems?': other_parties[0].psychiatric_emotional_problems_yes
     datatype: yesnoradio
   - 'What type of mental health problems?': other_parties[0].psychiatric_emotional_problems
@@ -756,6 +758,19 @@ subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
    ${defendantinformation209A0008_attachment_preview}
+---
+code: |
+  already_know_defendant_has_guns = defendant_weapons_guns or defendant_weapons_ammunition or defendant_weapons_firearms_identification_card or defendant_weapons_license_to_carry
+  gun_description_temp = []
+  if defendant_weapons_guns:
+    gun_description_temp.append("guns")
+  if defendant_weapons_ammunition:
+    gun_description_temp.append("ammunition")
+  if defendant_weapons_firearms_identification_card:
+    gun_description_temp.append("a firearm ID card")
+  if defendant_weapons_license_to_carry:
+    gun_description_temp.append("a concealed carry license")
+  gun_description = comma_and_list(gun_description_temp)
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview

@@ -35,6 +35,9 @@ code: |
   other_parties[0].race = DADict('other_parties[0].race', auto_gather=False, gathered=True)
   other_parties[0].physical_other = DADict('other_parties[0].physical_other', auto_gather=False, gathered=True)
   other_parties[0].physical_build = DADict('other_parties[0].physical_build', auto_gather=False, gathered=True)
+  related_by_household = DADict('related_by_household', auto_gather=False, gathered=True)
+  related_as_couple = DADict('related_as_couple',auto_gather=False,gathered=True)
+  
 ---
 mandatory: True
 code: |
@@ -73,6 +76,8 @@ sets: skip_children
 scan for variables: False
 code: |
   plaintiff_has_minor_children = True
+  plaintiff_has_children_parent_of = True
+  plaintiff_has_children_cares_for = True
   children.target_number = 2
   children_cares_for.target_number = 1
   
@@ -87,7 +92,8 @@ code: |
   children_cares_for[0].name.first = "Nelly"
   children_cares_for[0].name.last = "Nibling"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
-  children_cares_for[0].defendant_is_parent = False  
+  children_cares_for[0].defendant_is_parent = False 
+  defendant_and_plaintiff_are_parents_of_child = True
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
   
   skip_children = True
@@ -97,6 +103,8 @@ scan for variables: False
 code: |
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_married_to_each_other"] = True
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_formerly_married_to_each_other"] = True
+  related_as_couple['engaged'] = True
+  related_by_household['now'] = True 
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_dating_or_dated'] = True
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
@@ -205,7 +213,14 @@ code: |
     attorneys_for_children.gathered = True
     
   A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
-  plaintiff_and_defendant_other_case_yes = False
+  plaintiff_and_defendant_other_case_yes = True
+  other_cases.auto_gather=False
+  case = other_cases.appendObject()
+  case.court_name = "Dorchester BMC"
+  case.type_of_case = "Annulment"
+  case.date = "2019"
+  case.docket_number = "19-CV-1234"
+  other_cases.gathered = True
   skip_custody_cases = True
 ---
 scan for variables: False
@@ -331,6 +346,8 @@ code: |
   users[0].workplace_phone = "555-7777"
   users[0].school_name = "Greendale"
   users[0].school_address = "123 Fake St, Boston, MA"
+  plaintiff_needs_interpreter = True
+  plaintiff_preferred_language = "American Sign Language"
   persons_authorized_confidential_information = "My best friend"
   Who_is_allowed_to_see_this_form = True
   skip_plaintiff_information = True

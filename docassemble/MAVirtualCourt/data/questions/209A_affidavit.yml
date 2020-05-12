@@ -151,14 +151,6 @@ subquestion: |
 fields:
   - 'Defendant Name': defendant
 ---
-question: |
-  Children
-subquestion: |
-  Do you have any children under eighteen?
-fields:
-  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
-    datatype: yesnoradio
----
 code: |
   incidents_of_abuse[i].year
   incidents_of_abuse[i].time_of_day
