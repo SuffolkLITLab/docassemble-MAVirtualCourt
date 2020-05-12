@@ -1,41 +1,10 @@
 ---
-include:
-  - basic-questions.yml
----
-objects:
-  - children: PeopleList.using(ask_number=True)
----
 question: |
-  How many children do you have?
+  Test
 fields:
-  - no label: children.target_number
----
-question: |
-  % if children.target_number == 1:
-  Tell us about your child
-  % else:
-  % if i == 0:
-  Tell us about your oldest child first.
-  % else:
-  You have already told us
-  about ${children.complete_elements()}.
-  Tell us about your ${ordinal(i)} child. 
-  % endif
-  % endif
-fields:
-  - First Name: children[i].name.first
-  - Middle Name: children[i].name.middle
-    required: False
-  - Last Name: children[i].name.last
-  - Suffix: children[i].name.suffix
-    required: False
-  - Birthdate: children[i].birthdate
-    datatype: date
-    min: ${ today().minus(years=18) }
-    validation messages:
-      min: |
-        The child has to be less than 18 years old.  
+  - Is it true?: myvar
+    datatype: yesnomaybe
 ---
 mandatory: True
 question: |
-  ${children}
+  Test ${myvar}

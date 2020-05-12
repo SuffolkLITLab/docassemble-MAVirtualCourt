@@ -641,7 +641,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
       - defendant_phone : ${other_parties[0].phone_number}
-      - defendant_email: ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].email}
 ---
 include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
@@ -833,7 +833,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
       - defendant_phone : ${other_parties[0].phone_number}
-      - defendant_email: ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].email}
 
 ---
 code: |

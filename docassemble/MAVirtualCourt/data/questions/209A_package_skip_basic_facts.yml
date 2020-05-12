@@ -18,6 +18,7 @@ fields:
       - Affidavit: skip_affidavit
       - Children: skip_children      
       - Custody and no-contact: skip_custody_no_contact
+      - Child support affidavit: skip_child_support
       - Visitation: skip_visitation
       - Past custody cases: skip_custody_cases
       - Orders: skip_orders
@@ -37,7 +38,7 @@ code: |
   other_parties[0].physical_build = DADict('other_parties[0].physical_build', auto_gather=False, gathered=True)
   related_by_household = DADict('related_by_household', auto_gather=False, gathered=True)
   related_as_couple = DADict('related_as_couple',auto_gather=False,gathered=True)
-  
+  relationship_to_defendant_married = DADict('relationship_to_defendant_married', auto_gather=False, gathered=True)
 ---
 mandatory: True
 code: |
@@ -368,6 +369,11 @@ scan for variables: False
 code: |
   users[0].signature = placeholder_signature
   skip_signature = True
+---
+sets: skip_child_support
+scan for variables: False
+code: |
+  skip_child_support = True
 ---
 include:
   - 209a_package.yml
