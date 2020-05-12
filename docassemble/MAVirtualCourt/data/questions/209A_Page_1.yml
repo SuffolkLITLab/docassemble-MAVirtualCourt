@@ -609,7 +609,7 @@ fields:
     show if: related_by_blood
 terms: 
   - blood relative: |
-    Examples of blood relatives:
+      Examples of blood relatives:
       Your grandparents, aunts and uncles, cousins, and grandchildren are all blood relatives. If you are a grandparent, you are related to **both** parents of your grandchild - even if they are not married.
 ---
 question: |

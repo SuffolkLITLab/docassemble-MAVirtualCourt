@@ -695,6 +695,7 @@ code: |
   nav.set_section('section_defendant_info_appearance')
   other_parties[0].photo_yes
   other_parties[0].race
+  other_parties[0].eye_color # Needed if in the skip_sections code
   other_parties[0].height
 
   nav.set_section('section_defendant_info_safety')
