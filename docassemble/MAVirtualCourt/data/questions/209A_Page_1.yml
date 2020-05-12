@@ -438,20 +438,20 @@ fields:
 ---
 id: 209A page 1 relationship kids
 question: |
-  Do you and defendant have any children together?
+  Do you and ${ other_parties.familiar() } have any children together?
 yesno: defendant_and_plaintiff_are_parents_of_child
 ---
 id: 209A page 1 relationship household
 question: |
-  Do you and defendant live in the {same household}?
+  Do you and ${ other_parties.familiar() } live in the {same household}?
 fields: 
   - no label: related_by_household
     datatype: checkboxes
     choices:
-      - 'I live in the same household with defendant **now**': now
-      - 'I **used** to live in the same household with defendant': past
+      - 'I live in the same household with ${ other_parties.familiar() } **now**': now
+      - 'I **used** to live in the same household with ${ other_parties.familiar() }': past
     none of the above: |
-      I **never** lived in the same household with defendant
+      I **never** lived in the same household with ${ other_parties.familiar() }
 terms:
   - same household: |
       You live in the "same household" if you:
@@ -464,33 +464,33 @@ id: 209A page 1 couple relationship
 question: |
   Were you ever a 'couple'?
 subquestion: |
-   Jane, check the boxes next to any of the relationships you have with defendant.
+   ${ users.familiar() }, check the boxes next to any of the relationships you have with ${ other_parties.familiar() }.
 fields:
   - no label: related_as_couple
     datatype: checkboxes
     choices:
-      - 'I have been dating defendant': dating
+      - 'I have been dating ${ other_parties.familiar() }': dating
       - 'We **used** to date': dated
       - 'We are engaged': engaged
       - 'We **used** to be engaged': past_engaged
     none of the above: False
-  - 'Were you ever married to defendant?': relationship_to_defendant_married
+  - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
     datatype: checkboxes
     choices:
       - 'We are married now': now
       - 'We used to be married': past
     none of the above: |
-      I was never married to defendant
+      I was never married to ${ other_parties.familiar() }.
 ---
 id: 209A page 1 in-law relationship
 question: |
   Related by marriage
 subquestion: |
-  You said you were never married to defendant. Do you have any kind of {in-law relationship}? 
+  You said you were never married to ${ other_parties.familiar() }. Do you have any kind of {in-law relationship}? 
 fields:
   - 'Are you related by marriage?': related_by_marriage
     datatype: yesnoradio
-  - 'defendant is my': defendant_relationship_to_plaintiff_is
+  - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
     show if: related_by_marriage
 terms:
   in-law relationship: |
@@ -504,11 +504,11 @@ id: 209A page 1 blood relationship
 question: |
   Related by blood
 subquestion: |
-  Is defendant a {blood relative}?
+  Is ${ other_parties.familiar() } a {blood relative}?
 fields:
-  - 'defendant and I are {blood relative}s': related_by_blood
+  - '${ other_parties.familiar() } and I are {blood relative}s': related_by_blood
     datatype: yesnoradio
-  - 'defendant is my': defendant_relationship_to_plaintiff_is
+  - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
     show if: related_by_blood
 terms: 
   - blood relative: |
@@ -701,7 +701,7 @@ attachment:
       - "defendant_is_major": ${ defendant_is_major }
       - "defendant_and_plaintiff_are_parents_of_child": ${ defendant_and_plaintiff_are_parents_of_child }
       - "defendant_and_plaintiff_are_not_related_but_live_together": ${ defendant_and_plaintiff_are_not_related_but_live_together }
-      - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
+      - "defendant_and_plaintiff_used_to_live_together": ${defendant_and_plaintiff_used_to_live_together }
       - "defendant_and_plaintiff_are_dating_or_dated": ${ defendant_and_plaintiff_are_dating_or_dated }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
@@ -768,7 +768,7 @@ attachment:
       - "defendant_is_major": ${ defendant_is_major }
       - "defendant_and_plaintiff_are_parents_of_child": ${ defendant_and_plaintiff_are_parents_of_child }
       - "defendant_and_plaintiff_are_not_related_but_live_together": ${ defendant_and_plaintiff_are_not_related_but_live_together }
-      - "defendant_and_plaintiff_used_to_live_together": ${ relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] }
+      - "defendant_and_plaintiff_used_to_live_together": ${ defendant_and_plaintiff_used_to_live_together }
       - "defendant_and_plaintiff_are_dating_or_dated": ${ defendant_and_plaintiff_are_dating_or_dated }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
