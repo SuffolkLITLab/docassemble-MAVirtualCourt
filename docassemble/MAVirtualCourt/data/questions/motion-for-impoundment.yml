@@ -198,6 +198,7 @@ subquestion: |
 yesno: impound_information_ex_parte
 ---
 progress: 100
+event: download_impoundment
 #mandatory: True
 question: |
   Placeholder download screen
