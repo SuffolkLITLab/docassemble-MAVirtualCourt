@@ -170,8 +170,12 @@ code: |
   # defendant_and_plaintiff_are_parents_of_child = True
 
   # TODO: snippet contender
-  children.target_number
-  children_cares_for.target_number
+  if not plaintiff_has_children_parent_of:
+    children.target_number = 0
+  if not plaintiff_has_children_cares_for:
+    children_cares_for.target_number = 0
+  # children.target_number
+  # children_cares_for.target_number
 
   children.gather()  # .name.first completes the person
   for child in children:
@@ -377,17 +381,24 @@ subquestion: |
 # Placeholder for complaint page 1's questions
 id: number_of_children_under_18
 question: |
-  How many children do you have under 18?
+  Children under 18
 subquestion: |
-  Include all children that are yours or that you have care or custody of. 
-  (add plain language later)
+  You can ask the court to include children who live with you in a 209A order.
+  
+  You do not have to be the parent of these children to include them.
 fields:
-  - How many children are you the parent of?: children.target_number
+  - I am a parent of a child under 18: plaintiff_has_children_parent_of
+    datatype: yesnoradio
+  - How many?: children.target_number
     datatype: integer
-#    default: 2
-  - How many children do you take care of but are not the parent of?: children_cares_for.target_number
+    min: 0
+    show if: plaintiff_has_children_parent_of
+  - Do any other children live with you who you need the order to protect?: plaintiff_has_children_cares_for
+    datatype: yesnoradio
+  - How many?: children_cares_for.target_number
     datatype: integer
-#    default: 1
+    min: 0
+    show if: plaintiff_has_children_cares_for
 ---
 # `ordinal()` says 'first', even if there's only one :(
 id: children user is parent of

@@ -161,11 +161,14 @@ subquestion: |
   Do you want to add another case?
 yesno: other_cases.there_is_another
 ---
-question: |
-  Children
-fields:
-  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
-    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
+#question: |
+#  Children
+#fields:
+#  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
+#    datatype: yesnoradio # a yes here should trigger multiple other interviews: page of the 209A complaint (always), care and custody affidavit (always, but maybe not if the parties don't have any kids under 18 TOGETHER. SMEs to check.).
+---
+code: |
+  plaintiff_has_minor_children = plaintiff_has_children_parent_of or plaintiff_has_children_cares_for
 ---
 question: |
   Other cases with the Defendant
@@ -190,9 +193,11 @@ code: |
  # THIS IS PLACEHOLDER SCREEN FOR PEOPLE WHO SHOULD BE FILLING OUT 258E, NOT 209A. SME'S TO PROVIDE LANGUAGE. YOU GET HERE IF YOU CHECK 'NONE OF THE ABOVE' ON THE JURISDICTIONAL QUESTIONS OR YOU CLICK NONE OF THE ABOVE ON THE 'HOW DID THE DEFENDANT ABUSE YOU' QUESTIONS
 event: relationship_does_not_qualify # refer_to_258E_resources
 question: |
-  Your relationship with ${other_parties.familiar()} may not be the kind a 209A restraining order covers. 
-
-  Speak with a domestic violence advocate to be sure. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. They may suggest that you ask the court for a [258E Harassment Prevention Order](https://www.masslegalhelp.org/domestic-violence/harassment-prevention-orders)."
+  Your relationship with ${other_parties.familiar()} may not be the kind a 209A restraining order covers
+subquestion: |
+  Speak with a domestic violence advocate to be sure. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. 
+  
+  An advocate may suggest that you ask the court for a [258E Harassment Prevention Order](https://www.masslegalhelp.org/domestic-violence/harassment-prevention-orders).
 buttons:
   - Exit: exit
   - Restart: restart
@@ -290,7 +295,10 @@ fields:
 question: |
   What are you asking for?
 subquestion: |
-  What do you need the Court to do?
+  We will check the box on the form that asks the court to order
+  ${other_parties.familiar()} to stop abusing you.
+  
+  What else do you need the Court to do?
 fields:
   # - 'I need the Court to order ${other_parties.familiar()} to stop abusing me.': order_defendant_stop_abuse_yes
   #   datatype: yesno
@@ -599,18 +607,23 @@ terms:
 ---
 id: 209A page 1 blood relationship
 question: |
-  Related by blood
+  Related by blood or adoption
 subquestion: |
   Is ${ other_parties.familiar() } a {blood relative}?
+  
+  Adopted family members are considered blood relatives.
 fields:
-  - '${ other_parties.familiar() } and I are {blood relative}s': related_by_blood
+  - ${ other_parties.familiar() } and I are {blood relatives}: related_by_blood
     datatype: yesnoradio
   - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
     show if: related_by_blood
 terms: 
   - blood relative: |
-      Examples of blood relatives:
+      Examples of blood relatives:  
       Your grandparents, aunts and uncles, cousins, and grandchildren are all blood relatives. If you are a grandparent, you are related to **both** parents of your grandchild - even if they are not married.
+  - blood relatives: |
+      Examples of blood relatives:  
+      Your grandparents, aunts and uncles, cousins, and grandchildren are all blood relatives. If you are a grandparent, you are related to **both** parents of your grandchild - even if they are not married.      
 ---
 question: |
   Other Cases
@@ -658,6 +671,15 @@ buttons:
 # buttons:
 #  - Exit: exit
 #  - Restart: restart
+---
+code: |
+  test_relationship_does_not_qualify = relationship_to_defendant_married.all_false() and \
+    not defendant_and_plaintiff_are_parents_of_child and \
+    related_by_household.all_false() and \
+    related_as_couple.all_false() and \
+    relationship_to_defendant_married.all_false() and \
+    not related_by_marriage and \
+    not related_by_blood
 ---
 id: complaint_209A_labeled_page10003
 code: |
@@ -719,6 +741,9 @@ code: |
     defendant_and_plaintiff_are_dating_or_dated = True
   else:
     defendant_and_plaintiff_are_dating_or_dated = False
+
+  if test_relationship_does_not_qualify:
+    relationship_does_not_qualify
 
   # if relationship_to_defendant_marriage_or_kids.all_false():
   #   if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
