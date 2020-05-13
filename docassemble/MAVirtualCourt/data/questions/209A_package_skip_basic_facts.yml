@@ -39,6 +39,7 @@ code: |
   related_by_household = DADict('related_by_household', auto_gather=False, gathered=True)
   related_as_couple = DADict('related_as_couple',auto_gather=False,gathered=True)
   relationship_to_defendant_married = DADict('relationship_to_defendant_married', auto_gather=False, gathered=True)
+  defendant_has_guns = DADict('defendant_has_guns', auto_gather=False, gathered=True)
 ---
 mandatory: True
 code: |
@@ -105,7 +106,13 @@ code: |
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_married_to_each_other"] = True
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_relationship_formerly_married_to_each_other"] = True
   related_as_couple['engaged'] = True
+  related_as_couple['dating'] = True
+  related_as_couple['dated'] = True
+  related_as_couple['past_engaged'] = True
+  relationship_to_defendant_married['now'] = True
+  related_by_household['past'] = True
   related_by_household['now'] = True 
+  relationship_to_defendant_married['past'] = True
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_dating_or_dated'] = True
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
   relationship_to_defendant_unmarried[ 'defendant_and_plaintiff_are_not_related_but_live_together'] = True
@@ -139,11 +146,11 @@ code: |
 sets: skip_custody_no_contact
 scan for variables: False
 code: |
-  wants_custody_of = DAList(there_are_any=False)
-  wants_no_contact_for = DAList(there_are_any=False)
-  wants_child_support_for = DAList(there_are_any=False)
+  wants_custody_of = children_of_both
+  wants_no_contact_for = children_of_both
+  wants_child_support_for = children_of_both
   need_help_for_majors = False
-  
+  reasons_no_contact = "George shouldn't have any contact"
   schools_to_stay_away_from.there_are_any = False
   visitation_info = True
   wants_to_request_visitation_details = False
@@ -153,7 +160,17 @@ code: |
 sets: skip_visitation
 scan for variables: False
 code: |
-  wants_visitation_orders = False
+  wants_visitation_orders = True
+  permit_visitation_yes = True
+  prohibit_visitation_yes = False
+  visitation_center_name = "The Visitation Center"
+  visitation_center_payor_name = "George"
+  wants_supervision_yes = True
+  visitation_supervisor_name = "Robert Supervisor"
+  visitation_times = "Mondays at 3 PM"
+  visitation_supervision_payor_name = "George"
+  third_party_name = "Susan"
+  wants_third_party_yes = True
   skip_visitation = True
 ---
 sets: skip_custody_cases
@@ -255,10 +272,10 @@ code: |
 ---
 code: |
   courts[0] = macourts[26] # Should be BMC East Boston Division
-  docket_numbers[0] = ' '
-  docket_numbers.there_is_another = False
-  docket_numbers.there_are_any=True
-  dont_know_docket_number = True
+  docket_numbers.auto_gather = False  
+  docket_numbers[0] = '20-CV-1234'
+  docket_numbers.gathered=True
+  dont_know_docket_number = False
   skip_court = True
 ---
 scan for variables: False
@@ -312,11 +329,15 @@ code: |
   other_parties[0].does_not_have_car = True
   other_parties[0].police_violence_yes = True
   other_parties[0].drug_alcohol_yes = False
-  defendant_weapons_guns = True
-  defendant_weapons_ammunition = True
-  defendant_weapons_firearms_identification_card = True
-  defendant_weapons_license_to_carry = True
-  defendant_weapons_description = "A normal gun"
+  defendant_has_guns['a gun'] = True
+  defendant_has_guns['ammo'] = True
+  defendant_has_guns['firearms ID'] = True
+  defendant_has_guns['license'] = True
+  # defendant_weapons_guns = True
+  # defendant_weapons_ammunition = True
+  # defendant_weapons_firearms_identification_card = True
+  # defendant_weapons_license_to_carry = True
+  defendant_weapons_description = "A pistol. A shotgun. A hunting rifle."
   
   other_parties[0].gun_license_carry_possess_yes = True
   other_parties[0].gun_license_carry_possess = "a license"
@@ -373,6 +394,24 @@ code: |
 sets: skip_child_support
 scan for variables: False
 code: |
+  other_parties[0].defendant_parental_role = "father"
+  other_parties[0].occupation = "Bricklayer"
+  other_parties[0].employer = "Boston Brickworks"
+  other_parties[0].work_address = "123 Brickbottom Road, Boston, MA"
+  users[0].gross_income = 500
+  users[0].gross_income_interval = "weekly"
+  users[0].health_insurance = 200
+  users[0].health_insurance_interval = "monthly"
+  users[0].dental_vision_insurance = 75
+  users[0].dental_vision_insurance_interval = "monthly"
+  users.item(0).child_care_expenses = 1200
+  users.item(0).child_care_expenses_interval = "monthly"
+  users.item(0).child_care_other = 100
+  users.item(0).child_care_other_interval = "monthly"
+  other_parties[0].child_care_expenses = 25
+  other_parties[0].child_care_expenses_interval = "weekly"
+  other_parties[0].other_child_support_interval = "weekly"
+  other_parties[0].other_child_support = 175
   skip_child_support = True
 ---
 include:

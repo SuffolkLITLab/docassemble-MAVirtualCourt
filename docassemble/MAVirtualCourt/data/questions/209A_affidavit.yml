@@ -238,7 +238,7 @@ question: |
 subquestion: |
    The 209A complaint form has these 4 boxes on it. 
    
-   We have to check at least one box to get a restraining order.
+   We have to check at least one box to ask for a restraining order.
    
    Use the green button to help you decide the boxes you need to check.
 fields:
@@ -249,17 +249,31 @@ fields:
       - ${ defendant } physically hurt me: physical
       - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }: sex
     datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    validation messages:
+      minlength: |
+        You have to check at least one box to ask for a restraining order.
 help:
   label: Can you give me some examples?
   heading: Can you give me some examples?
   content: |
-    Making you afraid of physical harm includes saying things like "I'll kill you if you leave me," or "If you don't give me the car keys, I'll hit you harder than last time." It can also include waving a gun or knife at you, smashing your furniture, driving recklessly, and hurting or killing your pets. It includes threatening to commit any act of violence, threatening with a fake gun, or bomb threats. 
+    Making you afraid of physical harm includes saying things like "I'll kill
+    you if you leave me," or "If you don't give me the car keys, I'll hit you
+    harder than last time." It can also include waving a gun or knife at you,
+    smashing your furniture, driving recklessly, and hurting or killing your
+    pets. It includes threatening to commit any act of violence, threatening
+    with a fake gun, or bomb threats. 
         
-    Physically hurting you includes shoving, pushing, punching, slapping, kicking, pulling your hair, choking, strangling, throwing things at you, burning you with hot food or cigarettes, stabbing, shooting, or locking you in a room.
-    Threatening, pressuring or forcing you to have sex also includes forced contact with intimate body parts. For children under 18, it can mean any sexual contact.
-    For children under 18, it can mean any sexual contact.
+    Physically hurting you includes shoving, pushing, punching, slapping,
+    kicking, pulling your hair, choking, strangling, throwing things at you,
+    burning you with hot food or cigarettes, stabbing, shooting, or locking you
+    in a room. Threatening, pressuring or forcing you to have sex also includes
+    forced contact with intimate body parts. For children under 18, it can mean
+    any sexual contact. For children under 18, it can mean any sexual contact.
 
-    More - See (Writing Your 209A Affidavit on MassLegalHelp)[https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit]
+    More - See (Writing Your 209A Affidavit on
+    MassLegalHelp)[https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit]
 comment: |
   Should get link for this
 ---
@@ -283,6 +297,7 @@ content: |
   ${ defendant } threatened, pressured or forced me to have sex with them  
 ---
 code: |
+  # We're not using this anymore as of 5/13/2020
   # Create the placeholder text in a translateable way
   var_map = {
     'sex': text_sex.show(),
@@ -303,7 +318,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } ${ incidents_of_abuse[i].description_placeholder }.
+      "On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } :"
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -531,9 +546,9 @@ attachment:
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
       - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
+      - "plaintiff_signature": ${ users[0].signature }
       - "affidavit_body": ${ affidavit_intro + affidavit_body }
       - "incident_date": ${ incident_date }
 ---
 code: |
-  incident_date = str(incidents_of_abuse[0].year) + ", " + incidents_of_abuse[0].date
+  incident_date = incidents_of_abuse[0].date + ', ' + str(incidents_of_abuse[0].year)

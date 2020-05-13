@@ -377,8 +377,13 @@ fields:
     show if: dont_know_birthdate
   - "How tall is ${other_parties.familiar()}?": other_parties[0].height
     hint: e.g., 5 foot 10 inches
+    validate: |
+      # If the user entry only includes digits, prompt for a unit as well
+      lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 6 foot 1 inch."))
   - "What is ${other_parties.familiar()}'s weight?": other_parties[0].weight
     hint: e.g., 180 pounds
+    validate: |
+      lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 180 pounds."))
   - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
     help: |
       You can choose more than one if that is helpful to describe ${other_parties.familiar()}.
@@ -526,14 +531,6 @@ fields:
     show if:
       variable: other_parties[0].drug_alcohol_yes
       is: True
-  - 'Does ${other_parties.familiar()} have access to guns, ammunition, a license to carry, or an FID card?': other_parties[0].gun_license_carry_possess_yes
-    datatype: yesnoradio
-    default: ${already_know_defendant_has_guns}
-  - 'Describe which of the above ${other_parties.familiar()} has access to': other_parties[0].gun_license_carry_possess
-    show if:
-      variable: other_parties[0].gun_license_carry_possess_yes
-      is: True
-    default: ${gun_description}
   - 'Does ${other_parties.familiar()} have any mental health problems?': other_parties[0].psychiatric_emotional_problems_yes
     datatype: yesnoradio
   - 'What type of mental health problems?': other_parties[0].psychiatric_emotional_problems
@@ -635,7 +632,7 @@ attachment:
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
-      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
+      - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
@@ -701,7 +698,8 @@ code: |
   other_parties[0].height
 
   nav.set_section('section_defendant_info_safety')
-  if not defendant_weapons_guns: # This needs to get moved. It appears in a jarring place right now.
+  other_parties[0].gun_license_carry_possess_yes = defendant_has_guns.any_true()
+  if not defendant_has_guns.any_true():
     defendant_weapons_description = DAEmpty()
   other_parties[0].police_violence_yes
   
@@ -709,7 +707,6 @@ code: |
     other_parties[0].drug_alcohol_no = True
     other_parties[0].drug_alcohol_abuse = ''
   if not other_parties[0].gun_license_carry_possess_yes:
-    other_parties[0].gun_license_carry_possess_no = True
     other_parties[0].gun_license_carry_possess = ''
   if not other_parties[0].psychiatric_emotional_problems_yes:
     other_parties[0].psychiatric_emotional_problems_no = True
@@ -758,19 +755,19 @@ subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
    ${defendantinformation209A0008_attachment_preview}
----
-code: |
-  already_know_defendant_has_guns = defendant_weapons_guns or defendant_weapons_ammunition or defendant_weapons_firearms_identification_card or defendant_weapons_license_to_carry
-  gun_description_temp = []
-  if defendant_weapons_guns:
-    gun_description_temp.append("guns")
-  if defendant_weapons_ammunition:
-    gun_description_temp.append("ammunition")
-  if defendant_weapons_firearms_identification_card:
-    gun_description_temp.append("a firearm ID card")
-  if defendant_weapons_license_to_carry:
-    gun_description_temp.append("a concealed carry license")
-  gun_description = comma_and_list(gun_description_temp)
+# ---
+# code: |
+#   already_know_defendant_has_guns = defendant_weapons_guns or defendant_weapons_ammunition or defendant_weapons_firearms_identification_card or defendant_weapons_license_to_carry
+#   gun_description_temp = []
+#   if defendant_weapons_guns:
+#     gun_description_temp.append("guns")
+#   if defendant_weapons_ammunition:
+#     gun_description_temp.append("ammunition")
+#   if defendant_weapons_firearms_identification_card:
+#     gun_description_temp.append("a firearm ID card")
+#   if defendant_weapons_license_to_carry:
+#     gun_description_temp.append("a concealed carry license")
+#   gun_description = comma_and_list(gun_description_temp)
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview
@@ -827,7 +824,7 @@ attachment:
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
-      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
+      - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }

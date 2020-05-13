@@ -50,6 +50,8 @@ code: |
   
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
+  if need_page1_addendum:
+    attachment_temp.append(page1_addendum)
   attachment_temp.append( complaint_209A_Affidavit_attachment )  
   # include page 2 only if there are children
   if plaintiff_has_minor_children: 

@@ -260,8 +260,11 @@ fields:
       will be left unchecked on the form. This answer will be used to help
       identify ${other_parties} to the police to allow them to enforce
       your order.
-  - Is ${other_parties.familiar()} aged eighteen or older?: defendant_is_major
-    datatype: yesnoradio
+  # - Is ${other_parties.familiar()} aged eighteen or older?: defendant_is_major
+  #   datatype: yesnoradio
+---
+code: |
+  defendant_is_major = other_parties[0].age_in_years() >= 18
 # We never need to ask this question. It's filled in from the affidavit
 # ---
 # question: |
@@ -369,6 +372,7 @@ fields:
   - 'I need the Court to order something else': order_other_relief_yes
     datatype: yesno
   - 'The something else is:': other_relief
+    datatype: area
     show if:
       variable: order_other_relief_yes
       is: True  
@@ -438,11 +442,11 @@ comment: |
   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
----
-code: |
-  # Used to decide on page2 if we ask the person
-  # if defendant is also a parent of the child
-  defendant_and_plaintiff_are_parents_of_child = relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child']
+# ---
+# code: |
+#   # Used to decide on page2 if we ask the person
+#   # if defendant is also a parent of the child
+#   defendant_and_plaintiff_are_parents_of_child = relationship_to_defendant_married['defendant_and_plaintiff_are_parents_of_child']
 ---
 question: |
   % if who_protecting_screener == "someone else":
@@ -465,22 +469,52 @@ help:
 question: |
   Weapons
 subquestion: |
-  The police need to know if ${users.familiar()} has guns for their safety.
+  The police need to know if ${users.familiar()} has guns.
 
-  Check the following if they are true.
+  Does ${users.familiar()} have access or possess any of the following?
 fields:
-  - 'Defendant has a gun': defendant_weapons_guns
-    datatype: yesno
-  - 'Defendant has ammunition': defendant_weapons_ammunition
-    datatype: yesno
-  - 'Defendant has a firearms identification card': defendant_weapons_firearms_identification_card
-    datatype: yesno
-  - 'Defendant has a license to carry': defendant_weapons_license_to_carry
-    datatype: yesno
-  - 'Describe the gun(s)': defendant_weapons_description
-    show if:
-      variable: defendant_weapons_guns
-      is: True
+  - no label: defendant_has_guns
+    datatype: checkboxes
+    choices:
+      - A gun: a gun
+      - Ammunition: ammo
+      - Firearms ID card: firearms ID
+      - License to carry: license
+  - Describe the gun(s): defendant_weapons_description
+    show if: defendant_has_guns["a gun"]
+---
+code: |
+  defendant_weapons_safe_for_pdf = comma_and_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["a gun"] else '')
+---
+code: |
+  defendant_weapons_for_addendum = comma_and_list(defendant_has_guns.true_values()) + ( "Description of guns: " + defendant_weapons_description if defendant_has_guns["a gun"] else '')
+---
+code: |
+  need_gun_addendum = defendant_has_guns["a gun"]
+---
+code: |
+  need_relief_addendum =  len(other_relief) > 215
+---
+code: |
+  other_relief_safe_for_pdf = other_relief[:215] + " (See Addendum.)"
+---
+code: |
+  need_losses_addendum = len(losses_caused_by_defendant) > 100
+---
+code: |
+  losses_caused_by_defendant_safe_for_pdf = losses_caused_by_defendant[:100] + " (See Addendum.)"
+---
+code: |
+  need_cases_addendum = len(other_cases) > 1
+---  
+code: |
+  cases_other_safe_for_pdf = comma_and_list([case.court_name + ' (' + \
+      case.type_of_case + ') ' + \
+      showifdef('case.date') + ' ' + \
+      showifdef('case.docket_number') for case in other_cases[:1]]) + " (See Addendum)"
+---
+code: |
+  need_page1_addendum = need_cases_addendum or need_losses_addendum or need_relief_addendum or need_gun_addendum
 ---
 question: |
   % if who_protecting_screener == 'someone else':
@@ -809,6 +843,10 @@ code: |
       showifdef('case.date') + ' ' + \
       showifdef('case.docket_number') for case in other_cases])
 ---
+code: |
+  # Refer to the first incident of abuse from the 209A affidavit question
+  abuse_suffered_date = incident_date # Pulls from 209A_affidavit
+---
 continue button field: complaint_209A_labeled_page10003_preview_question
 question: |
   Placeholder preview screen
@@ -826,18 +864,13 @@ attachment:
       - "user_name_full": ${ str(users[0]) }
       - "defendant": ${ str(other_parties[0]) }
       - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
       - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
       - "district_court": ${ courts[0].department == "District Court" }
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }
       - "superior_court": ${ courts[0].department == "Superior Court" }
       - "court_name_short": ${ courts[0].division }
       - "defendant_alias": ${ other_parties[0].name_other if defendant_has_alias else '' }
-      - "defendant_weapons_guns": ${ defendant_weapons_guns }
-      - "defendant_weapons_ammunition": ${ defendant_weapons_ammunition }
-      - "defendant_weapons_firearms_identification_card": ${ defendant_weapons_firearms_identification_card }
-      - "defendant_weapons_license_to_carry": ${ defendant_weapons_license_to_carry }
-      - "defendant_weapons_description": ${ defendant_weapons_description }
+      - "defendant_weapons_description": ${ defendant_weapons_safe_for_pdf  }
       - "defendant_gender_male": ${ other_parties[0].gender_male }
       - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
@@ -872,13 +905,13 @@ attachment:
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) }
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief }
+      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
-      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description}
+      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
 ---
 #mandatory: True
@@ -897,17 +930,18 @@ attachment:
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
-    fields: 
-      - "user_name_full": ${ str(users[0]) }
-      - "defendant": ${ str(other_parties[0]) } 
-      - "signature_date": ${ signature_date }
+    fields:   
       - "user_signature": ${ users[0].signature }
+      - "user_name_full": ${ str(users[0]) }
+      - "defendant": ${ str(other_parties[0]) }
+      - "signature_date": ${ signature_date }
       - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
       - "district_court": ${ courts[0].department == "District Court" }
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }
       - "superior_court": ${ courts[0].department == "Superior Court" }
       - "court_name_short": ${ courts[0].division }
       - "defendant_alias": ${ other_parties[0].name_other if defendant_has_alias else '' }
+      - "defendant_weapons_description": ${ defendant_weapons_safe_for_pdf  }
       - "defendant_gender_male": ${ other_parties[0].gender_male }
       - "defendant_gender_female": ${ other_parties[0].gender_female }
       - "plaintiff_is_major_yes": ${ plaintiff_is_major_yes }
@@ -921,12 +955,11 @@ attachment:
       - "defendant_is_major": ${ defendant_is_major }
       - "defendant_and_plaintiff_are_parents_of_child": ${ defendant_and_plaintiff_are_parents_of_child }
       - "defendant_and_plaintiff_are_not_related_but_live_together": ${ defendant_and_plaintiff_are_not_related_but_live_together }
-      - "defendant_and_plaintiff_used_to_live_together": ${ defendant_and_plaintiff_used_to_live_together }
+      - "defendant_and_plaintiff_used_to_live_together": ${defendant_and_plaintiff_used_to_live_together }
       - "defendant_and_plaintiff_are_dating_or_dated": ${ defendant_and_plaintiff_are_dating_or_dated }
-      - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
+      - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
-      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description}
       - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
@@ -943,12 +976,17 @@ attachment:
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) }
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief }
+      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
+      - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
+---
+attachment:
+  - variable name: page1_addendum
+    docx template file: 209A_page1_addendum.docx
 ---
 variable name: interview_metadata['complaint_209A_labeled_page10003']['built_in_fields_used']
 data:
