@@ -278,17 +278,19 @@ question: |
 
 ###################################### Other party information
 ---
-event: section_defendant_info_demographics
+event: section_defendant_info
 question: |
-  Demographic information about ${other_parties.familiar()}
+  Identifying the Defendant
 review:
+  - note: |
+      #### Demographic information about ${other_parties.familiar()}
   - Edit birthdate: dont_know_birthdate
     button: |
       You said ${other_parties.familiar()}
       % if dont_know_birthdate:
       is about ${other_parties[0].age} years old.
       % else:
-      is ${other_parties[0].birthdate.format()}.
+      was born on ${other_parties[0].birthdate.format()}.
       % endif
   - Edit birthplace: other_parties[0].birthplace
     button: |
@@ -311,11 +313,22 @@ review:
       % else:
       does not understand English, and prefers ${other_parties[0].language_other}.
       % endif
----
-event: section_defendant_info_appearance
-question: |
-  What ${other_parties.familiar()} looks like
-review:
+  - note: |
+      What ${other_parties.familiar()} looks like
+  - Edit photo status:
+    - other_parties[0].photo_yes
+    button: |
+      You said you
+      % if other_parties[0].photo_yes:
+      do
+      % else:
+      do not
+      % endif
+      have a photo of ${other_parties.familiar()}
+  - Edit photo:
+    - photo_upload    
+    button: |
+      ${photo_upload.show(width="1in")}
   - Edit race: 
     - other_parties[0].race
     - recompute:
@@ -331,33 +344,74 @@ review:
     - other_parties[0].hair_color
     - recompute:
       - defendant_hair_details
+    button: |
+      ${other_parties[0].hair_color}
   - Edit description: 
     - other_parties[0].physical_other
     - recompute:
       - defendant_other_description
     button: |
-      ${defendant_other_description}            
----
-event: section_defendant_info_safety
-question: |
-  Safety information about ${other_parties.familiar()}
-review:
-  - Edit: variable
+      ${defendant_other_description}
+  - note: |
+      #### Defendant contact information
+  - Edit contact:
+    - other_parties[0].phone_number
     button: |
-      test  
----
-event: section_defendant_info_finding
-question: |
-  Finding ${other_parties.familiar()}
-review:
-  - Edit: variable
+      Phone: ${showifdef('other_parties[0].phone_number')}  
+      Email: ${showifdef('other_parties[0].email')}
+  - Edit address: 
+    - other_parties[0].address.address
     button: |
-      test  
----
-event: section_defendant_info_car
-question: |
-  Demographic information about ${other_parties.familiar()}
-review:
-  - Edit: variable
+      ${other_parties[0].address.block()}
+  - Edit location:
+    - other_parties[0].location_best
+    - recompute:
+      - defendant_location_information_other
     button: |
-      test                          
+      ${defendant_location_information_other}
+  - note: |
+      Information about work      
+  - Edit work:
+    - defendant_not_employed
+    button: |
+      You said that ${other_parties.familiar()}          
+      % if defendant_not_employed:
+      is not
+      % else:
+      is
+      % endif
+      working.
+  - Edit employer:
+    - other_parties[0].employer
+    button: |
+      ${other_parties[0].employer}  
+      ${showifdef('other_parties[0].work_address')}  
+      ${showifdef('other_parties[0].work_phone')}  
+      ${showifdef('other_parties[0].work_title')}  
+      ${showifdef('other_parties[0].work_department')}  
+      ${showifdef('other_parties[0].work_hours')}
+  - note: |
+      Information about vehicle
+  - Edit car status:
+    - other_parties[0].does_not_have_car
+  - Edit car:
+    - other_parties[0].vehicle_color
+    button: |
+      ${showifdef('other_parties[0].vehicle_color')}  
+      ${showifdef('other_parties[0].vehicle_make')}  
+      ${showifdef('other_parties[0].vehicle_model')}  
+      ${showifdef('other_parties[0].vehicle_year')}  
+      ${showifdef('other_parties[0].vehicle_license_plate')}
+  - note: |
+      Information for service
+  - Edit service information:
+    - other_parties[0].police_violence_yes
+    button: |
+      History of violence: ${yesno(other_parties[0].police_violence_yes)}  
+      Use of drugs/alcohol: ${yesno(other_parties[0].drug_alcohol_yes)} ${showifdef('other_parties[0].drug_alcohol_abuse')}  
+      Mental health problems: ${yesno(other_parties[0].psychiatric_emotional_problems_yes)} ${showifdef('other_parties[0].psychiatric_emotional_problems')}  
+  - Edit guns:
+    - defendant_has_guns
+    button: |
+      ${defendant_has_guns.true_values()}  ${showifdef('defendant_weapons_description')}  
+      

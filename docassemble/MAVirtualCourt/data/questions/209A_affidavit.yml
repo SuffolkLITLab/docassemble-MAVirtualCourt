@@ -68,7 +68,7 @@ subquestion: |
   The next few questions will be used to fill in the "209A Affidavit".
 
   Use the Affidavit form to describe the abuse. The affidavit needs to be in the words
-  of the person who is being protected. [TODO: we can change pronouns if we want later]
+  of the person who is being protected.
    
   When you sign your name you are declaring, "under penalty of perjury" that what you wrote is true to the best of your knowledge.
 terms:
@@ -318,7 +318,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      "On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } :"
+      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } :
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?

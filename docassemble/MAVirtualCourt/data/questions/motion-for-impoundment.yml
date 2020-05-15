@@ -107,9 +107,10 @@ code: |
 question: |
   Keeping information private (impoundment)
 subquestion: |
-  Draft: The defendant will still see all of this information. Privacy reasons
-  are not enough. Sexual abuse information can sometimes be a good reason. todo:
-  SMEs
+  Unless you ask the court, the forms you file (other than the confidential information form)
+  will become a public record.
+
+  You can ask the court to keep your form private.
 fields:
   - Is there any information on this form that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
@@ -169,7 +170,7 @@ help: |
   otherwise result.
 ---
 question: |
-  Why do you need to keep this information private (impounded)?
+  Why do you need to keep information private (impounded)?
 subquestion: |
   Be specific. Include facts about your safety.  
   

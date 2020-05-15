@@ -378,13 +378,25 @@ fields:
       is: True  
 ---
 question: |
-  PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
+  Emergency (temporary) order
 subquestion: |
-  PLACEHOLDER EX PARTE LANGUAGE. SMEs to PROVIDE WARNING LANGUAGE.
+  You can get an order without telling ${other_parties.familiar()} right away
+  if you need it for immediate safety reasons.
+
+  Do you need an emergency order that starts now, before
+  ${other_parties.familiar()} gets notified?
 fields:      
-  - 'I need the Court to make its order without advance notice to ${other_parties.familiar()}': order_relief_ex_parte
+  - 'I need the Court to make its order before telling ${other_parties.familiar()}': order_relief_ex_parte
     datatype: yesno
     default: True
+  - note: |
+      **Warning**: if you do not request an emergency order:
+
+      1. You will not get an order for at least 10 days.
+      2. ${other_parties.familiar()} will know about your order in advance. 
+    show if: 
+      variable: order_relief_ex_parte        
+      is: False
 ---
 help: |
   There are four courts that you can choose from to get a 209A Restraining order.
@@ -904,7 +916,7 @@ attachment:
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) }
+      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
@@ -975,7 +987,7 @@ attachment:
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) }
+      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }

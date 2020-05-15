@@ -22,20 +22,17 @@ sections:
   - section_relationship: Your relationship
   - section_affidavit: Your statement
   - section_children: Children  
-  - section_care_custody: Past Care or Custody Cases
-  - section_cases_with_defendant: Other Cases with Defendant
   - section_custody: Custody
   - section_child_support: Child Support
-  - Other party information:
-    - section_defendant_info_demographics: Demographics
-    - section_defendant_info_appearance: Appearance
-    - section_defendant_info_safety: Safety concerns
-    - section_defendant_info_finding: Finding Defendant
-    - section_defendant_info_employer: Employer
-    - section_defendant_info_car: Car
+  - section_care_custody: Past Care or Custody Cases
+  - section_cases_with_defendant: Other Cases with Defendant
+  - section_defendant_info: Identifying the Defendant
   - section_your_info: Your information
   - section_privacy: Keeping your information private
+  - section_signature: Signing
+  - section_filing: Filing
 ---
+reconsider: True
 code: |
   attachment_temp = []  
   # Build the 209A package. Up to 8 total forms
@@ -143,6 +140,8 @@ code: |
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False
   # Care or custody proceedings
+
+  nav.set_section('section_care_custody')
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
     if has_participated_custody_case or know_of_other_custody_case_yes:
       have_had_custody_cases = True # Skip this for stitchup
@@ -159,6 +158,7 @@ code: |
 
   ############################## Defendant info
   # From page 1
+  nav.set_section('section_defendant_info')
   defendantinformation209A0008_intro
   defendant_has_alias # redundant to def. information section
   
