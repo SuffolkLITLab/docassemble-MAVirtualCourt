@@ -1,12 +1,18 @@
 ---
-imports:
-  - docassemble.MAVirtualCourt
+include:
+  - basic-questions.yml
 ---
-code: |
-  define('my_variable','')
----
-mandatory: True
 question: |
-  ${docassemble.MAVirtualCourt.__version__}
+  Tell us some vital statistics
+fields:
+  - Weight: weight
+    validate: |
+      lambda y: True if not y.isnumeric() else validation_error("Please include a unit. E.g., 180 pounds")
+  - Height: height
+    validate: |
+      lambda y: True if not y.isnumeric() else validation_error("Please include a unit. E.g., 6 feet 1 inch")
   
-  ${my_variable}
+---
+question: |
+  ${weight}
+mandatory: True

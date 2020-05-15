@@ -53,6 +53,11 @@ class VCIndividual(Individual):
     if not hasattr(self, 'other_addresses'):
       self.initializeAttribute('other_addresses', AddressList)      
 
+# TODO: create a class for OtherCases we list on page 1. Is this related
+# to the other care/custody proceedings?
+class OtherCase(Thing):
+  pass
+
 class OtherProceeding(DAObject):
   """Currently used to represents a care and custody proceeding."""
   def init(self, *pargs, **kwargs):
@@ -94,12 +99,12 @@ class OtherProceeding(DAObject):
     # - Non-custody case that is complete: non-custody-closed
     if self.case_status in ['adoption',"adoption-pending", "adoption-closed"]:
       return 'Adoption'
-    elif self.case_status == 'pending':
-      return 'Pending'
-    elif self.case_status == 'custody-closed':
+    elif self.case_status == 'custody' and not self.is_open:
       return "Custody awarded to " + self.person_given_custody + ", " + self.date_of_custody.format("yyyy-MM-dd")
-    elif self.case_status == 'non-custody-closed':
+    elif self.case_status == 'other' and not self.is_open:
       return self.what_happened
+    elif self.is_open:
+      return 'Pending'
     else:
       return self.case_status
 

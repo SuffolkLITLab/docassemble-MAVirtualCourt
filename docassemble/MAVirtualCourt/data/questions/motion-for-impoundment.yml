@@ -87,44 +87,121 @@ comment: |
     Draft: Do you need to keep any of the information about this case away from the public?
   yesno: do_need_to_fill_out_this_form
 ---
-question: |
-  Is there any other information in the case that you'd want to be withheld from the public?
+question:
+  Keeping information private (impoundment)
 subquestion: |
-  Draft: The defendant will still see all of this information. Privacy reasons are not enough. Sexual abuse information can sometimes be a good reason. todo: SMEs
+  If you need to keep any information on this form private, you have
+  the right to ask for the court to "impound" information.
+
+  The next section will ask you about information that you can
+  keep private. If you decide to request information to be kept
+  private, your court forms will include a "motion for impoundment".
+continue button field: impoundment_intro
+---
+code: |
+  # Used to trigger asking the rest of the questions on this form in the 209A_package
+  impound_personal_information
+  impound_case_record_information
+  asked_for_impoundment = impound_personal_information or impound_case_record_information
+---
+question: |
+  Keeping information private (impoundment)
+subquestion: |
+  Unless you ask the court, the forms you file (other than the confidential information form)
+  will become a public record.
+
+  You can ask the court to keep your form private.
 fields:
-  - 'Do you have a good reason that you want this information to be kept private?': impound_case_record_information
-    datatype: yesno
-  - 'What information do you want to keep from the public?': case_record_information_to_be_impounded
+  - Is there any information on this form that you need to keep private?: impound_case_record_information
+    datatype: yesnoradio
+  - note: |
+      Explain what you want kept private below
+    show if: impound_case_record_information      
+  - no label: case_record_information_to_be_impounded
     show if: impound_case_record_information
     input type: area
 ---
 question: |
-  Draft: Do you want some of your addresses to be withheld from the public?
+  Keeping your addresses private
 subquestion: |
-  This will mean that the only addresses anyone will be able to see would be the addresses that you ask the court to order the defendant to stay away from. If police and domestic violence counselors absolutely need the information, they will see it.
+  You can ask the court to keep your address information private.
 
-  Alternatively this plus other descriptions:
-  The defendant and other members of the public will only be able to see the addresses that you ask the court to order the defendant to stay away from.
+  If you answer "Keep my address information private," the following information will be kept private
+  from court personnel and police employees who would otherwise see it in their normal jobs.
+
+  * Address where you live
+  * Address of your school
+  * Your telephone numbers
+  
+  **This will _not_ apply to any address you ask the court to order ${other_parties.familiar()}
+  to keep away from.**
+
+  Do you need to keep your addresses private?
 yesno: impound_personal_information
----
-question: |
-  Why are you asking for this?
-fields:
-  - no label: request_based_on
-    input type: area
----
-question: |
-  Would you be hurt if people heard about this request in advance? (plain language)
-subquestion: |
-  Draft:
-  If the defendant or someone else found out about this request before your hearing, could you be hurt, either physically or in another way (like ruining your reputation)?
+help: |
+  Pursuant to G.L. c. 209A, § 8 or G.L. c. 258E, § 10, your residential and
+  workplace addresses: 
 
-  TODO: Next question:
-  Would there be any way to repair this damage? If not, then
-  impound_information_ex_parte would be False.
+  * will automatically be kept from being disclosed to the
+    public.
+  * will automatically be kept from being disclosed to the defendant and
+    the defendant’s attorney unless those addresses appear in the court Order
+    becauseyou have requested that the defendant be ordered to remain away from
+    your residence or workplace.
+  * will be available to you, to your attorney, to
+    those you authorize to have access, and to certain persons when access is
+    necessary in the performance oftheir duties (prosecutors, law enforcement
+    officers, victim-witness advocates, sexual assault counselors and, in G.L. c.
+    209A cases only, domestic violence counselors).
+  
+  If you have good reasons why
+  your addresses should not be disclosed to those who would otherwise have
+  access in the course of their duties, you may file this motion with the court
+  requesting a judge to issue an Order of impoundment under Trial Court Uniform
+  Rule VIII on Impoundment Procedure. If you have good reasons, you may also
+  request a judge to impound other information in this case from public
+  inspection. You must explain why there is good cause for a judge to do so.
+  Usually a general preference for privacy is not alone a sufficient reason for
+  a judge to impound court records from public inspection. 
+  
+  If you are requesting
+  an Order of impoundment without prior notice to the defendant and any other
+  interested persons, you must explain why immediate and irreparable injury may
+  otherwise result.
+---
+question: |
+  Why do you need to keep information private (impounded)?
+subquestion: |
+  Be specific. Include facts about your safety.  
+  
+  Usually a general preference for privacy is not alone a sufficient reason for
+  a judge to impound court records from public inspection. If you are requesting
+  an Order of impoundment without prior notice to the defendant and any other
+  interested persons, you must explain why immediate and irreparable injury may
+  otherwise result.
+fields:
+  - The information should be kept private because: request_based_on
+    input type: area
+    rows: 5
+---
+question: |
+  Getting an impoundment order without notice to ${other_parties.familiar()}
+subquestion: |
+  If you need, you can keep this _request to keep information private_
+  (impoundment) private.
+
+  The judge may agree to give you an order that keeps your information private
+  without letting ${other_parties.familiar()} know about your request in
+  advance.
+
+  You can ask for this if you will suffer "immediate and irreparable harm" if
+  the court lets ${other_parties.familiar()} know about this request in advance.
+
+  Do you need an order without giving notice to ${other_parties.familiar()}?
 yesno: impound_information_ex_parte
 ---
 progress: 100
+event: download_impoundment
 #mandatory: True
 question: |
   Placeholder download screen
@@ -179,29 +256,27 @@ code: |
   # It was generated from interview_generator.py as an 'interview order' type question.
   basic_questions_intro_screen
   # If the user needs to fill out the form
-  if a_258e_motion_for_impoundment0019_intro:
-    # Set the preferred/allowed courts for this interview
-    preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
-    allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
-    impound_personal_information
-    # Wrong type of pdf field
-    if not impound_case_record_information:
-      case_record_information_to_be_impounded = ''
-    # Wrong type of pdf field
-    impound_information_ex_parte
-    request_based_on
-    signature_date
-    # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-    # Comment out the line below if you don't want this behavior. 
-    # I think we can get rid of this inside the if statement:
-    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
-    a_258e_motion_for_impoundment0019_preview_question # Pre-canned preview screen
-    basic_questions_signature_flow
-    users[0].signature
-
-  # If they don't need to do this at all, skip everything
-  else:
-    mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  #if a_258e_motion_for_impoundment0019_intro:
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["a_258e_motion_for_impoundment0019"]["preferred court"]
+  allowed_courts = interview_metadata["a_258e_motion_for_impoundment0019"]["allowed courts"]
+  impound_personal_information  
+  # Wrong type of pdf field
+  if not impound_case_record_information:
+    case_record_information_to_be_impounded = ''
+  # Wrong type of pdf field
+  request_based_on
+  impound_information_ex_parte
+  signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  # I think we can get rid of this inside the if statement:
+  # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  # a_258e_motion_for_impoundment0019_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
+  # else: # If they don't need to do this at all, skip everything
+  #  # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
   a_258e_motion_for_impoundment0019 = True
 ---
 continue button field: a_258e_motion_for_impoundment0019_preview_question

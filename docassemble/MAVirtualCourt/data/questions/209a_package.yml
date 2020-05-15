@@ -9,23 +9,30 @@ include:
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
+ - 209A-review.yml
  - escape.yml
 ---
 features:
   navigation: True
+  question help button: True
 ---
 sections:
-  - Introduction
-  - Basic information
-  - Your relationship
-  - Why do you need this order?
-  - Children  
-  - Other cases
-  - Custody
-  - Other party information
-  - Your information
-  - Keeping your information private
+  - section_intro: Introduction
+  - section_basic: Basic information
+  - section_relationship: Your relationship
+  - section_affidavit: Your statement
+  - section_children: Children  
+  - section_custody: Custody
+  - section_child_support: Child Support
+  - section_care_custody: Past Care or Custody Cases
+  - section_cases_with_defendant: Other Cases with Defendant
+  - section_defendant_info: Identifying the Defendant
+  - section_your_info: Your information
+  - section_privacy: Keeping your information private
+  - section_signature: Signing
+  - section_filing: Filing
 ---
+reconsider: True
 code: |
   attachment_temp = []  
   # Build the 209A package. Up to 8 total forms
@@ -40,51 +47,207 @@ code: |
   
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
+  if need_page1_addendum:
+    attachment_temp.append(page1_addendum)
+  attachment_temp.append( complaint_209A_Affidavit_attachment )  
   # include page 2 only if there are children
   if plaintiff_has_minor_children: 
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
-  attachment_temp.append( complaint_209A_Affidavit_attachment )
-  if wants_child_support_yes:
+    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+      attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
+    
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
   attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
   attachment_temp.append(defendantinformation209A0008_attachment)
-  attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
+  if asked_for_impoundment:
+    attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
   
   final_attachment_bundle = attachment_temp
 ---
 mandatory: True
 code: |
+  set_interview_defaults # Set some things that are true on any 209A
+  
+  ##################### Intro screen
   basic_questions_intro_screen
-  users.there_is_another = False
-  other_parties.there_is_another = False
-  defendant = other_parties # We need this for Affidavit interview currently
-  complaint_209A_labeled_page10003
-  if plaintiff_has_minor_children: 
-    A_complaint_for_protection_from_abuse_probation_copy0005
-  complaint_209A_Affidavit
-  if wants_child_support_yes:
-    Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008  
-  A_Plaintiff_Confidential_Information0011
+  main_209A_package_intro
+  who_protecting_screener # We don't use this yet?  
+  users[0].name.first
+  if who_protecting_screener == "someone else":
+    plaintiff_assistant_relationship_to_plaintiff
+  # plaintiff_is_major_yes # Ask for age
+  if plaintiff_is_major_yes == True:
+    plaintiff_is_major_no = False
+  # plaintiff_assistant_name = DAEmpty()
+    plaintiff_assistant_relationship_to_plaintiff = DAEmpty()   
+  else:
+    plaintiff_is_major_no = True
+    if who_protecting_screener == 'someone else':
+      if plaintiff_assistant_relationship_to_plaintiff not in ('parent', 'guardian','advocate'):
+        refer_to_advocate
+      else:
+        dcf_warning_given
+    else:
+      refer_to_advocate
+  if who_protecting_screener == 'someone else':
+    tell_user_about_first_person_questions   
+    
+  other_parties.there_are_any = True
+  other_parties[0].name.first
+  user_saw_what_to_expect
+
+  ########################## Page 1
+  defendant_and_plaintiff_are_parents_of_child
+  # relationship_to_defendant_unmarried
+  
+  complaint_209A_labeled_page10003 # Page 1
+
+  ############################ Affidavit
+  nav.set_section('section_affidavit')
+  complaint_209A_Affidavit # Main affidavit
+  # From page 1
+  abuse_suffered_date # Filled in with code, I think
+  if plaintiff_has_minor_children:
+    A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
+  if no_abuse_checked:
+    abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
+    # refer_to_258E_resources # Maybe this info is wrong
+
+  ############################ Relief
+  # From page 1
+  order_defendant_stop_abuse_yes # make sure this gets defined, but it will always be True via a code block
+  if not order_defendant_remain_away_plaintiff_residence_yes:
+    If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = DAEmpty()
+  if not order_defendant_pay_yes:
+    losses_caused_by_defendant = DAEmpty()
+    order_defendant_pay_amount = DAEmpty()
+
+  order_impound_plaintiff_address_residential_yes
+  if not order_other_relief_yes: # triggers asking about relief
+    other_relief = DAEmpty()
+
+  order_relief_ex_parte
+
+  ####################### Child support
+  nav.set_section('section_child_support')
+  if plaintiff_has_minor_children and wants_child_support_yes:
+    if not existing_order:
+      Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
+    else:
+      explain_no_child_support
+
+  have_had_paternity_cases = False # We'll reevaluate below
+  have_had_custody_cases  = False
+  # Care or custody proceedings
+
+  nav.set_section('section_care_custody')
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
+    if has_participated_custody_case or know_of_other_custody_case_yes:
+      have_had_custody_cases = True # Skip this for stitchup
+      needs_attorney_signature = False # TODO: double-check this
+      A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
+      for case in other_care_custody_proceedings:
+        if case.case_status == "paternity":
+          have_had_paternity_cases = True          
+          break # One match is good enough
+  
+  # From page 1
+  # Other cases involving P/D but not about the children
+  other_cases.gather()
+
+  ############################## Defendant info
+  # From page 1
+  nav.set_section('section_defendant_info')
+  defendantinformation209A0008_intro
+  defendant_has_alias # redundant to def. information section
+  
   defendantinformation209A0008
-  a_258e_motion_for_impoundment0019
+
+  ########################## Plaintiff info
+  A_Plaintiff_Confidential_Information0011
+  
+  impoundment_intro
+  if asked_for_impoundment:
+    a_258e_motion_for_impoundment0019
+
+  # Set unfilled fields empty, if needed
+  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
+  # mark_unfilled_fields_empty(interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"])
+  # mark_unfilled_fields_empty( interview_metadata["A_Plaintiff_Confidential_Information0011"])
+  # mark_unfilled_fields_empty(interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"])
+    # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  docket_numbers[0]
+  users[0].signature
+  
   final_attachment_bundle
   download_screen
 ---
+if: |
+  who_protecting_screener == "someone else"
 question: |
-  Who do you want protection from?  
+  What is the name of the person who needs the order?
 fields:
-  - First name: other_parties[0].name.first
-  - Middle name: other_parties[0].name.middle
+  - First Name: users[0].name.first
+  - Middle Name: users[0].name.middle
     required: False
-  - Last name: other_parties[0].name.last
-    required: False
-  - Suffix: other_parties[0].name.suffix
-    required: False
+  - Last Name: users[0].name.last
+  - Suffix: users[0].name.suffix
     code: |
       name_suffix()
+    required: False  
+---
+question: |
+  You are helping ${users.familiar()} fill out this form
+subquestion: |
+  Answer the rest of the questions as if you are ${users.familiar()}. 
+  
+  Some answers need to be in ${users.familiar()}'s own words.
+field: tell_user_about_first_person_questions  
 ---
 question: |
   Download screen
 subquestion: |
   ${pdf_concatenate(final_attachment_bundle)}
 event: download_screen  
+
+---
+comment: |
+  Build some variables dynamically
+---
+code: |
+  # There are never 2 defendants or two plaintiffs
+  users.there_is_another = False
+  other_parties.there_is_another = False
+  defendant = other_parties # We need this for Affidavit interview currently
+  confidential_address = True
+
+  set_interview_defaults = True
+---
+code: |
+  # Set no_abuse_checked via the 209A Affidavit questions
+  # Here we set them to the Page1 variables
+  for incident in incidents_of_abuse:
+    if 'fear' in incident.abuse:
+      defendant_abuse_caused_fear_of_serious_physical_harm = True
+    if 'attempted-physical' in incident.abuse:
+      defendant_abuse_attempted_physical_harm = True
+    if 'physical' in incident.abuse:
+      defendant_abuse_caused_physical_harm = True
+    if 'sex' in incident.abuse:
+      defendant_abuse_caused_sexual_assault = True
+
+  defendant_abuse_caused_fear_of_serious_physical_harm = defined('defendant_abuse_caused_fear_of_serious_physical_harm')
+  defendant_abuse_attempted_physical_harm = defined('defendant_abuse_attempted_physical_harm')
+  defendant_abuse_caused_physical_harm = defined('defendant_abuse_caused_physical_harm')
+  defendant_abuse_caused_sexual_assault = defined('defendant_abuse_caused_sexual_assault')
+
+  no_abuse_checked = (not defendant_abuse_caused_fear_of_serious_physical_harm 
+    and not defendant_abuse_attempted_physical_harm
+    and not defendant_abuse_caused_physical_harm
+    and not defendant_abuse_caused_sexual_assault)
+---
+code: |
+  # Refer to the first incident of abuse from the 209A affidavit question
+  abuse_suffered_date = incidents_of_abuse[0].date
+

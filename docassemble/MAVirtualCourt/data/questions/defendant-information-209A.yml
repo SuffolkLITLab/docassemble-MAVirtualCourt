@@ -1,12 +1,12 @@
-mandatory: True
+mandatory: True 
 code: |
   interview_metadata # make sure we initialize the object
   if not defined("interview_metadata['defendantinformation209A0008']"):
     interview_metadata.initializeObject('defendantinformation209A0008')
   interview_metadata['defendantinformation209A0008'].update({
-    'title': 'Defendant-information-209a',
-    'short title': 'Defendant-information-209a',
-    'description': 'Defendant-information-209a',
+    'title': '${other_parties.familiar()}-information-209a',
+    'short title': '${other_parties.familiar()}-information-209a',
+    'description': '${other_parties.familiar()}-information-209a',
     'original_form': 'https://www.mass.gov/doc/defendant-information-form-gl-c-209a-or-258e/download',
     'allowed courts': [
       'Boston Municipal Court',
@@ -36,7 +36,7 @@ code: |
        'transformed_variable': 'str(parents[1])',
       },
       {'variable': 'defendant_phone',
-       'transformed_variable': 'defendants[0].phone_number',
+       'transformed_variable': 'other_parties[0].phone_number',
       },
       {'variable': 'plaintiff_signature',
        'transformed_variable': 'plaintiffs[0].signature',
@@ -279,111 +279,284 @@ code: |
       ],
   })
 ---
+modules:
+  - docassemble.income.income
+---
 objects:
   - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
 ---
 question: |
-  Best places to find Defendant
+  How can police find ${other_parties.familiar()}?
 subquestion: |
-  This information helps the police find the Defendant to give them with a copy of the restraining order.
+  You already told us that ${other_parties.familiar()}'s address is
+  ${other_parties[0].address.on_one_line()}.
+
+  What is the best place and time to find ${other_parties.familiar()}? Are they staying 
+  somewhere else at the moment? Are there places or friends that they visit at a particular
+  time?
 fields:
-  - 'What is the best place and time to find Defendant? Are they staying somewhere else at the moment? Is there places or friends that they visit at a particular time?': other_parties[0].location_information_other
+  - Currently, what is the _best_ place to find ${other_parties.familiar()}?: other_parties[0].location_best
+  - What _time_ is best to find ${other_parties.familiar()}: other_parties[0].best_times_find
+  - Where _else_ can you find ${other_parties.familiar()}?: other_parties[0].locations_other
+  - Write down any other facts that could help police find ${other_parties.familiar()}: other_parties[0].location_information_other
     datatype: area
+    required: False
 ---
 question: |
-  Defendant's Physical Appearance
+  ${other_parties.familiar()}'s Physical Appearance
 subquestion: |
-  Please describe what Defendant looks like by providing the following information.
+  The police will need to be able to identify ${other_parties.familiar()}.
+  Answer the questions below and in the next few questions to tell us more about how they look.
 fields:
-  - 'Can you provide a photo of Defendant?': other_parties[0].photo_yes
+  - 'Can you provide a photo of ${other_parties.familiar()}?': other_parties[0].photo_yes
     datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.
-  - "What is the Defendant's race?": other_parties[0].race
-  - "What is the Defendant's eye color?": other_parties[0].eye_color
-  - "What is the Defendant's hair color?": other_parties[0].hair_color
-  - "What is the Defendant's height?": other_parties[0].height
-  - "What is the Defendant's weight?": other_parties[0].weight
-  - "What is Defendant's build (ex. lanky, stocky, skinny, muscular)": other_parties[0].physical_build
-  - 'Does Defendant have any other physical characteristics (ex. a beard, glasses, tattoo, scars)': other_parties[0].physical_other
-    required: False
+  - Are you ready to upload one now?: other_parties[0].photo_yes_can_upload  
+    datatype: yesnoradio
+    help: |
+      If it is safe, you can use your phone's camera to take
+      a picture of a photo album. We'll attach this to your
+      form to give to the police.
+    show if: other_parties[0].photo_yes  
+  - no label: photo_upload
+    datatype: file
+    show if: other_parties[0].photo_yes_can_upload    
 ---
 question: |
-  Defendant's Physical Location
-subquestion: |
-  Please describe where the police can best find the Defendant by providing the following information.  This information is important so that the police can quickly find the Defendant to give them a copy of the restraining order.
+  ${other_parties.familiar()}'s Physical Appearance
 fields:
-  - "Defendant's Address": other_parties[0].address
-  - 'Defendant address apartment number': other_parties[0].address_apartment
-  - 'Defendant address floor': other_parties[0].address_floor
-  - "What name is on the mailbox at Defendant's address? (write None if none).": other_parties[0].name_door_mailbox
-  - "What is the name of Defendant's employer?": other_parties[0].employer
-  - "What is Defendant's work phone number?": other_parties[0].work_phone
-  - "What is Defendant's specific job/title at work?": other_parties[0].work_title
-  - "Defendant's work address": other_parties[0].work_address
-  - "Defendant's work hours": other_parties[0].work_hours
-  - 'What department does Defendant work in?': other_parties[0].work_department
-  - 'What is the best place to find Defendant?': other_parties[0].location_best
-  - 'What is the best place and time to find Defendant? Is he staying somewhere else at the moment? Is there a certain place or friend that he visits at a particular time? Where are the police most likely to find Defendant now?': other_parties[0].locations_other
-    input type: area
-  - 'What the best time to find the Defendant at the listed locations?': other_parties[0].best_times_find
-  - "Defendant's vehicle license plate number": other_parties[0].vehicle_license_plate
-  - 'Year': other_parties[0].vehicle_year
-  - 'Make': other_parties[0].vehicle_make
-  - 'Model': other_parties[0].vehicle_model
-  - 'Color': other_parties[0].vehicle_color
----
-question: |
-  General Information About the Defendant
-subquestion: |
-  Please provide the following information about the Defendant.
-fields:
-  - 'Defendant Alias': other_parties[0].name_other
+  - "What is  ${other_parties.familiar()}'s race or ethnicity? (check any that apply)": other_parties[0].race
+    datatype: checkboxes
+    choices:
+      - White: White
+      - Black or African American: Black
+      - American Indian or Alaska Native: Native American
+      - Asian: Asian
+      - Native Hawaiian or Other Pacific Islander: Pacific Islander
+      - Hispanic or Latino: Hispanic
+      - Other: other
+  - Other race: other_parties[0].race_other
+    show if: other_parties[0].race["other"]
+  - "What is ${other_parties.familiar()}'s eye color?": other_parties[0].eye_color
+    choices:
+      - Amber: Amber
+      - Blue: Blue
+      - Brown: Brown
+      - Gray: Gray
+      - Green: Green
+      - Hazel: Hazel
+      - Red: Red
+  - Other details about ${other_parties.familiar()}'s eyes: other_parties[0].eye_other
     required: False
-  - 'Defendant Birthplace': other_parties[0].birthplace
-    required: False
-  - 'Defendant Social Security Number (Last Four)': other_parties[0].social_security_number
-    required: False
-  - 'Is Defendant Male': other_parties[0].gender_male_yes
-    datatype: yesnoradio
-  - 'Does Defendant understand English?': other_parties[0].english_yes
-    datatype: yesnoradio
-  - 'What languages other than English does Defendant speak?': other_parties[0].language_other
+  - "What is ${other_parties.familiar()}'s hair color?": other_parties[0].hair_color
+    choices:
+      - Brown: Brown
+      - Blond: Blond
+      - Black: Black
+      - Gray: Gray
+      - Red: Red
+      - White: White
+      - Other: other
+  - Other hair color: other_parties[0].hair_color_other
     show if:
-      variable: other_parties[0].english_yes
+      variable: other_parties[0].hair_color
+      is: "other"
+  - What is the style of ${other_parties.familiar()}'s hair?: other_parties[0].hair_other_style
+    required: False
+    hint: e.g., balding, short, long, sideburns, etc.
+---
+question: |
+  ${other_parties.familiar()}'s Physical Appearance
+fields:
+  - I don't know when ${other_parties.familiar()} was born: dont_know_birthdate
+    datatype: yesno
+  - Birthdate: other_parties[0].birthdate
+    datatype: date
+    hide if: dont_know_birthdate
+  - Best estimate of age (in years): other_parties[0].age
+    datatype: integer
+    show if: dont_know_birthdate
+  - "How tall is ${other_parties.familiar()}?": other_parties[0].height
+    hint: e.g., 5 foot 10 inches
+    validate: |
+      # If the user entry only includes digits, prompt for a unit as well
+      lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 6 foot 1 inch."))
+  - "What is ${other_parties.familiar()}'s weight?": other_parties[0].weight
+    hint: e.g., 180 pounds
+    validate: |
+      lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 180 pounds."))
+  - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
+    help: |
+      You can choose more than one if that is helpful to describe ${other_parties.familiar()}.
+    datatype: checkboxes
+    choices:
+      - Small: Small
+      - Medium: Medium
+      - Large: Large
+      - Lanky: Lanky
+      - Stocky: Stocky
+      - Husky: Husky
+      - Muscular: Muscular
+      - Fat: Fat
+      - Thin: Thin
+  - 'Does ${other_parties.familiar()} have any of the following?': other_parties[0].physical_other
+    required: False
+    datatype: checkboxes
+    choices:
+      - Full beard: Full beard
+      - Goatee: Goatee
+      - Thin mustasche: Thin mustasche
+      - Thick mustache: Thick mustasche
+      - Glasses: Glasses
+      - Tattoo (describe below): Tattooo
+      - Scars: Scars
+      - Acne: Acne
+  - note: |
+      Using your own words, briefly describe anything that would help the police identify ${other_parties.familiar()} that we haven't covered
+  - no label: other_parties[0].physical_other_details      
+    hint: e.g., details about tattoo, unusual walk, etc.
+    required: False
+---
+code: |
+  defendant_race = str(other_parties[0].race.true_values()) + " " + showifdef('other_parties[0].race_other')
+  defendant_eye_color = other_parties[0].eye_color
+  defendant_hair_details = other_parties[0].hair_color + showifdef('other_parties[0].hair_color_other') + showifdef('other_parties[0].hair_other_style')
+  defendant_other_description = str(other_parties[0].physical_other.true_values()) + " " + showifdef('other_parties[0].physical_other_details')
+---
+question: |
+  ${other_parties.familiar()}'s Physical Location
+subquestion: |
+  Please describe where the police can find ${other_parties.familiar()} 
+  by providing the following information.  This information is important so that the police can quickly find ${other_parties.familiar()} 
+  to give them a copy of the restraining order.
+
+  You already told us that ${other_parties.familiar()} lives
+  at ${other_parties[0].address.on_one_line()}.
+fields:
+  - 'What floor is "${other_parties[0].address.on_one_line()}" on?': other_parties[0].address_floor
+    default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
+    required: False
+  - "What name is on the mailbox at ${other_parties.familiar()}'s address? (write None if none).": other_parties[0].name_door_mailbox
+---
+question: |
+  ${other_parties.familiar()}'s work information
+fields:  
+  - ${other_parties.familiar()} is not working: defendant_not_employed
+    datatype: yesno
+    disable others: True    
+  - Name of employer: other_parties[0].employer
+  - Address of employer: other_parties[0].work_address
+    address autocomplete: True
+    required: False
+  - Work phone: other_parties[0].work_phone
+    required: False
+  - Job title / position: other_parties[0].work_title
+    required: False
+  - Department: other_parties[0].work_department
+    required: False  
+  - Work hours: other_parties[0].work_hours
+    required: False
+---
+question: |
+  Information about ${other_parties.familiar()}'s car
+subquestion: |
+  If ${other_parties.familiar()} does not have a car
+  but has a motorcycle, truck, or other vehicle, tell us 
+  about that.
+fields:
+  - ${other_parties.familiar()} does not have a car or other vehicle: other_parties[0].does_not_have_car
+    datatype: yesno
+    disable others: True
+  - 'Color (choose or type different answer)': other_parties[0].vehicle_color
+    datatype: combobox
+    choices:
+      - Black: Black
+      - White: White
+      - Gray: Gray
+      - Silver: Silver
+      - Blue: Blue
+      - Red: Red
+      - Brown: Brown
+      - Gold: Gold
+      - Green: Green
+      - Tan: Tan
+      - Orange: Orange
+    required: False      
+  - 'Make': other_parties[0].vehicle_make
+    hint: e.g., Honda
+    required: False
+  - 'Model': other_parties[0].vehicle_model
+    hint: e.g., Civic
+    required: False
+  - 'Year': other_parties[0].vehicle_year
+    datatype: combobox
+    code: recent_years(20)
+    required: False
+  - "${other_parties.familiar()}'s vehicle license plate number": other_parties[0].vehicle_license_plate
+    required: False
+---
+question: |
+  General Information About ${other_parties.familiar()}
+subquestion: |
+  Please provide the following information about ${other_parties.familiar()}.
+fields:
+  - 'Does ${other_parties.familiar()} understand English?': other_parties[0].understands_english
+    datatype: yesnoradio
+  - 'What languages other than English does ${other_parties.familiar()} speak?': other_parties[0].language_other
+    show if:
+      variable: other_parties[0].understands_english
       is: False
-  - "What is the name of Defendant's mother, using her maiden name?": parents[0]
+  - "What is the name of ${other_parties.familiar()}'s mother, using her maiden name?": parents[0]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other people share his name
-  - "What is the name of Defendant's father?": parents[1]
+      This information is used so the police can find the right ${other_parties.familiar()} if other people share his name
+  - "What is the name of ${other_parties.familiar()}'s father?": parents[1]
     required: False
     help: |
-      This information is used so the police can find the right Defendant if other people share his name
+      This information is used so the police can find the right ${other_parties.familiar()} if other people share his name
+  - ${other_parties.familiar()}'s Birthplace: other_parties[0].birthplace
+    required: False
+  - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
+    required: False
 ---
 question: |
   Information for Service
 subquestion: |
   The following information helps keep you and the police safe during this process. 
 fields:
-  - 'Does Defendant have a history of violence towards police officers?': other_parties[0].police_violence_yes
+  - 'Does ${other_parties.familiar()} have a history of violence towards police officers?': other_parties[0].police_violence_yes
     datatype: yesnoradio
-  - 'Does Defendant have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
+  - 'Does ${other_parties.familiar()} have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
     datatype: yesnoradio
   - 'What drugs or alcohol?': other_parties[0].drug_alcohol_abuse
     show if:
       variable: other_parties[0].drug_alcohol_yes
       is: True
-  - 'Does Defendant have access to guns, ammunition, a license to carry, or an FID card?': other_parties[0].gun_license_carry_possess_yes
-    datatype: yesnoradio
-  - 'Describe which of the above Defendant has access to': other_parties[0].gun_license_carry_possess
-    show if:
-      variable: other_parties[0].gun_license_carry_possess_yes
-      is: True
-  - 'Does Defendant have any mental health problems?': other_parties[0].psychiatric_emotional_problems_yes
+  - 'Does ${other_parties.familiar()} have any mental health problems?': other_parties[0].psychiatric_emotional_problems_yes
     datatype: yesnoradio
   - 'What type of mental health problems?': other_parties[0].psychiatric_emotional_problems
     show if:
       variable: other_parties[0].psychiatric_emotional_problems_yes
       is: True
+---
+question: |
+  ${other_parties.familiar()}'s contact information  
+fields:
+  - Street address: other_parties[0].address.address
+    address autocomplete: True
+  - Unit: other_parties[0].address.unit
+    required: False
+  - City: other_parties[0].address.city
+  - State: other_parties[0].address.state
+    default: MA   
+    code: |
+      states_list()   
+  - Zip: other_parties[0].address.zip  
+  - Cell phone: other_parties[0].mobile_number
+    required: False
+  - Other phone number: other_parties[0].phone_number
+    required: False
+  - Email: other_parties[0].email
+    required: False
 ---
 progress: 100
 # mandatory: True
@@ -405,35 +578,35 @@ attachment code: defendantinformation209A0008_attachment
 need: defendantinformation209A0008
 attachment:
     variable name: defendantinformation209A0008_attachment
-    name: Defendant-information-209a
+    name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age }
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[2-1]) }
-      - "defendant_phone": ${ other_parties[0].phone_number }
-      - "defendant_signature": ${ users[0].signature }
+      - "defendant_phone_home": ${ other_parties[0].phone_number }
+      - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      - "defendant_name_other": ${ other_parties[0].name_other }
+      - "defendant_name_other": ${ other_parties[0].name_other if defendant_has_alias else '' }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }
-      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male }
       - "defendant_photo_yes": ${ other_parties[0].photo_yes }
-      - "defendant_photo_no": ${ other_parties[0].photo_no }
-      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
-      - "defendant_race": ${ other_parties[0].race }
-      - "defendant_eye_color": ${ other_parties[0].eye_color }
-      - "defendant_hair_color": ${ other_parties[0].hair_color }
+      - "defendant_photo_no": ${ not other_parties[0].photo_yes }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female }
+      - "defendant_race": ${ defendant_race }
+      - "defendant_eye_color": ${ defendant_eye_color }
+      - "defendant_hair_color": ${ defendant_hair_details }
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
-      - "defendant_physical_build": ${ other_parties[0].physical_build }
-      - "defendant_physical_other": ${ other_parties[0].physical_other }
+      - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
+      - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address }
-      - "defendant_english_yes": ${ other_parties[0].english_yes }
-      - "defendant_english_no": ${ other_parties[0].english_no }
-      - "defendant_address_apartment": ${ other_parties[0].address_apartment }
+      - "defendant_english_yes": ${ other_parties[0].understands_english }
+      - "defendant_english_no": ${ not other_parties[0].understands_english }
+      - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
       - "defendant_address_floor": ${ other_parties[0].address_floor }
       - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
       - "defendant_language_other": ${ other_parties[0].language_other }
@@ -443,27 +616,29 @@ attachment:
       - "defendant_work_address": ${ other_parties[0].work_address }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
-      - "defendant_location_best": ${ other_parties[0].location_best }
-      - "defendant_locations_other": ${ other_parties[0].locations_other }
-      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      # - "defendant_location_best": ${ other_parties[0].location_best }
+      # - "defendant_locations_other": ${ other_parties[0].locations_other }
+      # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_location_information_other": ${ defendant_location_information_other }
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
       - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
-      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
-      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
-      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
-      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
+      - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
-      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties[0].name_print }
+      - "plaintiff_name": ${ users }
+      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].email}
 ---
 include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
@@ -473,13 +648,34 @@ comment: |
   This question is used to introduce your interview. Please customize
 continue button field: defendantinformation209A0008_intro
 question: |
-  Defendant Information
+  ${other_parties.familiar()} Information
 subquestion: |
-  The  next questions are about the Defendant. This information is used to give (serve) Defendant a copy of the restraining order. The police need to give the Defendant a copy of the restraining order so that the Defendant knows the restraining order exists and so that the Defendant knows when the next court date is.  If the police can't serve the Defendant, you may have to come back to court every ten days until service is done. It is also much harder to prosecute the Defendant for violating the restraining order.  
+  The  next questions are about ${other_parties.familiar()}. This information is used to give (serve) ${other_parties.familiar()} a copy of the restraining order. The police need to give ${other_parties.familiar()} a copy of the restraining order so that ${other_parties.familiar()} knows the restraining order exists and so that ${other_parties.familiar()} knows when the next court date is.  If the police can't serve ${other_parties.familiar()}, you may have to come back to court every ten days until service is done. It is also much harder to prosecute ${other_parties.familiar()} for violating the restraining order.  
   
-  The more information you can provide about the Defendant's usual location, the sooner the order will be served.
+  The more information you can provide about ${other_parties.familiar()}'s usual location, the sooner the order will be served.
   
-  If you see the Defendant, and you know the order has not been served, call the police. The police should not arrest the Defendant, but they will be able to serve the Defendant. Call the police even if you are not afraid.
+  If you see ${other_parties.familiar()}, and you know the order has not been served, call the police. The police should not arrest ${other_parties.familiar()}, but they will be able to serve ${other_parties.familiar()}. Call the police even if you are not afraid.
+# ---
+# question: |
+#   Weapons
+# subquestion: |
+#   Check the following if they are true.
+# fields:
+#   - 'Defendant has a gun': defendant_weapons_guns
+#     datatype: yesno
+#   - 'Defendant has ammunition': defendant_weapons_ammunition
+#     datatype: yesno
+#   - 'Defendant has a firearms identification card': defendant_weapons_firearms_identification_card
+#     datatype: yesno
+#   - 'Defendant has a license to carry': defendant_weapons_license_to_carry
+#     datatype: yesno
+#   - 'Describe the gun(s)': defendant_weapons_description
+#     show if:
+#       variable: defendant_weapons_guns
+#       is: True
+# under: |
+#   This is important so the police can take Defendant's guns.
+# Not sure how to handle this: it's in page 1 but is really defendant information question
 ---
 id: interview_order_defendantinformation209A0008
 code: |
@@ -490,35 +686,66 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
   allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
-  other_parties[0].name_other
-  if not other_parties[0].gender_male_yes:
-    other_parties[0].gender_male_no = True
-  if not other_parties[0].english_yes:
-    other_parties[0].english_no = True
-  if not other_parties[0].photo_yes:
-    other_parties[0].photo_no = True
-  other_parties[0].address
-  if not other_parties[0].police_violence_yes:
-    other_parties[0].police_violence_no = True
+  # other_parties[0].name_other
+  nav.set_section('section_defendant_info_demographics')
+  if other_parties[0].understands_english:
+    other_parties[0].language_other = ''
+
+  nav.set_section('section_defendant_info_appearance')
+  other_parties[0].photo_yes
+  other_parties[0].race
+  other_parties[0].eye_color # Needed if in the skip_sections code
+  other_parties[0].height
+
+  nav.set_section('section_defendant_info_safety')
+  other_parties[0].gun_license_carry_possess_yes = defendant_has_guns.any_true()
+  if not defendant_has_guns.any_true():
+    defendant_weapons_description = DAEmpty()
+  other_parties[0].police_violence_yes
+  
   if not other_parties[0].drug_alcohol_yes:
     other_parties[0].drug_alcohol_no = True
+    other_parties[0].drug_alcohol_abuse = ''
   if not other_parties[0].gun_license_carry_possess_yes:
-    other_parties[0].gun_license_carry_possess_no = True
+    other_parties[0].gun_license_carry_possess = ''
   if not other_parties[0].psychiatric_emotional_problems_yes:
     other_parties[0].psychiatric_emotional_problems_no = True
+    other_parties[0].psychiatric_emotional_problems = ''
+
+  nav.set_section('section_defendant_info_location')
+  other_parties[0].address.address
+  other_parties[0].address_floor  
+  other_parties[0].location_best    
   other_parties[0].location_information_other
-  str(other_parties[0])
-  other_parties[0].birthdate.format()
+
+  nav.set_section('section_defendant_info_employer')
+  if defendant_not_employed:
+    other_parties[0].employer = "N/A"
+    other_parties[0].work_address = ''
+    other_parties[0].work_phone = ''
+    other_parties[0].work_title = ''
+    other_parties[0].work_department = ''
+    other_parties[0].work_hours = ''
+
+  nav.set_section('section_defendant_info_car')    
+  if other_parties[0].does_not_have_car:
+    other_parties[0].vehicle_make = "N/A"
+    other_parties[0].vehicle_color = "N/A"
+    other_parties[0].vehicle_model = "N/A"
+    other_parties[0].vehicle_year = "N/A"
+    other_parties[0].vehicle_license_plate = "N/A"
+  # str(other_parties[0])
+  # other_parties[0].birthdate.format()
   str(parents[0])
   str(parents[1])
-  other_parties[0].phone_number # MB: do we want a phone number required here? It currently is.
-  signature_date
+  # other_parties[0].phone_number # MB: do we want a phone number required here? It currently is.
+  # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
-  defendantinformation209A0008_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  other_parties[0].signature
+  # mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
+  # defendantinformation209A0008_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # other_parties[0].signature
   defendantinformation209A0008 = True
 ---
 continue button field: defendantinformation209A0008_preview_question
@@ -528,37 +755,50 @@ subquestion: |
   Here is a preview of the form you'll sign on the next page. 
   
    ${defendantinformation209A0008_attachment_preview}
+# ---
+# code: |
+#   already_know_defendant_has_guns = defendant_weapons_guns or defendant_weapons_ammunition or defendant_weapons_firearms_identification_card or defendant_weapons_license_to_carry
+#   gun_description_temp = []
+#   if defendant_weapons_guns:
+#     gun_description_temp.append("guns")
+#   if defendant_weapons_ammunition:
+#     gun_description_temp.append("ammunition")
+#   if defendant_weapons_firearms_identification_card:
+#     gun_description_temp.append("a firearm ID card")
+#   if defendant_weapons_license_to_carry:
+#     gun_description_temp.append("a concealed carry license")
+#   gun_description = comma_and_list(gun_description_temp)
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview
-    name: Defendant-information-209a
+    name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
-      - "defendant_phone": ${ other_parties[0].phone_number }
+      - "defendant_phone_home": ${ other_parties[0].phone_number }
       - "signature_date": ${ signature_date }
-      - "defendant_name_other": ${ other_parties[0].name_other }
+      - "defendant_name_other": ${ other_parties[0].name_other  if defendant_has_alias else '' }
       - "defendant_birthplace": ${ other_parties[0].birthplace }
       - "defendant_social_security_number": ${ other_parties[0].social_security_number }
-      - "defendant_gender_male_yes": ${ other_parties[0].gender_male_yes }
+      - "defendant_gender_male_yes": ${ other_parties[0].gender_male }
       - "defendant_photo_yes": ${ other_parties[0].photo_yes }
-      - "defendant_photo_no": ${ other_parties[0].photo_no }
-      - "defendant_gender_female_yes": ${ other_parties[0].gender_female_yes }
-      - "defendant_race": ${ other_parties[0].race }
-      - "defendant_eye_color": ${ other_parties[0].eye_color }
-      - "defendant_hair_color": ${ other_parties[0].hair_color }
+      - "defendant_photo_no": ${ not other_parties[0].photo_yes }
+      - "defendant_gender_female_yes": ${ other_parties[0].gender_female }
+      - "defendant_race": ${ defendant_race }
+      - "defendant_eye_color": ${ defendant_eye_color }
+      - "defendant_hair_color": ${ defendant_hair_details }
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
-      - "defendant_physical_build": ${ other_parties[0].physical_build }
-      - "defendant_physical_other": ${ other_parties[0].physical_other }
+      - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
+      - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address }
-      - "defendant_english_yes": ${ other_parties[0].english_yes }
-      - "defendant_english_no": ${ other_parties[0].english_no }
-      - "defendant_address_apartment": ${ other_parties[0].address_apartment }
+      - "defendant_english_yes": ${ other_parties[0].understands_english }
+      - "defendant_english_no": ${ not other_parties[0].understands_english }
+      - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
       - "defendant_address_floor": ${ other_parties[0].address_floor }
       - "defendant_name_door_mailbox": ${ other_parties[0].name_door_mailbox }
       - "defendant_language_other": ${ other_parties[0].language_other }
@@ -568,24 +808,34 @@ attachment:
       - "defendant_work_address": ${ other_parties[0].work_address }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
-      - "defendant_location_best": ${ other_parties[0].location_best }
-      - "defendant_locations_other": ${ other_parties[0].locations_other }
-      - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      # - "defendant_location_best": ${ other_parties[0].location_best }
+      # - "defendant_locations_other": ${ other_parties[0].locations_other }
+      # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
+      - "defendant_location_information_other": ${ defendant_location_information_other }      
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
       - "defendant_vehicle_model": ${ other_parties[0].vehicle_model }
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
-      - "defendant_police_violence_no": ${ other_parties[0].police_violence_no }
+      - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
-      - "defendant_gun_license_carry_possess_no": ${ other_parties[0].gun_license_carry_possess_no }
+      - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
-      - "defendant_gun_license_carry_possess": ${ other_parties[0].gun_license_carry_possess }
-      - "defendant_psychiatric_emotional_problems_no": ${ other_parties[0].psychiatric_emotional_problems_no }
+      - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
+      - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
-      - "defendant_location_information_other": ${ other_parties[0].location_information_other }
-      - "defendant_name_print": ${ other_parties[0].name_print }
+      - "plaintiff_name": ${ users }
+      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_email: ${other_parties[0].email}
+
+---
+code: |
+  defendant_location_information_other = ("Best place to find: "
+    + other_parties[0].location_best \
+    + ". Best times to find: " + other_parties[0].best_times_find \
+    + ". Other places to find: " + other_parties[0].locations_other \
+    + ". Other information: " + other_parties[0].location_information_other)

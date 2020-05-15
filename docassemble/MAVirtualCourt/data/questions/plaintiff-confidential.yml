@@ -93,6 +93,18 @@ code: |
   })
 ---
 question: |
+  Preferred language
+subquestion: |
+  You have the right to an interpreter. You should ask
+  for an interpreter if you speak some English but are more comfortable
+  in a different language.
+fields:
+  - I want an interpreter: plaintiff_needs_interpreter
+    datatype: yesnoradio
+  - My preferred language is: plaintiff_preferred_language 
+    show if: plaintiff_needs_interpreter
+---
+question: |
   Former Addresses
 subquestion: |
   Have you had to move because of the defendant's abuse?
@@ -113,14 +125,20 @@ continue button field: domestic_violence_shelter_warning
 question: |
   Former or Prior Address
 subquestion: |
-  Provide the address you recently left
+  Provide any address you recently left to avoid abuse from ${other_parties.familiar()}
+
+  If you would need to add more than one, click "${word("Add another")}" to add more.
 fields: 
-  - 'Former addresses you have left to avoid abuse': users[0].address_former
+  - Address: users[0].previous_addresses[i].address
+    address autocomplete: True
+  - Unit:     users[0].previous_addresses[i].unit
     required: False
-  # gather as a group of addresses because there could be many.
-    # hide if:
-      # variable: is_209A # dummy variable. Will need to change when we put the interviews together.
-      # is: True
+  - City: users[0].previous_addresses[i].city
+  - State: users[0].previous_addresses[i].state
+    code: |
+      states_list()
+    default: "MA"    
+list collect: True    
 ---
 question: |
   Apartment building or multi-family home
@@ -139,6 +157,7 @@ fields:
   - 'Your school name': users[0].school_name
     required: False
   - 'School address': users[0].school_address
+    address autocomplete: True
     required: False
 ---
 continue button field: Who_is_allowed_to_see_this_form
@@ -149,6 +168,7 @@ subquestion: |
 fields:
   - 'Name(s)': persons_authorized_confidential_information
     required: False
+    datatype: area
 ---
 continue button field: Workplace
 question: |
@@ -160,6 +180,7 @@ fields:
     required: False
   - 'Work address': users[0].workplace_address
     required: False
+    address autocomplete: True
   - 'Work phone number': users[0].workplace_phone
     required: False
 ---
@@ -194,13 +215,15 @@ attachment:
       - "signature_date": ${ signature_date }
       - "plainitff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
-      - "plaintiff_address_former": ${ users[0].address_former }
+      - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
       - "plaintiff_workplace_address": ${ users[0].workplace_address }
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+      - "plaintiff_needs_interpreter": ${plaintiff_needs_interpreter}
+      - "plaintiff_preferred_language": ${plaintiff_preferred_language if plaintiff_needs_interpreter else ''}
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -229,19 +252,23 @@ code: |
   users[0].address.address
   users[0].apartment_yes
   if abuser_caused_plaintiff_to_leave_home:
-    users[0].address_former
-  users[0].apartment_yes
-  Workplace
-  School
+    users[0].previous_addresses.there_are_any = True
+    users[0].previous_addresses.gather()
+  else:
+    users[0].previous_addresses.there_are_any = False    
+  # users[0].apartment_yes
+  users[0].workplace_name
+  users[0].school_name
   Who_is_allowed_to_see_this_form
+  plaintiff_needs_interpreter
   # users[0].birthdate
-  signature_date
+  # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
-  mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
-  A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
+  # A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   A_Plaintiff_Confidential_Information0011 = True
 ---
 continue button field: A_Plaintiff_Confidential_Information0011_preview_question
@@ -265,11 +292,13 @@ attachment:
       - "signature_date": ${ signature_date }
       #- "plainitff_address_residential": ${ plainitff_address_residential }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
-      - "plaintiff_address_former": ${ users[0].address_former }
+      - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
       - "plaintiff_workplace_address": ${ users[0].workplace_address }
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+      - "plaintiff_needs_interpreter": ${plaintiff_needs_interpreter}
+      - "plaintiff_preferred_language": ${plaintiff_preferred_language if plaintiff_needs_interpreter else ''}
   

@@ -1,0 +1,417 @@
+##########
+# Review screens for the 209A Package
+# See: https://docassemble.org/docs/fields.html#review
+# I like this style: https://docassemble.org/docs/fields.html#review%20customization
+# Each screen is linked to a section heading on the left menu
+
+################################### Basic Facts
+---
+event: section_basic
+question: |
+  Basic facts
+subquestion: |
+  Click below to edit your answers
+review:
+  - Edit who protecting: who_protecting_screener
+    button: |
+      You said this form is to protect
+      % if who_protecting_screener == 'me':
+      You
+      % elif who_protecting_screener == "me and children":
+      You and your children
+      % else:
+      Someone else
+      % endif
+  - Edit name: plaintiff_assistant_relationship_to_plaintiff
+    button: |
+      You said your relationship to ${users} is
+      ${plaintiff_assistant_relationship_to_plaintiff}
+      and your name is ${plaintiff_assistant_name}.
+  - Edit age: plaintiff_is_major_yes
+    button: |
+      You said you
+      % if plaintiff_is_major_yes:
+      are
+      % else:
+      are not
+      % endif
+      18 years or older.      
+  - Edit name:  users[0].name.first
+    button: |
+      Person protected is ${users}
+  - Edit name: other_parties[0].name.first
+    button: |
+      Person you need protection from is ${other_parties}
+  - Edit alias: defendant_has_alias
+    button: |
+      ${other_parties.familiar()}
+      % if defendant_has_alias:
+      has the alias ${other_parties[0].name_other}
+      % else:
+      does not have any other names they go by
+      % endif
+  - Edit age: defendant_is_major
+    button: |
+      You said ${other_parties.familiar()}
+      % if defendant_is_major:
+      is
+      % else:
+      is not
+      % endif
+      18 years or older.
+  - Edit gender:       other_parties[0].gender
+    button: |
+      You said ${other_parties.familiar()}'s
+      gender is "${other_parties[0].gender}".
+########################################### Statement
+---
+event: section_affidavit  
+question: |
+  Your statement
+subquestion: |
+review:
+  - Edit your statement: affidavit_body
+    button: |
+      Here is what your affidavit says right now:
+
+      > ${affidavit_body}
+  - Edit date of abuse: 
+      - incidents_of_abuse[0].date
+      - recompute:
+        - incident_date
+    button: |
+      You told us that the first incident of abuse happened on
+      ${incidents_of_abuse[0].date} in ${incidents_of_abuse[0].year}.
+
+#################################### Children
+---
+continue button field: section_children
+continue button label: ${word("Resume")}
+question: |
+  Review information about your children
+subquestion: |
+  You told us that you
+  % if plaintiff_has_minor_children:
+  do
+  % else:
+  do not
+  % endif
+  have children.
+
+  [Change response](${url_action('plaintiff_has_minor_children')}).
+
+  % if plaintiff_has_minor_children:
+  #### Children you are the parent of
+  ${children.table}
+
+  ${children.add_action()}
+  #### Children who you take care of that you are not the parent of
+  ${children_cares_for.table}
+
+  ${ children_cares_for.add_action() }
+  % endif
+---
+table: children.table
+rows: children
+columns:
+  - Name: |
+      str(row_item)
+  - Birthdate: |
+      row_item.birthdate.format()
+  - Child of ${other_parties.familiar()}: |
+      yesno(row_item.defendant_is_parent).title()
+  - Address: |
+      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if defined('children[' + str(row_index) + '].address') else 'N/A'
+  - Past addresses: |
+      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
+edit:
+  - name.first
+  - birthdate
+  - defendant_is_parent
+---
+table: children.aff_table
+rows: children_of_both
+columns:
+  - Name: |
+      row_item
+  - Address: |
+      row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))
+  - Past addresses: |
+      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
+---
+continue button field: children[i].previous_addresses.review_table
+question: |
+  ${children[i].name.familiar()}'s Past Addresses
+subquestion: |
+  ${children[i].previous_addresses.table}
+
+  ${children[i].previous_addresses.add_action()}
+---
+table: children[i].previous_addresses.table
+rows: children[i].previous_addresses
+columns:
+  - Address: |
+      row_item.on_one_line()
+edit:
+  - address
+  - city
+---
+table: children_cares_for.table
+rows: children_cares_for
+columns:
+  - Name: |
+      str(row_item)
+  - Birthdate: |
+      row_item.birthdate.format()
+  - Child of ${other_parties.familiar()}: |
+      yesno(row_item.defendant_is_parent).title()
+edit:
+  - name.first
+  - birthdate
+  - defendant_is_parent  
+############################# Past care or custody cases
+---
+continue button field: section_care_custody
+question: |
+  Review Care or Custody Proceedings
+subquestion: |
+
+  % if defined('ask_impound_affidavit'):
+  You said you 
+  % if ask_impound_affidavit:
+  do
+  % else:
+  do not
+  % endif
+  want to have the adoption information "impounded" or kept private. ${action_button_html(url_action('ask_impound_affidavit'))}
+  % endif
+
+  #### Addresses for joint children
+  ${children.aff_table}
+
+  #### Past and pending cases involving care or custody
+  ${other_care_custody_proceedings.review_table}
+
+  ${other_care_custody_proceedings.add_action()}
+
+  % if defined('attorneys_for_parents'):
+  #### Attorneys representing a parent in pending cases
+  ${attorneys_for_parents.table}
+  % endif
+
+  % if defined('attorneys_for_children'):
+  #### Attorneys representing a child in pending cases
+  ${attorneys_for_children.table}
+  % endif
+
+  % if defined('gals_investigators'):
+  ${attorneys_for_children.add_action()}
+  #### Guardians ad litem and Investigators working with a child in pending cases
+  ${gals_investigators.table}
+  % endif
+---
+table: attorneys_for_children.table
+rows: attorneys_for_children
+columns:
+  - Name: |
+      row_item
+  - Children representing: |
+      row_item.represented_children
+---
+table: attorneys_for_parents.table
+rows: attorneys_for_parents
+columns:
+  - Name: |
+      row_item
+  - Parent representing: |
+      row_item.represented_party
+---
+table: gals_investigators.table
+rows: gals_investigators
+columns:
+  - Name: |
+      row_item
+  - Children working with: |
+      row_item.represented_children
+---
+table: other_care_custody_proceedings.review_table
+rows: other_care_custody_proceedings
+columns:
+  - Court: |
+      row_item.court_name
+  - Docket: |
+      row_item.docket_number
+  - Status: |
+      row_item.status()
+  - Children: |
+      row_item.children
+  - Other parties: |
+      action_button_html(url_action('other_care_custody_proceedings[' + str(row_index) +' ].review_parties'), label=( str(row_item.other_parties) if len(str(row_item.other_parties)) else word('Edit') ) )
+edit:
+  - court_name
+  - docket_number
+  - is_open
+---
+question: |
+  Review parties for ${other_care_custody_proceedings[i]}
+subquestion: |
+  ${other_care_custody_proceedings[i].review_parties_table}
+
+  ${other_care_custody_proceedings[i].other_parties.add_action()}
+continue button field: other_care_custody_proceedings[i].review_parties
+---
+table: other_care_custody_proceedings[i].review_parties_table
+rows: other_care_custody_proceedings[i].other_parties
+columns:
+  - Name: |
+      str(row_item)
+  - Address: |
+      row_item.address.on_one_line()
+edit:
+  - name.first
+  - address.address            
+############################# Other cases with Defendant
+---
+continue button field: section_cases_with_defendant
+question: |
+  Other cases you had with ${other_parties.familiar()}
+
+###################################### Other party information
+---
+event: section_defendant_info
+question: |
+  Identifying the Defendant
+review:
+  - note: |
+      #### Demographic information about ${other_parties.familiar()}
+  - Edit birthdate: dont_know_birthdate
+    button: |
+      You said ${other_parties.familiar()}
+      % if dont_know_birthdate:
+      is about ${other_parties[0].age} years old.
+      % else:
+      was born on ${other_parties[0].birthdate.format()}.
+      % endif
+  - Edit birthplace: other_parties[0].birthplace
+    button: |
+      Birthplace: ${other_parties[0].birthplace}
+  - Edit name: parents[0]
+    button: |
+      Mother's maiden name/Name of parent 1: ${parents[0]}
+  - Edit name: parents[1]
+    button: |
+      Father's name/Name of parent 2: ${parents[1]}
+  - Edit SSN: other_parties[0].social_security_number
+    button: |
+      You said the last 4 digits of ${other_parties.familiar()}'s
+      SSN are ${other_parties[0].social_security_number}.
+  - Edit language: other_parties[0].understands_english
+    button: |
+      ${other_parties.familiar()}
+      % if other_parties[0].understands_english:
+      understands English.
+      % else:
+      does not understand English, and prefers ${other_parties[0].language_other}.
+      % endif
+  - note: |
+      What ${other_parties.familiar()} looks like
+  - Edit photo status:
+    - other_parties[0].photo_yes
+    button: |
+      You said you
+      % if other_parties[0].photo_yes:
+      do
+      % else:
+      do not
+      % endif
+      have a photo of ${other_parties.familiar()}
+  - Edit photo:
+    - photo_upload    
+    button: |
+      ${photo_upload.show(width="1in")}
+  - Edit race: 
+    - other_parties[0].race
+    - recompute:
+      - defendant_race
+    button: |
+      ${defendant_race}
+  - Edit eye color: other_parties[0].eye_color
+    recompute:
+      - defendant_eye_color
+    button: |
+      ${defendant_eye_color}
+  - Edit hair color:    
+    - other_parties[0].hair_color
+    - recompute:
+      - defendant_hair_details
+    button: |
+      ${other_parties[0].hair_color}
+  - Edit description: 
+    - other_parties[0].physical_other
+    - recompute:
+      - defendant_other_description
+    button: |
+      ${defendant_other_description}
+  - note: |
+      #### Defendant contact information
+  - Edit contact:
+    - other_parties[0].phone_number
+    button: |
+      Phone: ${showifdef('other_parties[0].phone_number')}  
+      Email: ${showifdef('other_parties[0].email')}
+  - Edit address: 
+    - other_parties[0].address.address
+    button: |
+      ${other_parties[0].address.block()}
+  - Edit location:
+    - other_parties[0].location_best
+    - recompute:
+      - defendant_location_information_other
+    button: |
+      ${defendant_location_information_other}
+  - note: |
+      Information about work      
+  - Edit work:
+    - defendant_not_employed
+    button: |
+      You said that ${other_parties.familiar()}          
+      % if defendant_not_employed:
+      is not
+      % else:
+      is
+      % endif
+      working.
+  - Edit employer:
+    - other_parties[0].employer
+    button: |
+      ${other_parties[0].employer}  
+      ${showifdef('other_parties[0].work_address')}  
+      ${showifdef('other_parties[0].work_phone')}  
+      ${showifdef('other_parties[0].work_title')}  
+      ${showifdef('other_parties[0].work_department')}  
+      ${showifdef('other_parties[0].work_hours')}
+  - note: |
+      Information about vehicle
+  - Edit car status:
+    - other_parties[0].does_not_have_car
+  - Edit car:
+    - other_parties[0].vehicle_color
+    button: |
+      ${showifdef('other_parties[0].vehicle_color')}  
+      ${showifdef('other_parties[0].vehicle_make')}  
+      ${showifdef('other_parties[0].vehicle_model')}  
+      ${showifdef('other_parties[0].vehicle_year')}  
+      ${showifdef('other_parties[0].vehicle_license_plate')}
+  - note: |
+      Information for service
+  - Edit service information:
+    - other_parties[0].police_violence_yes
+    button: |
+      History of violence: ${yesno(other_parties[0].police_violence_yes)}  
+      Use of drugs/alcohol: ${yesno(other_parties[0].drug_alcohol_yes)} ${showifdef('other_parties[0].drug_alcohol_abuse')}  
+      Mental health problems: ${yesno(other_parties[0].psychiatric_emotional_problems_yes)} ${showifdef('other_parties[0].psychiatric_emotional_problems')}  
+  - Edit guns:
+    - defendant_has_guns
+    button: |
+      ${defendant_has_guns.true_values()}  ${showifdef('defendant_weapons_description')}  
+      

@@ -29,6 +29,8 @@ objects:
 features:
   question help button: True
 ---
+id: isolated_test_download
+event: affidavit_download
 comment: |
   Hopefully this screen will be unnecessary when merged in to parent
 # mandatory: True
@@ -63,7 +65,10 @@ question: |
 subquestion: |
   The judge needs to understand why you need a 209A order.
   
-  Use the Affidavit form to describe the abuse. 
+  The next few questions will be used to fill in the "209A Affidavit".
+
+  Use the Affidavit form to describe the abuse. The affidavit needs to be in the words
+  of the person who is being protected.
    
   When you sign your name you are declaring, "under penalty of perjury" that what you wrote is true to the best of your knowledge.
 terms:
@@ -117,13 +122,13 @@ code: |
   
   saw_incidents
   
-  
-  str(users[0])
-  signature_date
-  mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
-  complaint_209A_Affidavit_preview_question # Pre-canned preview screen
-  basic_questions_signature_flow
-  users[0].signature
+  # Moved to umbrella 209a package
+  # str(users[0])
+  # signature_date
+  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
+  # complaint_209A_Affidavit_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
   complaint_209A_Affidavit = True
 ---
 comment: |
@@ -145,14 +150,6 @@ subquestion: |
   Tell me about the Defendant.
 fields:
   - 'Defendant Name': defendant
----
-question: |
-  Children
-subquestion: |
-  Do you have any children under eighteen?
-fields:
-  - 'Do you have children under the age of eighteen?': plaintiff_has_minor_children
-    datatype: yesnoradio
 ---
 code: |
   incidents_of_abuse[i].year
@@ -241,30 +238,74 @@ question: |
 subquestion: |
    The 209A complaint form has these 4 boxes on it. 
    
-   We have to check at least one box to get a restraining order.
+   We have to check at least one box to ask for a restraining order.
    
    Use the green button to help you decide the boxes you need to check.
 fields:
   - no label: incidents_of_abuse[i].abuse
     choices:
-      - ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically
-      - ${ defendant } tried to physically hurt me
-      - ${ defendant } physically hurt me
-      - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }
+      - ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically: fear
+      - ${ defendant } tried to physically hurt me: attempted-physical
+      - ${ defendant } physically hurt me: physical
+      - ${ defendant } threatened, pressured or forced me to have sex with ${ defendant }: sex
     datatype: checkboxes
+    none of the above: False
+    minlength: 1
+    validation messages:
+      minlength: |
+        You have to check at least one box to ask for a restraining order.
 help:
   label: Can you give me some examples?
   heading: Can you give me some examples?
   content: |
-    Making you afraid of physical harm includes saying things like "I'll kill you if you leave me," or "If you don't give me the car keys, I'll hit you harder than last time." It can also include waving a gun or knife at you, smashing your furniture, driving recklessly, and hurting or killing your pets. It includes threatening to commit any act of violence, threatening with a fake gun, or bomb threats. 
+    Making you afraid of physical harm includes saying things like "I'll kill
+    you if you leave me," or "If you don't give me the car keys, I'll hit you
+    harder than last time." It can also include waving a gun or knife at you,
+    smashing your furniture, driving recklessly, and hurting or killing your
+    pets. It includes threatening to commit any act of violence, threatening
+    with a fake gun, or bomb threats. 
         
-    Physically hurting you includes shoving, pushing, punching, slapping, kicking, pulling your hair, choking, strangling, throwing things at you, burning you with hot food or cigarettes, stabbing, shooting, or locking you in a room.
-    Threatening, pressuring or forcing you to have sex also includes forced contact with intimate body parts. For children under 18, it can mean any sexual contact.
-    For children under 18, it can mean any sexual contact.
+    Physically hurting you includes shoving, pushing, punching, slapping,
+    kicking, pulling your hair, choking, strangling, throwing things at you,
+    burning you with hot food or cigarettes, stabbing, shooting, or locking you
+    in a room. Threatening, pressuring or forcing you to have sex also includes
+    forced contact with intimate body parts. For children under 18, it can mean
+    any sexual contact. For children under 18, it can mean any sexual contact.
 
-    More - See (Writing Your 209A Affidavit on MassLegalHelp)[https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit]
+    More - See (Writing Your 209A Affidavit on
+    MassLegalHelp)[https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit]
 comment: |
   Should get link for this
+---
+comment: |
+  Used to build the affidavit incidents.
+  We need to use templates to allow translation
+template: text_fear
+content: |
+  ${ defendant } made me AFRAID that ${ defendant } was going to seriously hurt me, physically
+---
+template: text_attempted
+content: |
+  ${ defendant } tried to physically hurt me
+---
+template: text_physical
+content: |
+  ${ defendant } physically hurt me
+---
+template: text_sex
+content: |
+  ${ defendant } threatened, pressured or forced me to have sex with them  
+---
+code: |
+  # We're not using this anymore as of 5/13/2020
+  # Create the placeholder text in a translateable way
+  var_map = {
+    'sex': text_sex.show(),
+    'physical': text_physical.show(),
+    'attempted-physical': text_attempted.show(),
+    'fear': text_fear.show()
+  }
+  incidents_of_abuse[i].description_placeholder = comma_and_list([var_map[key] for key in incidents_of_abuse[i].abuse.true_values()])
 ---
 id: Affidavit description
 question: |
@@ -277,7 +318,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } ${ ", ".join(incidents_of_abuse[i].abuse.true_values()) }.
+      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } :
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -471,6 +512,12 @@ yesno: incidents_of_abuse.there_is_another
 ---
 question: |
   This is what will go into your Affidavit: 
+subquestion: |
+  The affidavit will start with this text:
+
+  > The following is a brief summary of the events 
+  > and does not attempt to capture all the detail 
+  > of the abuse  
 fields:
   - no label: affidavit_body
     input type: area
@@ -479,14 +526,17 @@ fields:
     rows: 10
 field: saw_incidents
 ---
+code: |
+  affidavit_intro = "The following is a brief summary of the events and does not attempt to capture all the detail of the abuse: "
+---
 attachment:
     variable name: complaint_209A_Affidavit_attachment_preview
     name: 209A Complaint Affidavit
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
-      - "affidavit_body": ${ affidavit_body }
-      - "incident_date": ${ incidents_of_abuse[0].date }
+      - "affidavit_body": ${ affidavit_intro + affidavit_body }
+      - "incident_date": ${ incident_date }
 ---
 need: complaint_209A_Affidavit
 attachment:
@@ -496,7 +546,9 @@ attachment:
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
       - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
-      - "affidavit_body": ${ affidavit_body }
-      - "incident_date": ${ incidents_of_abuse[0].date }
+      - "plaintiff_signature": ${ users[0].signature }
+      - "affidavit_body": ${ affidavit_intro + affidavit_body }
+      - "incident_date": ${ incident_date }
 ---
+code: |
+  incident_date = incidents_of_abuse[0].date + ', ' + str(incidents_of_abuse[0].year)
