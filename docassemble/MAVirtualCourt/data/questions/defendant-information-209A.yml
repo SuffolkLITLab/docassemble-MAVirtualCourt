@@ -627,7 +627,7 @@ attachment:
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
       - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
@@ -819,7 +819,7 @@ attachment:
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
       - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }

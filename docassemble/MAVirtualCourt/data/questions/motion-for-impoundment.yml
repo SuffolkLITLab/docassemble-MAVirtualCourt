@@ -185,17 +185,17 @@ fields:
     rows: 5
 ---
 question: |
-  Getting an order without notice to ${other_parties.familiar()}
+  Getting an impoundment order without notice to ${other_parties.familiar()}
 subquestion: |
-  If you need, you can keep this _request_ private.
+  If you need, you can keep this _request to keep information private_
+  (impoundment) private.
 
   The judge may agree to give you an order that keeps your information private
   without letting ${other_parties.familiar()} know about your request in
   advance.
 
-  You can ask for this if you will suffer "immediate and irreparable harm"
-  if the court lets ${other_parties.familiar()} know about this request
-  in advance.
+  You can ask for this if you will suffer "immediate and irreparable harm" if
+  the court lets ${other_parties.familiar()} know about this request in advance.
 
   Do you need an order without giving notice to ${other_parties.familiar()}?
 yesno: impound_information_ex_parte
