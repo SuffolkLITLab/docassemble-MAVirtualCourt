@@ -11,6 +11,7 @@ code: |
   other_parties[0].name.first = "Sam"
   other_parties.there_is_another = False
   defendant = other_parties[0]
+  plaintiff_has_minor_children = True
   
   # Not skipping
   complaint_209A_Affidavit
@@ -24,3 +25,9 @@ code: |
   
   # Access from outside (remove `mandatory`)
   affidavit_test_complete = True
+
+---
+id: placeholder_plaintiff_has_minor_children
+question: Do you have children under 18?
+yesnowide: plaintiff_has_minor_children
+---
