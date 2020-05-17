@@ -34,6 +34,7 @@ objects from file:
 ---
 include:
   - form-actions.yml
+  - cover-page.yml
 ---
 features:
   question help button: True
@@ -233,6 +234,8 @@ question: |
   What is your contact information?
 subquestion: |
   Put in the address the court should use to mail papers to you.
+
+  Include at least one way other than mail for the court to contact you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -244,25 +247,32 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
-  - Phone number: users[0].phone_number
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
     required: False
   - Email address: users[0].email    
     datatype: email
     required: False
-  - How can the court contact you?: users[0].other_contact_method
+  - Contact notes: users[0].other_contact_method
     input type: area
     required: False
     help: |
-      If you do not have a phone number 
-      or email the court can use, provide specific contact instructions. For example, use a friend's phone number. But the friend must be someone you can trust to tell you the court is trying to reach you.
+      If you do not have a phone number or email the court can use, provide
+      specific contact instructions. For example, use a friend's phone number.
+      But the friend must be someone you can trust to tell you the court is
+      trying to reach you.
 validation code: |
-  if (not showifdef('users[0].phone_number') and (not showifdef('users[0].email')) and (not showifdef('users[0].other_contact_method'))):
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].mobile_number')) and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users[0].other_contact_method'))):
     validation_error(word("You need to provide at least one contact method."))
 help: |
   You _must_ provide contact information so the court can reach you.
   
-  Some forms allow you to tell the court you need to keep your address, phone, and email 
-  confidential, so that only court staff can see this information. 
+  Some forms allow you to tell the court you need to keep your address, phone,
+  and email confidential, so that only court staff can see this information. 
 ---
 code: |
   users[0].address.geolocate()
@@ -690,12 +700,18 @@ subquestion: |
   
   STEP 1. Click through this guide to prefill your form.  
   STEP 2. Review the completed form.  
-  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference.  
+  STEP 3. Use this website to submit the form securely to the court and save the
+  form for yourself for later reference.  
   
   If you have immediate questions about this form or the court process, 
   please call the Trial Court’s Emergency HelpLine.  
   
   833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm.
+
+  % if chat_partners_available().help:
+  Live help is currently available in this interview. Click the speech bubble
+  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+  % endif
 
 fields:
   - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
@@ -749,20 +765,41 @@ code: |
   send_icon = "envelope"
 ---
 code: |
-  email_to_use = court_emails.get(courts[0].name,None)
-  if not email_to_use:
+  court_email = court_emails.get(courts[0].name,None)
+  if not court_email:
     found_email = False
   else:
     found_email = True
 ---
+need:
+  - email_to_court_template
+  - court_email
 code: |
-  email_success = True # until we're ready to turn this on
+  if 'dev' in get_config('url root') or 'test' in get_config('url root'):
+    email_to_use = "massaccess@suffolklitlab.org"
+  else:
+    email_to_use = court_email
+
+  if task_not_yet_performed('send email'):
+    log('Sending email to ' + email_to_use + ' for ' + str(users))
+    email_success = True
+    # if showifdef('users[0].email'):
+      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', cc=users[0]) # True # until we're ready to turn this on
+    # else:
+      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email')
+    mark_task_as_performed('send email')
   sent_email_to_court = True
 ---
 id: ready to email
 question: |
   Your form is ready to be delivered to ${courts}.
 subquestion: |
+
+  Here is what the clerk at ${courts} will get:
+
+  ${ final_form_to_file }  
+  [:file-download: Download this form](${final_form_to_file.url_for(attachment=True)})
+
   % if found_email:
   We will deliver it securely.
   % else:
@@ -773,6 +810,7 @@ subquestion: |
   Click continue if you're ready to send it.
 continue button field: ready_to_email
 ---
+need: sent_email_to_court
 id: email status
 question: |
   % if email_success:
@@ -782,7 +820,8 @@ question: |
   % endif
 subquestion: |
   % if email_success:
-  If do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  If you do not hear from the court in 1 business day, call the Trial Court’s
+  Emergency HelpLine 833-91-COURT (833-912-6878). 
   
   The Emergency HelpLine is open:  
   8:30am - 4:30pm,   
@@ -798,12 +837,16 @@ subquestion: |
 continue button field: email_status
 ---
 id: email to court
-template: email_to_court
+template: email_to_court_template
 subject: |
   MassAccess submission from ${users} intended for ${courts[0]}
 content: |
-  On ${today()} at about ${current_datetime().format_datetime()},
+  At ${current_datetime().format_datetime()},
   ${users} submitted the attached form(s).
+
+  % for title in download_titles:
+  * title
+  % endfor
   
   Please contact them to confirm you received the forms:
   
@@ -813,3 +856,27 @@ content: |
   * Email: ${showifdef('user.email')}
   * Other contact method: ${showifdef('user.other_contact_method')}
   % endfor
+---
+imports:
+  - docassemble.MAVirtualCourt # INSTALLED version of the package
+---
+code: |
+  # Build up the package version and try to convey the server and if running from playground (not installed)
+  if 'playground' in interview_url():
+    extra = ', (playground)'
+  if 'test' in get_config('url root'):
+    extra += ', test'
+  if 'dev' in get_config('url root'):
+    extra += ', dev'
+  package_version_number = str(docassemble.MAVirtualCourt.__version__) + extra
+---
+event: review_all_sections
+question: |
+  Review of your answers
+subquestion: |
+  Click a section to revisit the answers from that section.
+  ${ nav.show_sections(style='inline',show_links=True) }
+  Press "Continue" to resume the
+  interview.
+buttons:
+  Continue: continue
