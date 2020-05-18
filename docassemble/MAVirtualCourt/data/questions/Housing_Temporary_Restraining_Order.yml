@@ -38,15 +38,16 @@ code: |
   set_progress(75)
   nav.set_section('users[0].name.first')
   str(users[0])
-  users.gather()
+  users.auto_gather=False
+  users.gathered=True
+  # users.gather()
   nav.set_section('users[0].address.address')
   users[0].address.on_one_line()
   users[0].phone_number
   nav.set_section('other_parties[0].address.address')
   other_parties[0].address.on_one_line()
-  nav.set_section('other_parties[0].phone_number')
-  other_parties[0].phone_number
-  users[0].email
+  # other_parties[0].phone_number
+  # users[0].email
   nav.set_section('signature_date')
   signature_date
   nav.set_section('users[0].signature')
@@ -57,7 +58,7 @@ code: |
   mark_unfilled_fields_empty( interview_metadata["Housing_Temporary_Restraining_Order0002"])
   
   Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
-  nav.set_section('user[0].signature')
+  nav.set_section('users[0].signature')
   signature_fields = get_signature_fields(interview_metadata["Housing_Temporary_Restraining_Order0002"])
   basic_questions_signature_flow
   users[0].signature
@@ -317,7 +318,7 @@ attachment:
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ users }
       - "user_address_on_one_line": ${ users[0].address.on_one_line() }
-      - "user_phone": ${ users[0].phone_number }
+      - "user_phone": ${ users[0].phone_numbers()}
       - "other_party_name_full": ${ str(other_parties[0]) }
       - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
       - "other_party_phone": ${ other_parties[0].phone_number }
@@ -342,7 +343,7 @@ attachment:
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ users[0].phone_number }
+      - "user_phone__2": ${ users[0].phone_numbers() }
       - "user_name_full__3": ${ users }
       - "user_name_full__2": ${ users }
       - "user_signature_verification": ${ users[0].signature }
@@ -465,7 +466,7 @@ attachment:
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ users }
       - "user_address_on_one_line": ${ users[0].address.on_one_line() }
-      - "user_phone": ${ users[0].phone_number }
+      - "user_phone": ${ users[0].phone_numbers() }
       - "other_party_name_full": ${ str(other_parties[0]) }
       - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
       - "other_party_phone": ${ other_parties[0].phone_number }
@@ -489,7 +490,7 @@ attachment:
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ users[0].phone_number }
+      - "user_phone__2": ${ users[0].phone_numbers() }
       - "user_name_full__3": ${ users }
       - "user_name_full__2": ${ users }      
 ---
@@ -508,6 +509,7 @@ code: |
   user_name_full__3 = users[0].name.full()
   user_phone__2 = users[0].phone_number  
 ---
+need: form_to_sign
 continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
   Nearly finished
@@ -518,7 +520,7 @@ subquestion: |
   Don't forget to come back to this page to click to the final step of signing and sending 
   the form to the court. 
   
-   ${Housing_Temporary_Restraining_Order0002_attachment_preview}
+   ${form_to_sign }
 
 progress: 95
 ---
@@ -569,6 +571,7 @@ subquestion: |
 progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
 section: download
+event: download
 ---
 id: persons signature
 question: |
@@ -576,8 +579,28 @@ question: |
 signature: users[0].signature
 under: |
   ${users.familiar()}
-progress: 99  
 
+  [Review form](${url_action('review_all_sections')})
+progress: 99  
+---
+id: persons address
+question: |
+  What is ${ other_parties[0].possessive('address') }?
+fields:
+  - Street address: other_parties[0].address.address
+    address autocomplete: True
+  - Unit: other_parties[0].address.unit
+    required: False
+  - City: other_parties[0].address.city
+  - State: other_parties[0].address.state
+    default: MA   
+    code: |
+      states_list()   
+  - Zip: other_parties[0].address.zip
+  - note: |
+      Please provide a phone number where the court can contact your landlord
+  - Phone: other_parties[0].phone_number
+    required: False
 ---
 sections:
   - Housing_Temporary_Restraining_Order0002_intro: Introduction
@@ -588,7 +611,6 @@ sections:
   - users[0].name.first: Your name
   - users[0].address.address: Your contact information
   - other_parties[0].address.address: Your landlord's contact information
-  - other_parties[0].phone_number: Phone number
   - signature_date: Signature date
   - users[0].signature: Signature  
-  - download: Download
+  - download: Download and Send

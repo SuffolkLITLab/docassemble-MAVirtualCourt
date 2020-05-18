@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value, comma_and_list
+from docassemble.base.functions import define, defined, value, comma_and_list, comma_list
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -51,7 +51,15 @@ class VCIndividual(Individual):
     if not hasattr(self, 'previous_addresses'):
       self.initializeAttribute('previous_addresses', AddressList)
     if not hasattr(self, 'other_addresses'):
-      self.initializeAttribute('other_addresses', AddressList)      
+      self.initializeAttribute('other_addresses', AddressList)
+
+  def phone_numbers(self):
+    nums = []
+    if hasattr(self, 'mobile_number'):
+      nums.append(self.mobile_number + ' (cell)')
+    if hasattr(self, 'phone_number'):
+      nums.append(self.phone_number + ' (other)')
+    return comma_list(nums)
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
