@@ -5,14 +5,13 @@ include:
 question: |
   Tell us some vital statistics
 fields:
-  - Weight: weight
-    validate: |
-      lambda y: True if not y.isnumeric() else validation_error("Please include a unit. E.g., 180 pounds")
-  - Height: height
-    validate: |
-      lambda y: True if not y.isnumeric() else validation_error("Please include a unit. E.g., 6 feet 1 inch")
-  
+  - Options: options
+    datatype: checkboxes
+    choices:
+      - Opt1
+      - Opt2
+      - Opt3
 ---
 question: |
-  ${weight}
+  ${interview_url()}
 mandatory: True
