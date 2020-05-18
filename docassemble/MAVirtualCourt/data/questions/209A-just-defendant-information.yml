@@ -16,6 +16,7 @@ code: |
   other_parties[0].name.first = "Sam"
   other_parties.there_is_another = False
   other_parties.there_is_another = False  # just to be safe
+  signature_date = today()
 
   # Skip specific
   defendant_has_alias = True  # Tester will set alias
@@ -74,11 +75,12 @@ subquestion: |
   Note: These gun and alias values are especially bad at testing
   full interview functionality
 fields:
-  - Does the defendant have guns?: defendant_has_guns
+  - no label: defendant_has_guns
     datatype: checkboxes
+    required: False
     none of the above: False
     choices:
-      - Yes: Yes
+      - The defendant has guns: Yes
   - What kinds of guns?: kinds_of_weapons
     required: False
   - Defendant's alias: other_parties[0].name_other

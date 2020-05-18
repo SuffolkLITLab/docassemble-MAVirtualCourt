@@ -22,8 +22,10 @@ code: |
   courts[0] = macourts[0]
   users[0].name.first = "Pat"
   users[0].name.last = "Kim"
+  users.there_is_another = False
   other_parties[0].name.first = "Sam"
   other_parties.there_is_another = False
+  signature_date = today()
   # auto kids
   wants_custody_of[0].name.first = "Lee"
   wants_custody_of.there_is_another = False

@@ -11,9 +11,10 @@ code: |
   other_parties[0].name.first = "Sam"
   other_parties.there_is_another = False
   defendant = other_parties[0]
-  plaintiff_has_minor_children = True
+  signature_date = today()
   
   # Not skipping
+  plaintiff_has_minor_children
   complaint_209A_Affidavit
   signature_date
   complaint_209A_Affidavit_preview_question # Pre-canned preview screen
@@ -28,6 +29,6 @@ code: |
 
 ---
 id: placeholder_plaintiff_has_minor_children
-question: Do you have children under 18?
-yesnowide: plaintiff_has_minor_children
+question: Tester, do want to test with plaintiff having children under 18?
+yesno: plaintiff_has_minor_children
 ---
