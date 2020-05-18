@@ -896,8 +896,7 @@ question: |
   Review of your answers
 subquestion: |
   
-  {showifdef('form_to_sign')}
-  ${form_to_sign}
+  ${showifdef('form_to_sign')}
 
   % if defined('form_delivery_complete'):
   **Warning: your form has already been delivered.** Any changes you make
@@ -905,20 +904,12 @@ subquestion: |
 
   % endif
   Click a section to revisit the answers from that section.
-  ${ nav.show_sections(style='inline',show_links=True) }
+
+  % for section in section_links(nav):
+  * ${section}
+  % endfor
+  
   Press "Continue" to resume the
   interview.
 buttons:
   Continue: continue
-css: |
-  <style>
-    .btn {
-      transition: none;
-      transition-delay : 0s;
-      transition-duration : 0s;
-      transition-property : none;
-      transition-delay: 0s;
-      transition-duration: 0s;
-      transition-property: none;      
-    }
-  </style>  

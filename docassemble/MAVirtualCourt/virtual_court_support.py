@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value, comma_and_list, comma_list
+from docassemble.base.functions import define, defined, value, comma_and_list, comma_list, DANav, url_action
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -220,3 +220,14 @@ def filter_letters(letter_strings):
     for letter in string:
       unique_letters.add(letter)
   return ''.join(sorted(unique_letters))
+
+
+def section_links(nav):
+  """Returns a list of clickable navigation links without animation."""
+  sections = nav.get_sections()
+  section_link = []
+  for section in sections:
+    for key in section:
+      section_link.append('[' + section[key] + '](' + url_action(key) + ')' )
+
+  return section_link    
