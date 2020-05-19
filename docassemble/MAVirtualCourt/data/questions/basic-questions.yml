@@ -885,6 +885,7 @@ imports:
 ---
 code: |
   # Build up the package version and try to convey the server and if running from playground (not installed)
+  extra = ''
   if 'playground' in interview_url():
     extra = ', (playground)'
   if 'test' in get_config('url root'):
