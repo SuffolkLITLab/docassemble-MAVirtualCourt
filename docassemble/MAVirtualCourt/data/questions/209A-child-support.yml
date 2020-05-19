@@ -301,7 +301,7 @@ fields:
       - I promise that my answers on this form are the truth under penalties of perjury
     validation messages:
       minlength: |
-        You cannot continue unless you agree to tell the truth.
+        You cannot keep going unless you agree that you will tell the truth.
 ---
 question: |
   Your Insurance Expenses

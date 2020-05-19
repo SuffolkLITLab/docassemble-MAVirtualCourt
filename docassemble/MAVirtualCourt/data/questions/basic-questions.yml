@@ -6,6 +6,8 @@ metadata:
   title url: https://massaccess.suffolklitlab.org/
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
+  continue button label: |
+    Next
 ---
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
@@ -770,7 +772,7 @@ subquestion: |
   locate the contact information for this court.
   % endif
   
-  Click continue if you're ready to send it.
+  Click "Next" if you're ready to send it.
 continue button field: ready_to_email
 ---
 id: email status
