@@ -303,14 +303,14 @@ code: |
   wants_no_contact_for6_age = wants_no_contact_for.item(6-1).age_in_years()
 
   hack_reasons_for_no_contact = showifdef('hack_reasons_for_no_contact', '')
-  reasons_no_contact = hack_reasons_for_no_contact
+  reasons_no_contact = reasons_for_no_contact_cutoff
 
   keep_away_from_schools_daycares = schools_to_stay_away_from.there_are_any
   # TODO: Does this need special DA treatment
   school_strings = []
   for school in schools_to_stay_away_from:
     school_strings.append( str(school) + ' ' + school.address.on_one_line() )
-  schools_to_stay_away_from_pdf = comma_and_list( school_strings )
+  schools_to_stay_away_from_pdf = comma_and_list( school_strings_cutoff )
 
   permit_visitation_yes = no_visitation_restrictions
   prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
@@ -939,27 +939,27 @@ code: |
   txtFieldsList_page2 = list()      
   Limit1 = 75
   sLimit1 = Limit1 - 16   
-  need_custody_addendum = len(custody_request_reasons) > Limit1
-  if need_custody_addendum:    
-    custody_request_reasons_cutoff = custody_request_reasons[:sLimit1] + " (See Addendum.)" 
+  need_noContact_addendum = len(reasons_for_no_contact) > Limit1
+  if need_noContact_addendum:    
+    reasons_for_no_contact_cutoff = reasons_for_no_contact[:sLimit1] + " (See Addendum.)" 
     txtFieldsList_page2.append(
       {'title': 'C. CUSTODY - The specific reasons for this request are:',
-      'value': [custody_request_reasons_cutoff]
+      'value': [reasons_for_no_contact_cutoff]
       })
   else:
-    custody_request_reasons_cutoff = custody_request_reasons
+    reasons_for_no_contact_cutoff = reasons_for_no_contact
     
   Limit2 = 70
   sLimit2 = Limit2 - 16   
-  need_school_addendum = len(school_name_address_daycare_name_address) > Limit2
+  need_school_addendum = len(school_strings) > Limit2
   if need_school_addendum:    
-    school_name_address_daycare_name_address_cutoff = school_name_address_daycare_name_address[:sLimit2] + " (See Addendum.)" 
+    school_strings_cutoff = school_strings[:sLimit2] + " (See Addendum.)" 
     txtFieldsList_page2.append(
       {'title': 'D. CONTACT WITH CHILDREN - I ask the Court to order the Defendant remain away from the following school(s) and day care(s):',
-      'value': [school_name_address_daycare_name_address_cutoff]
+      'value': [schools_to_stay_away_from_pdf]
       })
   else:
-    school_name_address_daycare_name_address_cutoff = school_name_address_daycare_name_address
+    school_strings_cutoff = school_strings
   
   addAddendum_page2 = False
   if txtFieldsList_page2: #if the list is not empty
