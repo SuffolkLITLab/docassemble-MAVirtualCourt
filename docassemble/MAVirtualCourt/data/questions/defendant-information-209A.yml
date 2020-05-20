@@ -602,7 +602,7 @@ attachment:
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
-      - "defendant_physical_other": ${ defendant_other_description }
+      - "defendant_physical_other": ${ defendant_other_description_cutoff }
       - "defendant_address": ${ other_parties[0].address }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
@@ -619,7 +619,7 @@ attachment:
       # - "defendant_location_best": ${ other_parties[0].location_best }
       # - "defendant_locations_other": ${ other_parties[0].locations_other }
       # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
-      - "defendant_location_information_other": ${ defendant_location_information_other }
+      - "defendant_location_information_other": ${ defendant_location_information_other_cutoff }
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
@@ -629,13 +629,13 @@ attachment:
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
-      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
+      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse_cutoff }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
-      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
+      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems_cutoff }
       - "plaintiff_name": ${ users }
       - defendant_phone : ${other_parties[0].phone_number}
       - defendant_email: ${other_parties[0].email}
@@ -794,7 +794,7 @@ attachment:
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
-      - "defendant_physical_other": ${ defendant_other_description }
+      - "defendant_physical_other": ${ defendant_other_description_cutoff }
       - "defendant_address": ${ other_parties[0].address }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
@@ -811,7 +811,7 @@ attachment:
       # - "defendant_location_best": ${ other_parties[0].location_best }
       # - "defendant_locations_other": ${ other_parties[0].locations_other }
       # - "defendant_best_times_find": ${ other_parties[0].best_times_find }
-      - "defendant_location_information_other": ${ defendant_location_information_other }      
+      - "defendant_location_information_other": ${ defendant_location_information_other_cutoff }      
       - "defendant_vehicle_license_plate": ${ other_parties[0].vehicle_license_plate }
       - "defendant_vehicle_year": ${ other_parties[0].vehicle_year }
       - "defendant_vehicle_make": ${ other_parties[0].vehicle_make }
@@ -821,13 +821,13 @@ attachment:
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
       - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
-      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse }
+      - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse_cutoff }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess_yes": ${ other_parties[0].gun_license_carry_possess_yes }
       - "defendant_gun_license_carry_possess": ${ defendant_weapons_safe_for_pdf }
       - "defendant_psychiatric_emotional_problems_no": ${ not other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
-      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
+      - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems_cutoff }
       - "plaintiff_name": ${ users }
       - defendant_phone : ${other_parties[0].phone_number}
       - defendant_email: ${other_parties[0].email}
@@ -839,3 +839,70 @@ code: |
     + ". Best times to find: " + other_parties[0].best_times_find \
     + ". Other places to find: " + other_parties[0].locations_other \
     + ". Other information: " + other_parties[0].location_information_other)
+    
+---
+comment: Addenda related code. 
+code: |  
+  txtFieldsList_defendant = list()      
+  Limit1 = 50
+  sLimit1 = Limit1 - 16   
+  need_defendant_addendum = len(defendant_other_description) > Limit1
+  if need_defendant_addendum:    
+    defendant_other_description_cutoff = defendant_other_description[:sLimit1] + " (See Addendum.)" 
+    txtFieldsList_defendant.append(
+      {'title': 'OTHER PHYSICAL CHARACTERISTICS',
+      'value': [defendant_other_description_cutoff]
+      })
+  else:
+    defendant_other_description_cutoff = defendant_other_description
+    
+  Limit2 = 25
+  sLimit2 = Limit2 - 16   
+  need_drug_addendum = len(other_parties[0].drug_alcohol_abuse) > Limit2
+  if need_drug_addendum:    
+    other_parties[0].drug_alcohol_abuse_cutoff = other_parties[0].drug_alcohol_abuse[:sLimit2] + " (See Addendum.)" 
+    txtFieldsList_defendant.append(
+      {'title': 'History of using and/or abusing drugs and/or alcohol',
+      'value': [other_parties[0].drug_alcohol_abuse_cutoff]
+      })
+  else:
+    other_parties[0].drug_alcohol_abuse_cutoff = other_parties[0].drug_alcohol_abuse
+    
+  Limit3 = 25
+  sLimit3 = Limit3 - 16   
+  need_psychiatric_addendum = len(other_parties[0].psychiatric_emotional_problems) > Limit3
+  if need_psychiatric_addendum:    
+    other_parties[0].psychiatric_emotional_problems_cutoff = other_parties[0].psychiatric_emotional_problems[:sLimit3] + " (See Addendum.)" 
+    txtFieldsList_defendant.append(
+      {'title': 'Mental health problems',
+      'value': [other_parties[0].psychiatric_emotional_problems_cutoff]
+      })
+  else:
+    other_parties[0].psychiatric_emotional_problems_cutoff = other_parties[0].psychiatric_emotional_problems
+  
+  Limit4 = 500
+  sLimit4 = Limit4 - 16   
+  need_location_addendum = len(defendant_location_information_other) > Limit4
+  if need_location_addendum:    
+    defendant_location_information_other_cutoff = defendant_location_information_other[:sLimit4] + " (See Addendum.)" 
+    txtFieldsList_defendant.append(
+      {'title': 'ANY OTHER INFORMATION WHICH MIGHT BE HELFPUL IN LOCATING THE DEFENDANT',
+      'value': [defendant_location_information_other_cutoff]
+      })
+  else:
+    defendant_location_information_other_cutoff = defendant_location_information_other
+    
+  if other_parties[0].photo_yes_can_upload:
+    txtFieldsList_defendant.append(
+      {'title': 'Uploaded defendant photo',
+      'value': [photo_upload]
+      })
+  
+  addAddendum_defendant = False
+  if txtFieldsList_defendant: #if the list is not empty
+    addAddendum_defendant = True
+---
+if: addAddendum_defendant
+attachment:
+  - variable name: defendant_addendum
+    docx template file: 209A_defendant_addendum.docx

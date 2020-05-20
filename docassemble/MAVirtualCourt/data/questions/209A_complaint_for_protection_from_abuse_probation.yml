@@ -934,3 +934,38 @@ attachment:
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
       - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
+comment: Addenda related code. 
+code: |  
+  txtFieldsList_page2 = list()      
+  Limit1 = 75
+  sLimit1 = Limit1 - 16   
+  need_custody_addendum = len(custody_request_reasons) > Limit1
+  if need_custody_addendum:    
+    custody_request_reasons_cutoff = custody_request_reasons[:sLimit1] + " (See Addendum.)" 
+    txtFieldsList_page2.append(
+      {'title': 'C. CUSTODY - The specific reasons for this request are:',
+      'value': [custody_request_reasons_cutoff]
+      })
+  else:
+    custody_request_reasons_cutoff = custody_request_reasons
+    
+  Limit2 = 70
+  sLimit2 = Limit2 - 16   
+  need_school_addendum = len(school_name_address_daycare_name_address) > Limit2
+  if need_school_addendum:    
+    school_name_address_daycare_name_address_cutoff = school_name_address_daycare_name_address[:sLimit2] + " (See Addendum.)" 
+    txtFieldsList_page2.append(
+      {'title': 'D. CONTACT WITH CHILDREN - I ask the Court to order the Defendant remain away from the following school(s) and day care(s):',
+      'value': [school_name_address_daycare_name_address_cutoff]
+      })
+  else:
+    school_name_address_daycare_name_address_cutoff = school_name_address_daycare_name_address
+  
+  addAddendum_page2 = False
+  if txtFieldsList_page2: #if the list is not empty
+    addAddendum__page2 = True
+---
+if: addAddendum__page2
+attachment:
+  - variable name: page2_addendum
+    docx template file: 209A_page2_addendum.docx
