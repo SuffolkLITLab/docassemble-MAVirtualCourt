@@ -215,7 +215,6 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
         except:
           pass
 
-
 def filter_letters(letter_strings):
   """Used to take a list of letters like ["A","ABC","AB"] and filter out any duplicate letters."""
   # There is probably a cute one liner, but this is easy to follow and
@@ -225,3 +224,13 @@ def filter_letters(letter_strings):
     for letter in string:
       unique_letters.add(letter)
   return ''.join(sorted(unique_letters))
+
+def yes_no_unknown(val, condition, unknown="Unknown", placeholder=0):
+  """Return 'unknown' if the value is None rather than False. Helper for PDF filling with
+  yesnomaybe fields"""
+  if condition:
+    return val
+  elif condition is None:
+    return unknown
+  else:
+    return placeholder
