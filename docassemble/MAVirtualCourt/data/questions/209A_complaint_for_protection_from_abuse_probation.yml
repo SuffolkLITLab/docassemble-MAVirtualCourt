@@ -137,6 +137,7 @@ data:
     field_type: text
     field_data_type: date
 ---
+reconsider: True
 code: |
   children_of_both = children.filter(defendant_is_parent = True)
   children_of_both.gathered = True

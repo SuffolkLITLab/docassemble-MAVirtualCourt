@@ -104,7 +104,6 @@ fields:
   - Middle name: other_parties[0].name.middle
     required: False
   - Last name: other_parties[0].name.last
-    required: False
   - Suffix: other_parties[0].name.suffix
     required: False
     code: |
@@ -282,11 +281,11 @@ code: |
 #     datatype: yesno
 #   - 'None of the above. SHOULD WE JUST REMOVE THIS?': no_abuse_checked
 #     datatype: yesno
----    
-question: |
-  When did ${other_parties.familiar()} abuse you?
-fields:
-  - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
+# ---    
+# question: |
+#   When did ${other_parties.familiar()} abuse you?
+# fields:
+#   - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
 ---
 question: |
   What are you asking for?
@@ -481,9 +480,9 @@ help:
 question: |
   Weapons
 subquestion: |
-  The police need to know if ${users.familiar()} has guns.
+  The police need to know if ${other_parties.familiar()} has guns.
 
-  Does ${users.familiar()} have access or possess any of the following?
+  Does ${other_parties.familiar()} have access or possess any of the following?
 fields:
   - no label: defendant_has_guns
     datatype: checkboxes
@@ -916,12 +915,12 @@ attachment:
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
+      - "order_defendant_pay_amount": ${ order_defendant_pay_amount if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -987,12 +986,12 @@ attachment:
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
+      - "order_defendant_pay_amount": ${ order_defendant_pay_amount if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---

@@ -14,5 +14,5 @@ fields:
   
 ---
 question: |
-  ${weight}
+  ${children.does_verb("do")}
 mandatory: True

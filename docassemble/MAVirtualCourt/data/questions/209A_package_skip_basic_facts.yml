@@ -368,8 +368,8 @@ code: |
   users[0].workplace_phone = "555-7777"
   users[0].school_name = "Greendale"
   users[0].school_address = "123 Fake St, Boston, MA"
-  plaintiff_needs_interpreter = True
-  plaintiff_preferred_language = "American Sign Language"
+  user_needs_interpreter = True
+  user_preferred_language = "American Sign Language"
   persons_authorized_confidential_information = "My best friend"
   Who_is_allowed_to_see_this_form = True
   skip_plaintiff_information = True

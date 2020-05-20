@@ -92,27 +92,32 @@ code: |
   # This is a placeholder to control logic flow in this interview
   # It was generated from interview_generator.py as an 'interview order' type question.  
   basic_questions_intro_screen 
-  A_affidavit_disclosing_care_or_custody_proceedings0009_intro
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
   allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
-  courts.gather()
-  str(courts[0])
-  fill_in_court_name
+  # courts.gather()
+  # str(courts[0])
+  # fill_in_court_name
   defendants.there_are_any = True  
   case_name
   # children.there_are_any = True
   # children.gather()
   assigned_letters # Give each "children_of_both" a letter from A-Z
-  explain_addresses_of_children  # Take out for standalone
-  for child in children_of_both:
-    child.child_complete
+  # explain_addresses_of_children  # Take out for standalone
+  # for child in children_of_both: # Enable this for standalone
+  #   child.child_complete
   # child1_name_last_first
   confidential_address
-  for child in children_of_both:
-    child.address.on_one_line()  
+  # for child in children_of_both:
+  #   child.address.on_one_line()  
   has_participated_custody_case
   other_care_custody_proceedings.gather()
+  for case in other_care_custody_proceedings:
+    if case.is_open:
+      case.atty_for_user
+      if case.has_gal:
+        case.gals.gather()
   if have_pending_cases:
     explain_why_asking_about_attorneys
     attorneys_for_parents.gather()
@@ -822,100 +827,174 @@ code: |
 code: |
   other_care_custody_proceedings.there_are_any = has_participated_custody_case_yes or know_of_other_custody_case_yes
 ---
+comment: |
+  Build an AJAX input that lists all of the trial court departments, excluding housing
+event: list_family_courts_ajax
+code: |
+  set_save_status('ignore')
+  wordstart = action_argument('wordstart').lower()
+  results = []
+  for court in macourts.filter_courts([
+      'Boston Municipal Court',
+      'District Court',
+      'Juvenile Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ]):
+    for word in court.name.split(" "):
+      if word.lower().startswith(wordstart):
+        results.append(court.name)
+  json_response(results)
+---
 question: |
-  Tell us about the ${ordinal(i)} case involving ${children_of_both}
+  Tell us about the ${ordinal(i)} case involving ${comma_and_list(children_of_both, and_string=word("or"))}
 subquestion: |
-  Include all of the information that you know about this case.
+  Include the best information you know. It is okay to leave information blank
+  if you're not sure, or to write down what you remember.
+
+  Only include information about cases that involve the children.
 
   You will have a chance to add more cases later.
 fields:  
+  - What is the best description of this case (you do not need to be exact): other_care_custody_proceedings[i].case_status
+    choices:
+      - A different 209A restraining order: different 209A restraining order
+      - Adoption: adoption
+      - Annulment: annulment
+      - Care and protection: care and protection
+      - Child Requiring Assistance (CRA): CRA
+      - Custody/Support/Parenting time: custody/support/parenting time
+      - Custody/Support/Visitation: custody/support/visitation
+      - Complaint to establish paternity: paternity
+      - Divorce: divorce
+      - Guardianship: guardianship
+      - Separate support or other legal separation: separate support or legal separation
+      - Other: other
+  - This case happened outside of Massachusetts: other_care_custody_proceedings[i].non_ma_court
+    datatype: yesno    
+  - Name of court this case was filed in: other_care_custody_proceedings[i].court_name
+    show if: other_care_custody_proceedings[i].non_ma_court
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
+    hint: Start typing a court name
+    input type: ajax
+    action: list_family_courts_ajax
+    trigger at: 2
+    hide if: other_care_custody_proceedings[i].non_ma_court
+    help: |
+      If you can't find your court above, try using the [Courthouse locator](https://www.mass.gov/courthouse-locator)
   - Docket number or case number: other_care_custody_proceedings[i].docket_number
     required: False
   - Which children were involved in this case?: other_care_custody_proceedings[i].children
     datatype: object_checkboxes
     choices: |
       children_of_both
+    none of the above: False
+    minlength: 1
     show if:
       code: |
         len(children_of_both) > 1
-  - How were you involved in this case?: other_care_custody_proceedings[i].user_role
+  - What was your role in this case?: other_care_custody_proceedings[i].user_role
+    datatype: radio
     choices:
       - Witness: W
       - Party: P
       - Other: O
       - I was not involved: N
     default: ${'N' if not has_participated_custody_case_yes else ''}
-  - Was ${other_parties} part of this case?: other_care_custody_proceedings[i].op_was_party
-    datatype: yesnoradio
-  # We need to add more options to this list, and sync it up with the case.status() method
-  - What is the best description of this case: other_care_custody_proceedings[i].case_status
+    hide if: 
+      variable: other_care_custody_proceedings[i].case_status
+      is: adoption
+  - Who else was part of this case?: other_care_custody_proceedings[i].other_party_types
+    datatype: checkboxes
     choices:
-      - Adoption: adoption
-      - Custody: custody
-      - Paternity: paternity
-      - Care and protection: care
-      - Guardianship: guardianship
-      - Other: other
+      - ${other_parties.familiar()}: defendant
+      - Department of Children and Families: dcf
+      - Someone else (like a grandparent): other
   - Is this case still open?: other_care_custody_proceedings[i].is_open
     datatype: yesnoradio
     help: |
       Answer "yes" if the case is still ongoing. Choose no if a judge made a final decision,
       even if you or another person plans to appeal to it.
+  - Was custody awarded?: other_care_custody_proceedings[i].custody_awarded
+    js hide if: |
+      val("other_care_custody_proceedings[i].case_status") == "adoption" || val("other_care_custody_proceedings[i].is_open")
+    datatype: yesnoradio      
   - Who was given custody?: other_care_custody_proceedings[i].person_given_custody
     js show if: |
-      val("other_care_custody_proceedings[i].case_status") == "custody" && !val("other_care_custody_proceedings[i].is_open")
+      !(val("other_care_custody_proceedings[i].case_status") == "adoption") && val("other_care_custody_proceedings[i].custody_awarded")
   - Date custody was given: other_care_custody_proceedings[i].date_of_custody
     datatype: date
     js show if: |
-      val("other_care_custody_proceedings[i].case_status") == "custody" && !val("other_care_custody_proceedings[i].is_open")
-  - What happened in this case?: other_care_custody_proceedings[i].what_happened
-    show if:
-      variable: other_care_custody_proceedings[i].is_open
-      is: False
-    help: |
-      Give a one sentence description.
+      !(val("other_care_custody_proceedings[i].case_status") == "adoption")  && val("other_care_custody_proceedings[i].custody_awarded")
 validation code: |
   # We don't ask the user to select which child is in the case if
   # there is only one child. Below code adds the child to the appropriate
   # list so we can write more general code.
   if len(children_of_both) == 1:
     other_care_custody_proceedings[i].children = children_of_both
+  
+  # Prepopulate the list of other parties involved in this case
+  if other_care_custody_proceedings[i].other_party_types.any_true():
+    other_care_custody_proceedings[i].other_parties.clear()
+    if other_care_custody_proceedings[i].other_party_types["defendant"]:
+      other_care_custody_proceedings[i].other_parties.there_are_any=True
+      other_care_custody_proceedings[i].other_parties.append(other_parties[0])
+    if other_care_custody_proceedings[i].other_party_types["dcf"]:
+      other_care_custody_proceedings[i].other_parties.there_are_any=True      
+      dcf = other_care_custody_proceedings[i].other_parties.appendObject()
+      dcf.name.first = "Department of Children and Families"
+      dcf.address = DAEmpty()
+    if other_care_custody_proceedings[i].other_party_types["other"]:
+      other_care_custody_proceedings[i].other_parties.there_are_any=True
+    else:
+      if other_care_custody_proceedings[i].other_party_types["defendant"]:
+        other_care_custody_proceedings[i].other_parties.there_are_any=True
+        other_care_custody_proceedings[i].other_parties.append(other_parties[0])
+      if other_care_custody_proceedings[i].other_party_types["dcf"]:
+        other_care_custody_proceedings[i].other_parties.there_are_any=True      
+        dcf = other_care_custody_proceedings[i].other_parties.appendObject()
+        dcf.name.first = "Department of Children and Families"
+        dcf.address = DAEmpty()
+      other_care_custody_proceedings[i].other_parties.auto_gather=False
+      other_care_custody_proceedings[i].other_parties.gathered=True
+  else:
+    other_care_custody_proceedings[i].other_parties.there_are_any=False
+    
+# ---
+# question: |
+#   Who else was involved in this case?
+# subquestion: |
+#   For the ${ordinal(i)} case, ${other_care_custody_proceedings[i]}:
+#   Is there anyone _other than_ you or ${other_parties.familiar()} who 
+#   was a party to this case? For example, a grandparent or other parent of the child.
+# yesno: other_care_custody_proceedings[i].other_parties.there_are_any
 ---
 question: |
   Who else was involved in this case?
 subquestion: |
-  For the ${ordinal(i)} case, ${other_care_custody_proceedings[i]}:
-  Is there anyone _other than_ you or ${other_parties.familiar()} who 
-  was a party to this case? For example, a grandparent or other parent of the child.
-yesno: other_care_custody_proceedings[i].other_parties.there_are_any
----
-question: |
-  Who else was involved in this case?
-subquestion: |
+  % if len(other_care_custody_proceedings[i].other_parties.complete_elements()):
+  You have already told us about ${other_care_custody_proceedings[i].other_parties.complete_elements()}
+  % endif
 
-  Other than yourself or ${other_parties}, who was involved in the custody dispute
-  ${other_care_custody_proceedings[i]}?
-
-  List the names of each person who was a party (Plaintiff/Petitioner or Defendant/Respondent)
-  OTHER than yourself or ${other_parties}.
-list collect: True
+  Click ${word("Add another")} to add another item.
+list collect: 
+  enable: True
+  label: |
+    **${ordinal(j).capitalize()}** additional party
 fields:
   - A person already mentioned: other_care_custody_proceedings[i].other_parties[j]
     datatype: object
     choices: box8_people
     disable others: True
   - Name: other_care_custody_proceedings[i].other_parties[j].name.first
-  - Street address: other_care_custody_proceedings[i].other_parties[j].address.address
+  - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
     address autocomplete: True
-  - Apartment or Unit: other_care_custody_proceedings[i].other_parties[j].address.unit
     required: False
-  - City: other_care_custody_proceedings[i].other_parties[j].address.city
-  - State: other_care_custody_proceedings[i].other_parties[j].address.state
-    code: |
-      states_list()      
-# We need to add the child_letters for this case to the other_party
-#validation code: | 
+validation code: |
+  for person in other_care_custody_proceedings[i].other_parties:
+    person.address.geolocate(person.address_for_form)
+    if not person.address.geolocated:
+      person.address = DAEmpty()
 ---
 reconsider: True
 comment: |
@@ -933,55 +1012,93 @@ code: |
         gathering_temp.add(other_party)
   box8_people.elements = list(gathering_temp) # I think we need to convert back to a list
   del gathering_temp
-# ---
-# code: |
-#   # This approach is too complex, but maybe worth revisiting
-#   # later
-#   # Build the attorneys_for_children list
-#   gathering_temp = set()
-#   for case in other_care_custody_proceedings:
-#     for case in 
-#     gathering_temp.update(case.attorneys.filter(role="attorney"))
-#   # Do we need an appendix for this field?
-#   need_attorneys_for_children_appendix = len(gathering_temp) > 3
-
-#   attorneys_for_children.extend(gathering_temp)
-#   attorneys_for_children.gathered = True
-#   del gathering_temp
-# ---
-# code: |
-#   # Build the gals_investigators list
-#   gathering_temp = set()
-#   for case in other_care_custody_proceedings:
-#     # We need to track the child letter with each GAL/investigator too
-#     for person in case.attorneys.filter(role="GAL") + case.attorneys.filter(role="investigator"):
-#       if not hasattr(person, 'child_letters'):
-#         person.child_letters = set(case.child_letters())
-#       else:        
-#         person.child_letters.add(case.child_letters())
-#     gathering_temp.update(case.attorneys.filter(role="attorney") + case.attorneys.filter(role="investigator"))
-#   # Do we need an appendix for this field?
-#   need_gals_investigators_appendix = len(gathering_temp) > 3
-#   gals_investigators.extend(gathering_temp)
-#   gals_investigators.gathered = True  
-#   del gathering_temp
 ---
 code: |
   other_care_custody_proceedings[i].other_parties[j].child_letters = other_care_custody_proceedings[i].child_letters()
 ---
+if: len(other_care_custody_proceedings[i].children) == 1
+question: |
+  Lawyers in ${ordinal(i)} case
+subquestion: |
+  The court wants to know about people who worked 
+  with you, ${other_parties.familiar()}, or ${children_of_both} 
+  for any open cases.
+
+  Who has a lawyer on this case?
+fields:
+  - You?: other_care_custody_proceedings[i].atty_for_user
+    datatype: yesnoradio
+  - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
+    show if: other_care_custody_proceedings[i].atty_for_user
+  - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
+    datatype: yesnoradio
+  - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
+    show if: other_care_custody_proceedings[i].atty_for_defendant
+  - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
+    datatype: yesnoradio
+  - Name of ${other_care_custody_proceedings[i].children}'s lawyer: other_care_custody_proceedings[i].atty_for_children_name
+    show if: other_care_custody_proceedings[i].atty_for_children
+---
+if: len(other_care_custody_proceedings[i].children) > 1
+question: |
+  Information about lawyers
+subquestion: |
+  The court wants to know about people who worked 
+  with you, ${other_parties.familiar()}, or ${children_of_both} 
+  for any open cases.
+
+  Who has a lawyer on this case?
+fields:
+  - You?: other_care_custody_proceedings[i].atty_for_user
+    datatype: yesnoradio
+  - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
+    show if: other_care_custody_proceedings[i].atty_for_user
+  - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
+    datatype: yesnoradio
+  - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
+    show if: other_care_custody_proceedings[i].atty_for_defendant
+  - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
+    datatype: yesnoradio
+  - note: |
+      OK, we will ask for the names of each child's lawyer on the next screen.
+    show if: other_care_custody_proceedings[i].atty_for_children
+---
+question: |
+  Information about Guardians ad Litem (GALs)
+subquestion: |
+  Did the judge appoint a GAL or investigator on this case?
+fields:
+  - no label: other_care_custody_proceedings[i].has_gal
+    datatype: yesnoradio
+  - How many did they appoint?: other_care_custody_proceedings[i].gals.target_number
+    datatype: integer
+    min: 1
+    show if: other_care_custody_proceedings[i].has_gal
+---
+question: |
+  Information about the ${ordinal(j)} guardian ad litem or investigator
+fields:
+  - Name: other_care_custody_proceedings[i].gals[j].name.first
+  - Did this GAL or investigator work with ALL children?: other_care_custody_proceedings[i].gals[j].represented_all_children
+    datatype: yesnoradio
+  - Which children did this GAL or investigator work with?: other_care_custody_proceedings[i].gals[j].represented_children
+    datatype: object_checkboxes
+    choices: children_of_both
+    show if:
+      variable: other_care_custody_proceedings[i].gals[j].represented_all_children
+      is: False
+---
 question: |
   Attorneys involved in your children's cases
 subquestion: |
-  It sounds like some of the cases you mentioned are still
-  ongoing.
+  It sounds like some of the cases you mentioned are still ongoing.
 
   You told us about the following pending cases so far:
 
   ${other_care_custody_proceedings.table}
 
-  In the next question, we will ask you about the names
-  of attorneys, guardians ad litem, and investigators
-  who were involved in each case.
+  In the next question, we will ask you about the names of attorneys, guardians
+  ad litem, and investigators who were involved in each case.
 continue button field: explain_why_asking_about_attorneys
 ---
 # TODO:
@@ -1050,7 +1167,7 @@ question: |
 yesno: attorneys_for_children.there_is_another 
 ---
 question: |
-  Law guardians and investigators for open (pending) cases representing your children
+  Guardians ad Litems and investigators for open (pending) cases representing your children
 subquestion: |
   You told us about the following pending cases:
 

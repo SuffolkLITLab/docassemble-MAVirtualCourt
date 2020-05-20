@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value, comma_and_list
+from docassemble.base.functions import define, defined, value, comma_and_list, word
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -39,6 +39,9 @@ class PeopleList(DAList):
   def familiar(self):
     return comma_and_list([person.name.familiar() for person in self])
 
+  def familiar_or(self):
+    return comma_and_list([person.name.familiar() for person in self],and_string=word("ord"))
+
 class VCIndividual(Individual):
   """Used to represent an Individual on the assembly line/virtual court project.
   Two custom attributes are objects and so we need to initialize: `previous_addresses` 
@@ -68,15 +71,25 @@ class OtherProceeding(DAObject):
       self.initializeAttribute('attorneys', PeopleList)
     if not hasattr(self, 'other_parties'):
       self.initializeAttribute('other_parties', PeopleList)
+    if not hasattr(self, 'gals'):
+      self.initializeAttribute('gals', PeopleList.using(ask_number=True))
 
   # We use a property decorator because Docassemble expects this to be an attribute, not a method
   @property
   def complete_proceeding(self):
     """Tells docassemble the list item has been gathered when the variables named below are defined."""
-    self.user_role
+    # self.user_role # Not asked for adoption cases
     self.case_status
     self.children.gathered
     self.other_parties.gather()
+    if self.is_open:
+      self.atty_for_user
+      if self.has_gal:
+        self.gals.gather()
+      else:
+        self.gals.auto_gather=True
+        self.gals.gathered=True
+    return True
     # We're going to gather this per-attorney instead of
     # per-case now
     #if self.case_status == 'pending':
@@ -99,14 +112,14 @@ class OtherProceeding(DAObject):
     # - Non-custody case that is complete: non-custody-closed
     if self.case_status in ['adoption',"adoption-pending", "adoption-closed"]:
       return 'Adoption'
-    elif self.case_status == 'custody' and not self.is_open:
+    elif hasattr(self, 'custody_awarded') and self.custody_awarded:
       return "Custody awarded to " + self.person_given_custody + ", " + self.date_of_custody.format("yyyy-MM-dd")
-    elif self.case_status == 'other' and not self.is_open:
-      return self.what_happened
+    elif not self.is_open:
+      return "Closed"
     elif self.is_open:
       return 'Pending'
     else:
-      return self.case_status
+      return self.case_status.title()
 
   def case_description(self):
     """Returns a short description of the other case or proceeding meant to display to identify it

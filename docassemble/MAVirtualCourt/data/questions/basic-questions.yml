@@ -33,6 +33,7 @@ include:
 ---
 features:
   question help button: True
+  question back button: True
   progress bar: True
   css: colors.css
 ---
@@ -620,7 +621,7 @@ field: signature_phone_followup
 ---
 template: interview_link
 content: |
-  Hi, ${ user }  sent you a form from MassAccess. To sign the form,
+  Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
   click the link below to continue the interview on your phone.
   ${interview_url()}
 ---
@@ -729,7 +730,7 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
-  - Self-described gender: x.gender
+  - Gender: x.gender
     show if:
       variable: x.gender
       is: "self-described"

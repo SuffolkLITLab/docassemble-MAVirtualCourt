@@ -345,6 +345,7 @@ fields:
       - Green: Green
       - Hazel: Hazel
       - Red: Red
+      - Other/unknown: other/unknown
   - Other details about ${other_parties.familiar()}'s eyes: other_parties[0].eye_other
     required: False
   - "What is ${other_parties.familiar()}'s hair color?": other_parties[0].hair_color
@@ -366,6 +367,8 @@ fields:
 ---
 question: |
   ${other_parties.familiar()}'s Physical Appearance
+subquestion: |
+  Answer as many questions below as you can.  
 fields:
   - I don't know when ${other_parties.familiar()} was born: dont_know_birthdate
     datatype: yesno
@@ -376,12 +379,14 @@ fields:
     datatype: integer
     show if: dont_know_birthdate
   - "How tall is ${other_parties.familiar()}?": other_parties[0].height
+    required: False
     hint: e.g., 5 foot 10 inches
     validate: |
       # If the user entry only includes digits, prompt for a unit as well
       lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 6 foot 1 inch."))
   - "What is ${other_parties.familiar()}'s weight?": other_parties[0].weight
     hint: e.g., 180 pounds
+    required: False
     validate: |
       lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 180 pounds."))
   - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
@@ -404,8 +409,8 @@ fields:
     choices:
       - Full beard: Full beard
       - Goatee: Goatee
-      - Thin mustasche: Thin mustasche
-      - Thick mustache: Thick mustasche
+      - Thin mustache: Thin mustache
+      - Thick mustache: Thick mustache
       - Glasses: Glasses
       - Tattoo (describe below): Tattooo
       - Scars: Scars
@@ -583,7 +588,7 @@ attachment:
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old' }
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[2-1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
@@ -603,7 +608,7 @@ attachment:
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description }
-      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_address": ${ other_parties[0].address.on_one_line() }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
@@ -613,7 +618,7 @@ attachment:
       - "defendant_employer": ${ other_parties[0].employer }
       - "defendant_work_phone": ${ other_parties[0].work_phone }
       - "defendant_work_title": ${ other_parties[0].work_title }
-      - "defendant_work_address": ${ other_parties[0].work_address }
+      - "defendant_work_address": ${ other_parties[0].work_address.on_one_line() }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
       # - "defendant_location_best": ${ other_parties[0].location_best }
@@ -637,7 +642,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_phone : ${other_parties[0].mobile_number}
       - defendant_email: ${other_parties[0].email}
 ---
 include:
@@ -776,7 +781,7 @@ attachment:
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age}
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old'}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
@@ -795,7 +800,7 @@ attachment:
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description }
-      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_address": ${ other_parties[0].address.on_one_line() }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
@@ -805,7 +810,7 @@ attachment:
       - "defendant_employer": ${ other_parties[0].employer }
       - "defendant_work_phone": ${ other_parties[0].work_phone }
       - "defendant_work_title": ${ other_parties[0].work_title }
-      - "defendant_work_address": ${ other_parties[0].work_address }
+      - "defendant_work_address": ${ other_parties[0].work_address.on_one_line() }
       - "defendant_work_hours": ${ other_parties[0].work_hours }
       - "defendant_work_department": ${ other_parties[0].work_department }
       # - "defendant_location_best": ${ other_parties[0].location_best }
@@ -829,7 +834,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_phone : ${other_parties[0].mobile_number}
       - defendant_email: ${other_parties[0].email}
 
 ---
