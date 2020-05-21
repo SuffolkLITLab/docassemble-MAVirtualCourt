@@ -55,9 +55,9 @@ class VCIndividual(Individual):
 
   def phone_numbers(self):
     nums = []
-    if hasattr(self, 'mobile_number'):
+    if hasattr(self, 'mobile_number') and self.mobile_number:
       nums.append(self.mobile_number + ' (cell)')
-    if hasattr(self, 'phone_number'):
+    if hasattr(self, 'phone_number') and self.phone_number:
       nums.append(self.phone_number + ' (other)')
     return comma_list(nums)
 
