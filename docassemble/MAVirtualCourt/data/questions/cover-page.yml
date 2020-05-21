@@ -36,18 +36,6 @@ help:
     There is a chance this information may end up in the public court file, so
     do not include sensitive or private information.
 ---
-question: |
-  Preferred language
-subquestion: |
-  You have the right to an interpreter. You should ask
-  for an interpreter if you speak some English but are more comfortable
-  in a different language.
-fields:
-  - I want an interpreter: user_needs_interpreter
-    datatype: yesnoradio
-  - My preferred language is: user_preferred_language 
-    show if: user_needs_interpreter
----
 reconsider: True
 code: |
   # This is here as a fallback. In many interviews,
