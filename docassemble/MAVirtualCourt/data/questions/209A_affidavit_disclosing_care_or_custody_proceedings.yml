@@ -1113,11 +1113,6 @@ subquestion: |
   for your children on this case, click ${word("Add another")}.
 list collect: True
 fields:
-  - Name of lawyer: other_care_custody_proceedings[i].attorneys_for_children[j]
-    datatype: object
-    choices: attorneys_for_children
-    disable others:
-      - other_care_custody_proceedings[i].attorneys_for_children[j].name.first
   - Name of lawyer: other_care_custody_proceedings[i].attorneys_for_children[j].name.first
   - Which children did this lawyer represent?: other_care_custody_proceedings[i].attorneys_for_children[j].represented_children
     datatype: object_checkboxes
