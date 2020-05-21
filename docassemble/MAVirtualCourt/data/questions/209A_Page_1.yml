@@ -783,37 +783,7 @@ code: |
 
   if test_relationship_does_not_qualify:
     relationship_does_not_qualify
-
-  # if relationship_to_defendant_marriage_or_kids.all_false():
-  #   if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
-  #     defendant_relationship_to_plaintiff_is = DAEmpty()
-  #   relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
-  #   if relationship_to_defendant_unmarried.all_false():
-  #     refer_to_258E_resources
-  # else:
-  #   defendant_relationship_to_plaintiff_is = DAEmpty()
-
-  # if court_selection == "Superior Court":
-  #   district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
-  #   municipal_court = DAEmpty()
-  #   probate_court = DAEmpty()
-  #   superior_court = True
-  # elif court_selection == "District Court":
-  #   district_court = True
-  #   municipal_court = DAEmpty()
-  #   probate_court = DAEmpty()
-  #   superior_court = DAEmpty()
-  # elif court_selection == "Municipal Court":
-  #   district_court = DAEmpty()
-  #   municipal_court = True
-  #   probate_court = DAEmpty()
-  #   superior_court = DAEmpty()
-  # elif court_selection == "Probate Court":
-  #   district_court = DAEmpty()
-  #   municipal_court = DAEmpty()
-  #   probate_court = True
-  #   superior_court = DAEmpty()
-
+    
   plaintiff_has_minor_children
 
   # other_cases.gather()  # Ask this later

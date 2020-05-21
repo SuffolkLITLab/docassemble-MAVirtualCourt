@@ -144,6 +144,8 @@ code: |
   build_children_of_both_list  = True
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
+scan for variables: False
+sets: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
   #######
   # Implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
@@ -310,7 +312,7 @@ code: |
   # TODO: Does this need special DA treatment
   school_strings = []
   for school in schools_to_stay_away_from:
-    school_strings.append( str(school) + ' ' + school.address.on_one_line() )
+    school_strings.append( str(school) + ' ' + school.address.on_one_line(include_unit=True) )
   schools_to_stay_away_from_pdf = comma_and_list( school_strings )
 
   permit_visitation_yes = no_visitation_restrictions
@@ -530,17 +532,56 @@ id: wants_to_request_visitation_details
 question: |
   Visitation
 subquestion: |
-  You are allowed to ask the court to make orders about when and how ${other_parties.familiar()} can visit the children.  If you need the court to do this, you have to file the restraining order in Probate and Family Court.  The District Courts and Boston Municipal Court can’t make orders about visitation, but they can still make orders about custody and child support.  The District Courts and Boston Municipal Court can also still make orders prohibiting ${other_parties.familiar()} from contacting the children. [Read more about visitation](${ url_action('visitation_info') }).
-  
-  Do you need the court to make an order about ${other_parties.familiar()}’s visitation with the children as part of the restraining order?
+  Do you need the court to make an order about ${other_parties.familiar()}’s
+  visitation with the children as part of the restraining order?
+
+  Remember, if you ask for visitation you can only file in the Probate and
+  Family Court. A visitation order becomes an order of the court, and if you
+  don't follow this order exactly, you will be in contempt of court.  
 yesno: wants_visitation_orders
 ---
 id: more_info_about_visitation
 field: visitation_info
 question: |
-  Before you ask the judge to order Visitation
+  Information about Visitation
 subquestion: |
-  The [doc that was linked](https://docs.google.com/document/d/1WyQrjTCzpZEoFlQZeS0h-JudAFvvefKcvmqNNqJUIH0/edit?usp=sharing) in the pg. 2 doc
+  Choosing visitation will also affect which court you can file in.
+
+  Not all courts can order visitation. But all courts can provide a safe way for
+  ${other_parties.familiar()} to spend time with ${children_of_both} if that is
+  the right choice in your case. Read below carefully to understand if you
+  should request a visitation order in your case.
+
+  #### What is visitation?
+
+  Visitation is a court order that gives the Defendant time with your joint
+  children. The Probate and Family Court is the _only_ court that can grant
+  visitation. Visitation orders are not flexible. You and
+  ${other_parties.familiar()} will both need to follow the order or you will be
+  in contempt of court.
+
+  If you file in the Probate and Family Court, even if you do not want
+  visitation, the judge is likely to ask you about it.
+  ${other_parties.familiar()} also has a right to ask for visitation in the
+  Probate and Family Court.
+
+  #### Are there other safe ways for ${other_parties.familiar()} to spend time with the children?
+
+  Yes. The 3 other trial court departments: District Court, Boston Municipal
+  Court (BMC), and Superior Court can all create safe rules for the children to
+  see ${other_parties.familiar()}, without a visitation order.
+
+  For example, you could ask for an order that says:
+  
+  1. You have custody of your children; and 
+  1. ${other_parties.familiar()} has contact with your children only in ways
+  that are safe. 
+  1. You can be detailed about safe ways for them to spend time together. 
+  1. Or you can ask that Defendant has no contact with your children.
+    
+  Read more about
+  [Visitation](https://www.masslegalhelp.org/domestic-violence/abuse-prevention-orders)
+  on MassLegalHelp]
 ---
 id: prohibit_visitation
 question: |
@@ -637,7 +678,7 @@ fields:
     choices: |
       children_of_both
     none of the above: |
-      I don’t need court to order ${other_parties.familiar()} to pay support
+      I don’t need the court to order ${other_parties.familiar()} to pay support for these children
 ---
 id: do_non_minors_need_child_support
 # TODO: similar to children, get number and then show

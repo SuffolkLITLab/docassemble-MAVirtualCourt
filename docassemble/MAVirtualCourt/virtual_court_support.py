@@ -69,6 +69,8 @@ class OtherProceeding(DAObject):
       self.initializeAttribute('children', PeopleList)
     if not hasattr(self, 'attorneys'):
       self.initializeAttribute('attorneys', PeopleList)
+    if not hasattr(self, 'attorneys_for_children'):
+      self.initializeAttribute('attorneys_for_children', PeopleList)
     if not hasattr(self, 'other_parties'):
       self.initializeAttribute('other_parties', PeopleList)
     if not hasattr(self, 'gals'):
@@ -84,6 +86,9 @@ class OtherProceeding(DAObject):
     self.other_parties.gather()
     if self.is_open:
       self.atty_for_user
+      if self.atty_for_children:
+        if len(self.children) > 1:
+          self.attorneys_for_children.gather()
       if self.has_gal:
         self.gals.gather()
       else:
@@ -101,15 +106,6 @@ class OtherProceeding(DAObject):
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
-    # I think there's four possible ways the status could go
-    # -if the case is an adoption: status should say "adoption"
-    # -if the case is still pending: status should say "pending"
-    # -if the case is closed and was about custody: should should say "custody to [person], [date of custody award]"
-    # -if the case is closed and was about something other than custody, I would do a very brief outcome of the case and the date the case closed, like "Father to pay child support, [date of judgment]"    
-    # - Adoption (pending or closed): adoption
-    # - Non-adoption case without a final decision yet: pending
-    # - Custody case that is complete: custody-closed
-    # - Non-custody case that is complete: non-custody-closed
     if self.case_status in ['adoption',"adoption-pending", "adoption-closed"]:
       return 'Adoption'
     elif hasattr(self, 'custody_awarded') and self.custody_awarded:
@@ -125,6 +121,7 @@ class OtherProceeding(DAObject):
     """Returns a short description of the other case or proceeding meant to display to identify it
     during list gathering in the course of the interview"""
     description = ""
+    description += self.case_status.title() + " case in "
     description += self.court_name
     if hasattr(self, 'docket_number') and len(self.docket_number.strip()):
       description += ', case number: ' + self.docket_number

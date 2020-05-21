@@ -20,10 +20,9 @@ fields:
       - Custody and no-contact: skip_custody_no_contact
       - Child support affidavit: skip_child_support
       - Visitation: skip_visitation
-      - Past custody cases: skip_custody_cases
+      - Past care or custody cases: skip_affidavit_care_or_custody
       - Orders: skip_orders
       - Court: skip_court
-      - Address: skip_address
       - Defendant information: skip_defendant_information
       - Plaintiff confidential information: skip_plaintiff_information
       - Motion to impound: skip_impound
@@ -43,7 +42,7 @@ code: |
 ---
 mandatory: True
 code: |
-  for section in skip_sections.true_values():
+  for section in [section for section in skip_sections if skip_sections[section]]:
     value(section)
 ---
 sets: skip_intro
@@ -70,7 +69,19 @@ code: |
   other_parties[0].name_other = "Alias"
   other_parties[0].gender = "male"
   
+  users[0].address.address = "120 Tremont St"
+  users[0].address.city = "Boston"
+  users[0].address.state = "MA"
+  users[0].address.zip = "02108"
   
+  other_parties[0].address.address = "121 Tremont St"
+  other_parties[0].address.city = "Boston"
+  other_parties[0].address.state = "MA"
+  other_parties[0].address.zip = "02108"
+  users[0].phone_number = "555-1234"
+  
+  users[0].address.geolocate()
+  other_parties[0].address.geolocate()
   skip_parties = True
   
 ---
@@ -91,6 +102,7 @@ code: |
   children[1].name.last = "Joint"
   children[1].birthdate= as_datetime("2019-04-01")
   children[1].defendant_is_parent = True
+  children.gathered = True
   children_cares_for[0].name.first = "Nelly"
   children_cares_for[0].name.last = "Nibling"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
@@ -99,6 +111,9 @@ code: |
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
   
   skip_children = True
+---
+code: |
+  children.gathered = True
 ---
 sets: skip_relationship
 scan for variables: False
@@ -146,6 +161,10 @@ code: |
 sets: skip_custody_no_contact
 scan for variables: False
 code: |
+  has_participated_custody_case = True
+  has_participated_custody_case_yes = True
+  know_of_other_custody_case_yes = True
+
   wants_custody_of = children_of_both
   wants_no_contact_for = children_of_both
   wants_child_support_for = children_of_both
@@ -173,16 +192,12 @@ code: |
   wants_third_party_yes = True
   skip_visitation = True
 ---
-sets: skip_custody_cases
+sets: skip_affidavit_care_or_custody
 scan for variables: False
 code: |
-  has_participated_custody_case = True
-  has_participated_custody_case_yes = True
-  know_of_other_custody_case_yes = True
   explain_addresses_of_children = True
   explain_why_asking_about_attorneys  = True
-  # have_had_custody_cases = True
-  # have_had_paternity_cases = True
+
   for child in children_of_both:
     child.address = users[0].address
     child.previous_addresses.auto_gather=False
@@ -239,7 +254,7 @@ code: |
   case.date = "2019"
   case.docket_number = "19-CV-1234"
   other_cases.gathered = True
-  skip_custody_cases = True
+  skip_affidavit_care_or_custody = True
 ---
 scan for variables: False
 sets: skip_atty_for_children
@@ -277,25 +292,6 @@ code: |
   docket_numbers.gathered=True
   dont_know_docket_number = False
   skip_court = True
----
-scan for variables: False
-sets: skip_address
-code: |
-  users[0].address.address = "120 Tremont St"
-  users[0].address.city = "Boston"
-  users[0].address.state = "MA"
-  users[0].address.zip = "02108"
-  
-  other_parties[0].address.address = "121 Tremont St"
-  other_parties[0].address.city = "Boston"
-  other_parties[0].address.state = "MA"
-  other_parties[0].address.zip = "02108"
-  users[0].phone_number = "555-1234"
-  
-  users[0].address.geolocate()
-  other_parties[0].address.geolocate()
-  
-  skip_address = True
 ---
 scan for variables: False
 sets: skip_defendant_information

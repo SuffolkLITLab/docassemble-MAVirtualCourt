@@ -138,10 +138,6 @@ code: |
     else:
       explain_no_child_support
 
-  have_had_paternity_cases = False # We'll reevaluate below
-  have_had_custody_cases  = False
-  # Care or custody proceedings
-
   ############################## Defendant info
   # From page 1
   nav.set_section('section_defendant_info')
@@ -153,23 +149,25 @@ code: |
   ########################## Plaintiff info
   A_Plaintiff_Confidential_Information0011
   # Ask for address info of children only if have cases to disclose
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-    if has_participated_custody_case or know_of_other_custody_case_yes:
-      # Get addresses and previous addresses for each child
-      explain_addresses_of_children # Not sure we need this
-      for child in children_of_both:
-        child.address.address
-        child.previous_addresses.gather()
+  # if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
+  #   if has_participated_custody_case or know_of_other_custody_case_yes:
+  #     # Get addresses and previous addresses for each child
+  #     explain_addresses_of_children # Not sure we need this
+  #     for child in children_of_both:
+  #       child.address.address
+  #       child.previous_addresses.gather()
   
   impoundment_intro
   if asked_for_impoundment:
     a_258e_motion_for_impoundment0019
 
+  # Care or custody proceedings
   nav.set_section('section_care_custody')
+  have_had_paternity_cases = False # We'll reevaluate below
+  have_had_custody_cases  = False
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
     if has_participated_custody_case or know_of_other_custody_case_yes:
-      have_had_custody_cases = True # Skip this for stitchup
-      needs_attorney_signature = False # TODO: double-check this
+      have_had_custody_cases = True
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
       for case in other_care_custody_proceedings:
         if case.case_status == "paternity":
@@ -228,13 +226,16 @@ comment: |
 code: |
   # There are never 2 defendants or two plaintiffs
   users.there_is_another = False
+  plaintiffs=users
   other_parties.there_is_another = False
   defendant = other_parties # We need this for Affidavit interview currently
+  defendants = other_parties
+  user_role = "plaintiff"
   confidential_address = True
   docket_numbers[0] = '' # we never know docket number in advance
   docket_numbers.auto_gather=False
   docket_numbers.gathered=True
-
+  needs_attorney_signature = False
   set_interview_defaults = True
 ---
 code: |

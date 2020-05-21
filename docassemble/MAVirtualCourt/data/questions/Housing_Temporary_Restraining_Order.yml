@@ -28,11 +28,11 @@ code: |
   #  str(defendants)
   set_progress(75)
   str(users[0])
-  users[0].address.on_one_line()
+  users[0].address.on_one_line(include_unit=True)
   users[0].phone_number
-  other_parties[0].address.on_one_line()
+  other_parties[0].address.on_one_line(include_unit=True)
   other_parties[0].phone_number
-  users[0].address.on_one_line()
+  users[0].address.on_one_line(include_unit=True)
   users[0].email
   signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -292,13 +292,13 @@ attachment:
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ str(users[0]) }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_phone": ${ users[0].phone_number }
       - "other_party_name_full": ${ str(other_parties[0]) }
-      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
+      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
       - "user_signature": ${ users[0].signature }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
       - "court_county": ${ court_county if defined('court_county') else ''}
@@ -446,12 +446,12 @@ attachment:
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ str(users[0]) }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_phone": ${ users[0].phone_number }
       - "other_party_name_full": ${ str(other_parties[0]) }
-      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
+      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
       - "court_county": ${ court_county if defined('court_county') else ''}

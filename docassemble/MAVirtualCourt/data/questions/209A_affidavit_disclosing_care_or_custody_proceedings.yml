@@ -8,11 +8,11 @@ objects:
   - signing_attorney: VCIndividual
   # - children: PeopleList.using(complete_attribute='child_complete')
   - box8_people: PeopleList.using(auto_gather=False, gathered=True) # People named as parties in other care/custody. We'll filter to remove dupes
-  - attorneys_for_children: PeopleList
+  - attorneys_for_children: PeopleList.using(auto_gather=False, gathered=True)
   - attorneys_for_children[i].represented_children: PeopleList
-  - gals_investigators: PeopleList
+  - gals_investigators: PeopleList.using(auto_gather=False, gathered=True)
   - gals_investigators[i].represented_children: PeopleList
-  - attorneys_for_parents: PeopleList
+  - attorneys_for_parents: PeopleList.using(auto_gather=False, gathered=True)
 ---
 code: |
   # children_of_both should have objects pointing to the master children list
@@ -110,23 +110,28 @@ code: |
   # child1_name_last_first
   confidential_address
   # for child in children_of_both:
-  #   child.address.on_one_line()  
+  #   child.address.on_one_line(include_unit=True)  
   has_participated_custody_case
+  # initialize_attorney_lists
   other_care_custody_proceedings.gather()
   for case in other_care_custody_proceedings:
     if case.is_open:
       case.atty_for_user
+      if case.atty_for_children and len(case.children) > 1:
+        case.attorneys_for_children.gather()
+        # for child in case.children:
+        #   child.represented
       if case.has_gal:
         case.gals.gather()
-  if have_pending_cases:
-    explain_why_asking_about_attorneys
-    attorneys_for_parents.gather()
-    attorneys_for_children.gather()
-    gals_investigators.gather()
-  else:
-    attorneys_for_children.gathered = True
-    attorneys_for_parents.gathered = True
-    gals_investigators.gathered = True
+  # if have_pending_cases:
+  #   explain_why_asking_about_attorneys
+  #   #attorneys_for_parents.gather()
+  #   #attorneys_for_children.gather()
+  #   #gals_investigators.gather()
+  # else:
+  #   attorneys_for_children.gathered = True
+  #   attorneys_for_parents.gathered = True
+  #   gals_investigators.gathered = True
   impound_affidavit
   day
 
@@ -137,13 +142,17 @@ code: |
   need_other_parties_appendix
 
   # str(users[0])
-  # users[0].address.on_one_line()
+  # users[0].address.on_one_line(include_unit=True)
   # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
   # docket_numbers[0]  # Enable this if a standalone form
   # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
   # users[0].signature
   A_affidavit_disclosing_care_or_custody_proceedings0009 = True
+# ---
+# code: |
+#   att
+#   initialize_attorney_lists = True
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0
@@ -251,16 +260,16 @@ code: |
        'transformed_variable': 'str(users[0])',
       },
       {'variable': 'child1_address_on_one_line',
-       'transformed_variable': 'children[1-1].address.on_one_line()',
+       'transformed_variable': 'children[1-1].address.on_one_line(include_unit=True)',
       },
       {'variable': 'child2_address_on_one_line',
-       'transformed_variable': 'children[2-1].address.on_one_line()',
+       'transformed_variable': 'children[2-1].address.on_one_line(include_unit=True)',
       },
       {'variable': 'child3_address_on_one_line',
-       'transformed_variable': 'children[3-1].address.on_one_line()',
+       'transformed_variable': 'children[3-1].address.on_one_line(include_unit=True)',
       },
       {'variable': 'user_address_on_one_line',
-       'transformed_variable': 'users[0].address.on_one_line()',
+       'transformed_variable': 'users[0].address.on_one_line(include_unit=True)',
       },
       {'variable': 'user_signature',
        'transformed_variable': 'users[0].signature',
@@ -287,7 +296,7 @@ code: |
        'transformed_variable': 'children[3-1].address.line_two()',
       },
       {'variable': 'user_address_on_one_line__2',
-       'transformed_variable': 'users[0].address.on_one_line()',
+       'transformed_variable': 'users[0].address.on_one_line(include_unit=True)',
       },
       ],
     'fields': [
@@ -917,7 +926,7 @@ fields:
       even if you or another person plans to appeal to it.
   - Was custody awarded?: other_care_custody_proceedings[i].custody_awarded
     js hide if: |
-      val("other_care_custody_proceedings[i].case_status") == "adoption" || val("other_care_custody_proceedings[i].is_open")
+      val("other_care_custody_proceedings[i].case_status") == "adoption" // || val("other_care_custody_proceedings[i].is_open")
     datatype: yesnoradio      
   - Who was given custody?: other_care_custody_proceedings[i].person_given_custody
     js show if: |
@@ -1028,14 +1037,32 @@ subquestion: |
 fields:
   - You?: other_care_custody_proceedings[i].atty_for_user
     datatype: yesnoradio
+  - Name of your lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_user_name
+    datatype: object
+    choices: attorneys_for_parents
+    show if: other_care_custody_proceedings[i].atty_for_user
+    disable others:
+      - other_care_custody_proceedings[i].atty_for_user_name
   - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
     show if: other_care_custody_proceedings[i].atty_for_user
   - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
     datatype: yesnoradio
+  - Name of ${other_parties.familiar()}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_defendant_name
+    datatype: object
+    choices: attorneys_for_parents
+    show if: other_care_custody_proceedings[i].atty_for_defendant   
+    disable others:
+      - other_care_custody_proceedings[i].atty_for_defendant_name
   - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
     show if: other_care_custody_proceedings[i].atty_for_defendant
   - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
     datatype: yesnoradio
+  - Name of ${other_care_custody_proceedings[i].children}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_children_name
+    datatype: object
+    choices: attorneys_for_children
+    disable others:
+      - other_care_custody_proceedings[i].atty_for_children_name
+    show if: other_care_custody_proceedings[i].atty_for_children  
   - Name of ${other_care_custody_proceedings[i].children}'s lawyer: other_care_custody_proceedings[i].atty_for_children_name
     show if: other_care_custody_proceedings[i].atty_for_children
 ---
@@ -1045,16 +1072,28 @@ question: |
 subquestion: |
   The court wants to know about people who worked 
   with you, ${other_parties.familiar()}, or ${children_of_both} 
-  for any open cases.
+  in the ${other_care_custody_proceedings[i]}.
 
-  Who has a lawyer on this case?
+  Who has or had a lawyer on this case?
 fields:
   - You?: other_care_custody_proceedings[i].atty_for_user
     datatype: yesnoradio
+  - Name of your lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_user_name
+    datatype: object
+    choices: attorneys_for_parents
+    show if: other_care_custody_proceedings[i].atty_for_user
+    disable others:
+      - other_care_custody_proceedings[i].atty_for_user_name
   - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
     show if: other_care_custody_proceedings[i].atty_for_user
   - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
     datatype: yesnoradio
+  - Name of ${other_parties.familiar()}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_defendant_name
+    datatype: object
+    choices: attorneys_for_parents
+    show if: other_care_custody_proceedings[i].atty_for_defendant   
+    disable others:
+      - other_care_custody_proceedings[i].atty_for_defendant_name
   - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
     show if: other_care_custody_proceedings[i].atty_for_defendant
   - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
@@ -1062,6 +1101,40 @@ fields:
   - note: |
       OK, we will ask for the names of each child's lawyer on the next screen.
     show if: other_care_custody_proceedings[i].atty_for_children
+validation code: |
+  for case in other_care_custody_proceedings:
+    if case.atty_for_children:
+      case.attorneys_for_children.there_are_any=True
+---
+question: |
+  Lawyers for children in your ${other_care_custody_proceedings[i]}?
+subquestion: |
+  List one lawyer at a time. If you need to add more than one lawyer
+  for your children on this case, click ${word("Add another")}.
+list collect: True
+fields:
+  - Name of lawyer: other_care_custody_proceedings[i].attorneys_for_children[j]
+    datatype: object
+    choices: attorneys_for_children
+    disable others:
+      - other_care_custody_proceedings[i].attorneys_for_children[j].name.first
+  - Name of lawyer: other_care_custody_proceedings[i].attorneys_for_children[j].name.first
+  - Which children did this lawyer represent?: other_care_custody_proceedings[i].attorneys_for_children[j].represented_children
+    datatype: object_checkboxes
+    choices: other_care_custody_proceedings[i].children
+    none of the above: False
+---
+question: is miles the best person in the world?
+# Miles is awesome
+# ---
+# This does not work because of an intrinsic name issue. I think workaround is acceptable
+# question: |
+#   Who represented your child, ${other_care_custody_proceedings[i].children[j]} in this case?
+# fields:
+#   - ${other_care_custody_proceedings[i].children[j]} did not have a lawyer: other_care_custody_proceedings[i].children[j].represented
+#     datatype: noyes
+#     disable others: True
+#   - Name: other_care_custody_proceedings[i].children[j].attorney
 ---
 question: |
   Information about Guardians ad Litem (GALs)
@@ -1076,7 +1149,7 @@ fields:
     show if: other_care_custody_proceedings[i].has_gal
 ---
 question: |
-  Information about the ${ordinal(j)} guardian ad litem or investigator
+  Information about the ${ordinal(j)} guardian ad litem or investigator for your ${other_care_custody_proceedings[i].case_status} case
 fields:
   - Name: other_care_custody_proceedings[i].gals[j].name.first
   - Did this GAL or investigator work with ALL children?: other_care_custody_proceedings[i].gals[j].represented_all_children
@@ -1087,6 +1160,10 @@ fields:
     show if:
       variable: other_care_custody_proceedings[i].gals[j].represented_all_children
       is: False
+validation code: |
+  for gal in other_care_custody_proceedings[i].gals:
+    if gal.represented_all_children:
+      gal.represented_children = other_care_custody_proceedings[i].children
 ---
 question: |
   Attorneys involved in your children's cases
@@ -1115,133 +1192,133 @@ columns:
       showifdef('row_item.docket_number')
   - Children: |
       row_item.children
----
-comment: |
-  TODO: 
-  It is too complex to do this on a case-by-case basis
-  given the filtering we need to do/reducing repetition of
-  attorney names. But it may be worth it if that UI is better
+# ---
+# comment: |
+#   TODO: 
+#   It is too complex to do this on a case-by-case basis
+#   given the filtering we need to do/reducing repetition of
+#   attorney names. But it may be worth it if that UI is better
 
-  Should revisit this later
-question: |
-  Attorneys for open (pending) cases representing your children
-subquestion: |
-  You told us about the following pending cases:
+#   Should revisit this later
+# question: |
+#   Attorneys for open (pending) cases representing your children
+# subquestion: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  Did any attorney represent either ${comma_and_list(children_of_both, and_string=word("or"))}
-  for any of the above cases?
-yesno: attorneys_for_children.there_are_any
----
-question: |
-  Attorneys representing your children
-subquestion: |
-  You told us about the following pending cases:
+#   Did any attorney represent either ${comma_and_list(children_of_both, and_string=word("or"))}
+#   for any of the above cases?
+# yesno: attorneys_for_children.there_are_any
+# ---
+# question: |
+#   Attorneys representing your children
+# subquestion: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  Please tell us about the **attorney** involved in any of the above cases who represented either ${comma_and_list(children_of_both, and_string=word("or"))}
-list collect: True
-fields:
-  - Name of attorney: attorneys_for_children[i].name.first
-  - Did this attorney represent ALL children?: attorneys_for_children[i].represented_all_children
-    datatype: yesnoradio
-  - Which children did this attorney represent?: attorneys_for_children[i].represented_children
-    datatype: object_checkboxes
-    choices: children_of_both
-    show if:
-      variable: attorneys_for_children[i].represented_all_children
-      is: False
-validation code: |
-  for attorney in attorneys_for_children:    
-    if attorney.represented_all_children:
-      attorney.represented_children = children_of_both  
----
-question: |
-  You told us about the following pending cases:
+#   Please tell us about the **attorney** involved in any of the above cases who represented either ${comma_and_list(children_of_both, and_string=word("or"))}
+# list collect: True
+# fields:
+#   - Name of attorney: attorneys_for_children[i].name.first
+#   - Did this attorney represent ALL children?: attorneys_for_children[i].represented_all_children
+#     datatype: yesnoradio
+#   - Which children did this attorney represent?: attorneys_for_children[i].represented_children
+#     datatype: object_checkboxes
+#     choices: children_of_both
+#     show if:
+#       variable: attorneys_for_children[i].represented_all_children
+#       is: False
+# validation code: |
+#   for attorney in attorneys_for_children:    
+#     if attorney.represented_all_children:
+#       attorney.represented_children = children_of_both  
+# ---
+# question: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}  
+#   ${other_care_custody_proceedings.table}  
 
-  Did any **attorney** other than ${comma_and_list(attorneys_for_children, and_string=word("or"))} represent ${comma_and_list(children_of_both, and_string=word("or"))}
-yesno: attorneys_for_children.there_is_another 
----
-question: |
-  Guardians ad Litems and investigators for open (pending) cases representing your children
-subquestion: |
-  You told us about the following pending cases:
+#   Did any **attorney** other than ${comma_and_list(attorneys_for_children, and_string=word("or"))} represent ${comma_and_list(children_of_both, and_string=word("or"))}
+# yesno: attorneys_for_children.there_is_another 
+# ---
+# question: |
+#   Guardians ad Litems and investigators for open (pending) cases representing your children
+# subquestion: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  Did a law guardian (guardians ad litem, or GALs) or investigator work with either ${comma_and_list(children_of_both, and_string=word("or"))}
-  for any of the above cases?
-yesno: gals_investigators.there_are_any
----
-question: |
-  Law guardians and investigators for open (pending) cases representing your children
-subquestion: |
-  You told us about the following pending cases:
+#   Did a law guardian (guardians ad litem, or GALs) or investigator work with either ${comma_and_list(children_of_both, and_string=word("or"))}
+#   for any of the above cases?
+# yesno: gals_investigators.there_are_any
+# ---
+# question: |
+#   Law guardians and investigators for open (pending) cases representing your children
+# subquestion: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  Please tell us about the **guardian ad litem** (GAL) or **investigator** involved in any of the above cases who represented
-  either ${comma_and_list(children_of_both, and_string=word("or"))}
+#   Please tell us about the **guardian ad litem** (GAL) or **investigator** involved in any of the above cases who represented
+#   either ${comma_and_list(children_of_both, and_string=word("or"))}
 
-  Click ${word("Add another")} to add another guardian ad litem or investigator.
-list collect: False
-fields:
-  - Name of GAL or investigator: gals_investigators[i].name.first
-  - Did this GAL or investigator work with ALL children?: gals_investigators[i].represented_all_children
-    datatype: yesnoradio
-  - Which children did this GAL or investigator represent?: gals_investigators[i].represented_children
-    datatype: object_checkboxes
-    choices: children_of_both
-    show if:
-      variable: gals_investigators[i].represented_all_children
-      is: False
-validation code: |
-  for gal in gals_investigators:    
-    if gal.represented_all_children:
-      gal.represented_children = children_of_both
----
-question: |
-  Guardians ad litem and Investigators
-subquestion: |
-  So far you told us about ${comma_and_list(gals_investigators, and_string=word("or"))}.
+#   Click ${word("Add another")} to add another guardian ad litem or investigator.
+# list collect: False
+# fields:
+#   - Name of GAL or investigator: gals_investigators[i].name.first
+#   - Did this GAL or investigator work with ALL children?: gals_investigators[i].represented_all_children
+#     datatype: yesnoradio
+#   - Which children did this GAL or investigator represent?: gals_investigators[i].represented_children
+#     datatype: object_checkboxes
+#     choices: children_of_both
+#     show if:
+#       variable: gals_investigators[i].represented_all_children
+#       is: False
+# validation code: |
+#   for gal in gals_investigators:    
+#     if gal.represented_all_children:
+#       gal.represented_children = children_of_both
+# ---
+# question: |
+#   Guardians ad litem and Investigators
+# subquestion: |
+#   So far you told us about ${comma_and_list(gals_investigators, and_string=word("or"))}.
 
-  Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children_of_both, and_string=word("or"))}?
-yesno: gals_investigators.there_is_another 
----
-question: |
-  Attorneys for open (pending) cases representing either you or ${other_parties}
-subquestion: |
-  You told us about the following pending cases:
+#   Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children_of_both, and_string=word("or"))}?
+# yesno: gals_investigators.there_is_another 
+# ---
+# question: |
+#   Attorneys for open (pending) cases representing either you or ${other_parties}
+# subquestion: |
+#   You told us about the following pending cases:
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  Did any attorney represent either you or ${other_parties} in 
-  any of the above cases? 
-yesno: attorneys_for_parents.there_are_any
----
-question: |
-  Attorneys for open (pending) cases representing you or ${other_parties}
-subquestion: |
-  You told us about the following pending cases:  
+#   Did any attorney represent either you or ${other_parties} in 
+#   any of the above cases? 
+# yesno: attorneys_for_parents.there_are_any
+# ---
+# question: |
+#   Attorneys for open (pending) cases representing you or ${other_parties}
+# subquestion: |
+#   You told us about the following pending cases:  
 
-  ${other_care_custody_proceedings.table}
+#   ${other_care_custody_proceedings.table}
 
-  List each **attorney** involved in any of the above cases who represented
-  either you or ${other_parties}.
+#   List each **attorney** involved in any of the above cases who represented
+#   either you or ${other_parties}.
 
-  Click ${word("Add another")} to add another attorney.
-list collect: True
-fields:
-  - Name of attorney: attorneys_for_parents[i].name.first
-  - Who did this attorney represent?: attorneys_for_parents[i].represented_party
-    datatype: object_radio
-    choices: 
-      - users
-      - other_parties
+#   Click ${word("Add another")} to add another attorney.
+# list collect: True
+# fields:
+#   - Name of attorney: attorneys_for_parents[i].name.first
+#   - Who did this attorney represent?: attorneys_for_parents[i].represented_party
+#     datatype: object_radio
+#     choices: 
+#       - users
+#       - other_parties
 ---
 question: |
   Are there any other cases you would like to tell us about?
@@ -1249,6 +1326,51 @@ subquestion: |
   So far you have told us about ${quantity_noun(len(other_care_custody_proceedings.elements), word("case"))}: 
   ${comma_and_list(other_care_custody_proceedings.elements)}
 yesno: other_care_custody_proceedings.there_is_another
+---
+reconsider: True
+code: |
+  # Build the lists of attorneys for parents
+  attorneys_for_parents.clear()
+  for case in other_care_custody_proceedings.complete_elements():
+    # If they selected an attorney and the attorney is a new one 
+    # (e.g., a string rather than an Individual)
+    if case.atty_for_user and hasattr(case, 'atty_for_user_name') and isinstance(case.atty_for_user_name, str):
+      atty = attorneys_for_parents.appendObject()
+      atty.name.first = case.atty_for_user_name
+      atty.represented_party = users
+    if case.atty_for_defendant and hasattr(case, 'atty_for_defendant_name') and isinstance(case.atty_for_defendant_name, str):
+      atty = attorneys_for_parents.appendObject()
+      atty.name.first = case.atty_for_defendant_name                
+      atty.represented_party = other_parties
+  attorneys_for_parents.gathered = True
+---
+reconsider: True
+code: |
+  # Build the list of attorneys for children
+  attorneys_for_children.clear()
+  for case in other_care_custody_proceedings.complete_elements():
+    if case.atty_for_children:
+      if len(case.children) == 1:
+        atty = attorneys_for_children.appendObject()
+        atty.name.first = case.atty_for_children_name
+        atty.represented_children = case.children
+      else:
+        attorneys_for_children.update(case.attorneys_for_children)
+        # for child in case.children:
+        #   if hasattr(child, 'represented') and child.represented:
+        #     atty = attorneys_for_children.appendObject()
+        #     atty.name.first = child.attorney
+        #     atty.represented_children = PeopleList(elements=[child],auto_gather=False,gathered=True)
+  attorneys_for_children.gathered=True
+---
+reconsider: True
+code: |
+  # Build the list of GALs/investigators
+  gals_investigators.clear()
+  for case in other_care_custody_proceedings.complete_elements():
+    if case.has_gal:
+      gals_investigators.update(case.gals)
+  gals_investigators.gathered = True
 ---
 code: |
   # Assign each child a letter from A..Z, or even AA..AZ, etc.
@@ -1318,10 +1440,10 @@ attachment:
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }
-      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line() if not confidential_address else ''}
-      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line()  if not confidential_address else ''}
-      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line()  if not confidential_address else ''}
-      - "user_address_on_one_line": ${ users[0].address.on_one_line()  if not confidential_address else ''}
+      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line(include_unit=True) if not confidential_address else ''}
+      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line(include_unit=True)  if not confidential_address else ''}
+      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line(include_unit=True)  if not confidential_address else ''}
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True)  if not confidential_address else ''}
       - "user_name_full__1": ${ str(users[0]) }
       - "child1_address_street": ${ children_of_both.item(0).address.line_one() }
       - "child1_address_city_state_zip": ${ children_of_both.item(0).address.line_two() }
@@ -1329,7 +1451,7 @@ attachment:
       - "child2_address_city_state_zip": ${ children_of_both.item(1).address.line_two() }
       - "child3_address_street": ${ children_of_both.item(2).address.line_one() }
       - "child3_address_city_state_zip": ${ children_of_both.item(2).address.line_two() }
-      - "user_address_on_one_line__2": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line__2": ${ users[0].address.on_one_line(include_unit=True) }
       - "case_name": ${ case_name }
       - "court_division_bmc": ${ showifdef('courts[0].division_bmc') }
       - "court_division_district_court": ${ showifdef('courts[0].division_district_court') }
@@ -1364,18 +1486,18 @@ attachment:
       - "other_case_3_status": ${ other_care_custody_proceedings.item(2).status() }
       - "other_case_other_parties_1_letters": ${ filter_letters(box8_people.item(0).child_letters) }
       - "other_case_other_parties_1_names": ${ box8_people.item(0) }
-      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line() }
+      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_2_letters": ${ filter_letters(box8_people.item(1).child_letters) }
       - "other_case_other_parties_2_names": ${ box8_people.item(1) }
-      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line() }
+      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_3_names": ${ box8_people.item(2) }
-      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line() }
+      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_3_letters": ${ filter_letters(box8_people.item(2).child_letters) }
       - "impound_affidavit": ${ impound_affidavit }
       - "day": ${ day }
       - "month": ${ month }
       - "year": ${ year }
-      - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
+      - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line(include_unit=True) if needs_attorney_signature else '' }
       - "child1_past_addresses_1": ${ children_of_both.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
       - "child1_past_addresses_2": ${ children_of_both.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
       - "child2_past_addresses_1": ${ children_of_both.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
@@ -1424,10 +1546,10 @@ attachment:
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }
-      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line() if not confidential_address else ''}
-      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line()  if not confidential_address else ''}
-      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line()  if not confidential_address else ''}
-      - "user_address_on_one_line": ${ users[0].address.on_one_line()  if not confidential_address else ''}
+      - "child1_address_on_one_line": ${ children_of_both.item(0).address.on_one_line(include_unit=True) if not confidential_address else ''}
+      - "child2_address_on_one_line": ${ children_of_both.item(1).address.on_one_line(include_unit=True)  if not confidential_address else ''}
+      - "child3_address_on_one_line": ${ children_of_both.item(2).address.on_one_line(include_unit=True)  if not confidential_address else ''}
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True)  if not confidential_address else ''}
       - "user_name_full__1": ${ str(users[0]) }
       - "child1_address_street": ${ children_of_both.item(0).address.line_one() }
       - "child1_address_city_state_zip": ${ children_of_both.item(0).address.line_two() }
@@ -1435,7 +1557,7 @@ attachment:
       - "child2_address_city_state_zip": ${ children_of_both.item(1).address.line_two() }
       - "child3_address_street": ${ children_of_both.item(2).address.line_one() }
       - "child3_address_city_state_zip": ${ children_of_both.item(2).address.line_two() }
-      - "user_address_on_one_line__2": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line__2": ${ users[0].address.on_one_line(include_unit=True) }
       - "case_name": ${ case_name }
       - "court_division_bmc": ${ showifdef('courts[0].division_bmc') }
       - "court_division_district_court": ${ showifdef('courts[0].division_district_court') }
@@ -1470,18 +1592,18 @@ attachment:
       - "other_case_3_status": ${ other_care_custody_proceedings.item(2).status() }
       - "other_case_other_parties_1_letters": ${ filter_letters(box8_people.item(0).child_letters) }
       - "other_case_other_parties_1_names": ${ box8_people.item(0) }
-      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line() }
+      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_2_letters": ${ filter_letters(box8_people.item(1).child_letters) }
       - "other_case_other_parties_2_names": ${ box8_people.item(1) }
-      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line() }
+      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_3_names": ${ box8_people.item(2) }
-      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line() }
+      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line(include_unit=True) }
       - "other_case_other_parties_3_letters": ${ filter_letters(box8_people.item(2).child_letters) }
       - "impound_affidavit": ${ impound_affidavit }
       - "day": ${ day }
       - "month": ${ month }
       - "year": ${ year }
-      - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line() if needs_attorney_signature else '' }
+      - "attorney_for_juvenile_address_on_one_line": ${ signing_attorney.address.on_one_line(include_unit=True) if needs_attorney_signature else '' }
       - "child1_past_addresses_1": ${ children_of_both.item(0).previous_addresses.item(0).on_one_line() if confidential_address else '' }
       - "child1_past_addresses_2": ${ children_of_both.item(0).previous_addresses.item(1).on_one_line() if confidential_address else '' }
       - "child2_past_addresses_1": ${ children_of_both.item(1).previous_addresses.item(0).on_one_line() if confidential_address else '' }
