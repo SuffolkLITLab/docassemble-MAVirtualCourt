@@ -805,13 +805,19 @@ code: |
 ---
 id: ready to email
 question: |
-  Your form is ready to be delivered to ${courts}.
+  Final Review With Cover Page
 subquestion: |
-
+  
+  Below is your ${comma_and_list(download_titles)} document with the 
+  cover page that we will deliver to ${courts[0]}.
+  
+  Click "Back" if you need to make any changes.  
+  Click "Send to court" to deliver it.
+  
   Here is what the clerk at ${courts} will get:
 
   ${ final_form_to_file }  
-  [:file-download: Download this form](${final_form_to_file.url_for(attachment=True)})
+  [:file-download: Download this form with cover page](${final_form_to_file.url_for(attachment=True)})
 
   % if found_email:
   We will deliver it securely. Please allow up to 15 minutes for the email to
@@ -821,7 +827,7 @@ subquestion: |
   locate the contact information for this court.
   % endif
   
-  Click continue if you're ready to send it.
+  Press below to deliver the form.
 fields:
   - Send me a copy: should_cc_user
     datatype: yesno
@@ -830,6 +836,7 @@ fields:
     show if: should_cc_user
     default: ${users[0].email if defined('users[0].email') else ''}
 continue button field: ready_to_email
+continue button label: Send to court
 ---
 need: sent_email_to_court
 id: email status
@@ -856,6 +863,7 @@ subquestion: |
   Monday - Friday.  
   % endif
 continue button field: email_status
+continue button label: Back to download screen
 ---
 id: email to court
 template: email_to_court_template
