@@ -14,6 +14,22 @@ objects:
   - gals_investigators[i].represented_children: PeopleList
   - attorneys_for_parents: PeopleList.using(auto_gather=False)
 ---
+code: |
+  DCF = VCIndividual("DCF")
+  DCF.address = DAEmpty()
+  DCF.name.first = "Department of Children and Families"
+---
+sets: DCF.child_letters
+code: |
+  for case in other_care_custody_proceedings:
+    if DCF in case.other_parties.complete_elements():
+      if not hasattr(DCF, 'child_letters'):
+        DCF.child_letters = case.child_letters()
+      else:
+        DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
+    else:
+      DCF.child_letters = ''
+---
 id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
 code: |
   # This is a placeholder to control logic flow in this interview
@@ -54,6 +70,7 @@ code: |
   attorneys_for_children.gathered
   attorneys_for_parents.gathered
   gals_investigators.gathered
+  removed_other_people_duplicates
 
   impound_affidavit
   # day # uncomment for standalone
@@ -846,6 +863,7 @@ code: |
         results.append(court.name)
   json_response(results)
 ---
+need: DCF
 question: |
   Tell us about the ${ordinal(i)} case involving ${comma_and_list(children_of_both, and_string=word("or"))}
 subquestion: |
@@ -917,7 +935,7 @@ fields:
       even if you or another person plans to appeal to it.
   - Was custody awarded?: other_care_custody_proceedings[i].custody_awarded
     js hide if: |
-      val("other_care_custody_proceedings[i].case_status") == "adoption" // || val("other_care_custody_proceedings[i].is_open")
+      val("other_care_custody_proceedings[i].case_status") == "adoption"
     datatype: yesnoradio      
   - Who was given custody?: other_care_custody_proceedings[i].person_given_custody
     js show if: |
@@ -941,9 +959,7 @@ validation code: |
       other_care_custody_proceedings[i].other_parties.append(other_parties[0])
     if other_care_custody_proceedings[i].other_party_types["dcf"]:
       other_care_custody_proceedings[i].other_parties.there_are_any=True      
-      dcf = other_care_custody_proceedings[i].other_parties.appendObject()
-      dcf.name.first = "Department of Children and Families"
-      dcf.address = DAEmpty()
+      other_care_custody_proceedings[i].other_parties.append(DCF)
     if other_care_custody_proceedings[i].other_party_types["other"]:
       other_care_custody_proceedings[i].other_parties.there_are_any=True
     else:
@@ -1392,6 +1408,25 @@ code: |
       need_other_parties_appendix_temp = True
       proceeding.put_on_appendix = True
   need_other_parties_appendix = need_other_parties_appendix_temp
+---
+code: |
+  # Remove duplicates from list of box8 people
+
+  # avoid idempotency problems
+  for person in others_in_proceedings:
+    str(person)
+    str(person.child_letters ) # Should be a list of strings
+
+  names = set() # Potential issue: 2 box8 people with the same name that are different and were part of different cases. Not worth solving yet
+  for index, person in enumerate(others_in_proceedings):
+    if str(person) in names: # checking for unique person based on unique names
+      for p_level2 in others_in_proceedings:
+        if str(person) == str(p_level2): 
+          p_level2.child_letters = filter_letters([person.child_letters, p_level2.child_letters]) # these get filtered later for the form.
+      others_in_proceedings.pop(index) # remove the duplicate person
+    names.add(str(person)) # This is a set so adding won't cause a duplicate
+  
+  removed_other_people_duplicates = True
 ---
 progress: 100
 # mandatory: True
