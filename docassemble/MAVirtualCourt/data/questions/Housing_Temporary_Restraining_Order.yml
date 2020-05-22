@@ -44,6 +44,7 @@ code: |
   nav.set_section('users[0].address.address')
   users[0].address.on_one_line()
   users[0].phone_number
+  user_needs_interpreter
   nav.set_section('other_parties[0].address.address')
   other_parties[0].address.on_one_line()
   # other_parties[0].phone_number
