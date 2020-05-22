@@ -1,4 +1,4 @@
----
+
 objects:
   - placeholder_signature: DAStaticFile.using(filename='mass_icon.png')
 ---
@@ -45,6 +45,9 @@ code: |
   for section in [section for section in skip_sections if skip_sections[section]]:
     value(section)
 ---
+include:
+  - 209a_package.yml
+---
 sets: skip_intro
 scan for variables: False
 code: |
@@ -59,11 +62,11 @@ sets: skip_parties
 scan for variables: False
 code: |
   who_protecting_screener = "me"
-  users[0].name.first = "Jane"
-  users[0].name.last = "Survivor"
+  users[0].name.first = "Sam"
+  users[0].name.last = "Sail"
   plaintiff_is_major_yes = True
   defendant_is_major = True
-  other_parties[0].name.first = "George"
+  other_parties[0].name.first = "Alex"
   other_parties[0].name.last = "Abuser"
   defendant_has_alias = True
   other_parties[0].name_other = "Alias"
@@ -94,21 +97,25 @@ code: |
   children.target_number = 2
   children_cares_for.target_number = 1
   
-  children[0].name.first = "Bobby"
+  children[0].name.first = "Rae"
   children[0].name.last =  "User Only"
   children[0].birthdate = as_datetime("2020-05-01")
   children[0].defendant_is_parent = False
-  children[1].name.first = "Junie"
+  children[1].name.first = "Jo"
   children[1].name.last = "Joint"
   children[1].birthdate= as_datetime("2019-04-01")
   children[1].defendant_is_parent = True
   children.gathered = True
-  children_cares_for[0].name.first = "Nelly"
+  children_cares_for[0].name.first = "Nili"
   children_cares_for[0].name.last = "Nibling"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
   children_cares_for[0].defendant_is_parent = False 
   defendant_and_plaintiff_are_parents_of_child = True
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
+  
+  children.gathered = True
+  children_of_both = children.filter(defendant_is_parent = True)
+  children_of_both.gathered = True
   
   skip_children = True
 ---
@@ -409,6 +416,4 @@ code: |
   other_parties[0].other_child_support_interval = "weekly"
   other_parties[0].other_child_support = 175
   skip_child_support = True
----
-include:
-  - 209a_package.yml
+  
