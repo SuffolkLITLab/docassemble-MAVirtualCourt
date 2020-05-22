@@ -10,6 +10,7 @@ code: |
   users[0].name.last = "Kim"
   other_parties[0].name.first = "Sam"
   other_parties.there_is_another = False
+  signature_date = today()
   
   # Testing (Get from `need` in download screen)
   impoundment_intro

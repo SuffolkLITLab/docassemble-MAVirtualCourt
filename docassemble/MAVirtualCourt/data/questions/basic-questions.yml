@@ -6,6 +6,8 @@ metadata:
   title url: https://massaccess.suffolklitlab.org/
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
+  continue button label: |
+    Next
 ---
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
@@ -826,7 +828,7 @@ subquestion: |
   There was a problem delivering this to the ${courts[0]}. We couldn't
   locate the contact information for this court.
   % endif
-  
+ 
   Press below to deliver the form.
 fields:
   - Send me a copy: should_cc_user
