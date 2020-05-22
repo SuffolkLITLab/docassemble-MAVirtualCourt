@@ -4,13 +4,15 @@ comment: |
   cover page and for filing a form with the court.
 ---
 question: |
-  Information for clerk
+  Special instructions for the cover page
 subquestion: |
-  You can include instructions on the cover page that will be sent to
-  ${courts[0]}.
-
+  Before we deliver your form, you can include instructions on the cover
+  page that will be sent to the clerk at ${courts[0]}.
+  
+  For example, you may have special instructions about how and when to reach
+  you that you did not already include in the contact information section.
+  
   The clerk _may_ print the cover page and include it in the public file.
-  It will not be an official part of your case.
 
   Are there any instructions that you would like to give to the clerk that will
   receive your forms?
@@ -26,9 +28,6 @@ help:
     Include information that you want the clerk to know. The clerk is the person
     who will receive your paperwork and put it in an official court file. The
     clerk is not a decision maker on your case.
-    
-    For example, you may have special instructions about how and when to reach
-    you that you did not already include in the contact information section.
 
     Do not include information that is meant for the judge or the other party.
     Do not include information that is meant to be part of your official case.
