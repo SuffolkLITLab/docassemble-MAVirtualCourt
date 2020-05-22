@@ -63,7 +63,7 @@ scan for variables: False
 code: |
   who_protecting_screener = "me"
   users[0].name.first = "Sam"
-  users[0].name.last = "Sail"
+  users[0].name.last = "Survivor"
   plaintiff_is_major_yes = True
   defendant_is_major = True
   other_parties[0].name.first = "Alex"
