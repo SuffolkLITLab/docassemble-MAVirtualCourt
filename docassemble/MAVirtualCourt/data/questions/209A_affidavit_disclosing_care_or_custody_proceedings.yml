@@ -14,6 +14,69 @@ objects:
   - gals_investigators[i].represented_children: PeopleList
   - attorneys_for_parents: PeopleList.using(auto_gather=False)
 ---
+id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.  
+  basic_questions_intro_screen 
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
+  allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
+  # courts.gather()
+  # str(courts[0])
+  # fill_in_court_name
+  defendants.there_are_any = True  
+  case_name
+  # children.there_are_any = True
+  # children.gather()
+  assigned_letters # Give each "children_of_both" a letter from A-Z
+  # explain_addresses_of_children  # Take out for standalone
+  # for child in children_of_both: # Enable this for standalone
+  #   child.child_complete
+  # child1_name_last_first
+  confidential_address
+  # for child in children_of_both:
+  #   child.address.on_one_line(include_unit=True)  
+  has_participated_custody_case
+  # initialize_attorney_lists
+  other_care_custody_proceedings.gather()
+  for case in other_care_custody_proceedings:
+    if case.is_open:
+      case.atty_for_user
+      if case.atty_for_children and len(case.children) > 1:
+        case.attorneys_for_children.gather()
+        # for child in case.children:
+        #   child.represented
+      if case.has_gal:
+        case.gals.gather()
+  # Make sure these are defined after we go through the cases
+  attorneys_for_children.gathered
+  attorneys_for_parents.gathered
+  gals_investigators.gathered
+
+  impound_affidavit
+  # day # uncomment for standalone
+
+  needs_attorney_signature
+  
+  need_past_address_appendix
+  need_children_appendix
+  need_other_parties_appendix
+
+  # str(users[0])
+  # users[0].address.on_one_line(include_unit=True)
+  # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
+  # docket_numbers[0]  # Enable this if a standalone form
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
+  A_affidavit_disclosing_care_or_custody_proceedings0009 = True
+# ---
+# code: |
+#   att
+#   initialize_attorney_lists = True
+---
 code: |
   # children_of_both should have objects pointing to the master children list
   children[i].address.address
@@ -81,73 +144,6 @@ yesno: children[i].previous_addresses.there_is_another
 reconsider: True
 code: |
   collected_addresses = [child.address for child in children_of_both.elements if defined('child.address.address')] + [user.address for user in users]
----
-id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
-code: |
-  # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.  
-  basic_questions_intro_screen 
-  # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
-  # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
-  allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
-  # courts.gather()
-  # str(courts[0])
-  # fill_in_court_name
-  defendants.there_are_any = True  
-  case_name
-  # children.there_are_any = True
-  # children.gather()
-  assigned_letters # Give each "children_of_both" a letter from A-Z
-  # explain_addresses_of_children  # Take out for standalone
-  # for child in children_of_both: # Enable this for standalone
-  #   child.child_complete
-  # child1_name_last_first
-  confidential_address
-  # for child in children_of_both:
-  #   child.address.on_one_line(include_unit=True)  
-  has_participated_custody_case
-  # initialize_attorney_lists
-  other_care_custody_proceedings.gather()
-  for case in other_care_custody_proceedings:
-    if case.is_open:
-      case.atty_for_user
-      if case.atty_for_children and len(case.children) > 1:
-        case.attorneys_for_children.gather()
-        # for child in case.children:
-        #   child.represented
-      if case.has_gal:
-        case.gals.gather()
-  # if have_pending_cases:
-  #   explain_why_asking_about_attorneys
-  #   #attorneys_for_parents.gather()
-  #   #attorneys_for_children.gather()
-  #   #gals_investigators.gather()
-  # else:
-  #   attorneys_for_children.gathered = True
-  #   attorneys_for_parents.gathered = True
-  #   gals_investigators.gathered = True
-  impound_affidavit
-  day
-
-  needs_attorney_signature
-  
-  need_past_address_appendix
-  need_children_appendix
-  need_other_parties_appendix
-
-  # str(users[0])
-  # users[0].address.on_one_line(include_unit=True)
-  # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
-  # docket_numbers[0]  # Enable this if a standalone form
-  # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
-  # basic_questions_signature_flow
-  # users[0].signature
-  A_affidavit_disclosing_care_or_custody_proceedings0009 = True
-# ---
-# code: |
-#   att
-#   initialize_attorney_lists = True
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0
@@ -1349,7 +1345,7 @@ code: |
         atty.name.first = case.atty_for_children_name
         atty.represented_children = case.children
       else:
-        attorneys_for_children.update(case.attorneys_for_children)
+        attorneys_for_children.extend(case.attorneys_for_children)
         # for child in case.children:
         #   if hasattr(child, 'represented') and child.represented:
         #     atty = attorneys_for_children.appendObject()

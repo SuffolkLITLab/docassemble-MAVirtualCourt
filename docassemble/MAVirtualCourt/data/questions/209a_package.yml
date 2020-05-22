@@ -186,6 +186,7 @@ code: |
   # mark_unfilled_fields_empty(interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"])
     # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
   docket_numbers[0]
+  day # Triggers date question in format for aff. of care and custody
   users[0].signature
   
   final_attachment_bundle
