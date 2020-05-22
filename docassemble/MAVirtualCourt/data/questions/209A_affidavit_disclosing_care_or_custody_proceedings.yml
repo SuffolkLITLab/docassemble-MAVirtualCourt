@@ -7,12 +7,12 @@ objects:
   - other_care_custody_proceedings: OtherProceedingList
   - signing_attorney: VCIndividual
   # - children: PeopleList.using(complete_attribute='child_complete')
-  - box8_people: PeopleList.using(auto_gather=False, gathered=True) # People named as parties in other care/custody. We'll filter to remove dupes
-  - attorneys_for_children: PeopleList.using(auto_gather=False, gathered=True)
+  - others_in_proceedings: PeopleList.using(auto_gather=False) # Formerly box8_people. People named as parties in other care/custody. We'll filter to remove dupes
+  - attorneys_for_children: PeopleList.using(auto_gather=False)
   - attorneys_for_children[i].represented_children: PeopleList
-  - gals_investigators: PeopleList.using(auto_gather=False, gathered=True)
+  - gals_investigators: PeopleList.using(auto_gather=False)
   - gals_investigators[i].represented_children: PeopleList
-  - attorneys_for_parents: PeopleList.using(auto_gather=False, gathered=True)
+  - attorneys_for_parents: PeopleList.using(auto_gather=False)
 ---
 code: |
   # children_of_both should have objects pointing to the master children list
@@ -28,11 +28,6 @@ subquestion: |
   We need to include this information together with the other information
   about past care or custody cases.
 continue button field: explain_addresses_of_children  
----
-generic_object: VCIndividual
-question: |
-  Has ${x} lived anywhere else in the last 2 years?
-yesno: x.previous_addresses.there_are_any  
 ---
 question: |
   Has ${children[i]} lived anywhere else in the last 2 years?
@@ -959,11 +954,17 @@ validation code: |
       if other_care_custody_proceedings[i].other_party_types["defendant"]:
         other_care_custody_proceedings[i].other_parties.there_are_any=True
         other_care_custody_proceedings[i].other_parties.append(other_parties[0])
+        # Assign a child letter to other_parties if they were part of this case
+        if hasattr(other_parties[0],'child_letters') and other_parties[0].child_letters:
+          other_parties[0].child_letters = other_parties[0].child_letters + other_care_custody_proceedings[i].child_letters()
+        else:
+          other_parties[0].child_letters = other_care_custody_proceedings[i].child_letters()
       if other_care_custody_proceedings[i].other_party_types["dcf"]:
         other_care_custody_proceedings[i].other_parties.there_are_any=True      
         dcf = other_care_custody_proceedings[i].other_parties.appendObject()
         dcf.name.first = "Department of Children and Families"
         dcf.address = DAEmpty()
+        dcf.child_letters = other_care_custody_proceedings[i].child_letters()
       other_care_custody_proceedings[i].other_parties.auto_gather=False
       other_care_custody_proceedings[i].other_parties.gathered=True
   else:
@@ -993,7 +994,7 @@ list collect:
 fields:
   - A person already mentioned: other_care_custody_proceedings[i].other_parties[j]
     datatype: object
-    choices: box8_people
+    choices: others_in_proceedings
     disable others: True
   - Name: other_care_custody_proceedings[i].other_parties[j].name.first
   - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
@@ -1019,7 +1020,8 @@ code: |
     if case.other_parties.there_are_any:
       for other_party in case.other_parties.complete_elements():
         gathering_temp.add(other_party)
-  box8_people.elements = list(gathering_temp) # I think we need to convert back to a list
+  others_in_proceedings.elements = list(gathering_temp) # I think we need to convert back to a list
+  others_in_proceedings.gathered=True
   del gathering_temp
 ---
 code: |
@@ -1118,9 +1120,6 @@ fields:
     datatype: object_checkboxes
     choices: other_care_custody_proceedings[i].children
     none of the above: False
----
-question: is miles the best person in the world?
-# Miles is awesome
 # ---
 # This does not work because of an intrinsic name issue. I think workaround is acceptable
 # question: |
@@ -1479,15 +1478,15 @@ attachment:
       - "other_case_3_court": ${ other_care_custody_proceedings.item(2).court_name }
       - "other_case_3_docket": ${ other_care_custody_proceedings.item(2).docket_number }
       - "other_case_3_status": ${ other_care_custody_proceedings.item(2).status() }
-      - "other_case_other_parties_1_letters": ${ filter_letters(box8_people.item(0).child_letters) }
-      - "other_case_other_parties_1_names": ${ box8_people.item(0) }
-      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_2_letters": ${ filter_letters(box8_people.item(1).child_letters) }
-      - "other_case_other_parties_2_names": ${ box8_people.item(1) }
-      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_3_names": ${ box8_people.item(2) }
-      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_3_letters": ${ filter_letters(box8_people.item(2).child_letters) }
+      - "other_case_other_parties_1_letters": ${ filter_letters(others_in_proceedings.item(0).child_letters) }
+      - "other_case_other_parties_1_names": ${ others_in_proceedings.item(0) }
+      - "other_case_other_parties_1_address_on_one_line": ${ others_in_proceedings.item(0).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_2_letters": ${ filter_letters(others_in_proceedings.item(1).child_letters) }
+      - "other_case_other_parties_2_names": ${ others_in_proceedings.item(1) }
+      - "other_case_other_parties_2_address_on_one_line": ${ others_in_proceedings.item(1).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_3_names": ${ others_in_proceedings.item(2) }
+      - "other_case_other_parties_3_address_on_one_line": ${ others_in_proceedings.item(2).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_3_letters": ${ filter_letters(others_in_proceedings.item(2).child_letters) }
       - "impound_affidavit": ${ impound_affidavit }
       - "day": ${ day }
       - "month": ${ month }
@@ -1585,15 +1584,15 @@ attachment:
       - "other_case_3_court": ${ other_care_custody_proceedings.item(2).court_name }
       - "other_case_3_docket": ${ other_care_custody_proceedings.item(2).docket_number }
       - "other_case_3_status": ${ other_care_custody_proceedings.item(2).status() }
-      - "other_case_other_parties_1_letters": ${ filter_letters(box8_people.item(0).child_letters) }
-      - "other_case_other_parties_1_names": ${ box8_people.item(0) }
-      - "other_case_other_parties_1_address_on_one_line": ${ box8_people.item(0).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_2_letters": ${ filter_letters(box8_people.item(1).child_letters) }
-      - "other_case_other_parties_2_names": ${ box8_people.item(1) }
-      - "other_case_other_parties_2_address_on_one_line": ${ box8_people.item(1).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_3_names": ${ box8_people.item(2) }
-      - "other_case_other_parties_3_address_on_one_line": ${ box8_people.item(2).address.on_one_line(include_unit=True) }
-      - "other_case_other_parties_3_letters": ${ filter_letters(box8_people.item(2).child_letters) }
+      - "other_case_other_parties_1_letters": ${ filter_letters(others_in_proceedings.item(0).child_letters) }
+      - "other_case_other_parties_1_names": ${ others_in_proceedings.item(0) }
+      - "other_case_other_parties_1_address_on_one_line": ${ others_in_proceedings.item(0).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_2_letters": ${ filter_letters(others_in_proceedings.item(1).child_letters) }
+      - "other_case_other_parties_2_names": ${ others_in_proceedings.item(1) }
+      - "other_case_other_parties_2_address_on_one_line": ${ others_in_proceedings.item(1).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_3_names": ${ others_in_proceedings.item(2) }
+      - "other_case_other_parties_3_address_on_one_line": ${ others_in_proceedings.item(2).address.on_one_line(include_unit=True) }
+      - "other_case_other_parties_3_letters": ${ filter_letters(others_in_proceedings.item(2).child_letters) }
       - "impound_affidavit": ${ impound_affidavit }
       - "day": ${ day }
       - "month": ${ month }
