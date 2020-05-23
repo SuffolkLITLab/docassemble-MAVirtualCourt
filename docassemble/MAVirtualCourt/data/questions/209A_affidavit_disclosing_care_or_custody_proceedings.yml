@@ -10,26 +10,7 @@ objects:
   - others_in_proceedings: PeopleList.using(auto_gather=False) # Formerly box8_people. People named as parties in other care/custody. We'll filter to remove dupes
   - attorneys_for_children: PeopleList.using(auto_gather=False)
   - attorneys_for_children[i].represented_children: PeopleList
-  - gals_investigators: PeopleList.using(auto_gather=False)
-  - gals_investigators[i].represented_children: PeopleList
   - attorneys_for_parents: PeopleList.using(auto_gather=False)
----
-code: |
-  DCF = VCIndividual("DCF")
-  DCF.address = DAEmpty()
-  DCF.address_for_form = DAEmpty()
-  DCF.name.first = "Department of Children and Families"
----
-sets: DCF.child_letters
-code: |
-  for case in other_care_custody_proceedings:
-    if hasattr(case, 'other_parties') and case.other_parties and DCF in case.other_parties.complete_elements():
-      if not hasattr(DCF, 'child_letters'):
-        DCF.child_letters = case.child_letters()
-      else:
-        DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
-    else:
-      DCF.child_letters = ''
 ---
 id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
 code: |
@@ -70,7 +51,7 @@ code: |
   # Make sure these are defined after we go through the cases
   attorneys_for_children.gathered
   attorneys_for_parents.gathered
-  gals_investigators.gathered
+  gals_investigators
   removed_other_people_duplicates
 
   impound_affidavit
@@ -94,6 +75,23 @@ code: |
 # code: |
 #   att
 #   initialize_attorney_lists = True
+---
+code: |
+  DCF = VCIndividual("DCF")
+  DCF.address = DAEmpty()
+  DCF.address_for_form = DAEmpty()
+  DCF.name.first = "Department of Children and Families"
+---
+sets: DCF.child_letters
+code: |
+  for case in other_care_custody_proceedings:
+    if hasattr(case, 'other_parties') and case.other_parties and DCF in case.other_parties.complete_elements():
+      if not hasattr(DCF, 'child_letters'):
+        DCF.child_letters = case.child_letters()
+      else:
+        DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
+    else:
+      DCF.child_letters = ''
 ---
 code: |
   # children_of_both should have objects pointing to the master children list
@@ -1164,10 +1162,6 @@ fields:
     show if:
       variable: other_care_custody_proceedings[i].gals[j].represented_all_children
       is: False
-validation code: |
-  for gal in other_care_custody_proceedings[i].gals:
-    if gal.represented_all_children:
-      gal.represented_children = other_care_custody_proceedings[i].children
 ---
 question: |
   Attorneys involved in your children's cases
@@ -1233,21 +1227,10 @@ code: |
         atty.represented_children = case.children
       else:
         attorneys_for_children.extend(case.attorneys_for_children)
-        # for child in case.children:
-        #   if hasattr(child, 'represented') and child.represented:
-        #     atty = attorneys_for_children.appendObject()
-        #     atty.name.first = child.attorney
-        #     atty.represented_children = PeopleList(elements=[child],auto_gather=False,gathered=True)
   attorneys_for_children.gathered=True
 ---
-reconsider: True
 code: |
-  # Build the list of GALs/investigators
-  gals_investigators.clear()
-  for case in other_care_custody_proceedings.complete_elements():
-    if case.has_gal:
-      gals_investigators.extend(case.gals)
-  gals_investigators.gathered = True
+  gals_investigators = other_care_custody_proceedings.get_gals('gals_investigators')
 ---
 code: |
   # Assign each child a letter from A..Z, or even AA..AZ, etc.
@@ -1403,9 +1386,9 @@ attachment:
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
       - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
-      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
-      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
-      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
+      - "gals_investigators_1": ${ gals_investigators.item(0).status()}
+      - "gals_investigators_2": ${ gals_investigators.item(1).status()}
+      - "gals_investigators_3": ${ gals_investigators.item(2).status()}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
@@ -1509,9 +1492,9 @@ attachment:
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
       - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
-      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
-      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
-      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
+      - "gals_investigators_1": ${ gals_investigators.item(0).status()}
+      - "gals_investigators_2": ${ gals_investigators.item(1).status()}
+      - "gals_investigators_3": ${ gals_investigators.item(2).status()}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
