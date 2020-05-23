@@ -6,6 +6,8 @@ metadata:
   title url: https://massaccess.suffolklitlab.org/
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
+  continue button label: |
+    Next
 ---
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
@@ -23,13 +25,22 @@ code: |
 ---
 default screen parts:
   under: |
-    Have a problem with this website? <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link">Please complete this feedback form</a>. Follow its instructions about [this link](${interview_url()}).
+    % if not user_logged_in():
+    [:sign-in-alt: Sign-in](${url_of('login', next=interview_url())}) or [register](${url_of('register', next=interview_url())}) to save your progress (optional).
+    % endif
+
+    % if 'dev' in get_config('url root') or 'test' in get_config('url root'):
+    Feedback, suggestions, or comments? [Complete this survey](https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link).
+    % else:
+    Feedback, suggestions, or comments? [Complete this survey](https://docs.google.com/forms/d/e/1FAIpQLSen48P7xIH6Feuzi9ovLs9HsOmhbo787vK-jScspAyZyjMqdg/viewform?usp=sf_link).
+    % endif    
 ---
 objects from file:
   - court_emails : court_emails.yml
 ---
 include:
   - form-actions.yml
+  - cover-page.yml
 ---
 features:
   question help button: True
@@ -230,6 +241,8 @@ question: |
   What is your contact information?
 subquestion: |
   Put in the address the court should use to mail papers to you.
+
+  Include at least one way other than mail for the court to contact you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -241,25 +254,32 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
-  - Phone number: users[0].phone_number
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
     required: False
   - Email address: users[0].email    
     datatype: email
     required: False
-  - How can the court contact you?: users[0].other_contact_method
+  - Contact notes: users[0].other_contact_method
     input type: area
     required: False
     help: |
-      If you do not have a phone number 
-      or email the court can use, provide specific contact instructions. For example, use a friend's phone number. But the friend must be someone you can trust to tell you the court is trying to reach you.
+      If you do not have a phone number or email the court can use, provide
+      specific contact instructions. For example, use a friend's phone number.
+      But the friend must be someone you can trust to tell you the court is
+      trying to reach you.
 validation code: |
-  if (not showifdef('users[0].phone_number') and (not showifdef('users[0].email')) and (not showifdef('users[0].other_contact_method'))):
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].mobile_number')) and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users[0].other_contact_method'))):
     validation_error(word("You need to provide at least one contact method."))
 help: |
   You _must_ provide contact information so the court can reach you.
   
-  Some forms allow you to tell the court you need to keep your address, phone, and email 
-  confidential, so that only court staff can see this information. 
+  Some forms allow you to tell the court you need to keep your address, phone,
+  and email confidential, so that only court staff can see this information. 
 ---
 code: |
   users[0].address.geolocate()
@@ -453,8 +473,9 @@ under: |
   ${x}
 progress: 99  
 ---
+# Temporarily disable
 if: |
-  preferred_court == 'Housing Court'
+  False # preferred_court == 'Housing Court'
 id: court information
 sets:
   - courts[0].name
@@ -485,8 +506,9 @@ continue button field: ask_court_question
 #  ${quote_paragraphs(local_housing_court.description)}
 #  % endif
 ---
+# Temporarily always use this form
 if: |
-  not defined('preferred_court') or preferred_court != 'Housing Court'
+  True # not defined('preferred_court') or preferred_court != 'Housing Court'
 id: court information
 sets:
   - courts[0].name
@@ -554,6 +576,8 @@ script: |
     $(".da-field-buttons > div > .btn-da-custom").first().before("<br>")
   </script>
 ---
+comment: |
+  This block is shown when the user texts a link to sign a form
 id: signature wait screen
 question: |
   % if defined('tenant.signature'):
@@ -569,6 +593,10 @@ subquestion: |
   Click continue on this screen once you have finished signing on your phone.
   % endif
   % else:
+  You have been asked to sign this PDF. Click to review it.    
+  ${form_to_sign}  
+  [Make changes](${url_action('review_all_sections')})
+
   Click continue on this screen when you're ready to sign.
   % endif  
 field: signature_wait_screen
@@ -622,7 +650,7 @@ field: signature_phone_followup
 template: interview_link
 content: |
   Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
-  click the link below to continue the interview on your phone.
+  click the link below:  
   ${interview_url()}
 ---
 code: |
@@ -685,12 +713,18 @@ subquestion: |
   
   STEP 1. Click through this guide to prefill your form.  
   STEP 2. Review the completed form.  
-  STEP 3. Use this website to submit the form securely to the court and save the form for yourself for later reference.  
+  STEP 3. Use this website to submit the form securely to the court and save the
+  form for yourself for later reference.  
   
   If you have immediate questions about this form or the court process, 
   please call the Trial Court’s Emergency HelpLine.  
   
   833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm.
+
+  % if chat_partners_available().help:
+  Live help is currently available in this interview. Click the speech bubble
+  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+  % endif
 
 fields:
   - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
@@ -737,6 +771,7 @@ fields:
 ---
 code: |
   ready_to_email
+  prevent_going_back()
   email_status
   form_delivery_complete = True
 ---
@@ -744,40 +779,80 @@ code: |
   send_icon = "envelope"
 ---
 code: |
-  email_to_use = court_emails.get(courts[0].name,None)
-  if not email_to_use:
+  court_email = court_emails.get(courts[0].name,None)
+  if not court_email:
     found_email = False
   else:
     found_email = True
 ---
+need:
+  - email_to_court_template
+  - court_email
+  - should_cc_user
 code: |
-  email_success = True # until we're ready to turn this on
+  if 'dev' in get_config('url root') or 'test' in get_config('url root'):
+    email_to_use = "massaccess@suffolklitlab.org"
+  else:
+    email_to_use = court_email
+
+  if task_not_yet_performed('send email'):
+    email_success = True
+    if should_cc_user:
+      log('Sending email to ' + email_to_use + ' and ccing ' + cc_email + ' for ' + str(users))
+      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', cc=cc_email, attachments=final_form_to_file) # True # until we're ready to turn this on
+    else:
+      log('Sending email to ' + email_to_use + ' and no cc ' + ' for ' + str(users))
+      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', attachments=final_form_to_file)
+    mark_task_as_performed('send email')
   sent_email_to_court = True
 ---
 id: ready to email
 question: |
-  Your form is ready to be delivered to ${courts}.
+  Final Review With Cover Page
 subquestion: |
+  
+  Below is your ${comma_and_list(download_titles)} document with the 
+  cover page that we will deliver to ${courts[0]}.
+  
+  Click "Back" if you need to make any changes.  
+  Click "Send to court" to deliver it.
+  
+  Here is what the clerk at ${courts} will get:
+
+  ${ final_form_to_file }  
+  [:file-download: Download this form with cover page](${final_form_to_file.url_for(attachment=True)})
+
   % if found_email:
-  We will deliver it securely.
+  We will deliver it securely. Please allow up to 15 minutes for the email to
+  arrive.
   % else:
   There was a problem delivering this to the ${courts[0]}. We couldn't
   locate the contact information for this court.
   % endif
-  
-  Click continue if you're ready to send it.
+ 
+  Press below to deliver the form.
+fields:
+  - Send me a copy: should_cc_user
+    datatype: yesno
+  - Email address: cc_email
+    datatype: email
+    show if: should_cc_user
+    default: ${users[0].email if defined('users[0].email') else ''}
 continue button field: ready_to_email
+continue button label: Send to court
 ---
+need: sent_email_to_court
 id: email status
 question: |
   % if email_success:
-  Your form was delivered
+  Your form will be sent within the next 15 minutes.
   % else:
   Something went wrong delivering your form
   % endif
 subquestion: |
   % if email_success:
-  If do not hear from the court in 1 business day, call the Trial Court’s Emergency HelpLine 833-91-COURT (833-912-6878). 
+  If you do not hear from the court in 1 business day, call the Trial Court’s
+  Emergency HelpLine 833-91-COURT (833-912-6878). 
   
   The Emergency HelpLine is open:  
   8:30am - 4:30pm,   
@@ -791,14 +866,19 @@ subquestion: |
   Monday - Friday.  
   % endif
 continue button field: email_status
+continue button label: Back to download screen
 ---
 id: email to court
-template: email_to_court
+template: email_to_court_template
 subject: |
   MassAccess submission from ${users} intended for ${courts[0]}
 content: |
-  On ${today()} at about ${current_datetime().format_datetime()},
+  At ${current_datetime().format_datetime()},
   ${users} submitted the attached form(s).
+
+  % for title in download_titles:
+  * title
+  % endfor
   
   Please contact them to confirm you received the forms:
   
@@ -808,3 +888,52 @@ content: |
   * Email: ${showifdef('user.email')}
   * Other contact method: ${showifdef('user.other_contact_method')}
   % endfor
+---
+imports:
+  - docassemble.MAVirtualCourt # INSTALLED version of the package
+---
+code: |
+  # Build up the package version and try to convey the server and if running from playground (not installed)
+  extra = ''
+  if 'playground' in interview_url():
+    extra = ', (playground)'
+  if 'test' in get_config('url root'):
+    extra += ', test'
+  if 'dev' in get_config('url root'):
+    extra += ', dev'
+  package_version_number = str(docassemble.MAVirtualCourt.__version__) + extra
+---
+event: review_all_sections
+question: |
+  Review of your answers
+subquestion: |
+  
+  ${showifdef('form_to_sign')}
+
+  % if defined('form_delivery_complete'):
+  **Warning: your form has already been delivered.** Any changes you make
+  will _not_ be sent to the court.
+
+  % endif
+  Click a section to revisit the answers from that section.
+
+  % for section in section_links(nav):
+  * ${section}
+  % endfor
+  
+  Press "Continue" to resume the
+  interview.
+buttons:
+  Continue: continue
+---
+question: |
+  Preferred language
+subquestion: |
+  You have the right to an interpreter. You should ask
+  for an interpreter if you speak some English but are more comfortable
+  in a different language.
+fields:
+  - I want an interpreter: user_needs_interpreter
+    datatype: yesnoradio
+  - My preferred language is: user_preferred_language 
+    show if: user_needs_interpreter  

@@ -564,6 +564,7 @@ fields:
     required: False
 ---
 progress: 100
+event: download_defendant_info
 # mandatory: True
 question: |
   Placeholder download screen

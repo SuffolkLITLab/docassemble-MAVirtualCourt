@@ -95,7 +95,7 @@ subquestion: |
    
   Then tell the judge about other serious incidents, if there are any. 
    
-  When you are ready, press 'continue'.
+  When you are ready, press "Next".
 help:
   label: What should I talk about?
   heading: Is this all?

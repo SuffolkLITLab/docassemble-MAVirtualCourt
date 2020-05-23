@@ -150,7 +150,7 @@ continue button field: School
 question: |
   School
 subquestion: |
-  If you're a student, provide your school name and address. If you're not a student, hit 'Continue'.
+  If you're a student, provide your school name and address. If you're not a student, tap "Next".
   
   Please don't include your childrens' schools.  There will be another place to give that information.
 fields:
@@ -174,7 +174,7 @@ continue button field: Workplace
 question: |
   Workplace
 subquestion: |
-  If you have a job, provide your employer's name and contact information. If you do not have a job, hit 'Continue'.
+  If you have a job, provide your employer's name and contact information. If you do not have a job, tap "Next".
 fields:
   - 'Name of your employer/workplace': users[0].workplace_name
     required: False

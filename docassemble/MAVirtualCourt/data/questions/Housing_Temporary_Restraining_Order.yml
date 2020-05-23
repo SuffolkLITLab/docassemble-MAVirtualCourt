@@ -3,22 +3,31 @@ include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
   - basic-questions.yml
 ---
+features:
+  navigation: True
+  progress bar: True
+---
 id: Housing_Temporary_Restraining_Order0002
 code: |
   # This is a placeholder to control logic flow in this interview
 
   basic_questions_intro_screen 
+  nav.set_section('Housing_Temporary_Restraining_Order0002_intro')
   Housing_Temporary_Restraining_Order0002_intro
+  nav.set_section('incident_date')
   incident_date
   #no_expenses
   #tenant_monthly_rent
+  nav.set_section('landlord_type')
   other_parties[0].name.first
   set_progress(25)
   # landlord_liable_amount
+  nav.set_section('requested_action_deny_possession')
   requested_action_deny_possession
   allowed_courts = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('allowed courts')
   preferred_court = interview_metadata['Housing_Temporary_Restraining_Order0002'].get('preferred court')
   # users[0].address.geolocate() # fill in the county attribute of address
+  nav.set_section('courts[0].name')
   courts[0]
   court_county
   set_party_assignments
@@ -27,14 +36,23 @@ code: |
   #  # docket_numbers[0]
   #  str(defendants)
   set_progress(75)
+  nav.set_section('users[0].name.first')
   str(users[0])
-  users[0].address.on_one_line(include_unit=True)
+  users.auto_gather=False
+  users.gathered=True
+  # users.gather()
+  nav.set_section('users[0].address.address')
+  users[0].address.address
+  nav.set_section('users[0].phone_number')  
   users[0].phone_number
+  user_needs_interpreter
+  nav.set_section('other_parties[0].address.address')
   other_parties[0].address.on_one_line(include_unit=True)
-  other_parties[0].phone_number
-  users[0].address.on_one_line(include_unit=True)
-  users[0].email
+  # other_parties[0].phone_number
+  # users[0].email
+  nav.set_section('signature_date')
   signature_date
+  nav.set_section('users[0].signature')
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
   #interview_metadata_dict = interview_metadata[ "Housing_Temporary_Restraining_Order0002"]
@@ -42,9 +60,11 @@ code: |
   mark_unfilled_fields_empty( interview_metadata["Housing_Temporary_Restraining_Order0002"])
   
   Housing_Temporary_Restraining_Order0002_preview_question # Pre-canned preview screen
+  nav.set_section('users[0].signature')
   signature_fields = get_signature_fields(interview_metadata["Housing_Temporary_Restraining_Order0002"])
   basic_questions_signature_flow
   users[0].signature
+  nav.set_section('download')
   Housing_Temporary_Restraining_Order0002 = True
 ---
 mandatory: True
@@ -60,8 +80,7 @@ code: |
     'allowed courts': [
       'Boston Municipal Court',
       'District Court',
-      'Housing Court',
-      'Superior Court',
+      'Housing Court', 
     ],
     'preferred court': 'Housing Court',
     'categories': [
@@ -237,11 +256,16 @@ fields:
   - 'Stop breaching my quiet enjoyment': requested_action_quiet_enjoyment
     datatype: yesno
     default: ${incident_other}
+validation code: |
+  if not showifdef('requested_action_deny_possession') and not showifdef('requested_action_deprive_utility') \
+      and not showifdef('requested_action_quiet_enjoyment'):
+    validation_error("You must ask the court to do at least one thing.")
 ---
 question: |
   Your landlord's actions
 subquestion: |
-  This form allows you to ask for emergency help for something your landlord did or failed to do. Please give us some information about what happened.
+  This form allows you to ask for emergency help for something your landlord did
+  or failed to do. Please give us some information about what happened.
 fields:
   - 'When did the issue start?': incident_date
     datatype: date
@@ -251,49 +275,52 @@ fields:
     datatype: yesno
   - 'Explain what utility was shut off, and when': incident_utility_description
     show if: incident_utility
-  - 'Other breach of quiet enjoyment': incident_other
+  - 'Other (breach of my quiet enjoyment)': incident_other
     datatype: yesno
   - 'Describe the other thing your landlord did wrong': incident_other_description
     datatype: area
     show if: incident_other
+    help: |
+      You can include anything here that is a breach of your right to
+      "quiet enjoyment" of your home. For example: an unsafe living condition;
+      an odor or noise that makes your home unlivable; or anything that 
+      makes you unable to use your home safely and peacefully.
 validation code: |
-  if not incident_locked_out and not incident_utility and not incident_utility:
+  if not incident_locked_out and not incident_utility and not incident_other:
     validation_error("You must select at least one incident.")
+help: |
+  #### What is a breach of quiet enjoyment?
+  A breach of quiet enjoyment is something that your landlord did or should
+  have done that makes your home unlivable. This can cover a lot of different
+  issues. The problem needs to be serious and you can get help for issues
+  that the court agrees are emergencies with this form.
+  
+  Examples might include:
+  
+  * A sewage backup in your basement
+  * A strong unpleasant odor
+  * Constant noise at unreasonable times of day (remember, even if you are
+  working from home, permitted construction may still be allowed)
+  * Unsafe living conditions that your landlord isn't fixing
+  
+  [Read more](https://www.masslegalhelp.org/housing/lt1-chapter-8-rights-decent-place-live)
 ---
-mandatory: True
-need: Housing_Temporary_Restraining_Order0002
-decoration: file-download
-question: |
-  Great job! You filled out the form.
-subquestion: |
-  Thank you ${users[0]}. Your form is ready to send to the court. After you submit, you will have an option to save the form and email it to yourself or someone else.
-  
-  
-  ${ Housing_Temporary_Restraining_Order0002_attachment }
-  
-    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
-  
-  1. You should download and save or print a copy of this form for your 
-  records.
-
-progress: 100
-attachment code: Housing_Temporary_Restraining_Order0002_attachment
-
----
+reconsider: True
 need: Housing_Temporary_Restraining_Order0002
 attachment:
     variable name: Housing_Temporary_Restraining_Order0002_attachment
+    editable: False
     name: Housing TRO
     filename: Housing_TRO
     pdf template file: Housing_Temporary_Restraining_Order_redacted.pdf
     fields: 
       - "court_name": ${ courts[0] }
-      - "plaintiff": ${ plaintiff }
+      - "plaintiff": ${ users }
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
-      - "user_name_full": ${ str(users[0]) }
+      - "user_name_full": ${ users }
       - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
-      - "user_phone": ${ users[0].phone_number }
+      - "user_phone": ${ users[0].phone_numbers()}
       - "other_party_name_full": ${ str(other_parties[0]) }
       - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
@@ -318,9 +345,9 @@ attachment:
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ users[0].phone_number }
-      - "user_name_full__3": ${ users[0] }
-      - "user_name_full__2": ${ users[0] }
+      - "user_phone__2": ${ users[0].phone_numbers() }
+      - "user_name_full__3": ${ users }
+      - "user_name_full__2": ${ users }
       - "user_signature_verification": ${ users[0].signature }
       - "user_signature": ${ users[0].signature }
 ---
@@ -403,10 +430,16 @@ continue button field: Housing_Temporary_Restraining_Order0002_intro
 question: |
   Housing temporary restraining order
 subquestion: |
-  This form lets you ask the court for emergency help if your landlord illegallly locked you out of your apartment, shut off your utilities, or did something else to effect your right to "quiet enjoyment" of your home. That means TK INSERT DEFINITION.
+  This form lets you ask the court for emergency help if your landlord illegally
+  locked you out of your apartment, shut off your utilities, or most other
+  emergency issues related to your ability to live in your home safely and
+  peacefully. 
+  
+  [Read more about your rights](https://www.masslegalhelp.org/housing/lt1-chapter-8-rights-decent-place-live).
   
   You will be asked about 10 questions. At the end, you will need to provide
-  your name and signature before the form is sent to the court. You can use this website to send the form to the court by secure email.
+  your name and signature before the form is sent to the court. You can use this
+  website to send the form to the court by secure email.
   
 ---
 features:
@@ -422,32 +455,20 @@ code: |
   defendants.gathered = True
   set_party_assignments = True
 ---
-continue button field: Housing_Temporary_Restraining_Order0002_preview_question
-question: |
-  Nearly finished
-subquestion: |
-  You are almost done! Please click on the form below. It will open in a new window so you 
-  can review it and make sure it is correct.
-  
-  Don't forget to come back to this page to click to the final step of signing and sending 
-  the form to the court. 
-  
-   ${Housing_Temporary_Restraining_Order0002_attachment_preview}
-progress: 95
----
 attachment:
     variable name: Housing_Temporary_Restraining_Order0002_attachment_preview
     name: Housing TRO
     filename: Housing_TRO
+    editable: False
     pdf template file: Housing_Temporary_Restraining_Order_redacted.pdf
     fields: 
       - "court_name": ${ courts[0] }
-      - "plaintiff": ${ plaintiff }
+      - "plaintiff": ${ users }
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
-      - "user_name_full": ${ str(users[0]) }
+      - "user_name_full": ${ users }
       - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
-      - "user_phone": ${ users[0].phone_number }
+      - "user_phone": ${ users[0].phone_numbers() }
       - "other_party_name_full": ${ str(other_parties[0]) }
       - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
@@ -471,9 +492,9 @@ attachment:
       - "requested_action_deny_possession": ${ requested_action_deny_possession }
       - "requested_action_deprive_utility": ${ requested_action_deprive_utility }
       - "requested_action_quiet_enjoyment": ${ requested_action_quiet_enjoyment }
-      - "user_phone__2": ${ users[0].phone_number }
-      - "user_name_full__3": ${ users[0] }
-      - "user_name_full__2": ${ users[0] }      
+      - "user_phone__2": ${ users[0].phone_numbers() }
+      - "user_name_full__3": ${ users }
+      - "user_name_full__2": ${ users }      
 ---
 question: |
   What is your landlord's phone number?
@@ -489,3 +510,163 @@ code: |
   user_name_full__2 = users[0].name.full()
   user_name_full__3 = users[0].name.full()
   user_phone__2 = users[0].phone_number  
+---
+need: form_to_sign
+continue button field: Housing_Temporary_Restraining_Order0002_preview_question
+question: |
+  Nearly finished
+subquestion: |
+  You are almost done! Please click on the form below. It will open in a new window so you 
+  can review it and make sure it is correct.
+  
+  Don't forget to come back to this page to click to the final step of signing and sending 
+  the form to the court. 
+  
+   ${form_to_sign }
+
+progress: 95
+---
+comment: |
+  The attachment email screen relies on final_form_to_file being defined. This
+  will be built from the interview_metadata dictionary's contents, but if you
+  add any addenda you will want to set this in a code block somewhere that takes
+  priority over basic-questions.yml.
+mandatory: True
+need: 
+  - Housing_Temporary_Restraining_Order0002
+decoration: file-download
+question: |
+  % if not defined('email_success') or not email_success:
+  Review, Download, and Send Form
+  % else:
+  Form delivered
+  % endif
+subquestion: |
+  % if not defined('email_success') or not email_success:
+  Thank you ${users[0]}. Your form is ready to send to the court. **It is not
+  delivered until you complete the delivery process below.**
+
+  1. Click to open the form below in a new window. Correct any errors using the "Make changes" button below.
+  1. Download and save or print a copy of this form for your 
+  records.
+  1. Click the "Submit to ${courts[0]}" button to send it to the court. 
+  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+  % else:
+  If you do not hear from the court in 1 business day, call the Trial Court’s
+  Emergency HelpLine 833-91-COURT (833-912-6878).
+  
+  The Emergency HelpLine is open:  
+  8:30am - 4:30pm,   
+  Monday - Friday.
+  % endif
+  
+  ${ form_to_file_no_cover }  
+  
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+  
+  % if not defined('email_success') or not email_success:
+    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+    
+  Or download/email below:
+  % else:
+    Your email has already been delivered to ${courts[0]}
+    
+  [:file-download: Download with cover page](${final_form_to_file.url_for()})    
+  % endif
+progress: 100
+attachment code: Housing_Temporary_Restraining_Order0002_attachment
+section: download
+event: download
+---
+id: persons signature
+question: |
+  ${users.familiar()}, please sign below
+signature: users[0].signature
+under: |
+  ${users.familiar()}
+
+  [Review form](${url_action('review_all_sections')})
+progress: 99  
+---
+id: persons address
+question: |
+  What is ${ other_parties[0].possessive('address') }?
+fields:
+  - Street address: other_parties[0].address.address
+    address autocomplete: True
+  - Unit: other_parties[0].address.unit
+    required: False
+  - City: other_parties[0].address.city
+  - State: other_parties[0].address.state
+    default: MA   
+    code: |
+      states_list()   
+  - Zip: other_parties[0].address.zip
+  - note: |
+      Please provide a phone number where the court can contact your landlord
+  - Phone: other_parties[0].phone_number
+    required: False
+---
+sections:
+  - Housing_Temporary_Restraining_Order0002_intro: Introduction
+  - incident_date: Your landlord's actions
+  - landlord_type: Landlord's name
+  - requested_action_deny_possession: What you want
+  - courts[0].name: Court choice
+  - users[0].name.first: Your name
+  - users[0].address.address: Your address
+  - users[0].phone_number: Your contact information
+  - other_parties[0].address.address: Your landlord's contact information
+  - signature_date: Signature date
+  - users[0].signature: Signature  
+  - download: Download and Send
+---
+id: your address
+question: |
+  Your address
+subquestion: |
+  Put in the address where you live now as a tenant.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip 
+---
+id: contact information
+question: |
+  Contact information
+subquestion: |
+  Put at least one way for the court to reach you below.
+fields:
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
+    required: False
+  - Email address: users[0].email    
+    datatype: email
+    required: False
+  - Contact notes: users[0].other_contact_method
+    input type: area
+    required: False
+    help: |
+      If you do not have a phone number or email the court can use, provide
+      specific contact instructions. For example, use a friend's phone number.
+      But the friend must be someone you can trust to tell you the court is
+      trying to reach you.
+validation code: |
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].mobile_number')) and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users[0].other_contact_method'))):
+    validation_error(word("You need to provide at least one contact method."))
+help: |
+  You _must_ provide contact information so the court can reach you.
+  
+  Some forms allow you to tell the court you need to keep your address, phone,
+  and email confidential, so that only court staff can see this information. 

@@ -1,0 +1,87 @@
+---
+comment: |
+  This file contains variables and questions that are used for creating the
+  cover page and for filing a form with the court.
+---
+question: |
+  Special instructions for the cover page
+subquestion: |
+  Before we deliver your form, you can include instructions on the cover
+  page that will be sent to the clerk at ${courts[0]}.
+  
+  For example, you may have special instructions about how and when to reach
+  you that you did not already include in the contact information section.
+  
+  The clerk _may_ print the cover page and include it in the public file.
+
+  Are there any instructions that you would like to give to the clerk that will
+  receive your forms?
+fields:
+  - Information for clerk: comments_to_clerk
+    datatype: area
+    rows: 4
+    required: False
+help:
+  label: |
+    What to include?
+  content: |
+    Include information that you want the clerk to know. The clerk is the person
+    who will receive your paperwork and put it in an official court file. The
+    clerk is not a decision maker on your case.
+
+    Do not include information that is meant for the judge or the other party.
+    Do not include information that is meant to be part of your official case.
+
+    There is a chance this information may end up in the public court file, so
+    do not include sensitive or private information.
+---
+reconsider: True
+code: |
+  # This is here as a fallback. In many interviews,
+  # we will want to use a different document. It will
+  # not include addenda, for example.
+  form_to_file_no_cover = pdf_concatenate([value(interview_metadata[key]["attachment block variable"]) for key in interview_metadata.elements])
+---
+reconsider: True
+code: |
+  # Fallback code for preview PDF. You likely want to override this if you are filling more than one PDF to control order
+  # Make sure the PDF preview attachment still ends in "_preview"
+  form_to_sign = pdf_concatenate([value(interview_metadata[key]['attachment block variable'] + '_preview') for key in interview_metadata.elements])
+---
+reconsider: True
+code: |
+  # This is here as a fallback. In many interviews, we want to use
+  # a different document that includes addenda
+  final_form_to_file = pdf_concatenate(general_cover_sheet, form_to_file_no_cover, filename=space_to_underscore(package_title) + '.pdf')
+---
+sets: num_package_pages
+code: |
+  # This is a fallback page number to avoid errors on new forms. It will not
+  # account for possible addenda. You should almost always define this in the
+  # interview's code block.
+  # We generate a PDF from all attachment blocks mentioned in interview_metadata
+  # and then use the num_pages() method to count pages
+  num_package_pages = form_to_file_no_cover.num_pages()
+---
+code: |
+  # This is a fallback form title to avoid errors on new forms
+  # It will not account for umbrella interviews that have multiple forms
+  # but should only have one title.
+  # You should always define this in the interview's code block.
+  # Should be a list.
+  download_titles = [interview_metadata[key]["title"] for key in interview_metadata.elements]
+---
+code: |
+  # This is a fallback package title to avoid errors on new forms
+  # It defines package_title as the title of the first form.
+  # You may want a better form title for most interviews
+  package_title = next(iter(download_titles),'')
+---
+need:
+  - form_to_file_no_cover
+  - num_package_pages
+  - download_titles
+attachment:
+  variable name: general_cover_sheet
+  filename: ${package_title}
+  docx template file: general_cover_sheet.docx

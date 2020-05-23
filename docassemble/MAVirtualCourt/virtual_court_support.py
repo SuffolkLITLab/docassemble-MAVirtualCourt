@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value, comma_and_list, word
+from docassemble.base.functions import define, defined, value, comma_and_list, word, comma_list, DANav, url_action
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -54,7 +54,15 @@ class VCIndividual(Individual):
     if not hasattr(self, 'previous_addresses'):
       self.initializeAttribute('previous_addresses', AddressList)
     if not hasattr(self, 'other_addresses'):
-      self.initializeAttribute('other_addresses', AddressList)      
+      self.initializeAttribute('other_addresses', AddressList)
+
+  def phone_numbers(self):
+    nums = []
+    if hasattr(self, 'mobile_number') and self.mobile_number:
+      nums.append(self.mobile_number + ' (cell)')
+    if hasattr(self, 'phone_number') and self.phone_number:
+      nums.append(self.phone_number + ' (other)')
+    return comma_list(nums)
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
@@ -231,3 +239,13 @@ def yes_no_unknown(val, condition, unknown="Unknown", placeholder=0):
     return unknown
   else:
     return placeholder
+
+def section_links(nav):
+  """Returns a list of clickable navigation links without animation."""
+  sections = nav.get_sections()
+  section_link = []
+  for section in sections:
+    for key in section:
+      section_link.append('[' + section[key] + '](' + url_action(key) + ')' )
+
+  return section_link    
