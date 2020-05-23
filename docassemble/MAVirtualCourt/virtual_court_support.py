@@ -102,7 +102,7 @@ class OtherProceeding(DAObject):
 
   def child_letters(self):
     """Return ABC if children lettered A,B,C are part of this case"""
-    return ''.join([child.letter for child in self.children])
+    return ''.join([child.letter for child in self.children if child.letter])
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
@@ -218,9 +218,14 @@ def filter_letters(letter_strings):
   # probably same speed
   unique_letters = set()
   for string in letter_strings:
-    for letter in string:
-      unique_letters.add(letter)
-  return ''.join(sorted(unique_letters))
+    if string: # Catch possible None values
+      for letter in string:
+        unique_letters.add(letter)
+  try:
+    retval = ''.join(sorted(unique_letters))
+  except:
+    reval = ''
+  return retval
 
 def yes_no_unknown(val, condition, unknown="Unknown", placeholder=0):
   """Return 'unknown' if the value is None rather than False. Helper for PDF filling with
