@@ -42,6 +42,9 @@ class PeopleList(DAList):
   def familiar_or(self):
     return comma_and_list([person.name.familiar() for person in self],and_string=word("ord"))
 
+class UniquePeopleList(PeopleList):
+  pass
+
 class VCIndividual(Individual):
   """Used to represent an Individual on the assembly line/virtual court project.
   Two custom attributes are objects and so we need to initialize: `previous_addresses` 
@@ -82,7 +85,7 @@ class OtherProceeding(DAObject):
     if not hasattr(self, 'other_parties'):
       self.initializeAttribute('other_parties', PeopleList)
     if not hasattr(self, 'gals'):
-      self.initializeAttribute('gals', PeopleList.using(ask_number=True))
+      self.initializeAttribute('gals', GALList.using(ask_number=True))
 
   # We use a property decorator because Docassemble expects this to be an attribute, not a method
   @property
@@ -110,7 +113,7 @@ class OtherProceeding(DAObject):
 
   def child_letters(self):
     """Return ABC if children lettered A,B,C are part of this case"""
-    return ''.join([child.letter for child in self.children])
+    return ''.join([child.letter for child in self.children if child.letter])
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
@@ -151,6 +154,45 @@ class OtherProceedingList(DAList):
     for case in self.elements:
       if case.case_status == 'adoption':
         return True
+  
+  def get_gals(self, intrinsic_name):
+    GALs = GALList(intrinsic_name, auto_gather=False,gathered=True)
+    for case in self:
+      if case.has_gal:
+        for gal in case.gals:
+          if gal.represented_all_children:
+            gal.represented_children = case.children
+          GALs.append(gal, set_instance_name=True)         
+    return GALs
+
+class GAL(VCIndividual):
+  """This object has a helper for printing itself in PDF, as well as a way to merge attributes for duplicates"""
+  def status(self):
+    return str(self) + ' (' + comma_and_list(self.represented_children) + ')'
+  
+  def is_match(self, new_gal):
+    return str(self) == str(new_gal)
+
+  def merge(self, new_gal):
+    self.represented_children = PeopleList(elements=self.represented_children.union(new_gal.represented_children))
+
+class GALList(PeopleList):
+  """For storing a list of Guardians ad Litem in Affidavit of Care and Custody"""
+  def init(self, *pargs, **kwargs):
+    super(GALList, self).init(*pargs, **kwargs)
+    self.object_type = GAL
+
+  def append(self, new_item, set_instance_name=False):
+    """Only append if this GAL has a unique name"""
+    match = False
+    for item in self:
+      if item.is_match(new_item):
+        match = True
+        # Merge list of children represented if same name
+        item.merge(new_item)
+    if not match:
+      return super().append(new_item, set_instance_name=set_instance_name)    
+    return None
 
 def get_signature_fields(interview_metadata_dict):
   """Returns a list of the signature fields in the list of fields, based on assembly line naming conventions"""
@@ -226,9 +268,14 @@ def filter_letters(letter_strings):
   # probably same speed
   unique_letters = set()
   for string in letter_strings:
-    for letter in string:
-      unique_letters.add(letter)
-  return ''.join(sorted(unique_letters))
+    if string: # Catch possible None values
+      for letter in string:
+        unique_letters.add(letter)
+  try:
+    retval = ''.join(sorted(unique_letters))
+  except:
+    reval = ''
+  return retval
 
 def yes_no_unknown(val, condition, unknown="Unknown", placeholder=0):
   """Return 'unknown' if the value is None rather than False. Helper for PDF filling with

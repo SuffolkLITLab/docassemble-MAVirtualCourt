@@ -10,9 +10,88 @@ objects:
   - others_in_proceedings: PeopleList.using(auto_gather=False) # Formerly box8_people. People named as parties in other care/custody. We'll filter to remove dupes
   - attorneys_for_children: PeopleList.using(auto_gather=False)
   - attorneys_for_children[i].represented_children: PeopleList
-  - gals_investigators: PeopleList.using(auto_gather=False)
-  - gals_investigators[i].represented_children: PeopleList
   - attorneys_for_parents: PeopleList.using(auto_gather=False)
+---
+id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.  
+  basic_questions_intro_screen 
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
+  # Set the preferred/allowed courts for this interview
+  preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
+  allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
+  # courts.gather()
+  # str(courts[0])
+  # fill_in_court_name
+  defendants.there_are_any = True  
+  case_name
+  # children.there_are_any = True
+  # children.gather()
+  assigned_letters # Give each "children_of_both" a letter from A-Z
+  # explain_addresses_of_children  # Take out for standalone
+  # for child in children_of_both: # Enable this for standalone
+  #   child.child_complete
+  # child1_name_last_first
+  confidential_address
+  # for child in children_of_both:
+  #   child.address.on_one_line(include_unit=True)  
+  has_participated_custody_case
+  # initialize_attorney_lists
+  other_care_custody_proceedings.gather()
+  for case in other_care_custody_proceedings:
+    if case.is_open:
+      case.atty_for_user
+      if case.atty_for_children and len(case.children) > 1:
+        case.attorneys_for_children.gather()
+        # for child in case.children:
+        #   child.represented
+      if case.has_gal:
+        case.gals.gather()
+  # Make sure these are defined after we go through the cases
+  attorneys_for_children.gathered
+  attorneys_for_parents.gathered
+  gals_investigators
+  removed_other_people_duplicates
+
+  impound_affidavit
+  # day # uncomment for standalone
+
+  needs_attorney_signature
+  
+  need_past_address_appendix
+  need_children_appendix
+  need_other_parties_appendix
+
+  # str(users[0])
+  # users[0].address.on_one_line(include_unit=True)
+  # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
+  # docket_numbers[0]  # Enable this if a standalone form
+  # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
+  A_affidavit_disclosing_care_or_custody_proceedings0009 = True
+# ---
+# code: |
+#   att
+#   initialize_attorney_lists = True
+---
+code: |
+  DCF = VCIndividual("DCF")
+  DCF.address = DAEmpty()
+  DCF.address_for_form = DAEmpty()
+  DCF.name.first = "Department of Children and Families"
+---
+sets: DCF.child_letters
+code: |
+  for case in other_care_custody_proceedings:
+    if hasattr(case, 'other_parties') and case.other_parties and DCF in case.other_parties.complete_elements():
+      if not hasattr(DCF, 'child_letters'):
+        DCF.child_letters = case.child_letters()
+      else:
+        DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
+    else:
+      DCF.child_letters = ''
 ---
 code: |
   # children_of_both should have objects pointing to the master children list
@@ -81,73 +160,6 @@ yesno: children[i].previous_addresses.there_is_another
 reconsider: True
 code: |
   collected_addresses = [child.address for child in children_of_both.elements if defined('child.address.address')] + [user.address for user in users]
----
-id: interview_order_A_affidavit_disclosing_care_or_custody_proceedings0009
-code: |
-  # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.  
-  basic_questions_intro_screen 
-  # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
-  # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
-  allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
-  # courts.gather()
-  # str(courts[0])
-  # fill_in_court_name
-  defendants.there_are_any = True  
-  case_name
-  # children.there_are_any = True
-  # children.gather()
-  assigned_letters # Give each "children_of_both" a letter from A-Z
-  # explain_addresses_of_children  # Take out for standalone
-  # for child in children_of_both: # Enable this for standalone
-  #   child.child_complete
-  # child1_name_last_first
-  confidential_address
-  # for child in children_of_both:
-  #   child.address.on_one_line(include_unit=True)  
-  has_participated_custody_case
-  # initialize_attorney_lists
-  other_care_custody_proceedings.gather()
-  for case in other_care_custody_proceedings:
-    if case.is_open:
-      case.atty_for_user
-      if case.atty_for_children and len(case.children) > 1:
-        case.attorneys_for_children.gather()
-        # for child in case.children:
-        #   child.represented
-      if case.has_gal:
-        case.gals.gather()
-  # if have_pending_cases:
-  #   explain_why_asking_about_attorneys
-  #   #attorneys_for_parents.gather()
-  #   #attorneys_for_children.gather()
-  #   #gals_investigators.gather()
-  # else:
-  #   attorneys_for_children.gathered = True
-  #   attorneys_for_parents.gathered = True
-  #   gals_investigators.gathered = True
-  impound_affidavit
-  day
-
-  needs_attorney_signature
-  
-  need_past_address_appendix
-  need_children_appendix
-  need_other_parties_appendix
-
-  # str(users[0])
-  # users[0].address.on_one_line(include_unit=True)
-  # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
-  # docket_numbers[0]  # Enable this if a standalone form
-  # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
-  # basic_questions_signature_flow
-  # users[0].signature
-  A_affidavit_disclosing_care_or_custody_proceedings0009 = True
-# ---
-# code: |
-#   att
-#   initialize_attorney_lists = True
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0
@@ -850,6 +862,7 @@ code: |
         results.append(court.name)
   json_response(results)
 ---
+need: DCF
 question: |
   Tell us about the ${ordinal(i)} case involving ${comma_and_list(children_of_both, and_string=word("or"))}
 subquestion: |
@@ -921,7 +934,7 @@ fields:
       even if you or another person plans to appeal to it.
   - Was custody awarded?: other_care_custody_proceedings[i].custody_awarded
     js hide if: |
-      val("other_care_custody_proceedings[i].case_status") == "adoption" // || val("other_care_custody_proceedings[i].is_open")
+      val("other_care_custody_proceedings[i].case_status") == "adoption"
     datatype: yesnoradio      
   - Who was given custody?: other_care_custody_proceedings[i].person_given_custody
     js show if: |
@@ -945,11 +958,11 @@ validation code: |
       other_care_custody_proceedings[i].other_parties.append(other_parties[0])
     if other_care_custody_proceedings[i].other_party_types["dcf"]:
       other_care_custody_proceedings[i].other_parties.there_are_any=True      
-      dcf = other_care_custody_proceedings[i].other_parties.appendObject()
-      dcf.name.first = "Department of Children and Families"
-      dcf.address = DAEmpty()
+      other_care_custody_proceedings[i].other_parties.append(DCF)
     if other_care_custody_proceedings[i].other_party_types["other"]:
-      other_care_custody_proceedings[i].other_parties.there_are_any=True
+      if len(other_care_custody_proceedings[i].other_parties.elements):  
+        other_care_custody_proceedings[i].other_parties.there_are_any=True
+        other_care_custody_proceedings[i].other_parties.there_is_another = True
     else:
       if other_care_custody_proceedings[i].other_party_types["defendant"]:
         other_care_custody_proceedings[i].other_parties.there_are_any=True
@@ -960,11 +973,8 @@ validation code: |
         else:
           other_parties[0].child_letters = other_care_custody_proceedings[i].child_letters()
       if other_care_custody_proceedings[i].other_party_types["dcf"]:
-        other_care_custody_proceedings[i].other_parties.there_are_any=True      
-        dcf = other_care_custody_proceedings[i].other_parties.appendObject()
-        dcf.name.first = "Department of Children and Families"
-        dcf.address = DAEmpty()
-        dcf.child_letters = other_care_custody_proceedings[i].child_letters()
+        other_care_custody_proceedings[i].other_parties.there_are_any=True
+        other_care_custody_proceedings[i].other_parties.append(DCF)
       other_care_custody_proceedings[i].other_parties.auto_gather=False
       other_care_custody_proceedings[i].other_parties.gathered=True
   else:
@@ -983,14 +993,12 @@ question: |
   Who else was involved in this case?
 subquestion: |
   % if len(other_care_custody_proceedings[i].other_parties.complete_elements()):
-  You have already told us about ${other_care_custody_proceedings[i].other_parties.complete_elements()}
+  You have already told us about ${comma_and_list(other_care_custody_proceedings[i].other_parties.complete_elements())}
   % endif
-
-  Click ${word("Add another")} to add another item.
-list collect: 
-  enable: True
-  label: |
-    **${ordinal(j).capitalize()}** additional party
+# list collect: 
+#   enable: True
+#   label: |
+#     **${ordinal(j).capitalize()}** additional party
 fields:
   - A person already mentioned: other_care_custody_proceedings[i].other_parties[j]
     datatype: object
@@ -1001,11 +1009,29 @@ fields:
     address autocomplete: True
     required: False
 validation code: |
-  for person in other_care_custody_proceedings[i].other_parties:
-    person.address.geolocate(person.address_for_form)
-    if not person.address.geolocated:
-      person.address = DAEmpty()
+  other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
+  if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
+    other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
+  # for person in other_care_custody_proceedings[i].other_parties:
+  #   person.address.geolocate(person.address_for_form)
+  #   if not person.address.geolocated:
+  #     person.address = DAEmpty()
 ---
+question: |
+  Was there anyone else involved in this case?
+subquestion: |
+  % if len(other_care_custody_proceedings[i].other_parties.complete_elements()):
+  You have already told us about ${comma_and_list(other_care_custody_proceedings[i].other_parties.complete_elements())}
+  % endif
+yesno: other_care_custody_proceedings[i].other_parties.there_is_another
+---
+# TODO: this way of uniquely gathering the parties is not the best
+# approach. May be smarter to make a method on PeopleList
+# or make a new class that subclasses PeopleList with a
+# unique_people method.
+# Also need to re-think the "child_letters" being an attribute
+# of the person, rather than collecting the unique child letters
+# at the time we build the list.
 reconsider: True
 comment: |
   This builds our list of parties involved in other care/custody proceedings
@@ -1039,32 +1065,14 @@ subquestion: |
 fields:
   - You?: other_care_custody_proceedings[i].atty_for_user
     datatype: yesnoradio
-  - Name of your lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_user_name
-    datatype: object
-    choices: attorneys_for_parents
-    show if: other_care_custody_proceedings[i].atty_for_user
-    disable others:
-      - other_care_custody_proceedings[i].atty_for_user_name
   - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
     show if: other_care_custody_proceedings[i].atty_for_user
   - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
     datatype: yesnoradio
-  - Name of ${other_parties.familiar()}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_defendant_name
-    datatype: object
-    choices: attorneys_for_parents
-    show if: other_care_custody_proceedings[i].atty_for_defendant   
-    disable others:
-      - other_care_custody_proceedings[i].atty_for_defendant_name
   - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
     show if: other_care_custody_proceedings[i].atty_for_defendant
   - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
     datatype: yesnoradio
-  - Name of ${other_care_custody_proceedings[i].children}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_children_name
-    datatype: object
-    choices: attorneys_for_children
-    disable others:
-      - other_care_custody_proceedings[i].atty_for_children_name
-    show if: other_care_custody_proceedings[i].atty_for_children  
   - Name of ${other_care_custody_proceedings[i].children}'s lawyer: other_care_custody_proceedings[i].atty_for_children_name
     show if: other_care_custody_proceedings[i].atty_for_children
 ---
@@ -1154,10 +1162,6 @@ fields:
     show if:
       variable: other_care_custody_proceedings[i].gals[j].represented_all_children
       is: False
-validation code: |
-  for gal in other_care_custody_proceedings[i].gals:
-    if gal.represented_all_children:
-      gal.represented_children = other_care_custody_proceedings[i].children
 ---
 question: |
   Attorneys involved in your children's cases
@@ -1186,133 +1190,6 @@ columns:
       showifdef('row_item.docket_number')
   - Children: |
       row_item.children
-# ---
-# comment: |
-#   TODO: 
-#   It is too complex to do this on a case-by-case basis
-#   given the filtering we need to do/reducing repetition of
-#   attorney names. But it may be worth it if that UI is better
-
-#   Should revisit this later
-# question: |
-#   Attorneys for open (pending) cases representing your children
-# subquestion: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}
-
-#   Did any attorney represent either ${comma_and_list(children_of_both, and_string=word("or"))}
-#   for any of the above cases?
-# yesno: attorneys_for_children.there_are_any
-# ---
-# question: |
-#   Attorneys representing your children
-# subquestion: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}
-
-#   Please tell us about the **attorney** involved in any of the above cases who represented either ${comma_and_list(children_of_both, and_string=word("or"))}
-# list collect: True
-# fields:
-#   - Name of attorney: attorneys_for_children[i].name.first
-#   - Did this attorney represent ALL children?: attorneys_for_children[i].represented_all_children
-#     datatype: yesnoradio
-#   - Which children did this attorney represent?: attorneys_for_children[i].represented_children
-#     datatype: object_checkboxes
-#     choices: children_of_both
-#     show if:
-#       variable: attorneys_for_children[i].represented_all_children
-#       is: False
-# validation code: |
-#   for attorney in attorneys_for_children:    
-#     if attorney.represented_all_children:
-#       attorney.represented_children = children_of_both  
-# ---
-# question: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}  
-
-#   Did any **attorney** other than ${comma_and_list(attorneys_for_children, and_string=word("or"))} represent ${comma_and_list(children_of_both, and_string=word("or"))}
-# yesno: attorneys_for_children.there_is_another 
-# ---
-# question: |
-#   Guardians ad Litems and investigators for open (pending) cases representing your children
-# subquestion: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}
-
-#   Did a law guardian (guardians ad litem, or GALs) or investigator work with either ${comma_and_list(children_of_both, and_string=word("or"))}
-#   for any of the above cases?
-# yesno: gals_investigators.there_are_any
-# ---
-# question: |
-#   Law guardians and investigators for open (pending) cases representing your children
-# subquestion: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}
-
-#   Please tell us about the **guardian ad litem** (GAL) or **investigator** involved in any of the above cases who represented
-#   either ${comma_and_list(children_of_both, and_string=word("or"))}
-
-#   Click ${word("Add another")} to add another guardian ad litem or investigator.
-# list collect: False
-# fields:
-#   - Name of GAL or investigator: gals_investigators[i].name.first
-#   - Did this GAL or investigator work with ALL children?: gals_investigators[i].represented_all_children
-#     datatype: yesnoradio
-#   - Which children did this GAL or investigator represent?: gals_investigators[i].represented_children
-#     datatype: object_checkboxes
-#     choices: children_of_both
-#     show if:
-#       variable: gals_investigators[i].represented_all_children
-#       is: False
-# validation code: |
-#   for gal in gals_investigators:    
-#     if gal.represented_all_children:
-#       gal.represented_children = children_of_both
-# ---
-# question: |
-#   Guardians ad litem and Investigators
-# subquestion: |
-#   So far you told us about ${comma_and_list(gals_investigators, and_string=word("or"))}.
-
-#   Did any **guardian ad litem** (GAL) or **investigator** other than ${comma_and_list(gals_investigators, and_string=word("or"))} work with ${comma_and_list(children_of_both, and_string=word("or"))}?
-# yesno: gals_investigators.there_is_another 
-# ---
-# question: |
-#   Attorneys for open (pending) cases representing either you or ${other_parties}
-# subquestion: |
-#   You told us about the following pending cases:
-
-#   ${other_care_custody_proceedings.table}
-
-#   Did any attorney represent either you or ${other_parties} in 
-#   any of the above cases? 
-# yesno: attorneys_for_parents.there_are_any
-# ---
-# question: |
-#   Attorneys for open (pending) cases representing you or ${other_parties}
-# subquestion: |
-#   You told us about the following pending cases:  
-
-#   ${other_care_custody_proceedings.table}
-
-#   List each **attorney** involved in any of the above cases who represented
-#   either you or ${other_parties}.
-
-#   Click ${word("Add another")} to add another attorney.
-# list collect: True
-# fields:
-#   - Name of attorney: attorneys_for_parents[i].name.first
-#   - Who did this attorney represent?: attorneys_for_parents[i].represented_party
-#     datatype: object_radio
-#     choices: 
-#       - users
-#       - other_parties
 ---
 question: |
   Are there any other cases you would like to tell us about?
@@ -1328,11 +1205,11 @@ code: |
   for case in other_care_custody_proceedings.complete_elements():
     # If they selected an attorney and the attorney is a new one 
     # (e.g., a string rather than an Individual)
-    if case.atty_for_user and hasattr(case, 'atty_for_user_name') and isinstance(case.atty_for_user_name, str):
+    if case.atty_for_user and hasattr(case, 'atty_for_user_name'):
       atty = attorneys_for_parents.appendObject()
       atty.name.first = case.atty_for_user_name
       atty.represented_party = users
-    if case.atty_for_defendant and hasattr(case, 'atty_for_defendant_name') and isinstance(case.atty_for_defendant_name, str):
+    if case.atty_for_defendant and hasattr(case, 'atty_for_defendant_name'):
       atty = attorneys_for_parents.appendObject()
       atty.name.first = case.atty_for_defendant_name                
       atty.represented_party = other_parties
@@ -1349,22 +1226,11 @@ code: |
         atty.name.first = case.atty_for_children_name
         atty.represented_children = case.children
       else:
-        attorneys_for_children.update(case.attorneys_for_children)
-        # for child in case.children:
-        #   if hasattr(child, 'represented') and child.represented:
-        #     atty = attorneys_for_children.appendObject()
-        #     atty.name.first = child.attorney
-        #     atty.represented_children = PeopleList(elements=[child],auto_gather=False,gathered=True)
+        attorneys_for_children.extend(case.attorneys_for_children)
   attorneys_for_children.gathered=True
 ---
-reconsider: True
 code: |
-  # Build the list of GALs/investigators
-  gals_investigators.clear()
-  for case in other_care_custody_proceedings.complete_elements():
-    if case.has_gal:
-      gals_investigators.update(case.gals)
-  gals_investigators.gathered = True
+  gals_investigators = other_care_custody_proceedings.get_gals('gals_investigators')
 ---
 code: |
   # Assign each child a letter from A..Z, or even AA..AZ, etc.
@@ -1396,6 +1262,25 @@ code: |
       need_other_parties_appendix_temp = True
       proceeding.put_on_appendix = True
   need_other_parties_appendix = need_other_parties_appendix_temp
+---
+code: |
+  # Remove duplicates from list of box8 people
+
+  # avoid idempotency problems
+  for person in others_in_proceedings:
+    str(person)
+    str(person.child_letters ) # Should be a list of strings
+
+  names = set() # Potential issue: 2 box8 people with the same name that are different and were part of different cases. Not worth solving yet
+  for index, person in enumerate(others_in_proceedings):
+    if str(person) in names: # checking for unique person based on unique names
+      for p_level2 in others_in_proceedings:
+        if str(person) == str(p_level2): 
+          p_level2.child_letters = filter_letters([person.child_letters, p_level2.child_letters]) # these get filtered later for the form.
+      others_in_proceedings.pop(index) # remove the duplicate person
+    names.add(str(person)) # This is a set so adding won't cause a duplicate
+  
+  removed_other_people_duplicates = True
 ---
 progress: 100
 # mandatory: True
@@ -1499,11 +1384,11 @@ attachment:
       - "child3_past_addresses_1": ${ children_of_both.item(2).previous_addresses.item(0).on_one_line() if confidential_address else '' }
       - "child3_past_addresses_2": ${ children_of_both.item(2).previous_addresses.item(1).on_one_line() if confidential_address else '' }
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
-      - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}}
+      - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
-      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
-      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
-      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
+      - "gals_investigators_1": ${ gals_investigators.item(0).status()}
+      - "gals_investigators_2": ${ gals_investigators.item(1).status()}
+      - "gals_investigators_3": ${ gals_investigators.item(2).status()}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
@@ -1607,9 +1492,9 @@ attachment:
       - "attorney_for_children_1": ${ str(attorneys_for_children.item(0)) +  ' (' + str(attorneys_for_children.item(0).represented_children) + ')' if defined('attorneys_for_children[0]') else ''}
       - "attorney_for_children_2": ${ str(attorneys_for_children.item(1)) +  ' (' + str(attorneys_for_children.item(1).represented_children) + ')' if defined('attorneys_for_children[1]') else ''}
       - "attorney_for_children_3": ${ str(attorneys_for_children.item(2)) +  ' (' + str(attorneys_for_children.item(2).represented_children) + ')' if defined('attorneys_for_children[2]') else ''}
-      - "gals_investigators_1": ${ str(gals_investigators.item(0)) +  ' (' + str(gals_investigators.item(0).represented_children) + ')' if defined('gals_investigators[0]') else ''}
-      - "gals_investigators_2": ${ str(gals_investigators.item(1)) +  ' (' + str(gals_investigators.item(1).represented_children) + ')' if defined('gals_investigators[1]') else ''}
-      - "gals_investigators_3": ${ str(gals_investigators.item(2)) +  ' (' + str(gals_investigators.item(2).represented_children) + ')' if defined('gals_investigators[2]') else ''}
+      - "gals_investigators_1": ${ gals_investigators.item(0).status()}
+      - "gals_investigators_2": ${ gals_investigators.item(1).status()}
+      - "gals_investigators_3": ${ gals_investigators.item(2).status()}
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
