@@ -277,11 +277,11 @@ def filter_letters(letter_strings):
     reval = ''
   return retval
 
-def yes_no_unknown(val, condition, unknown="Unknown", placeholder=0):
+def yes_no_unknown(var_name, condition, unknown="Unknown", placeholder=0):
   """Return 'unknown' if the value is None rather than False. Helper for PDF filling with
   yesnomaybe fields"""
   if condition:
-    return val
+    return value(var_name)
   elif condition is None:
     return unknown
   else:
