@@ -99,10 +99,10 @@ subquestion: |
   for an interpreter if you speak some English but are more comfortable
   in a different language.
 fields:
-  - I want an interpreter: plaintiff_needs_interpreter
+  - I want an interpreter: user_needs_interpreter
     datatype: yesnoradio
-  - My preferred language is: plaintiff_preferred_language 
-    show if: plaintiff_needs_interpreter
+  - My preferred language is: user_preferred_language 
+    show if: user_needs_interpreter
 ---
 question: |
   Former Addresses
@@ -222,8 +222,8 @@ attachment:
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
-      - "plaintiff_needs_interpreter": ${plaintiff_needs_interpreter}
-      - "plaintiff_preferred_language": ${plaintiff_preferred_language if plaintiff_needs_interpreter else ''}
+      - "plaintiff_needs_interpreter": ${user_needs_interpreter}
+      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -260,7 +260,7 @@ code: |
   users[0].workplace_name
   users[0].school_name
   Who_is_allowed_to_see_this_form
-  plaintiff_needs_interpreter
+  user_needs_interpreter
   # users[0].birthdate
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -299,6 +299,6 @@ attachment:
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
-      - "plaintiff_needs_interpreter": ${plaintiff_needs_interpreter}
-      - "plaintiff_preferred_language": ${plaintiff_preferred_language if plaintiff_needs_interpreter else ''}
+      - "plaintiff_needs_interpreter": ${user_needs_interpreter}
+      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
   

@@ -104,7 +104,6 @@ fields:
   - Middle name: other_parties[0].name.middle
     required: False
   - Last name: other_parties[0].name.last
-    required: False
   - Suffix: other_parties[0].name.suffix
     required: False
     code: |
@@ -282,11 +281,11 @@ code: |
 #     datatype: yesno
 #   - 'None of the above. SHOULD WE JUST REMOVE THIS?': no_abuse_checked
 #     datatype: yesno
----    
-question: |
-  When did ${other_parties.familiar()} abuse you?
-fields:
-  - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
+# ---    
+# question: |
+#   When did ${other_parties.familiar()} abuse you?
+# fields:
+#   - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
 ---
 question: |
   What are you asking for?
@@ -302,11 +301,11 @@ fields:
     datatype: yesno
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
     datatype: yesno
-  - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
-    datatype: yesnoradio
-    show if:
-      variable: order_defendant_remain_away_plaintiff_residence_yes
-      is: True
+  # - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
+  #   datatype: yesnoradio
+  #   show if:
+  #     variable: order_defendant_remain_away_plaintiff_residence_yes
+  #     is: True
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
     datatype: yesno
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
@@ -481,28 +480,28 @@ help:
 question: |
   Weapons
 subquestion: |
-  The police need to know if ${users.familiar()} has guns.
+  The police need to know if ${other_parties.familiar()} has guns.
 
-  Does ${users.familiar()} have access or possess any of the following?
+  Does ${other_parties.familiar()} have access or possess any of the following?
 fields:
   - no label: defendant_has_guns
     datatype: checkboxes
     choices:
-      - A gun: a gun
+      - A gun: gun
       - Ammunition: ammo
-      - Firearms ID card: firearms ID
+      - Firearms ID card: FID
       - License to carry: license
   - Describe the gun(s): defendant_weapons_description
-    show if: defendant_has_guns["a gun"]
+    show if: defendant_has_guns["gun"]
 ---
 code: |
-  defendant_weapons_safe_for_pdf = comma_and_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["a gun"] else '')
+  defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')
 ---
 code: |
-  defendant_weapons_for_addendum = comma_and_list(defendant_has_guns.true_values()) + ( "Description of guns: " + defendant_weapons_description if defendant_has_guns["a gun"] else '')
+  defendant_weapons_for_addendum = comma_list(defendant_has_guns.true_values()) + ( " Description of guns: " + defendant_weapons_description if defendant_has_guns["gun"] else '')
 ---
 code: |
-  need_gun_addendum = defendant_has_guns["a gun"]
+  need_gun_addendum = defendant_has_guns["gun"]
 ---
 code: |
   need_relief_addendum =  len(other_relief) > 215
@@ -596,6 +595,9 @@ fields:
       - 'I **used** to live in the same household with ${ other_parties.familiar() }': past
     none of the above: |
       I **never** lived in the same household with ${ other_parties.familiar() }
+    validation messages:
+      checkboxes required: |
+        Check at least one option
 terms:
   - same household: |
       You live in the "same household" if you:
@@ -784,37 +786,7 @@ code: |
 
   if test_relationship_does_not_qualify:
     relationship_does_not_qualify
-
-  # if relationship_to_defendant_marriage_or_kids.all_false():
-  #   if not relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']:
-  #     defendant_relationship_to_plaintiff_is = DAEmpty()
-  #   relationship_to_defendant_unmarried['defendant_and_plaintiff_engaged'] = relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated']
-  #   if relationship_to_defendant_unmarried.all_false():
-  #     refer_to_258E_resources
-  # else:
-  #   defendant_relationship_to_plaintiff_is = DAEmpty()
-
-  # if court_selection == "Superior Court":
-  #   district_court = DAEmpty() # this and all other uses of DAEmpty() are likely no longer necessary because of updates to the wizard
-  #   municipal_court = DAEmpty()
-  #   probate_court = DAEmpty()
-  #   superior_court = True
-  # elif court_selection == "District Court":
-  #   district_court = True
-  #   municipal_court = DAEmpty()
-  #   probate_court = DAEmpty()
-  #   superior_court = DAEmpty()
-  # elif court_selection == "Municipal Court":
-  #   district_court = DAEmpty()
-  #   municipal_court = True
-  #   probate_court = DAEmpty()
-  #   superior_court = DAEmpty()
-  # elif court_selection == "Probate Court":
-  #   district_court = DAEmpty()
-  #   municipal_court = DAEmpty()
-  #   probate_court = True
-  #   superior_court = DAEmpty()
-
+    
   plaintiff_has_minor_children
 
   # other_cases.gather()  # Ask this later
@@ -909,19 +881,19 @@ attachment:
       - "order_defendant_stop_abuse_yes": ${ order_defendant_stop_abuse_yes }
       - "order_defendant_no_contact_unless_court_authorized_yes": ${ order_defendant_no_contact_unless_court_authorized_yes }
       - "order_defendant_remain_away_plaintiff_residence_yes": ${ order_defendant_remain_away_plaintiff_residence_yes }
-      - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
+      # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
       - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
+      - "order_defendant_pay_amount": ${ order_defendant_pay_amount if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -980,19 +952,19 @@ attachment:
       - "order_defendant_stop_abuse_yes": ${ order_defendant_stop_abuse_yes }
       - "order_defendant_no_contact_unless_court_authorized_yes": ${ order_defendant_no_contact_unless_court_authorized_yes }
       - "order_defendant_remain_away_plaintiff_residence_yes": ${ order_defendant_remain_away_plaintiff_residence_yes }
-      - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
+      # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
       - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
       - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
-      - "order_defendant_pay_amount": ${ currency(order_defendant_pay_amount ) if  order_defendant_pay_amount else ''}
+      - "order_defendant_pay_amount": ${ order_defendant_pay_amount if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---

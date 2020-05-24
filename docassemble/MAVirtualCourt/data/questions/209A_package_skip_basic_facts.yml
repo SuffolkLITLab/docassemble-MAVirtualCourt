@@ -1,4 +1,3 @@
----
 objects:
   - placeholder_signature: DAStaticFile.using(filename='mass_icon.png')
 ---
@@ -16,17 +15,16 @@ fields:
       - Parties: skip_parties
       - Relationship: skip_relationship
       - Affidavit: skip_affidavit
+      - Defendant information: skip_defendant_information      
       - Children: skip_children      
       - Custody and no-contact: skip_custody_no_contact
       - Child support affidavit: skip_child_support
       - Visitation: skip_visitation
-      - Past custody cases: skip_custody_cases
       - Orders: skip_orders
       - Court: skip_court
-      - Address: skip_address
-      - Defendant information: skip_defendant_information
       - Plaintiff confidential information: skip_plaintiff_information
       - Motion to impound: skip_impound
+      - Past care or custody cases: skip_affidavit_care_or_custody      
       - Signature: skip_signature
 ---
 mandatory: True
@@ -43,8 +41,11 @@ code: |
 ---
 mandatory: True
 code: |
-  for section in skip_sections.true_values():
+  for section in [section for section in skip_sections if skip_sections[section]]:
     value(section)
+---
+include:
+  - 209a_package.yml
 ---
 sets: skip_intro
 scan for variables: False
@@ -60,17 +61,29 @@ sets: skip_parties
 scan for variables: False
 code: |
   who_protecting_screener = "me"
-  users[0].name.first = "Jane"
+  users[0].name.first = "Sam"
   users[0].name.last = "Survivor"
   plaintiff_is_major_yes = True
   defendant_is_major = True
-  other_parties[0].name.first = "George"
+  other_parties[0].name.first = "Alex"
   other_parties[0].name.last = "Abuser"
   defendant_has_alias = True
   other_parties[0].name_other = "Alias"
   other_parties[0].gender = "male"
   
+  users[0].address.address = "120 Tremont St"
+  users[0].address.city = "Boston"
+  users[0].address.state = "MA"
+  users[0].address.zip = "02108"
   
+  other_parties[0].address.address = "121 Tremont St"
+  other_parties[0].address.city = "Boston"
+  other_parties[0].address.state = "MA"
+  other_parties[0].address.zip = "02108"
+  users[0].phone_number = "555-1234"
+  
+  users[0].address.geolocate()
+  other_parties[0].address.geolocate()
   skip_parties = True
   
 ---
@@ -83,22 +96,30 @@ code: |
   children.target_number = 2
   children_cares_for.target_number = 1
   
-  children[0].name.first = "Bobby"
+  children[0].name.first = "Rae"
   children[0].name.last =  "User Only"
   children[0].birthdate = as_datetime("2020-05-01")
   children[0].defendant_is_parent = False
-  children[1].name.first = "Junie"
+  children[1].name.first = "Jo"
   children[1].name.last = "Joint"
   children[1].birthdate= as_datetime("2019-04-01")
   children[1].defendant_is_parent = True
-  children_cares_for[0].name.first = "Nelly"
+  children.gathered = True
+  children_cares_for[0].name.first = "Nili"
   children_cares_for[0].name.last = "Nibling"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
   children_cares_for[0].defendant_is_parent = False 
   defendant_and_plaintiff_are_parents_of_child = True
   relationship_to_defendant_marriage_or_kids[ "defendant_and_plaintiff_are_parents_of_child"] = True
   
+  children.gathered = True
+  children_of_both = children.filter(defendant_is_parent = True)
+  children_of_both.gathered = True
+  
   skip_children = True
+---
+code: |
+  children.gathered = True
 ---
 sets: skip_relationship
 scan for variables: False
@@ -146,6 +167,10 @@ code: |
 sets: skip_custody_no_contact
 scan for variables: False
 code: |
+  has_participated_custody_case = True
+  has_participated_custody_case_yes = True
+  know_of_other_custody_case_yes = True
+
   wants_custody_of = children_of_both
   wants_no_contact_for = children_of_both
   wants_child_support_for = children_of_both
@@ -173,16 +198,12 @@ code: |
   wants_third_party_yes = True
   skip_visitation = True
 ---
-sets: skip_custody_cases
+sets: skip_affidavit_care_or_custody
 scan for variables: False
 code: |
-  has_participated_custody_case = True
-  has_participated_custody_case_yes = True
-  know_of_other_custody_case_yes = True
   explain_addresses_of_children = True
   explain_why_asking_about_attorneys  = True
-  # have_had_custody_cases = True
-  # have_had_paternity_cases = True
+
   for child in children_of_both:
     child.address = users[0].address
     child.previous_addresses.auto_gather=False
@@ -239,7 +260,7 @@ code: |
   case.date = "2019"
   case.docket_number = "19-CV-1234"
   other_cases.gathered = True
-  skip_custody_cases = True
+  skip_affidavit_care_or_custody = True
 ---
 scan for variables: False
 sets: skip_atty_for_children
@@ -277,25 +298,6 @@ code: |
   docket_numbers.gathered=True
   dont_know_docket_number = False
   skip_court = True
----
-scan for variables: False
-sets: skip_address
-code: |
-  users[0].address.address = "120 Tremont St"
-  users[0].address.city = "Boston"
-  users[0].address.state = "MA"
-  users[0].address.zip = "02108"
-  
-  other_parties[0].address.address = "121 Tremont St"
-  other_parties[0].address.city = "Boston"
-  other_parties[0].address.state = "MA"
-  other_parties[0].address.zip = "02108"
-  users[0].phone_number = "555-1234"
-  
-  users[0].address.geolocate()
-  other_parties[0].address.geolocate()
-  
-  skip_address = True
 ---
 scan for variables: False
 sets: skip_defendant_information
@@ -368,8 +370,8 @@ code: |
   users[0].workplace_phone = "555-7777"
   users[0].school_name = "Greendale"
   users[0].school_address = "123 Fake St, Boston, MA"
-  plaintiff_needs_interpreter = True
-  plaintiff_preferred_language = "American Sign Language"
+  user_needs_interpreter = True
+  user_preferred_language = "American Sign Language"
   persons_authorized_confidential_information = "My best friend"
   Who_is_allowed_to_see_this_form = True
   skip_plaintiff_information = True
@@ -413,6 +415,4 @@ code: |
   other_parties[0].other_child_support_interval = "weekly"
   other_parties[0].other_child_support = 175
   skip_child_support = True
----
-include:
-  - 209a_package.yml
+  

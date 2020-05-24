@@ -44,6 +44,7 @@ include:
 ---
 features:
   question help button: True
+  question back button: True
   progress bar: True
   css: colors.css
 ---
@@ -488,7 +489,7 @@ subquestion: |
   below, based on the address you gave us.
   
   We think you are most likely to file in ${local_housing_court}, which
-  is at ${local_housing_court.address.on_one_line()}
+  is at ${local_housing_court.address.on_one_line(include_unit=True)}
   
   ${map_of(local_housing_court.address)}
   % else:
@@ -648,7 +649,7 @@ field: signature_phone_followup
 ---
 template: interview_link
 content: |
-  Hi, ${ users }  sent you a form from MassAccess. To sign the form,
+  Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
   click the link below:  
   ${interview_url()}
 ---
@@ -763,7 +764,7 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
-  - Self-described gender: x.gender
+  - Gender: x.gender
     show if:
       variable: x.gender
       is: "self-described"

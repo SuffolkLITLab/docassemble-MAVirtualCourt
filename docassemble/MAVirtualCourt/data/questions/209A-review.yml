@@ -121,7 +121,7 @@ columns:
   - Child of ${other_parties.familiar()}: |
       yesno(row_item.defendant_is_parent).title()
   - Address: |
-      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if defined('children[' + str(row_index) + '].address') else 'N/A'
+      (row_item.address.on_one_line(include_unit=True) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if defined('children[' + str(row_index) + '].address') else 'N/A'
   - Past addresses: |
       str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
 edit:
@@ -135,7 +135,7 @@ columns:
   - Name: |
       row_item
   - Address: |
-      row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))
+      row_item.address.on_one_line(include_unit=True) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))
   - Past addresses: |
       str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
 ---
@@ -266,7 +266,7 @@ columns:
   - Name: |
       str(row_item)
   - Address: |
-      row_item.address.on_one_line()
+      row_item.address.on_one_line(include_unit=True)
 edit:
   - name.first
   - address.address            
