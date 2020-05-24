@@ -301,11 +301,11 @@ fields:
     datatype: yesno
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my home': order_defendant_remain_away_plaintiff_residence_yes
     datatype: yesno
-  - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
-    datatype: yesnoradio
-    show if:
-      variable: order_defendant_remain_away_plaintiff_residence_yes
-      is: True
+  # - 'Is your home in an apartment building or a multi-family home?': If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here
+  #   datatype: yesnoradio
+  #   show if:
+  #     variable: order_defendant_remain_away_plaintiff_residence_yes
+  #     is: True
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my work.': order_defendant_remain_away_plaintiff_workplace_yes
     datatype: yesno
   - 'I need the Court to order ${other_parties.familiar()} to leave and stay away from my school.': order_defendant_remain_away_plaintiff_school_yes
@@ -487,21 +487,21 @@ fields:
   - no label: defendant_has_guns
     datatype: checkboxes
     choices:
-      - A gun: a gun
+      - A gun: gun
       - Ammunition: ammo
-      - Firearms ID card: firearms ID
+      - Firearms ID card: FID
       - License to carry: license
   - Describe the gun(s): defendant_weapons_description
-    show if: defendant_has_guns["a gun"]
+    show if: defendant_has_guns["gun"]
 ---
 code: |
-  defendant_weapons_safe_for_pdf = comma_and_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["a gun"] else '')
+  defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')
 ---
 code: |
-  defendant_weapons_for_addendum = comma_and_list(defendant_has_guns.true_values()) + ( "Description of guns: " + defendant_weapons_description if defendant_has_guns["a gun"] else '')
+  defendant_weapons_for_addendum = comma_list(defendant_has_guns.true_values()) + ( " Description of guns: " + defendant_weapons_description if defendant_has_guns["gun"] else '')
 ---
 code: |
-  need_gun_addendum = defendant_has_guns["a gun"]
+  need_gun_addendum = defendant_has_guns["gun"]
 ---
 code: |
   need_relief_addendum =  len(other_relief) > 215
@@ -595,6 +595,9 @@ fields:
       - 'I **used** to live in the same household with ${ other_parties.familiar() }': past
     none of the above: |
       I **never** lived in the same household with ${ other_parties.familiar() }
+    validation messages:
+      checkboxes required: |
+        Check at least one option
 terms:
   - same household: |
       You live in the "same household" if you:
@@ -878,7 +881,7 @@ attachment:
       - "order_defendant_stop_abuse_yes": ${ order_defendant_stop_abuse_yes }
       - "order_defendant_no_contact_unless_court_authorized_yes": ${ order_defendant_no_contact_unless_court_authorized_yes }
       - "order_defendant_remain_away_plaintiff_residence_yes": ${ order_defendant_remain_away_plaintiff_residence_yes }
-      - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
+      # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
       - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
@@ -949,7 +952,7 @@ attachment:
       - "order_defendant_stop_abuse_yes": ${ order_defendant_stop_abuse_yes }
       - "order_defendant_no_contact_unless_court_authorized_yes": ${ order_defendant_no_contact_unless_court_authorized_yes }
       - "order_defendant_remain_away_plaintiff_residence_yes": ${ order_defendant_remain_away_plaintiff_residence_yes }
-      - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
+      # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
       - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }

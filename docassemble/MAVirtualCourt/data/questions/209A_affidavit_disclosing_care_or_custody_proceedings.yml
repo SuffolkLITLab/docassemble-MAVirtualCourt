@@ -1084,26 +1084,31 @@ subquestion: |
   with you, ${other_parties.familiar()}, or ${children_of_both} 
   in the ${other_care_custody_proceedings[i]}.
 
+  % if i > 1:
+  You don't need to tell us about the same lawyer twice,
+  if you mentioned this lawyer for a different case.
+  % endif
+
   Who has or had a lawyer on this case?
 fields:
   - You?: other_care_custody_proceedings[i].atty_for_user
     datatype: yesnoradio
-  - Name of your lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_user_name
-    datatype: object
-    choices: attorneys_for_parents
-    show if: other_care_custody_proceedings[i].atty_for_user
-    disable others:
-      - other_care_custody_proceedings[i].atty_for_user_name
+  # - Name of your lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_user_name
+  #   datatype: object
+  #   choices: attorneys_for_parents
+  #   show if: other_care_custody_proceedings[i].atty_for_user
+  #   disable others:
+  #     - other_care_custody_proceedings[i].atty_for_user_name
   - Name of your lawyer: other_care_custody_proceedings[i].atty_for_user_name
     show if: other_care_custody_proceedings[i].atty_for_user
   - ${other_parties.familiar()}?: other_care_custody_proceedings[i].atty_for_defendant
     datatype: yesnoradio
-  - Name of ${other_parties.familiar()}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_defendant_name
-    datatype: object
-    choices: attorneys_for_parents
-    show if: other_care_custody_proceedings[i].atty_for_defendant   
-    disable others:
-      - other_care_custody_proceedings[i].atty_for_defendant_name
+  # - Name of ${other_parties.familiar()}'s lawyer (if already mentioned): other_care_custody_proceedings[i].atty_for_defendant_name
+  #   datatype: object
+  #   choices: attorneys_for_parents
+  #   show if: other_care_custody_proceedings[i].atty_for_defendant   
+  #   disable others:
+  #     - other_care_custody_proceedings[i].atty_for_defendant_name
   - Name of ${other_parties.familiar()}'s lawyer: other_care_custody_proceedings[i].atty_for_defendant_name
     show if: other_care_custody_proceedings[i].atty_for_defendant
   - ${comma_and_list(other_care_custody_proceedings[i].children,and_string=word("or"))}?: other_care_custody_proceedings[i].atty_for_children
