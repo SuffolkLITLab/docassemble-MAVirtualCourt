@@ -289,7 +289,7 @@ question: |
   How can police find ${other_parties.familiar()}?
 subquestion: |
   You already told us that ${other_parties.familiar()}'s address is
-  ${other_parties[0].address.on_one_line()}.
+  ${other_parties[0].address.on_one_line(include_unit=True)}.
 
   What is the best place and time to find ${other_parties.familiar()}? Are they staying 
   somewhere else at the moment? Are there places or friends that they visit at a particular
@@ -345,6 +345,7 @@ fields:
       - Green: Green
       - Hazel: Hazel
       - Red: Red
+      - Other/unknown: other/unknown
   - Other details about ${other_parties.familiar()}'s eyes: other_parties[0].eye_other
     required: False
   - "What is ${other_parties.familiar()}'s hair color?": other_parties[0].hair_color
@@ -366,6 +367,8 @@ fields:
 ---
 question: |
   ${other_parties.familiar()}'s Physical Appearance
+subquestion: |
+  Answer as many questions below as you can.  
 fields:
   - I don't know when ${other_parties.familiar()} was born: dont_know_birthdate
     datatype: yesno
@@ -376,12 +379,14 @@ fields:
     datatype: integer
     show if: dont_know_birthdate
   - "How tall is ${other_parties.familiar()}?": other_parties[0].height
+    required: False
     hint: e.g., 5 foot 10 inches
     validate: |
       # If the user entry only includes digits, prompt for a unit as well
       lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 6 foot 1 inch."))
   - "What is ${other_parties.familiar()}'s weight?": other_parties[0].weight
     hint: e.g., 180 pounds
+    required: False
     validate: |
       lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 180 pounds."))
   - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
@@ -404,8 +409,8 @@ fields:
     choices:
       - Full beard: Full beard
       - Goatee: Goatee
-      - Thin mustasche: Thin mustasche
-      - Thick mustache: Thick mustasche
+      - Thin mustache: Thin mustache
+      - Thick mustache: Thick mustache
       - Glasses: Glasses
       - Tattoo (describe below): Tattooo
       - Scars: Scars
@@ -430,9 +435,9 @@ subquestion: |
   to give them a copy of the restraining order.
 
   You already told us that ${other_parties.familiar()} lives
-  at ${other_parties[0].address.on_one_line()}.
+  at ${other_parties[0].address.on_one_line(include_unit=True)}.
 fields:
-  - 'What floor is "${other_parties[0].address.on_one_line()}" on?': other_parties[0].address_floor
+  - 'What floor is "${other_parties[0].address.on_one_line(include_unit=True)}" on?': other_parties[0].address_floor
     default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
     required: False
   - "What name is on the mailbox at ${other_parties.familiar()}'s address? (write None if none).": other_parties[0].name_door_mailbox
@@ -559,6 +564,7 @@ fields:
     required: False
 ---
 progress: 100
+event: download_defendant_info
 # mandatory: True
 question: |
   Placeholder download screen
@@ -583,7 +589,7 @@ attachment:
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old' }
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[2-1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
@@ -603,7 +609,7 @@ attachment:
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description_cutoff }
-      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_address": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
@@ -627,7 +633,7 @@ attachment:
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
       - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse_cutoff }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
@@ -637,7 +643,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems_cutoff }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_phone : ${other_parties[0].mobile_number}
       - defendant_email: ${other_parties[0].email}
 ---
 include:
@@ -648,13 +654,25 @@ comment: |
   This question is used to introduce your interview. Please customize
 continue button field: defendantinformation209A0008_intro
 question: |
-  ${other_parties.familiar()} Information
+  Defendant's Information Form
 subquestion: |
-  The  next questions are about ${other_parties.familiar()}. This information is used to give (serve) ${other_parties.familiar()} a copy of the restraining order. The police need to give ${other_parties.familiar()} a copy of the restraining order so that ${other_parties.familiar()} knows the restraining order exists and so that ${other_parties.familiar()} knows when the next court date is.  If the police can't serve ${other_parties.familiar()}, you may have to come back to court every ten days until service is done. It is also much harder to prosecute ${other_parties.familiar()} for violating the restraining order.  
+  The  next questions are about ${other_parties.familiar()}. This information is
+  used to give (serve) ${other_parties.familiar()} a copy of the restraining
+  order. The police need to give ${other_parties.familiar()} a copy of the
+  restraining order so that ${other_parties.familiar()} knows the restraining
+  order exists and so that ${other_parties.familiar()} knows when the next court
+  date is.  If the police can't serve ${other_parties.familiar()}, you may have
+  to come back to court every ten days until service is done. It is also much
+  harder to prosecute ${other_parties.familiar()} for violating the restraining
+  order.  
   
-  The more information you can provide about ${other_parties.familiar()}'s usual location, the sooner the order will be served.
+  The more information you can provide about ${other_parties.familiar()}'s usual
+  location, the sooner the order will be served.
   
-  If you see ${other_parties.familiar()}, and you know the order has not been served, call the police. The police should not arrest ${other_parties.familiar()}, but they will be able to serve ${other_parties.familiar()}. Call the police even if you are not afraid.
+  If you see ${other_parties.familiar()}, and you know the order has not been
+  served, call the police. The police should not arrest
+  ${other_parties.familiar()}, but they will be able to serve
+  ${other_parties.familiar()}. Call the police even if you are not afraid.
 # ---
 # question: |
 #   Weapons
@@ -776,7 +794,7 @@ attachment:
     pdf template file: defendant-information-209A.pdf
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else other_parties[0].age}
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old'}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
@@ -795,7 +813,7 @@ attachment:
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
       - "defendant_physical_other": ${ defendant_other_description_cutoff }
-      - "defendant_address": ${ other_parties[0].address }
+      - "defendant_address": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
       - "defendant_address_apartment": ${ showifdef('other_parties[0].address.unit') }
@@ -819,7 +837,7 @@ attachment:
       - "defendant_vehicle_color": ${ other_parties[0].vehicle_color }
       - "defendant_police_violence_no": ${ not other_parties[0].police_violence_yes }
       - "defendant_police_violence_yes": ${ other_parties[0].police_violence_yes }
-      - "defendant_drug_alcohol_no": ${ other_parties[0].drug_alcohol_no }
+      - "defendant_drug_alcohol_no": ${ not other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_yes": ${ other_parties[0].drug_alcohol_yes }
       - "defendant_drug_alcohol_abuse": ${ other_parties[0].drug_alcohol_abuse_cutoff }
       - "defendant_gun_license_carry_possess_no": ${ not other_parties[0].gun_license_carry_possess_yes }
@@ -829,7 +847,7 @@ attachment:
       - "defendant_psychiatric_emotional_problems_yes": ${ other_parties[0].psychiatric_emotional_problems_yes }
       - "defendant_psychiatric_emotional_problems": ${ other_parties[0].psychiatric_emotional_problems_cutoff }
       - "plaintiff_name": ${ users }
-      - defendant_phone : ${other_parties[0].phone_number}
+      - defendant_phone : ${other_parties[0].mobile_number}
       - defendant_email: ${other_parties[0].email}
 
 ---

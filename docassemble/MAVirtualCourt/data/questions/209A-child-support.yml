@@ -301,7 +301,7 @@ fields:
       - I promise that my answers on this form are the truth under penalties of perjury
     validation messages:
       minlength: |
-        You cannot continue unless you agree to tell the truth.
+        You cannot keep going unless you agree that you will tell the truth.
 ---
 question: |
   Your Insurance Expenses
@@ -402,20 +402,24 @@ fields:
     show if: user_has_income
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
----
-question: |
-  Did a judge already approve a child support order for any of these children?
-subquestion: |
-  ${comma_and_list(all_support_children, and_string=word("or"))}
-yesno: existing_order
----
-question: |
-  It looks like you can't request child support in this interview
-subquestion: |
-  If a judge already made a child support order for 
-  ${comma_and_list(all_support_children, and_string=word("or"))},
-  you can't use this form to change it.
-continue button field: explain_no_child_support
+# ---
+# comment: |
+#   Moved to page 2
+# question: |
+#   Do you already have court-ordered child support?
+# subquestion: |
+#   Has the court already ordered child support for any
+#   children you have with ${other_parties.familiar()}, including
+#   ${comma_and_list(children_of_both, and_string=word("or"))}?
+# yesno: existing_order
+# ---
+# question: |
+#   It looks like you can't request child support in this interview
+# subquestion: |
+#   If a judge already made a child support order for 
+#   ${comma_and_list(all_support_children, and_string=word("or"))},
+#   you can't use this form to change it.
+# continue button field: explain_no_child_support
 ---
 comment: |
   event: mb_kick_out_user_existing_order
@@ -505,7 +509,10 @@ code: |
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008 = True
 ---
 code: |
-  all_support_children = wants_custody_of + majors_needing_support
+  if not existing_order:
+    all_support_children = children_of_both + majors_needing_support
+  else:
+    all_support_children = children_of_both
 ---
 continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question
 question: |
@@ -537,44 +544,44 @@ attachment:
       - "other_party_employer_address": ${ other_parties[0].work_address }
 
       # user income and expenses
-      - "user_gross_income": ${ currency(users[0].gross_income) }
+      - "user_gross_income": ${ users[0].gross_income }
       - "user_gross_income_is_per_week": ${ users[0].gross_income_interval == 'weekly' }
       - "user_gross_income_is_per_month": ${ users[0].gross_income_interval == 'monthly' }
 
-      - "user_health_insurance_payment": ${ currency(users.item(0).health_insurance) }
+      - "user_health_insurance_payment": ${ users.item(0).health_insurance }
       - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_interval == 'weekly' }
       - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_interval == 'monthly' }
 
-      - "user_dental_vision_insurance_payment": ${ currency(users.item(0).dental_vision_insurance) }
+      - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance }
       - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_interval == 'weekly' }
       - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_interval == 'monthly' }
 
-      - "user_child_care_expenses": ${ currency(users.item(0).child_care_expenses) }
+      - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
       - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_interval == 'weekly' }
       - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_interval == 'monthly' }
 
-      - "user_child_care_other": ${ currency(users.item(0).child_care_other) }
+      - "user_child_care_other": ${ users.item(0).child_care_other }
       - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_interval == 'monthly' }
       - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_interval == 'weekly' }
 
       # other party income and expenses
-      - "other_party_gross_income": ${ currency(other_parties[0].gross_income) if not dont_know_op_income else  'Unknown'}
+      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', dont_know_op_income) }
       - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_interval == 'weekly' }
       - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_interval == 'monthly' }
 
-      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance) if not other_has_health_insurance is None else 'Unknown'}
+      - "other_party_health_insurance_payment": ${ yes_no_unknown('other_parties[0].health_insurance', other_has_health_insurance)}
       - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_interval == 'weekly' }
       - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_interval == 'monthly' }
 
-      - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance) if not other_has_health_insurance is None else 'Unknown'}
+      - "other_party_dental_vision_insurance_payment": ${ yes_no_unknown('other_parties[0].dental_vision_insurance', other_has_dental)}
       - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_interval == 'weekly' }
       - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_interval == 'monthly' }
 
-      - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses)  if not other_has_childcare is None else 'Unknown' }
+      - "other_party_child_care_expenses": ${ yes_no_unknown('other_parties[0].child_care_expenses',  other_has_childcare) }
       - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_interval == 'weekly' }
       - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_interval == 'monthly' }
 
-      - "other_party_child_care_other": ${ currency(other_parties[0].child_support_other) if not defendant_pays_child_support is None else 'Unknown'}
+      - "other_party_child_care_other": ${ yes_no_unknown('other_parties[0].child_support_other', defendant_pays_child_support)}
       - "other_party_child_care_other_is_per_month": ${ other_parties[0].other_child_support_interval == 'monthly' }
       - "other_party_child_care_other_is_per_week": ${ other_parties[0].other_child_support_interval == 'weekly' }
       
@@ -623,44 +630,45 @@ attachment:
       - "other_party_employer_address": ${ other_parties[0].work_address }
 
       # user income and expenses
-      - "user_gross_income": ${ currency(users[0].gross_income) }
+      - "user_gross_income": ${ users[0].gross_income }
       - "user_gross_income_is_per_week": ${ users[0].gross_income_interval == 'weekly' }
       - "user_gross_income_is_per_month": ${ users[0].gross_income_interval == 'monthly' }
 
-      - "user_health_insurance_payment": ${ currency(users.item(0).health_insurance) }
+      - "user_health_insurance_payment": ${ users.item(0).health_insurance }
       - "user_health_insurance_payment_is_per_week": ${ users.item(0).health_insurance_interval == 'weekly' }
       - "user_health_insurance_payment_is_per_month": ${ users.item(0).health_insurance_interval == 'monthly' }
 
-      - "user_dental_vision_insurance_payment": ${ currency(users.item(0).dental_vision_insurance) }
+      - "user_dental_vision_insurance_payment": ${ users.item(0).dental_vision_insurance }
       - "user_dental_vision_insurance_payment_is_per_week": ${ users.item(0).dental_vision_insurance_interval == 'weekly' }
       - "user_dental_vision_insurance_payment_is_per_month": ${ users.item(0).dental_vision_insurance_interval == 'monthly' }
 
-      - "user_child_care_expenses": ${ currency(users.item(0).child_care_expenses) }
+      - "user_child_care_expenses": ${ users.item(0).child_care_expenses }
       - "user_child_care_expenses_is_per_week": ${ users.item(0).child_care_expenses_interval == 'weekly' }
       - "user_child_care_expenses_is_per_month": ${ users.item(0).child_care_expenses_interval == 'monthly' }
 
-      - "user_child_care_other": ${ currency(users.item(0).child_care_other) }
+      - "user_child_care_other": ${ users.item(0).child_care_other }
       - "user_child_care_other_is_per_month": ${ users.item(0).child_care_other_interval == 'monthly' }
       - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_interval == 'weekly' }
 
       # other party income and expenses
-      - "other_party_gross_income": ${ currency(other_parties[0].gross_income) if not dont_know_op_income else  'Unknown'}
+      # other party income and expenses
+      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', dont_know_op_income) }
       - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_interval == 'weekly' }
       - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_interval == 'monthly' }
 
-      - "other_party_health_insurance_payment": ${ currency(other_parties[0].health_insurance) if not other_has_health_insurance is None else 'Unknown'}
+      - "other_party_health_insurance_payment": ${ yes_no_unknown('other_parties[0].health_insurance', other_has_health_insurance)}
       - "other_party_health_insurance_payment_is_per_week": ${ other_parties[0].health_insurance_interval == 'weekly' }
       - "other_party_health_insurance_payment_is_per_month": ${ other_parties[0].health_insurance_interval == 'monthly' }
 
-      - "other_party_dental_vision_insurance_payment": ${ currency(other_parties[0].dental_vision_insurance) if not other_has_health_insurance is None else 'Unknown'}
+      - "other_party_dental_vision_insurance_payment": ${ yes_no_unknown('other_parties[0].dental_vision_insurance', other_has_dental)}
       - "other_party_dental_vision_insurance_payment_is_per_week": ${ other_parties[0].dental_vision_insurance_interval == 'weekly' }
       - "other_party_dental_vision_insurance_payment_is_per_month": ${ other_parties[0].dental_vision_insurance_interval == 'monthly' }
 
-      - "other_party_child_care_expenses": ${ currency(other_parties[0].child_care_expenses)  if not other_has_childcare is None else 'Unknown' }
+      - "other_party_child_care_expenses": ${ yes_no_unknown('other_parties[0].child_care_expenses',  other_has_childcare) }
       - "other_party_child_care_expenses_is_per_week": ${ other_parties[0].child_care_expenses_interval == 'weekly' }
       - "other_party_child_care_expenses_is_per_month": ${ other_parties[0].child_care_expenses_interval == 'monthly' }
 
-      - "other_party_child_care_other": ${ currency(other_parties[0].child_support_other) if not defendant_pays_child_support is None else 'Unknown'}
+      - "other_party_child_care_other": ${ yes_no_unknown('other_parties[0].child_support_other', defendant_pays_child_support)}
       - "other_party_child_care_other_is_per_month": ${ other_parties[0].other_child_support_interval == 'monthly' }
       - "other_party_child_care_other_is_per_week": ${ other_parties[0].other_child_support_interval == 'weekly' }
       

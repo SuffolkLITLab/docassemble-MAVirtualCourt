@@ -1,4 +1,4 @@
-from docassemble.base.functions import define, defined, value, comma_and_list
+from docassemble.base.functions import define, defined, value, comma_and_list, word, comma_list, DANav, url_action
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
 from docassemble.assemblylinewizard.interview_generator import map_names
@@ -39,6 +39,12 @@ class PeopleList(DAList):
   def familiar(self):
     return comma_and_list([person.name.familiar() for person in self])
 
+  def familiar_or(self):
+    return comma_and_list([person.name.familiar() for person in self],and_string=word("ord"))
+
+class UniquePeopleList(PeopleList):
+  pass
+
 class VCIndividual(Individual):
   """Used to represent an Individual on the assembly line/virtual court project.
   Two custom attributes are objects and so we need to initialize: `previous_addresses` 
@@ -51,7 +57,15 @@ class VCIndividual(Individual):
     if not hasattr(self, 'previous_addresses'):
       self.initializeAttribute('previous_addresses', AddressList)
     if not hasattr(self, 'other_addresses'):
-      self.initializeAttribute('other_addresses', AddressList)      
+      self.initializeAttribute('other_addresses', AddressList)
+
+  def phone_numbers(self):
+    nums = []
+    if hasattr(self, 'mobile_number') and self.mobile_number:
+      nums.append(self.mobile_number + ' (cell)')
+    if hasattr(self, 'phone_number') and self.phone_number:
+      nums.append(self.phone_number + ' (other)')
+    return comma_list(nums)
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
@@ -66,17 +80,32 @@ class OtherProceeding(DAObject):
       self.initializeAttribute('children', PeopleList)
     if not hasattr(self, 'attorneys'):
       self.initializeAttribute('attorneys', PeopleList)
+    if not hasattr(self, 'attorneys_for_children'):
+      self.initializeAttribute('attorneys_for_children', PeopleList)
     if not hasattr(self, 'other_parties'):
       self.initializeAttribute('other_parties', PeopleList)
+    if not hasattr(self, 'gals'):
+      self.initializeAttribute('gals', GALList.using(ask_number=True))
 
   # We use a property decorator because Docassemble expects this to be an attribute, not a method
   @property
   def complete_proceeding(self):
     """Tells docassemble the list item has been gathered when the variables named below are defined."""
-    self.user_role
+    # self.user_role # Not asked for adoption cases
     self.case_status
     self.children.gathered
     self.other_parties.gather()
+    if self.is_open:
+      self.atty_for_user
+      if self.atty_for_children:
+        if len(self.children) > 1:
+          self.attorneys_for_children.gather()
+      if self.has_gal:
+        self.gals.gather()
+      else:
+        self.gals.auto_gather=True
+        self.gals.gathered=True
+    return True
     # We're going to gather this per-attorney instead of
     # per-case now
     #if self.case_status == 'pending':
@@ -84,34 +113,26 @@ class OtherProceeding(DAObject):
 
   def child_letters(self):
     """Return ABC if children lettered A,B,C are part of this case"""
-    return ''.join([child.letter for child in self.children])
+    return ''.join([child.letter for child in self.children if child.letter])
 
   def status(self):
     """Should return the status of the case, suitable to fit on Section 7 of the affidavit disclosing care or custody"""
-    # I think there's four possible ways the status could go
-    # -if the case is an adoption: status should say "adoption"
-    # -if the case is still pending: status should say "pending"
-    # -if the case is closed and was about custody: should should say "custody to [person], [date of custody award]"
-    # -if the case is closed and was about something other than custody, I would do a very brief outcome of the case and the date the case closed, like "Father to pay child support, [date of judgment]"    
-    # - Adoption (pending or closed): adoption
-    # - Non-adoption case without a final decision yet: pending
-    # - Custody case that is complete: custody-closed
-    # - Non-custody case that is complete: non-custody-closed
     if self.case_status in ['adoption',"adoption-pending", "adoption-closed"]:
       return 'Adoption'
-    elif self.case_status == 'custody' and not self.is_open:
+    elif hasattr(self, 'custody_awarded') and self.custody_awarded:
       return "Custody awarded to " + self.person_given_custody + ", " + self.date_of_custody.format("yyyy-MM-dd")
-    elif self.case_status == 'other' and not self.is_open:
-      return self.what_happened
+    elif not self.is_open:
+      return "Closed"
     elif self.is_open:
       return 'Pending'
     else:
-      return self.case_status
+      return self.case_status.title()
 
   def case_description(self):
     """Returns a short description of the other case or proceeding meant to display to identify it
     during list gathering in the course of the interview"""
     description = ""
+    description += self.case_status.title() + " case in "
     description += self.court_name
     if hasattr(self, 'docket_number') and len(self.docket_number.strip()):
       description += ', case number: ' + self.docket_number
@@ -133,6 +154,45 @@ class OtherProceedingList(DAList):
     for case in self.elements:
       if case.case_status == 'adoption':
         return True
+  
+  def get_gals(self, intrinsic_name):
+    GALs = GALList(intrinsic_name, auto_gather=False,gathered=True)
+    for case in self:
+      if case.has_gal:
+        for gal in case.gals:
+          if gal.represented_all_children:
+            gal.represented_children = case.children
+          GALs.append(gal, set_instance_name=True)         
+    return GALs
+
+class GAL(VCIndividual):
+  """This object has a helper for printing itself in PDF, as well as a way to merge attributes for duplicates"""
+  def status(self):
+    return str(self) + ' (' + comma_and_list(self.represented_children) + ')'
+  
+  def is_match(self, new_gal):
+    return str(self) == str(new_gal)
+
+  def merge(self, new_gal):
+    self.represented_children = PeopleList(elements=self.represented_children.union(new_gal.represented_children))
+
+class GALList(PeopleList):
+  """For storing a list of Guardians ad Litem in Affidavit of Care and Custody"""
+  def init(self, *pargs, **kwargs):
+    super(GALList, self).init(*pargs, **kwargs)
+    self.object_type = GAL
+
+  def append(self, new_item, set_instance_name=False):
+    """Only append if this GAL has a unique name"""
+    match = False
+    for item in self:
+      if item.is_match(new_item):
+        match = True
+        # Merge list of children represented if same name
+        item.merge(new_item)
+    if not match:
+      return super().append(new_item, set_instance_name=set_instance_name)    
+    return None
 
 def get_signature_fields(interview_metadata_dict):
   """Returns a list of the signature fields in the list of fields, based on assembly line naming conventions"""
@@ -202,13 +262,37 @@ def mark_unfilled_fields_empty(interview_metadata_dict):
         except:
           pass
 
-
 def filter_letters(letter_strings):
   """Used to take a list of letters like ["A","ABC","AB"] and filter out any duplicate letters."""
   # There is probably a cute one liner, but this is easy to follow and
   # probably same speed
   unique_letters = set()
   for string in letter_strings:
-    for letter in string:
-      unique_letters.add(letter)
-  return ''.join(sorted(unique_letters))
+    if string: # Catch possible None values
+      for letter in string:
+        unique_letters.add(letter)
+  try:
+    retval = ''.join(sorted(unique_letters))
+  except:
+    reval = ''
+  return retval
+
+def yes_no_unknown(var_name, condition, unknown="Unknown", placeholder=0):
+  """Return 'unknown' if the value is None rather than False. Helper for PDF filling with
+  yesnomaybe fields"""
+  if condition:
+    return value(var_name)
+  elif condition is None:
+    return unknown
+  else:
+    return placeholder
+
+def section_links(nav):
+  """Returns a list of clickable navigation links without animation."""
+  sections = nav.get_sections()
+  section_link = []
+  for section in sections:
+    for key in section:
+      section_link.append('[' + section[key] + '](' + url_action(key) + ')' )
+
+  return section_link    

@@ -1,1 +1,1 @@
-__version__ = '1.0-lily'
+__version__ = '0.70'

@@ -107,9 +107,10 @@ code: |
 question: |
   Keeping information private (impoundment)
 subquestion: |
-  Draft: The defendant will still see all of this information. Privacy reasons
-  are not enough. Sexual abuse information can sometimes be a good reason. todo:
-  SMEs
+  Unless you ask the court, the forms you file (other than the confidential information form)
+  will become a public record.
+
+  You can ask the court to keep your form private.
 fields:
   - Is there any information on this form that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
@@ -169,32 +170,30 @@ help: |
   otherwise result.
 ---
 question: |
-  Why do you need to keep this information private (impounded)?
-subquestion: |
-  Be specific. Include facts about your safety.  
-  
-  Usually a general preference for privacy is not alone a sufficient reason for
-  a judge to impound court records from public inspection. If you are requesting
-  an Order of impoundment without prior notice to the defendant and any other
-  interested persons, you must explain why immediate and irreparable injury may
-  otherwise result.
+  Why do you need to keep information private (impounded)?
+subquestion: |  
+  Privacy alone is usually not enough; examples of good reasons include that the
+  information is very sensitive, such as involving sexual assault, or could be
+  very damaging to you and/or your children, or could be used for wrong reasons.
+
+  Be specific. Include facts about your safety.
 fields:
   - The information should be kept private because: request_based_on
     input type: area
     rows: 5
 ---
 question: |
-  Getting an order without notice to ${other_parties.familiar()}
+  Getting an impoundment order without notice to ${other_parties.familiar()}
 subquestion: |
-  If you need, you can keep this _request_ private.
+  If you need, you can keep this _request to keep information private_
+  (impoundment) private.
 
   The judge may agree to give you an order that keeps your information private
   without letting ${other_parties.familiar()} know about your request in
   advance.
 
-  You can ask for this if you will suffer "immediate and irreparable harm"
-  if the court lets ${other_parties.familiar()} know about this request
-  in advance.
+  You can ask for this if you will suffer "immediate and irreparable harm" if
+  the court lets ${other_parties.familiar()} know about this request in advance.
 
   Do you need an order without giving notice to ${other_parties.familiar()}?
 yesno: impound_information_ex_parte
@@ -233,7 +232,7 @@ attachment:
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ True }
+      - "attach_additional_pages": ${'' }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -300,7 +299,7 @@ attachment:
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ True }
+      - "attach_additional_pages": ${ '' }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
