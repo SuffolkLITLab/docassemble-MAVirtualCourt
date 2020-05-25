@@ -89,8 +89,8 @@ sets: skip_parties
 scan for variables: False
 code: |
   who_protecting_screener = "me"
-  users[0].name.first = "Super"
-  users[0].name.last = "Sam"
+  users[0].name.first = "Pat"
+  users[0].name.last = "Plaintiff"
   plaintiff_is_major_yes = True
   defendant_is_major = True
   other_parties[0].name.first = "Drew"
@@ -129,12 +129,12 @@ code: |
   children[0].birthdate = as_datetime("2020-05-01")
   children[0].defendant_is_parent = False
   children[1].name.first = "Jo"
-  children[1].name.last = "Joint"
+  children[1].name.last = "Joint Child"
   children[1].birthdate= as_datetime("2019-04-01")
   children[1].defendant_is_parent = True
   children.gathered = True
-  children_cares_for[0].name.first = "Nili"
-  children_cares_for[0].name.last = "Nibling"
+  children_cares_for[0].name.first = "Cass"
+  children_cares_for[0].name.last = "Care Of"
   children_cares_for[0].birthdate = as_datetime("2018-03-01")
   children_cares_for[0].defendant_is_parent = False 
   defendant_and_plaintiff_are_parents_of_child = True
@@ -292,15 +292,15 @@ code: |
   if not defined('other_care_custody_proceedings[0].gals.gathered') or not other_care_custody_proceedings[0].gals.gathered:
     other_care_custody_proceedings[0].gals.auto_gather = False
     new_gal2 = other_care_custody_proceedings[0].gals.appendObject()
-    new_gal2.name.first = "Gallant Children Guardian"
+    new_gal2.name.first = "Gallant Childs Guardian"
     new_gal2.represented_children = children_of_both  # needed?
     other_care_custody_proceedings[0].gals.gathered = True
 
   # Not sure where in flow this goes (plocket)
   other_care_custody_proceedings[0].atty_for_user = True
-  other_care_custody_proceedings[0].atty_for_user_name = "Atl"
+  other_care_custody_proceedings[0].atty_for_user_name = "User Attorney"
   other_care_custody_proceedings[0].atty_for_children = True
-  other_care_custody_proceedings[0].atty_for_children_name = "Atiya"
+  other_care_custody_proceedings[0].atty_for_children_name = "Childs Attorney"
   
   attorneys_for_parents.auto_gather = False
   if not defined('attorneys_for_parents.gathered') or not attorneys_for_parents.gathered:
@@ -317,7 +317,7 @@ code: |
     attorneys_for_children.gathered = True
     
   other_care_custody_proceedings[0].atty_for_defendant = True
-  other_care_custody_proceedings[0].atty_for_defendant_name = "Defendant advocate"
+  other_care_custody_proceedings[0].atty_for_defendant_name = "Defendant Advocate"
     
   A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
   plaintiff_and_defendant_other_case_yes = True
@@ -378,13 +378,13 @@ code: |
   defendantinformation209A0008_intro = True
   other_parties[0].birthdate = "2000-01-01"
   dont_know_birthdate = False
-  other_parties[0].birthplace = "Atlanta"
+  other_parties[0].birthplace = "Denver"
   other_parties[0].social_security_number = "5555"
-  parents[0] = "Mother maiden name"
-  parents[1] = "Father name"
+  parents[0] = "Defendant mother maiden name"
+  parents[1] = "Defendant father name"
   other_parties[0].phone_number = "555-4567"
   other_parties[0].mobile_number = "555-4567"
-  other_parties[0].email = "george@example.com"
+  other_parties[0].email = "drew@example.com"
   signature_date = today()
   other_parties[0].gender = "male"
   other_parties[0].photo_yes = False
@@ -398,7 +398,7 @@ code: |
   defendant_other_description = "Has a scar on right leg"
   other_parties[0].understands_english = True
   other_parties[0].address_floor = "First floor"
-  other_parties[0].name_door_mailbox = "George"
+  other_parties[0].name_door_mailbox = "Drew"
   defendant_not_employed = True
   other_parties[0].employer = "N/A"
   other_parties[0].does_not_have_car = True
@@ -418,7 +418,7 @@ code: |
   other_parties[0].gun_license_carry_possess = "a license"
   other_parties[0].psychiatric_emotional_problems_yes = True
   other_parties[0].psychiatric_emotional_problems = "Borderline personality"
-  other_parties[0].location_information_other = "A long description of where to find George"
+  other_parties[0].location_information_other = "A long description of where to find the defendant"
   other_parties[0].location_best = "Bar"
   other_parties[0].best_times_find = "Noon"
   other_parties[0].locations_other = "Library"
@@ -455,9 +455,9 @@ code: |
   impoundment_intro = True
   impound_personal_information = True
   impound_case_record_information = True
-  case_record_information_to_be_impounded = "All information about the case"
+  case_record_information_to_be_impounded = "All information about the case."
   impound_information_ex_parte = True
-  request_based_on = "I need this because"
+  request_based_on = "I need this because I'm in danger."
   skip_impound = True
 ---
 sets: skip_signature
