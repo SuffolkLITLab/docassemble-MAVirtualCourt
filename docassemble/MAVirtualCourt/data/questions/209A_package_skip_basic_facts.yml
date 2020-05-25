@@ -1,3 +1,6 @@
+comment: |
+  MVP: Do we want to fill in as much of the PDF as possible?
+---
 objects:
   - placeholder_signature: DAStaticFile.using(filename='mass_icon.png')
 ---
@@ -8,15 +11,21 @@ subquestion: |
   It's not a guarantee of testing, but it can help you quickly
   advance to the right screen to test.
 fields:
+  - Do you want to skip straight to the PDF?: wants_to_pick_sections
+    datatype: radio
+    choices:
+      - Yes: False
+      - No: True
   - Choose a section to skip: skip_sections
     datatype: checkboxes
+    show if: wants_to_pick_sections
     choices:
       - Intro: skip_intro
       - Parties: skip_parties
       - Relationship: skip_relationship
       - Affidavit: skip_affidavit
-      - Defendant information: skip_defendant_information      
-      - Children: skip_children      
+      - Defendant information: skip_defendant_information
+      - Children: skip_children
       - Custody and no-contact: skip_custody_no_contact
       - Child support affidavit: skip_child_support
       - Visitation: skip_visitation
@@ -24,7 +33,7 @@ fields:
       - Court: skip_court
       - Plaintiff confidential information: skip_plaintiff_information
       - Motion to impound: skip_impound
-      - Past care or custody cases: skip_affidavit_care_or_custody      
+      - Past care or custody cases: skip_affidavit_care_or_custody
       - Signature: skip_signature
 ---
 mandatory: True
@@ -41,6 +50,25 @@ code: |
 ---
 mandatory: True
 code: |
+
+  if not wants_to_pick_sections:
+    skip_sections = {}
+    skip_sections[ 'skip_intro' ] = True
+    skip_sections[ 'skip_parties' ] = True
+    skip_sections[ 'skip_relationship' ] = True
+    skip_sections[ 'skip_affidavit' ] = True
+    skip_sections[ 'skip_defendant_information' ] = True
+    skip_sections[ 'skip_children' ] = True
+    skip_sections[ 'skip_custody_no_contact' ] = True
+    skip_sections[ 'skip_child_support' ] = True
+    skip_sections[ 'skip_visitation' ] = True
+    skip_sections[ 'skip_orders' ] = True
+    skip_sections[ 'skip_court' ] = True
+    skip_sections[ 'skip_plaintiff_information' ] = True
+    skip_sections[ 'skip_impound' ] = True
+    skip_sections[ 'skip_affidavit_care_or_custody' ] = True
+    skip_sections[ 'skip_signature' ] = True
+  
   for section in [section for section in skip_sections if skip_sections[section]]:
     value(section)
 ---
@@ -61,12 +89,12 @@ sets: skip_parties
 scan for variables: False
 code: |
   who_protecting_screener = "me"
-  users[0].name.first = "Sam"
-  users[0].name.last = "Survivor"
+  users[0].name.first = "Super"
+  users[0].name.last = "Sam"
   plaintiff_is_major_yes = True
   defendant_is_major = True
-  other_parties[0].name.first = "Alex"
-  other_parties[0].name.last = "Abuser"
+  other_parties[0].name.first = "Drew"
+  other_parties[0].name.last = "Defendant"
   defendant_has_alias = True
   other_parties[0].name_other = "Alias"
   other_parties[0].gender = "male"
@@ -174,8 +202,9 @@ code: |
   wants_custody_of = children_of_both
   wants_no_contact_for = children_of_both
   wants_child_support_for = children_of_both
-  need_help_for_majors = False
-  reasons_no_contact = "George shouldn't have any contact"
+  majors_needing_support.there_are_any = False  # No PDF test?
+  need_help_for_majors = majors_needing_support.there_are_any
+  reasons_for_no_contact = 'No contact'
   schools_to_stay_away_from.there_are_any = False
   visitation_info = True
   wants_to_request_visitation_details = False
@@ -185,17 +214,37 @@ code: |
 sets: skip_visitation
 scan for variables: False
 code: |
+  # TODO: These need to be untangled more. The variable names have changed,
+  # but I'm not yet sure which of these old ones are necessary. Time is
+  # of the essence!
+  # Old vars
   wants_visitation_orders = True
   permit_visitation_yes = True
   prohibit_visitation_yes = False
   visitation_center_name = "The Visitation Center"
-  visitation_center_payor_name = "George"
+  visitation_center_payor_name = "The defendant"
   wants_supervision_yes = True
   visitation_supervisor_name = "Robert Supervisor"
   visitation_times = "Mondays at 3 PM"
-  visitation_supervision_payor_name = "George"
-  third_party_name = "Susan"
+  visitation_supervision_payor_name = "The defendant"
   wants_third_party_yes = True
+  third_party_name = "A friend"
+  
+  # New vars. Trying to follow the desires expressed by the old vars. 
+  prohibit_visitation = False
+  wants_center = True
+  visitation_center_name = "The Visitation Center"  # old vars
+  pays_for_center = "defendant"  # These are choices now
+  wants_supervision = True  # old vars
+  visitation_supervisor_name_full = "Robert Supervisor"  # old vars
+  supervision_time = "Mondays at 3 PM"  # old vars
+  supervision_payer = "defendant"  # These are choices now
+  other_supervision_payer = "defendant"  # These are choices now
+  wants_pickup = True  # old vars
+  who_picks_up = "A friend"  # old vars
+  wants_other_order = True
+  other_order = "Another order"
+
   skip_visitation = True
 ---
 sets: skip_affidavit_care_or_custody
@@ -237,6 +286,22 @@ code: |
     new_gal.represented_children = children_of_both
     gals_investigators.gathered = True
   
+    other_care_custody_proceedings[0].has_gal = True
+    other_care_custody_proceedings[0].gals.target_number = 1
+    # Is this a new gal or the same gal as the above?
+  if not defined('other_care_custody_proceedings[0].gals.gathered') or not other_care_custody_proceedings[0].gals.gathered:
+    other_care_custody_proceedings[0].gals.auto_gather = False
+    new_gal2 = other_care_custody_proceedings[0].gals.appendObject()
+    new_gal2.name.first = "Gallant Children Guardian"
+    new_gal2.represented_children = children_of_both  # needed?
+    other_care_custody_proceedings[0].gals.gathered = True
+
+  # Not sure where in flow this goes (plocket)
+  other_care_custody_proceedings[0].atty_for_user = True
+  other_care_custody_proceedings[0].atty_for_user_name = "Atl"
+  other_care_custody_proceedings[0].atty_for_children = True
+  other_care_custody_proceedings[0].atty_for_children_name = "Atiya"
+  
   attorneys_for_parents.auto_gather = False
   if not defined('attorneys_for_parents.gathered') or not attorneys_for_parents.gathered:
     atty1 = attorneys_for_parents.appendObject()
@@ -250,6 +315,9 @@ code: |
     atty2.name.first = "Childs Advocate"
     atty2.represented_children = children_of_both
     attorneys_for_children.gathered = True
+    
+  other_care_custody_proceedings[0].atty_for_defendant = True
+  other_care_custody_proceedings[0].atty_for_defendant_name = "Defendant advocate"
     
   A_affidavit_disclosing_care_or_custody_proceedings0009_intro  = True
   plaintiff_and_defendant_other_case_yes = True
@@ -289,6 +357,11 @@ code: |
   order_other_relief_yes = True
   other_relief = ''
   order_relief_ex_parte = True
+  
+  # Not sure where in flow this goes (plocket)
+  existing_order = True
+  explain_no_child_support = True
+
   skip_orders = True
 ---
 code: |
@@ -414,5 +487,6 @@ code: |
   other_parties[0].child_care_expenses_interval = "weekly"
   other_parties[0].other_child_support_interval = "weekly"
   other_parties[0].other_child_support = 175
+  
   skip_child_support = True
   
