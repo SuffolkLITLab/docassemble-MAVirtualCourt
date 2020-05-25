@@ -6,9 +6,10 @@ metadata:
   title url: https://massaccess.suffolklitlab.org/
   logo: |
     <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
+---
+default screen parts:
   continue button label: |
     Next
----
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
 generic object: DADict
@@ -937,4 +938,4 @@ fields:
   - I want an interpreter: user_needs_interpreter
     datatype: yesnoradio
   - My preferred language is: user_preferred_language 
-    show if: user_needs_interpreter  
+    show if: user_needs_interpreter
