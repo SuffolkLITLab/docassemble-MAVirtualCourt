@@ -99,10 +99,15 @@ code: |
   user_saw_what_to_expect
 
   ########################## Page 1
+  user_saw_relationship
   defendant_and_plaintiff_are_parents_of_child
   # relationship_to_defendant_unmarried
   
   complaint_209A_labeled_page10003 # Page 1
+  user_saw_abuse_explanation
+  defendant_abuse_caused_physical_harm
+  if no_abuse_checked:
+    abuse_does_not_qualify
 
   ############################ Affidavit
   nav.set_section('section_affidavit')
@@ -111,8 +116,8 @@ code: |
   abuse_suffered_date # Filled in with code, I think
   if plaintiff_has_minor_children:
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
-  if no_abuse_checked:
-    abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
+  # if no_abuse_checked:
+  #  abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
     # refer_to_258E_resources # Maybe this info is wrong
 
   ############################ Relief
@@ -242,20 +247,20 @@ code: |
 code: |
   # Set no_abuse_checked via the 209A Affidavit questions
   # Here we set them to the Page1 variables
-  for incident in incidents_of_abuse:
-    if 'fear' in incident.abuse:
-      defendant_abuse_caused_fear_of_serious_physical_harm = True
-    if 'attempted-physical' in incident.abuse:
-      defendant_abuse_attempted_physical_harm = True
-    if 'physical' in incident.abuse:
-      defendant_abuse_caused_physical_harm = True
-    if 'sex' in incident.abuse:
-      defendant_abuse_caused_sexual_assault = True
+  # for incident in incidents_of_abuse:
+  #  if 'fear' in incident.abuse:
+  #    defendant_abuse_caused_fear_of_serious_physical_harm = True
+  #  if 'attempted-physical' in incident.abuse:
+  #    defendant_abuse_attempted_physical_harm = True
+  #  if 'physical' in incident.abuse:
+  #    defendant_abuse_caused_physical_harm = True
+  #  if 'sex' in incident.abuse:
+  #    defendant_abuse_caused_sexual_assault = True
 
-  defendant_abuse_caused_fear_of_serious_physical_harm = defined('defendant_abuse_caused_fear_of_serious_physical_harm')
-  defendant_abuse_attempted_physical_harm = defined('defendant_abuse_attempted_physical_harm')
-  defendant_abuse_caused_physical_harm = defined('defendant_abuse_caused_physical_harm')
-  defendant_abuse_caused_sexual_assault = defined('defendant_abuse_caused_sexual_assault')
+  # defendant_abuse_caused_fear_of_serious_physical_harm = defined('defendant_abuse_caused_fear_of_serious_physical_harm')
+  # defendant_abuse_attempted_physical_harm = defined('defendant_abuse_attempted_physical_harm')
+  # defendant_abuse_caused_physical_harm = defined('defendant_abuse_caused_physical_harm')
+  # defendant_abuse_caused_sexual_assault = defined('defendant_abuse_caused_sexual_assault')
 
   no_abuse_checked = (not defendant_abuse_caused_fear_of_serious_physical_harm 
     and not defendant_abuse_attempted_physical_harm

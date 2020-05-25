@@ -112,7 +112,7 @@ fields:
 question: |
   What to expect
 subquestion: |
-  When you ask the court for an abuse prevention order, the judge can do 3 things.
+  When you ask the court for an abuse prevention order, the judge can do 3 things:
 
   **1.  Deny your request.** Refuse to give you a restraining order. ${other_parties.familiar()} will not get any notice that you asked the court for a restraining order.
 
@@ -160,6 +160,8 @@ subquestion: |
 yesno: other_cases.there_is_another
 ---
 code: |
+  plaintiff_has_children_parent_of
+  plaintiff_has_children_cares_for
   plaintiff_has_minor_children = plaintiff_has_children_parent_of or plaintiff_has_children_cares_for
 ---
 question: |
@@ -199,7 +201,7 @@ Comment: |
 event: abuse_does_not_qualify
 question: |
   In Massachusetts the law about abuse focuses on **physical** abuse. 
-
+subquestion: |
   People **can** abuse you emotionally, financially, psychologically, and spiritually, but you can only ask the court for a 209A restraining order if the abusive person:    
 
   - **hurt** you physically;
@@ -315,24 +317,29 @@ code: |
   # This is silly to ask--the only reason Plaintiff wants the order
   order_defendant_stop_abuse_yes = True
 ---
+
 question: |
-  Should ${other_parties.familiar()} have to pay you money?
+  Should the judge order ${other_parties.familiar()} to pay you for anything?
 subquestion: |
-  The Court can tell ${other_parties.familiar()} to pay for money you lost or spent as direct result of the abuse.  For example, the court might order ${other_parties.familiar()} to pay for lost wages, medical bills, changing locks, or damaged property.  In some cases, the Court might also be able to tell ${other_parties.familiar()} to pay money to support you (as opposed to your children).
+  The judge can order ${other_parties.familiar()} to pay for money you lost or spent as a direct result of the abuse.  
+  
+  For example, the judge might order ${other_parties.familiar()} to pay for your lost wages, medical bills, changing locks, or damaged property.  
+  
+  In some cases, the judge may also order ${other_parties.familiar()} to support **you** financially. This support would be **on top of** any child support you ask for.
 fields:
-  - 'I need the Court to order ${other_parties.familiar()} to pay me because of losses I have suffered': order_defendant_pay_yes
+  - 'I need the judge to order ${other_parties.familiar()} to pay me because of losses I have suffered.': order_defendant_pay_yes
     datatype: yesno
-  - 'The Court should order ${other_parties.familiar()} to pay me:': order_defendant_pay_amount
+  - 'The judge should order ${other_parties.familiar()} to pay me:': order_defendant_pay_amount
     datatype: currency
     show if:
       variable: order_defendant_pay_yes
       is: True
-  - 'This is why the Court should order ${other_parties.familiar()} to pay me:': losses_caused_by_defendant
+  - 'This is why the judge should order ${other_parties.familiar()} to pay me:': losses_caused_by_defendant
     input type: area
     show if:
       variable: order_defendant_pay_yes
       is: True
-  - 'The Court should order ${other_parties.familiar()} to temporarily support me.': order_defendant_pay_temporary_support_to_plaintiff_yes
+  - 'The judge should order ${other_parties.familiar()} to support me temporarily.': order_defendant_pay_temporary_support_to_plaintiff_yes
     datatype: yesno
 ---
 code: |
@@ -352,15 +359,17 @@ code: |
   # datatype: yesno    
 ---
 question: |
-  Keeping your information secret
+  Protecting your addresses 
 subquestion: |
-  What information do you need to show up on the restraining order? ${other_parties.familiar()} will see the restraining order.
+  ${other_parties.familiar()} will see the restraining order. 
+  
+  What addresses do you need to keep off the restraining order? 
 fields: 
-  - "I do not want my home address to appear on the Court's order.": order_impound_plaintiff_address_residential_yes
+  - "Keep my home address off the order.": order_impound_plaintiff_address_residential_yes
     datatype: yesno
-  - "I do not want my work address to appear on the Court's order.": order_impound_plaintiff_address_work_yes
+  - "Keep my work address off the order.": order_impound_plaintiff_address_work_yes
     datatype: yesno
-  - "I do not want my school address to appear on the Court's order.": order_impound_plaintiff_address_school
+  - "Keep my school address off the order.": order_impound_plaintiff_address_school
     datatype: yesno
 ---
 question: |
@@ -368,31 +377,41 @@ question: |
 subquestion: |
   Is there anything else you need the court to order ${other_parties.familiar()} to do?
 fields:
-  - 'I need the Court to order something else': order_other_relief_yes
+  - 'I need the judge to order something else': order_other_relief_yes
     datatype: yesno
-  - 'The something else is:': other_relief
-    datatype: area
+  - 'I also need the judge to order:': other_relief
+    input type: area 
     show if:
       variable: order_other_relief_yes
-      is: True  
+      is: True
+help:
+  label: What other kinds of things?
+  heading: What else can I ask for?
+  content: |
+    You can ask the judge to order anything you need to stay safe. Some examples are,  "Order ${other_parties.familiar()} to:
+    
+    * Give me the keys to my home or my car.
+    * Leave the car with me.
+    * Pay rent or utilities.
+    * Continue to pay insurance premiums.
+    * Return any important papers like my passport, birth certificates, immigration papers. 
 ---
 question: |
   Emergency (temporary) order
 subquestion: |
-  You can get an order without telling ${other_parties.familiar()} right away
-  if you need it for immediate safety reasons.
+  This box is checked automatically so you can get a hearing with the judge right away.
 
   Do you need an emergency order that starts now, before
-  ${other_parties.familiar()} gets notified?
+  the court notifies ${other_parties.familiar()} that you are asking for a restraining order?
 fields:      
-  - 'I need the Court to make its order before telling ${other_parties.familiar()}': order_relief_ex_parte
+  - 'I need a restraining order **before** the court tells ${other_parties.familiar()} I am asking for one.': order_relief_ex_parte
     datatype: yesno
     default: True
   - note: |
-      **Warning**: if you do not request an emergency order:
+      **Warning**: if you uncheck this box, you will not be asking for an **emergency order**:
 
       1. You will not get an order for at least 10 days.
-      2. ${other_parties.familiar()} will know about your order in advance. 
+      2. The court will notify ${other_parties.familiar()} that you are going to court to ask for an order. 
     show if: 
       variable: order_relief_ex_parte        
       is: False
@@ -579,6 +598,29 @@ continue button field: dcf_warning_given
 #   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
 #     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
 ---
+id: 209A page 1 relationship intro	
+question: |	
+  Your relationship to ${other_parties.familiar()}	
+subquestion: |	
+  You and ${other_parties.familiar()} must be {members of the same family or household} to get a 209A order.	
+  You may think you are **not** members of the same family or household. But the law says you are.	
+  The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against him.	
+terms:	
+  - members of the same family or household: |	
+      You and ${other_parties.familiar()} are members of the same family or household if you:	
+      1. are both parents of the same child or children,	
+      2. are married to each other now,	
+      3. used to be married to each other,	
+      4. are related by marriage,	
+      5. live in the same household,	
+      6. used to live in the same household,	
+      7. date each other now or are engaged,	
+      8. used to date each other or used to be engaged, 	
+      9. are not married but related to each other by marriage, or	
+      10. are blood relatives. Adopted family members count as blood relatives.
+      	
+continue button field: user_saw_relationship	
+---
 id: 209A page 1 relationship kids
 question: |
   Do you and ${ other_parties.familiar() } have any children together?
@@ -606,6 +648,8 @@ terms:
       * are roommates, or
       * live in the same house or apartment.   
 ---
+comment: |
+  Adding punctuation at the end of each list item as screen readers need punctuation at the end of each to be able to convey list to user.
 id: 209A page 1 couple relationship
 question: |
   Were you ever a 'couple'?
@@ -615,17 +659,17 @@ fields:
   - no label: related_as_couple
     datatype: checkboxes
     choices:
-      - 'I have been dating ${ other_parties.familiar() }': dating
-      - 'We **used** to date': dated
-      - 'We are engaged': engaged
-      - 'We **used** to be engaged': past_engaged
+      - 'I have been dating ${ other_parties.familiar() }.': dating
+      - 'We **used** to date.': dated
+      - 'We are engaged.': engaged
+      - 'We **used** to be engaged.': past_engaged
     none of the above: False
     required: False
   - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
     datatype: checkboxes
     choices:
-      - 'We are married now': now
-      - 'We used to be married': past
+      - 'We are married now.': now
+      - 'We used to be married.': past
     none of the above: |
       I was never married to ${ other_parties.familiar() }.
 ---
@@ -666,6 +710,51 @@ terms:
   - blood relatives: |
       Examples of blood relatives:  
       Your grandparents, aunts and uncles, cousins, and grandchildren are all blood relatives. If you are a grandparent, you are related to **both** parents of your grandchild - even if they are not married.      
+---
+---
+id: about_the_abuse
+question: |
+  About the abuse
+subquestion: |
+  Your relationship with ${other_parties.familiar()} means you can ask the court to order ${other_parties.familiar()} to stop abusing you.
+  
+  The next set of questions is about the abuse.  
+  
+  Although ${other_parties.familiar()} may have abused you in many ways, to get a 209A abuse prevention order, ${other_parties.familiar()} must have:
+  
+  * **hurt** you physically,
+  * **tried to hurt** you physically,
+  * **made you scared** of getting physically hurt, or
+  * **forced** you to have sex or sexual contact, or **made** you have sex or sexual contact by threatening you or making you feel that you have no choice.
+continue button field: user_saw_abuse_explanation
+---
+id: identify_the_abuse
+question: |
+  Did ${other_parties.familiar()} ever...?
+subquestion: |
+  Check everything that is true.
+fields:
+  - '**hurt** you physically?': defendant_abuse_caused_physical_harm
+    datatype: yesnowide
+  - '**try to hurt** you physically?': defendant_abuse_attempted_physical_harm
+    datatype: yesnowide
+  - '**make** you scared of getting physically hurt?': defendant_abuse_caused_fear_of_serious_physical_harm
+    datatype: yesnowide
+  - '**force** you to have sex or sexual contact, or **make** you have sex or sexual contact by threatening you or making you feel that you have no choice?':  defendant_abuse_caused_sexual_assault
+    datatype: yesnowide
+help:
+  label: Can you give me some examples?
+  heading: Can you give me some examples?
+  content: |
+    **Making you afraid of physical harm** includes saying things like "I'll kill you if you leave me," or "If you don't give me the car keys, I'll hit you harder than last time." It can also include waving a gun or knife at you, smashing your furniture, driving recklessly, and hurting or killing your pets. It includes threatening to commit any act of violence, threatening with a fake gun, or bomb threats. 
+        
+    **Physically hurting you** includes shoving, pushing, punching, slapping, kicking, pulling your hair, choking, strangling, throwing things at you, burning you with hot food or cigarettes, stabbing, shooting, or locking you in a room.
+    
+    **Threatening, making or forcing you to have sex** also includes forced contact with intimate body parts.
+    
+    For children under 18, it can mean any sexual contact.
+
+    More - See [Writing Your 209A Affidavit on MassLegalHelp](https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit)
 ---
 question: |
   Other Cases
@@ -746,6 +835,7 @@ code: |
     plaintiff_assistant_name
 
   # plaintiff defendant relationship
+  user_saw_relationship
   defendant_and_plaintiff_are_parents_of_child
   related_by_household
   related_as_couple 
