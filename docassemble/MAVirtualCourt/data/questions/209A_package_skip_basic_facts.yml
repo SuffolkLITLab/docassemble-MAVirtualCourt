@@ -404,7 +404,7 @@ code: |
   other_parties[0].does_not_have_car = True
   other_parties[0].police_violence_yes = True
   other_parties[0].drug_alcohol_yes = False
-  defendant_has_guns['a gun'] = True
+  defendant_has_guns['gun'] = True
   defendant_has_guns['ammo'] = True
   defendant_has_guns['firearms ID'] = True
   defendant_has_guns['license'] = True
