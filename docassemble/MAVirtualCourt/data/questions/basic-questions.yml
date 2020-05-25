@@ -9,7 +9,7 @@ metadata:
 ---
 default screen parts:
   continue button label: |
-    ${ word("Next" )}
+    Next
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
 generic object: DADict
