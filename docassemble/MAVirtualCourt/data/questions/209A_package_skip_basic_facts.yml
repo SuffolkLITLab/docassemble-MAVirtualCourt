@@ -282,7 +282,7 @@ code: |
   if not defined('gals_investigators.gathered') or not gals_investigators.gathered:
     gals_investigators.auto_gather = False
     new_gal = gals_investigators.appendObject()
-    new_gal.name.first = "Gallant Guardian"
+    new_gal.name.first = "Iden Investigator"
     new_gal.represented_children = children_of_both
     gals_investigators.gathered = True
   
