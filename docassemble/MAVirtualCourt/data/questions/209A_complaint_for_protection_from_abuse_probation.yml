@@ -241,15 +241,15 @@ code: |
   
   # Will allow visitation without restrictions perhaps?
   no_visitation_restrictions = not wants_visitation_orders
-
-  child_support_safety
-  wants_child_support_yes
-  # wants_child_support_for
-  # for support_child in wants_child_support_for:
-  #  wants_child_support_for.seeking_child_support = True
-
-  if need_help_for_majors:
-    majors_needing_support[0].name.first
+  if existing_order:
+    explain_no_child_support
+    wants_child_support_yes = False
+    majors_needing_support.there_are_any = False
+  else:
+    child_support_safety
+    wants_child_support_yes
+    if need_help_for_majors:
+      majors_needing_support[0].name.first
 
   # REMOVED in stitchup -- ask these later
   # have_had_custody_cases
@@ -510,7 +510,7 @@ fields:
       code: |
         defendant_and_plaintiff_are_parents_of_child # means of any children
   - note: |  
-      In some cases, to keep children safe, a judge **can** order ${other_parties.familiar()} not to contact ${other_parties.familiar()}'s children. But it is a complicated to convince a judge to make this order.
+      In some cases, to keep children safe, a judge **can** order ${other_parties.familiar()} not to contact ${other_parties.familiar()}'s children. But it is complicated to convince a judge to make this order.
       
       You may have to file a guardianship case also.  [Talk to a lawyer](https://MassLegalHelp.org/find-legal-aid) if you need the judge to order ${other_parties.familiar()} to have no contact with this child.
     show if: children_cares_for[i].defendant_is_parent
@@ -738,17 +738,21 @@ subquestion: |
   **Note:** The judge will not order ${other_parties.familiar()} to pay you anything until the 10 day hearing. At that hearing ${other_parties.familiar()} will know you have a restraining order and if you have asked for child support, ${other_parties.familiar()} will know that also.
 continue button field: child_support_safety
 ---
-comment: |
-  fields:
-  - no label: wants_child_support_for
-    datatype: object_checkboxes
-    choices: |
-      children_of_both
-    none of the above: |
-      I do not need court to order ${other_parties.familiar()} to pay support
+# comment: |
+#   fields:
+#   - no label: wants_child_support_for
+#     datatype: object_checkboxes
+#     choices: |
+#       children_of_both
+#     none of the above: |
+#       I do not need court to order ${other_parties.familiar()} to pay support
 id: seeking_child_support
 question: |
-  Do you need the court to order ${other_parties.familiar()} to pay you child support for ${children_of_both}?
+  Do you need the judge to order ${other_parties.familiar()} to pay you child support?
+subquestion: |
+  You can ask the judge for child support for ${children_of_both}.
+  Sometimes, you can also get child support for 
+  any children between the age of 18-22 who you share with ${other_parties.familiar()}.
 
 yesno: wants_child_support_yes
 ---
@@ -783,6 +787,22 @@ fields:
   - Last Name: majors_needing_support[i].name.last
   - Suffix: majors_needing_support[i].name.suffix
     required: False
+---
+question: |
+  Do you already have court-ordered child support?
+subquestion: |
+  Has the court already ordered child support for any
+  children you have with ${other_parties.familiar()}, including
+  ${comma_and_list(children_of_both, and_string=word("or"))}?
+yesno: existing_order
+---
+question: |
+  It looks like you can't request child support in this interview
+subquestion: |
+  If a judge already made a child support order for 
+  ${comma_and_list(all_support_children, and_string=word("or"))},
+  you can't use this form to change it.
+continue button field: explain_no_child_support  
 # ---
 # id: have_there_been_other_cases
 # question: |

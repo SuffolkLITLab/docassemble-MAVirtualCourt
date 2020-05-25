@@ -594,7 +594,7 @@ attachment:
     pdf template file: complaint_209A_affidavit.pdf
     fields: 
       - "signature_date": ${ signature_date }
-      - "user_signature": ${ users[0].signature }
+      - "plaintiff_signature": ${ users[0].signature }
       - "affidavit_body": ${ affidavit_intro + affidavit_body }
       - "incident_date": ${ incident_date }
 ---

@@ -402,20 +402,24 @@ fields:
     show if: user_has_income
 help: |      
    For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
----
-question: |
-  Did a judge already approve a child support order for any of these children?
-subquestion: |
-  ${comma_and_list(all_support_children, and_string=word("or"))}
-yesno: existing_order
----
-question: |
-  It looks like you can't request child support in this interview
-subquestion: |
-  If a judge already made a child support order for 
-  ${comma_and_list(all_support_children, and_string=word("or"))},
-  you can't use this form to change it.
-continue button field: explain_no_child_support
+# ---
+# comment: |
+#   Moved to page 2
+# question: |
+#   Do you already have court-ordered child support?
+# subquestion: |
+#   Has the court already ordered child support for any
+#   children you have with ${other_parties.familiar()}, including
+#   ${comma_and_list(children_of_both, and_string=word("or"))}?
+# yesno: existing_order
+# ---
+# question: |
+#   It looks like you can't request child support in this interview
+# subquestion: |
+#   If a judge already made a child support order for 
+#   ${comma_and_list(all_support_children, and_string=word("or"))},
+#   you can't use this form to change it.
+# continue button field: explain_no_child_support
 ---
 comment: |
   event: mb_kick_out_user_existing_order
@@ -505,7 +509,10 @@ code: |
   Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008 = True
 ---
 code: |
-  all_support_children = wants_custody_of + majors_needing_support
+  if not existing_order:
+    all_support_children = children_of_both + majors_needing_support
+  else:
+    all_support_children = children_of_both
 ---
 continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_preview_question
 question: |

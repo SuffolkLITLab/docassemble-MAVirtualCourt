@@ -347,7 +347,7 @@ code: |
   # (custody, no contact, visitation, support).
   requested_relief_for_minors = requests_custody_yes or wants_other_order_yes or \
     len(wants_custody_of) > 0 or len(wants_no_contact_for) > 0 or len(schools_to_stay_away_from) > 0 \
-    or len(majors_needing_support) > 0 or len(wants_child_support_for) > 0 or \
+    or wants_child_support_yes or \
     wants_visitation_orders
 ---
 code: |
