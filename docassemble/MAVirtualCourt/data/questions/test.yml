@@ -13,5 +13,6 @@ fields:
       - Opt3
 ---
 question: |
+  ${children.does_verb("do")}
   ${interview_url()}
 mandatory: True

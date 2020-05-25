@@ -42,10 +42,12 @@ code: |
   users.gathered=True
   # users.gather()
   nav.set_section('users[0].address.address')
-  users[0].address.on_one_line()
+  users[0].address.address
+  nav.set_section('users[0].phone_number')  
   users[0].phone_number
+  user_needs_interpreter
   nav.set_section('other_parties[0].address.address')
-  other_parties[0].address.on_one_line()
+  other_parties[0].address.on_one_line(include_unit=True)
   # other_parties[0].phone_number
   # users[0].email
   nav.set_section('signature_date')
@@ -317,13 +319,13 @@ attachment:
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ users }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_phone": ${ users[0].phone_numbers()}
       - "other_party_name_full": ${ str(other_parties[0]) }
-      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
+      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
       - "user_signature": ${ users[0].signature }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
       - "court_county": ${ court_county if defined('court_county') else ''}
@@ -465,12 +467,12 @@ attachment:
       - "docket_number": ${ docket_numbers[0] }
       - "defendant": ${ str(defendants) }
       - "user_name_full": ${ users }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_phone": ${ users[0].phone_numbers() }
       - "other_party_name_full": ${ str(other_parties[0]) }
-      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line() }
+      - "other_party_address_on_one_line": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "other_party_phone": ${ other_parties[0].phone_number }
-      - "user_address_on_one_line": ${ users[0].address.on_one_line() }
+      - "user_address_on_one_line": ${ users[0].address.on_one_line(include_unit=True) }
       - "user_email": ${ users[0].email }
       - "signature_date": ${ signature_date }
       - "court_county": ${ court_county if defined('court_county') else ''}
@@ -535,23 +537,23 @@ need:
 decoration: file-download
 question: |
   % if not defined('email_success') or not email_success:
-  Ready to be delivered
+  Review, Download, and Send Form
   % else:
   Form delivered
   % endif
 subquestion: |
   % if not defined('email_success') or not email_success:
-  Thank you ${users[0]}. Your form is ready to send to the court. After you
-  submit it, you will still have an option to save the form and email it to
-  yourself or someone else.
+  Thank you ${users[0]}. Your form is ready to send to the court. **It is not
+  delivered until you complete the delivery process below.**
 
-  1. Look over the form below. Correct any errors using the "Make changes" link.
+  1. Click to open the form below in a new window. Correct any errors using the "Make changes" button below.
   1. Download and save or print a copy of this form for your 
   records.
-  2. Click the "Submit to ${courts[0]}" button to send it to the court.
+  1. Click the "Submit to ${courts[0]}" button to send it to the court. 
+  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
   % else:
   If you do not hear from the court in 1 business day, call the Trial Court’s
-  Emergency HelpLine 833-91-COURT (833-912-6878). 
+  Emergency HelpLine 833-91-COURT (833-912-6878).
   
   The Emergency HelpLine is open:  
   8:30am - 4:30pm,   
@@ -559,15 +561,18 @@ subquestion: |
   % endif
   
   ${ form_to_file_no_cover }  
-  [Make changes](${url_action('review_all_sections')})
+  
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
   
   % if not defined('email_success') or not email_success:
     ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+    
+  Or download/email below:
   % else:
     Your email has already been delivered to ${courts[0]}
+    
+  [:file-download: Download with cover page](${final_form_to_file.url_for()})    
   % endif
-
-
 progress: 100
 attachment code: Housing_Temporary_Restraining_Order0002_attachment
 section: download
@@ -609,8 +614,59 @@ sections:
   - requested_action_deny_possession: What you want
   - courts[0].name: Court choice
   - users[0].name.first: Your name
-  - users[0].address.address: Your contact information
+  - users[0].address.address: Your address
+  - users[0].phone_number: Your contact information
   - other_parties[0].address.address: Your landlord's contact information
   - signature_date: Signature date
   - users[0].signature: Signature  
   - download: Download and Send
+---
+id: your address
+question: |
+  Your address
+subquestion: |
+  Put in the address where you live now as a tenant.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip 
+---
+id: contact information
+question: |
+  Contact information
+subquestion: |
+  Put at least one way for the court to reach you below.
+fields:
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
+    required: False
+  - Email address: users[0].email    
+    datatype: email
+    required: False
+  - Contact notes: users[0].other_contact_method
+    input type: area
+    required: False
+    help: |
+      If you do not have a phone number or email the court can use, provide
+      specific contact instructions. For example, use a friend's phone number.
+      But the friend must be someone you can trust to tell you the court is
+      trying to reach you.
+validation code: |
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].mobile_number')) and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users[0].other_contact_method'))):
+    validation_error(word("You need to provide at least one contact method."))
+help: |
+  You _must_ provide contact information so the court can reach you.
+  
+  Some forms allow you to tell the court you need to keep your address, phone,
+  and email confidential, so that only court staff can see this information. 

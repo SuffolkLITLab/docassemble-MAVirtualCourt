@@ -45,6 +45,7 @@ include:
 ---
 features:
   question help button: True
+  question back button: True
   progress bar: True
   css: colors.css
 ---
@@ -489,7 +490,7 @@ subquestion: |
   below, based on the address you gave us.
   
   We think you are most likely to file in ${local_housing_court}, which
-  is at ${local_housing_court.address.on_one_line()}
+  is at ${local_housing_court.address.on_one_line(include_unit=True)}
   
   ${map_of(local_housing_court.address)}
   % else:
@@ -649,7 +650,7 @@ field: signature_phone_followup
 ---
 template: interview_link
 content: |
-  Hi, ${ users }  sent you a form from MassAccess. To sign the form,
+  Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
   click the link below:  
   ${interview_url()}
 ---
@@ -709,17 +710,18 @@ question: |
   Mass Access Project
 subquestion: |
  
-  This website can help you complete and file court forms in three steps:
+  This website can help you complete and file court forms in 3 steps:
   
-  STEP 1. Click through this guide to prefill your form.  
-  STEP 2. Review the completed form.  
-  STEP 3. Use this website to submit the form securely to the court and save the
-  form for yourself for later reference.  
+  Step 1. Answer questions to prefill your forms.  
+  Step 2. Review the completed forms.  
+  Step 3. Email the forms to the court using this secure website and save copies
+  for yourself for later reference.  
   
-  If you have immediate questions about this form or the court process, 
-  please call the Trial Court’s Emergency HelpLine.  
-  
-  833-91-COURT (833-912-6878), open Monday-Friday, 8:30am - 4:30pm.
+  If you have questions about this form or the court process, 
+  call the Trial Court’s Emergency HelpLine:  
+  833-91-COURT (833-912-6878)  
+  Monday-Friday  
+  8:30am - 4:30pm
 
   % if chat_partners_available().help:
   Live help is currently available in this interview. Click the speech bubble
@@ -764,7 +766,7 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
-  - Self-described gender: x.gender
+  - Gender: x.gender
     show if:
       variable: x.gender
       is: "self-described"
@@ -808,13 +810,19 @@ code: |
 ---
 id: ready to email
 question: |
-  Your form is ready to be delivered to ${courts}.
+  Final Review With Cover Page
 subquestion: |
-
+  
+  Below is your ${comma_and_list(download_titles)} document with the 
+  cover page that we will deliver to ${courts[0]}.
+  
+  Click "Back" if you need to make any changes.  
+  Click "Send to court" to deliver it.
+  
   Here is what the clerk at ${courts} will get:
 
   ${ final_form_to_file }  
-  [:file-download: Download this form](${final_form_to_file.url_for(attachment=True)})
+  [:file-download: Download this form with cover page](${final_form_to_file.url_for(attachment=True)})
 
   % if found_email:
   We will deliver it securely. Please allow up to 15 minutes for the email to
@@ -823,8 +831,8 @@ subquestion: |
   There was a problem delivering this to the ${courts[0]}. We couldn't
   locate the contact information for this court.
   % endif
-
-  Click "Next" if you're ready to send it.
+ 
+  Press below to deliver the form.
 fields:
   - Send me a copy: should_cc_user
     datatype: yesno
@@ -833,6 +841,7 @@ fields:
     show if: should_cc_user
     default: ${users[0].email if defined('users[0].email') else ''}
 continue button field: ready_to_email
+continue button label: Send to court
 ---
 need: sent_email_to_court
 id: email status
@@ -859,6 +868,7 @@ subquestion: |
   Monday - Friday.  
   % endif
 continue button field: email_status
+continue button label: Back to download screen
 ---
 id: email to court
 template: email_to_court_template
@@ -886,6 +896,7 @@ imports:
 ---
 code: |
   # Build up the package version and try to convey the server and if running from playground (not installed)
+  extra = ''
   if 'playground' in interview_url():
     extra = ', (playground)'
   if 'test' in get_config('url root'):
@@ -916,3 +927,15 @@ subquestion: |
   interview.
 buttons:
   Continue: continue
+---
+question: |
+  Preferred language
+subquestion: |
+  You have the right to an interpreter. You should ask
+  for an interpreter if you speak some English but are more comfortable
+  in a different language.
+fields:
+  - I want an interpreter: user_needs_interpreter
+    datatype: yesnoradio
+  - My preferred language is: user_preferred_language 
+    show if: user_needs_interpreter

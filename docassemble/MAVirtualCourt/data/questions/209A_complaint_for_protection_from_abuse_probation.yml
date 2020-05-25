@@ -137,12 +137,15 @@ data:
     field_type: text
     field_data_type: date
 ---
+reconsider: True
 code: |
   children_of_both = children.filter(defendant_is_parent = True)
   children_of_both.gathered = True
   build_children_of_both_list  = True
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
+scan for variables: False
+sets: A_complaint_for_protection_from_abuse_probation_copy0005
 code: |
   #######
   # Implementation of https://docs.google.com/document/d/1o-7280WLN8U64ofjxb5m6JFycKvpmnGryvVmflmZv2I/edit?pli=1
@@ -170,10 +173,10 @@ code: |
   # defendant_and_plaintiff_are_parents_of_child = True
 
   # TODO: snippet contender
-  if not plaintiff_has_children_parent_of:
-    children.target_number = 0
-  if not plaintiff_has_children_cares_for:
-    children_cares_for.target_number = 0
+  # if not plaintiff_has_children_parent_of:
+  #  children.target_number = 0
+  # if not plaintiff_has_children_cares_for:
+  #  children_cares_for.target_number = 0
   # children.target_number
   # children_cares_for.target_number
 
@@ -218,7 +221,7 @@ code: |
   actual_center_payer = ''
   actual_supervision_payer = ''
 
-  visitation_info
+  # visitation_info
   if wants_visitation_orders:
     if not prohibit_visitation:
       wants_center  # Asks all the questions
@@ -239,9 +242,11 @@ code: |
   # Will allow visitation without restrictions perhaps?
   no_visitation_restrictions = not wants_visitation_orders
 
-  wants_child_support_for
-  for support_child in wants_child_support_for:
-    wants_child_support_for.seeking_child_support = True
+  child_support_safety
+  wants_child_support_yes
+  # wants_child_support_for
+  # for support_child in wants_child_support_for:
+  #  wants_child_support_for.seeking_child_support = True
 
   if need_help_for_majors:
     majors_needing_support[0].name.first
@@ -309,7 +314,7 @@ code: |
   # TODO: Does this need special DA treatment
   school_strings = []
   for school in schools_to_stay_away_from:
-    school_strings.append( str(school) + ' ' + school.address.on_one_line() )
+    school_strings.append( str(school) + ' ' + school.address.on_one_line(include_unit=True) )
   schools_to_stay_away_from_pdf = comma_and_list( school_strings )
 
   permit_visitation_yes = no_visitation_restrictions
@@ -342,7 +347,7 @@ code: |
   other_order_pdf = showifdef('other_order', '')
   other_order_discription = other_order_pdf
 
-  wants_child_support_yes = len(wants_child_support_for) > 0
+  # wants_child_support_yes = len(wants_child_support_for) > 0
   
   # Vars other interviews need
   # majors_needing_support  # is list
@@ -379,31 +384,54 @@ subquestion: |
   TODO: SME consult because of previous quesiton added: Complete this form if you are applying for 209A restraining order and you have children under 18.
 ---
 # Placeholder for complaint page 1's questions
-id: number_of_children_under_18
+id: number_of_own_children_under_18
 question: |
-  Children under 18
+  The court needs to know if you have any children under 18
 subquestion: |
-  You can ask the court to include children who live with you in a 209A order.
+  This includes
   
-  You do not have to be the parent of these children to include them.
+  % if defendant_and_plaintiff_are_parents_of_child:
+  * children you have with ${other_parties.familiar()} who are under 18, as well as
+  * 
+  % endif  
+  any of your children whose other parent is not ${other_parties.familiar()}.
+ 
 fields:
-  - I am a parent of a child under 18: plaintiff_has_children_parent_of
+  - Do you have any children under 18?: plaintiff_has_children_parent_of
     datatype: yesnoradio
-  - How many?: children.target_number
+  - How many of your children are under 18?: children.target_number
     datatype: integer
     min: 0
     show if: plaintiff_has_children_parent_of
-  - Do any other children under 18 live with you who you need the order to protect?: plaintiff_has_children_cares_for
+validation code: |
+  if not plaintiff_has_children_parent_of:
+    children.target_number = 0
+---
+id: number_of_other_children_under_18
+question: |
+  Are you responsible for any 
+  % if children.target_number > 0:
+  other 
+  % endif
+  children under 18 who live with you?
+subquestion: |
+ If you are responsible for children under 18 who live with you but you are not their parent, the court needs to know about them also.
+
+fields:
+  - Are you responsible for someone else's child who lives with you and is under 18?: plaintiff_has_children_cares_for
     datatype: yesnoradio
   - How many?: children_cares_for.target_number
     datatype: integer
     min: 0
     show if: plaintiff_has_children_cares_for
+validation code: |
+  if not plaintiff_has_children_cares_for:
+    children_cares_for.target_number = 0
 ---
 # `ordinal()` says 'first', even if there's only one :(
 id: children user is parent of
 question: |
-  Children you are the parent of
+  Your children
 subquestion: |  
   % if children.target_number == 1:
   Tell us about your child
@@ -417,6 +445,17 @@ subquestion: |
   Tell us about your ${ordinal(i)} child. 
   % endif
   % endif
+     
+  % if i == 0:
+  % if children_cares_for.target_number == 1:
+  The next question asks about the child in your home whom you care for, but is not your own child. For now, just name your own children.
+  % else:
+  % if children_cares_for.target_number > 1:
+  The next question asks about the children in your home whom you care for, but are not your own children. For now, just name your own children.
+  % endif
+  % endif
+  % endif
+ 
 fields:
   - First Name: children[i].name.first
   - Middle Name: children[i].name.middle
@@ -429,8 +468,8 @@ fields:
     min: ${ today().minus(years=18) }
     validation messages:
       min: |
-        The child has to be less than 18 years old.
-  - Is ${other_parties.familiar()} also a parent of this child?: children[i].defendant_is_parent
+        The court asks only for children under 18.
+  - Is ${other_parties.familiar()} this child's other parent?: children[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
@@ -439,12 +478,19 @@ fields:
 id: non_parent_children
 question: |
   % if ( children_cares_for.target_number == 1 ):
-  Tell us about the child that is in your care or custody.
+  Tell us about the child in your home who you care and take responsiblity for
   % else:
-  Tell us about the ${ordinal( i )} child that is in your care or custody.
+  % if i == 0:
+  Tell us about the oldest child in your home who you care and take responsiblity for
+  % else:
+  You have already told us
+  about ${comma_and_list(children_cares_for.complete_elements())}. 
+
+  Tell us about the ${ordinal(i)} child in your home who you care and take responsiblity for.
+  % endif
   % endif
 subquestion: |
-  You said you look after children who are not your own. They also need to to be included in the protection order you are asking for.
+  You said you look after a child who lives with you but is not your own. Because they are under 18, the court needs to know about them also.
 fields:
   - First Name: children_cares_for[i].name.first
   - Middle Name: children_cares_for[i].name.middle
@@ -457,17 +503,16 @@ fields:
     min: ${ today().minus(years=18) }
     validation messages:
       min: |
-        The child has to be less than 18 years old.
-  - Is ${other_parties.familiar()} also this child's parent?: children_cares_for[i].defendant_is_parent
+        The court asks only for children under 18.
+  - Is ${other_parties.familiar()} this child's parent?: children_cares_for[i].defendant_is_parent
     datatype: yesnoradio
     show if:
       code: |
         defendant_and_plaintiff_are_parents_of_child # means of any children
-  - note: |
-      It sounds like you care for a child is not yours but is ${other_parties.familiar()}'s.  
-      In some cases, judges are allowed to forbid the Defendant from contacting these children
-       in order to keep them safe, but it is very complicated.
-      You might have to also file a guardianship case.  You should contact a lawyer if you want to do this.
+  - note: |  
+      In some cases, to keep children safe, a judge **can** order ${other_parties.familiar()} not to contact ${other_parties.familiar()}'s children. But it is a complicated to convince a judge to make this order.
+      
+      You may have to file a guardianship case also.  [Talk to a lawyer](https://MassLegalHelp.org/find-legal-aid) if you need the judge to order ${other_parties.familiar()} to have no contact with this child.
     show if: children_cares_for[i].defendant_is_parent
 ---
 id: custody_children
@@ -490,25 +535,31 @@ fields:
     choices: |
       children + children_cares_for
     none of the above: |
-      None of them
+      ${other_parties.familiar()} can contact my ${children.as_noun()}.
 ---
 id: reasons_no_contact
 question: |
-  What are the reasons you need the court to order ${other_parties.familiar()} not to contact them?
+  Why should the court order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
+subquestion: |
+  Did your ${children.as_noun()} witness the abuse you describe in your affidavit? 
+  
+  How has the abuse affected them?
+  
+  How would contact with ${other_parties.familiar()} affect your ${children.as_noun()}?
 fields:
   - no label: reasons_for_no_contact
     datatype: area
 ---
 id: plaintiff_wants_defendant_to_stay_away_from_schools_daycares
 question: |
-  Do you need the court to tell ${other_parties.familiar()} to stay away from schools or daycares?
+  Do you need the court to tell ${other_parties.familiar()} to stay away from your ${children.as_noun()}'s school or daycare?
 yesno: schools_to_stay_away_from.there_are_any
 ---
 # For listing for each child (if we choose to do that), see
 # 209A_affidavit_disclosing_care_or_custody_proceedings.yml on its branch
 id: schools_and_daycares
 question:
-  Please give us the information for the schools and daycares you want the court to tell ${other_parties.familiar()} not to go to.
+  What are the schools or daycare centers you need the court to order ${other_parties.familiar()} to stay away from?
 list collect: True
 minimum number: 1
 fields:
@@ -529,28 +580,68 @@ id: wants_to_request_visitation_details
 question: |
   Visitation
 subquestion: |
-  You are allowed to ask the court to make orders about when and how ${other_parties.familiar()} can visit the children.  If you need the court to do this, you have to file the restraining order in Probate and Family Court.  The District Courts and Boston Municipal Court can’t make orders about visitation, but they can still make orders about custody and child support.  The District Courts and Boston Municipal Court can also still make orders prohibiting ${other_parties.familiar()} from contacting the children. [Read more about visitation](${ url_action('visitation_info') }).
-  
-  Do you need the court to make an order about ${other_parties.familiar()}’s visitation with the children as part of the restraining order?
+  Do you need the court to make an order about ${other_parties.familiar()}’s
+  visitation with the children as part of the restraining order?
+
+  Remember, if you ask for visitation you can only file in the Probate and
+  Family Court. A visitation order becomes an order of the court, and if you
+  don't follow this order exactly, you will be in contempt of court.  
 yesno: wants_visitation_orders
 ---
-id: more_info_about_visitation
-field: visitation_info
+id: visitation
+# field: visitation_info
 question: |
   Before you ask the judge to order Visitation
 subquestion: |
-  The [doc that was linked](https://docs.google.com/document/d/1WyQrjTCzpZEoFlQZeS0h-JudAFvvefKcvmqNNqJUIH0/edit?usp=sharing) in the pg. 2 doc
+  If your ${children.as_noun()} need to spend time with ${other_parties.familiar()}, they need to be safe and you need to be safe. 
+
+  You can ask the District Court, Boston Municipal Court (BMC) and Superior Court to order only safe ways ${other_parties.familiar()} can spend time with your children. Or, you can ask the Probate and Family Court for “visitation.”
+
+  **District Court, BMC or Superior Court**
+ 
+  If you ask the District Court, BMC or Superior Court for a restraining order, you can ask the judge to order that:
+ 
+  1. You have custody of your children, and 
+  2. ${other_parties.familiar()} has contact with your children **only** in ways that are safe. You can be detailed about safe ways for them to spend time together. Or
+  3.  You can ask the judge to order ${other_parties.familiar()} to have no contact with your children.
+
+  **Probate and Family Court**
+  
+  The  Probate and Family Court is the only court that can order visitation. If you ask the Probate and Family Court for a restraining order:
+ 
+  1. The judge will probably ask you about visitation.
+  2. You will have to explain why the visitation you are asking for is necessary.
+  3. You must follow the visitation order you get. Visitation orders are not flexible.
+  4. When you go back to court for the 10-day hearing, ${other_parties.familiar()} will have a chance to give their opinion and they may bring up visitation. You will have to explain again why you need the order you ask for.
+  
+   ${other_parties.familiar()} may take you to court again and again to try to change the order.
+ 
+  If you do not follow the order **exactly** as it is written, you will be in contempt of court.  
+ 
+  Read more about [Visitation](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a#bettercourt).
+
+  Do you need the 209A restraining order to include an order about "visitation"?
+yesno: wants_visitation_orders
 ---
-id: prohibit_visitation
+Comment: |
+  The [doc that was linked](https://docs.google.com/document/d/1WyQrjTCzpZEoFlQZeS0h-JudAFvvefKcvmqNNqJUIH0/edit?usp=sharing) in the pg. 2 doc
+id: visitation order
 question: |
-  More About Visitation
+  What do you need in the visitation order?
 subquestion: |
+  Think about the visitation schedule you need. Write it down and be prepared to explain to the court why this schedule works for you and your children. 
+ 
+  Think about if supervised visitation may be the best option for your ${children.as_noun()}. Keep in mind that the judge **will** take ${other_parties.familiar()}'s view into account as well. And the judge may not order exactly what you ask for.
+  
+  Is [supervised visitation](https://www.masslegalhelp.org/domestic-violence/supervised-visitation) the best option for you?  
+
   What do you need the court to order about ${other_parties.familiar()}’s visitation?
+  If you pick 'Allow', you can ask for supervised visitation and other protections next.
 fields:
   - no label: prohibit_visitation
     input type: radio
     choices:
-    - Allow ${other_parties.familiar()} to have visitation.  (If you pick this option, you will be able to ask for things like supervision and other protections on the next page.): False
+    - Allow ${other_parties.familiar()} to have visitation.  : False
     - Order ${other_parties.familiar()} to have no visitation with my children.: True
 ---
 id: safe_visits
@@ -558,16 +649,16 @@ id: safe_visits
 # Note: have not yet looked into checkboxes with
 # `show if:`s between them.
 question: |
-  Keeping the Visits Safe
+  Keep visits safe
 subquestion: |
-  What do you and your children need so they can spend time with ${other_parties.familiar()} and still be safe?
+  What do you and your children need in the visitation order so they can spend time with ${other_parties.familiar()} safely?
 # Original language won't work with yes/no questions, which is what is most straightforward to code.
 # Pick all that apply.
 fields:
   # Original language won't work with yes/no question. See above
   #- '**Defendants should visit with children at a supervised visitation center.**': wants_center
-  - '**Should ${other_parties.familiar()} visit with the children at a supervised visitation center?**': wants_center
-    datatype: yesnoradio
+  - '${other_parties.familiar()} should visit with my ${children.as_noun()} at a supervised visitation center': wants_center
+    datatype: yesnowide
   - What visitation center?: visitation_center_name
     required: False
     show if: wants_center
@@ -584,11 +675,12 @@ fields:
       is: "other"
   - html: |
       <hr>
+    show if: wants_center
 
   # Original language won't work with yes/no question
-  #- '**Someone else should supervise Defendant’s visits.**': wants_supervision
-  - '**Should someone else supervise ${other_parties.familiar()}’s visits?**': wants_supervision
-    datatype: yesnoradio
+  - 'Someone else should supervise ${other_parties.familiar()}’s visits.': wants_supervision
+  #- '**Should someone else supervise ${other_parties.familiar()}’s visits?**': wants_supervision
+    datatype: yesnowide
   - Who should the supervisor be?: visitation_supervisor_name_full
     show if: wants_supervision
   - When should the visitation happen?: supervision_time
@@ -601,42 +693,64 @@ fields:
       - ${other_parties.familiar()}: "defendant"
       - Me: "plaintiff"
       - Someone else: "other"
+    required: False
   - Who?: other_supervision_payer
     show if:
       variable: supervision_payer
       is: "other"
   - html: |
       <hr>
+    show if: wants_supervision
 
   # Original language won't work with yes/no question
-  #- '**Someone else should pick up and drop off the children for visits.**': wants_pickup
-  - '**Should someone else to pick up and drop off the children for visits?**': wants_pickup
-    datatype: yesnoradio
+  - 'Someone else should pick up and drop off my ${children.as_noun()} for visits.': wants_pickup
+  #- '**Should someone else to pick up and drop off the children for visits?**': wants_pickup
+    datatype: yesnowide
   - Who should pick up and drop off the child(ren)?: who_picks_up
     show if: wants_pickup
   - html: |
       <hr>
+    show if: wants_pickup
 
   # Original language won't work with yes/no question
-  #- I need the Court to make some other order about visitation.
-  - '**Do you need the Court to make some other order about visitation?**': wants_other_order
-    datatype: yesnoradio
+  - I need the vistitation order to include some other things also.: wants_other_order
+  #- '**Do you need the Court to make some other order about visitation?**': wants_other_order
+    datatype: yesnowide
   - What else do you need the court to order?: other_order
     input type: area
     show if: wants_other_order
 ---
-id: seeking_child_support
+id: child support
 question: |
-  Do you need the court to order ${other_parties.familiar()} to pay you child support for any of these children?
+  Before you ask the judge to order child support
 subquestion: |
-  Sometimes, you can ask for child support for kids you share with ${other_parties.familiar()} that are between 18 and 22. See [Child Support for Children 18-22](https://www.masslegalhelp.org/children-and-families/child-support-over-18) on MassLegalHelp.
-fields:
+  Think carefully about asking for child support in the 209A order. 
+  
+  Only you know how safe it is to ask the court to order ${other_parties.familiar()} to pay you anything. 
+
+  If ${other_parties.familiar()} is angry about paying child support, ${other_parties.familiar()} may be more likely to threaten you or hurt you, **or** take you to court to ask for custody, parenting time, or to make decisions about your ${children.as_noun()}'s life. 
+
+  It may be worth it to get a child support order. All parents should support their children. But if you believe that asking for child support is dangerous, you might be better off not asking for it. Child support might not be worth risking your health and safety, or the health and safety of your ${children.as_noun()}. 
+  
+  You can always talk with a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): 877-785-2020
+  Learn more: Read [Is filing for child support safe?](https://www.masslegalhelp.org/domestic-violence/child-support/is-filing-safe) on MassLegalHelp.org
+    
+  **Note:** The judge will not order ${other_parties.familiar()} to pay you anything until the 10 day hearing. At that hearing ${other_parties.familiar()} will know you have a restraining order and if you have asked for child support, ${other_parties.familiar()} will know that also.
+continue button field: child_support_safety
+---
+comment: |
+  fields:
   - no label: wants_child_support_for
     datatype: object_checkboxes
     choices: |
       children_of_both
     none of the above: |
-      I don’t need court to order ${other_parties.familiar()} to pay support
+      I do not need court to order ${other_parties.familiar()} to pay support
+id: seeking_child_support
+question: |
+  Do you need the court to order ${other_parties.familiar()} to pay you child support for ${children_of_both}?
+
+yesno: wants_child_support_yes
 ---
 id: do_non_minors_need_child_support
 # TODO: similar to children, get number and then show
@@ -644,10 +758,11 @@ id: do_non_minors_need_child_support
 question: |
   Child support for children over 18
 subquestion: |
-  You can get child support for children over 18 and younger than 22.
+  Sometimes, you can ask for child support for any children you share with ${other_parties.familiar()} who are between 18 and 22. 
+  
+  See [Child Support for Children 18-22](https://www.masslegalhelp.org/children-and-families/child-support-over-18) on MassLegalHelp.
 
-  Are there any children that are between 18 and and 22 that you want to get
-  child support for with this form?
+  Do you and ${other_parties.familiar()} have any children between 18 and 22 who you need child support for?
 yesno: majors_needing_support.there_are_any
 ---
 code: |
@@ -655,8 +770,10 @@ code: |
 ---
 id: non_minors_needing_child_support
 question: |
-  Tell us about the children you have that are between 18 and 22 (including the 22 year-olds).
+  Who are your children between 18 and 22? 
 subquestion: |
+  Include any children who are 22.
+
   Click "${word("Add another")}" to add more.
 list collect: True
 fields:
