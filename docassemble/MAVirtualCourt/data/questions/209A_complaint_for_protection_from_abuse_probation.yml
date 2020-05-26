@@ -839,7 +839,6 @@ attachment:
     name: 209A Page 2
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
-    decimal places: 2    
     fields: 
       - "signature_date": ${ signature_date }
       - "signature_date__2": ${ signature_date }
@@ -966,7 +965,6 @@ attachment:
     name: 209A Page 2
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
-    decimal places: 2    
     fields:
       - "user_signature": ${ users[0].signature }
       - "user_signature_probation_copy": ${ users[0].signature }

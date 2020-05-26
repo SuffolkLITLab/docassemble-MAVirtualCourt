@@ -582,7 +582,6 @@ attachment:
     name: 209A Complaint Affidavit
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
-    decimal places: 2    
     fields: 
       - "affidavit_body": ${ affidavit_intro + affidavit_body_cutoff }
       - "incident_date": ${ incident_date }
@@ -593,7 +592,6 @@ attachment:
     name: 209A Complaint Affidavit
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
-    decimal places: 2    
     fields: 
       - "signature_date": ${ signature_date }
       - "plaintiff_signature": ${ users[0].signature }

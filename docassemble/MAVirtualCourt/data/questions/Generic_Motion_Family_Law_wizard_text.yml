@@ -357,7 +357,6 @@ attachment:
     name: Generic Motion Family Law
     filename: Generic_Motion_Family_Law
     pdf template file: Generic_Motion_Family_Law_ready_for_upload.pdf
-    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }
@@ -472,7 +471,6 @@ attachment:
     name: Generic Motion Family Law
     filename: Generic_Motion_Family_Law
     pdf template file: Generic_Motion_Family_Law_ready_for_upload.pdf
-    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }

@@ -153,7 +153,6 @@ attachment:
     name: 209A Page 2
     filename: A_Page_2
     pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
-    decimal places: 2    
     fields: 
       - "child1_name_full": ${ str(children[1-1]) }
       - "child1_age": ${ children[1-1].age_in_years() }
@@ -389,7 +388,6 @@ attachment:
     name: 209A Page 2
     filename: A_Page_2
     pdf template file: 209A_complaint_for_protection_from_abuse_probation_copy_qc.pdf
-    decimal places: 2    
     fields: 
       - "child1_name_full": ${ str(children[1-1]) }
       - "child1_age": ${ children[1-1].age_in_years() }
