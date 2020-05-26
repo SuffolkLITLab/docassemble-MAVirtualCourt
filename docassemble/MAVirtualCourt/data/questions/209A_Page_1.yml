@@ -564,27 +564,62 @@ subquestion: |
   % endif
 continue button field: dcf_warning_given
 ---
-id: 209A page 1 relationship intro  
-question: |  
-  Your relationship to ${other_parties.familiar()}  
-subquestion: |  
-  You and ${other_parties.familiar()} must be {members of the same family or household} to get a 209A order.  
-  You may think you are **not** members of the same family or household. But the law says you are.  
-  The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against him.
-terms:
-  - members of the same family or household: |
-      You and ${other_parties.familiar()} are members of the same family or household if you:  
-      1. are both parents of the same child or children,
-      2. are married to each other now,  
-      3. used to be married to each other,  
-      4. are related by marriage,  
-      5. live in the same household,  
-      6. used to live in the same household,  
-      7. date each other now or are engaged,  
-      8. used to date each other or used to be engaged,   
-      9. are not married but related to each other by marriage, or  
+#question: |
+ # You are seeing this screen because the Plaintiff is under 18.  
+# subquestion: |
+ # Judges and other court employees are called "mandated reporters."  That means that if they think a child under 18 is being abused or neglected, they are supposed to report the case to the Department of Children and Families.  It is possible that this will happen in your case. 
+# continue button field: dcf_warning_given
+# ---
+# question: |
+#   Your relationship to the Defendant
+# subquestion: |
+#   Check the boxes for the things that are true.
+# fields:
+#   - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_marriage_or_kids
+#     datatype: checkboxes
+#     choices:
+#       - 'I am currently married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_married_to_each_other
+#       - 'I was formerly married to ${other_parties.familiar()}': defendant_and_plaintiff_relationship_formerly_married_to_each_other
+#       - 'I have a child with ${other_parties.familiar()}': defendant_and_plaintiff_are_parents_of_child
+# ---
+# question: |
+#    Your relationship to the Defendant
+# subquestion: |
+#   Check the boxes for the things that are true.
+# fields: 
+#   - 'Check the box that best describes your relationship to ${other_parties.familiar()}': relationship_to_defendant_unmarried
+#     datatype: checkboxes
+#     choices:
+#       - 'I am not married to ${other_parties.familiar()}, but we are related by blood or marriage': defendant_and_plaintiff_relationship_not_married_but_are_related
+#       - 'I live with ${other_parties.familiar()}': defendant_and_plaintiff_are_not_related_but_live_together
+#       - 'I used to live with ${other_parties.familiar()}': defendant_and_plaintiff_used_to_live_together
+#       - 'I dated or used to date ${other_parties.familiar()}': defendant_and_plaintiff_are_dating_or_dated
+#       - 'I am or was engaged to ${other_parties.familiar()}': defendant_and_plaintiff_engaged # user gets kicked out of interview for no_jurisdiction if they only check this box, which is wrong.
+#   - 'Describe your relationship to Defendant': defendant_relationship_to_plaintiff_is
+#     show if: relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related']
+---
+id: 209A page 1 relationship intro	
+question: |	
+  Your relationship to ${other_parties.familiar()}	
+subquestion: |	
+  You and ${other_parties.familiar()} must be {members of the same family or household} to get a 209A order.	
+  You may think you are **not** members of the same family or household. But the law says you are.	
+  The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against him.	
+terms:	
+  - members of the same family or household: |	
+      You and ${other_parties.familiar()} are members of the same family or household if you:	
+      1. are both parents of the same child or children,	
+      2. are married to each other now,	
+      3. used to be married to each other,	
+      4. are related by marriage,	
+      5. live in the same household,	
+      6. used to live in the same household,	
+      7. date each other now or are engaged,	
+      8. used to date each other or used to be engaged, 	
+      9. are not married but related to each other by marriage, or	
       10. are blood relatives. Adopted family members count as blood relatives.
-continue button field: user_saw_relationship  
+      	
+continue button field: user_saw_relationship	
 ---
 id: 209A page 1 relationship kids
 question: |
@@ -881,10 +916,10 @@ code: |
       case.type_of_case + ') ' + \
       showifdef('case.date') + ' ' + \
       showifdef('case.docket_number') for case in other_cases])
-# ---
-# code: |
-#   # Refer to the first incident of abuse from the 209A affidavit question
-#   abuse_suffered_date = incident_date # Pulls from 209A_affidavit
+---
+code: |
+  # Refer to the first incident of abuse from the 209A affidavit question
+  abuse_suffered_date = incident_date # Pulls from 209A_affidavit
 ---
 continue button field: complaint_209A_labeled_page10003_preview_question
 question: |
@@ -899,7 +934,6 @@ attachment:
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
-    decimal places: 2    
     fields: 
       - "user_name_full": ${ str(users[0]) }
       - "defendant": ${ str(other_parties[0]) }
@@ -929,7 +963,7 @@ attachment:
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
-      - "abuse_suffered_date": ${ incident_date }
+      - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
       - "defendant_abuse_caused_physical_harm": ${ defendant_abuse_caused_physical_harm }
@@ -970,7 +1004,6 @@ attachment:
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
-    decimal places: 2    
     fields:   
       - "user_signature": ${ users[0].signature }
       - "user_name_full": ${ str(users[0]) }
@@ -1001,7 +1034,7 @@ attachment:
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
-      - "abuse_suffered_date": ${ incident_date }
+      - "abuse_suffered_date": ${ abuse_suffered_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
       - "defendant_abuse_caused_physical_harm": ${ defendant_abuse_caused_physical_harm }
