@@ -305,7 +305,7 @@ attachment:
 comment: Addenda related code. 
 code: |  
   txtFieldsList_confidential = list()
-  if users[0].previous_addresses.target_number >= 2:    
+  if len(users[0].previous_addresses) >= 2:    
     txtFieldsList_confidential.append(
       {'title': 'FORMER ADDRESSES',
       'value': [users[0].previous_addresses]
