@@ -337,6 +337,7 @@ attachment:
     name: Appointnment of Temporary Guardian for a Minor
     filename: Appointnment_of_Temporary_Guardian_for_a_Minor
     pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
+    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "child_name_first": ${ MJFchild.name.first }
@@ -450,6 +451,7 @@ attachment:
     name: Appointnment of Temporary Guardian for a Minor
     filename: Appointnment_of_Temporary_Guardian_for_a_Minor
     pdf template file: guardianship_minor_temp_order_first_qc_complete_ready_for_upload.pdf
+    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "child_name_first": ${ MJFchild.name.first }

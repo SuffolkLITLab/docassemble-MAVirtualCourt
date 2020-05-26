@@ -422,10 +422,10 @@ fields:
     required: False
 ---
 code: |
-  defendant_race = str(other_parties[0].race.true_values()) + " " + showifdef('other_parties[0].race_other')
+  defendant_race = str(other_parties[0].race.true_values()) + space('other_parties[0].race_other')
   defendant_eye_color = other_parties[0].eye_color
-  defendant_hair_details = other_parties[0].hair_color + showifdef('other_parties[0].hair_color_other') + showifdef('other_parties[0].hair_other_style')
-  defendant_other_description = str(other_parties[0].physical_other.true_values()) + " " + showifdef('other_parties[0].physical_other_details')
+  defendant_hair_details = other_parties[0].hair_color + space('other_parties[0].hair_color_other') + space('other_parties[0].hair_other_style')
+  defendant_other_description = str(other_parties[0].physical_other.true_values()) + space('other_parties[0].physical_other_details')
 ---
 question: |
   ${other_parties.familiar()}'s Physical Location
@@ -587,6 +587,7 @@ attachment:
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
+    decimal places: 2    
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old' }
@@ -792,6 +793,7 @@ attachment:
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
+    decimal places: 2    
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
       - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old'}

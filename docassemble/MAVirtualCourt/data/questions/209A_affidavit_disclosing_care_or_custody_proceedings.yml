@@ -1319,8 +1319,9 @@ attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment
     name: Affidavit of Care
     filename: Affidavit_of_Care
-    editable: False  
+    # editable: False  
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
+    decimal places: 2
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }
@@ -1425,8 +1426,9 @@ attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
     name: Affidavit of Care
     filename: Affidavit_of_Care
-    editable: False    
+    # editable: False    
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
+    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "user_name_full": ${ str(users[0]) }

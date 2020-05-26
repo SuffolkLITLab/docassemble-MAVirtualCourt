@@ -286,6 +286,7 @@ attachment:
     name: Defendant's Affidavit In Connection with Request For Child Support Order
     filename: Defendants_Affidavit_In_Connection_with_Request_For_Child_Support_Order
     pdf template file: 209A_defendant_s_child_support_affidavit_ready_for_upload.pdf
+    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }
@@ -402,6 +403,7 @@ attachment:
     name: Defendant's Affidavit In Connection with Request For Child Support Order
     filename: Defendants_Affidavit_In_Connection_with_Request_For_Child_Support_Order
     pdf template file: 209A_defendant_s_child_support_affidavit_ready_for_upload.pdf
+    decimal places: 2    
     fields: 
       - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }

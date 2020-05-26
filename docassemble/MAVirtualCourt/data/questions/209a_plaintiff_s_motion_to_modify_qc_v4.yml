@@ -137,6 +137,7 @@ attachment:
     name: Plaintiff\'s Motion to Modify or Terminate Abuse Prevention Order - 209a
     filename: Plaintiffs_Motion_to_Modify__209a
     pdf template file: 209A_plaintiff_s_motion_to_modify_qc_v4.pdf
+    decimal places: 2    
     editable: False    
     fields: 
       - "plaintiff_name": ${ plaintiffs }
@@ -213,6 +214,7 @@ attachment:
     name: Plaintiff Motion to Modify  - 209a
     filename: Plaintiffs_Motion_to_Modify__209a
     pdf template file: 209A_plaintiff_s_motion_to_modify_qc_v4.pdf
+    decimal places: 2    
     editable: False
     fields: 
       - "plaintiff_name": ${ plaintiffs }
