@@ -1422,6 +1422,9 @@ subquestion: |
   ${care_or_custody_proceedings_appendix_variable }
   % endif
 ---
+code: |
+  need_care_custody_addendum = need_children_appendix or need_other_parties_appendix or need_past_address_appendix
+---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
     name: Affidavit of Care

@@ -332,12 +332,12 @@ code: |
       })
   else:
     request_based_on_cutoff = request_based_on
-  
-  addAddendum_impound = False
-  if txtFieldsList_impoundment: #if the list is not empty
-    addAddendum_impound = True
+  addAddendum_impound = bool(txtFieldsList_impoundment)
+  # addAddendum_impound = False
+  # if txtFieldsList_impoundment: #if the list is not empty
+  #   addAddendum_impound = True
 ---
-if: addAddendum_impound
+# if: addAddendum_impound
 attachment:
   - variable name: impound_addendum
     docx template file: 209A_impound_addendum.docx

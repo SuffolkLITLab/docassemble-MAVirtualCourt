@@ -618,11 +618,11 @@ code: |
   else:
    affidavit_body_cutoff = affidavit_body
    
-  addAddendum_affidavit = False
-  if txtFieldsList_affidavit: #if the list is not empty
-    addAddendum_affidavit = True
+  addAddendum_affidavit = bool(txtFieldsList_affidavit)
+  # if txtFieldsList_affidavit: #if the list is not empty
+  #    = True
 ---
-if: addAddendum_affidavit
+# if: addAddendum_affidavit
 attachment:
   - variable name: affidavit_addendum
     docx template file: 209A_affidavit_addendum.docx

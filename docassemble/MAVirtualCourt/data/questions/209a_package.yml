@@ -38,10 +38,14 @@ code: |
   attachment_temp = []  
   # Build the 209A package. Up to 8 total forms
   # Page 1: complaint_209A_labeled_page10003_attachment
+  #     page1_addendum
   # Complaint Affidavit: complaint_209A_Affidavit_attachment
+  #     affidavit_addendum, triggered by addAddendum_affidavit
   # Page 2: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
+  #     page2_addendum, triggered by addAddendum_page2
   # Child support: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
   # Affidavit care/custody: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment 
+  #     care_or_custody_proceedings_appendix_variable, triggered by need_care_custody_addendum
   # Plaintiff info: A_Plaintiff_Confidential_Information0011_attachment
   # Defendant info: defendantinformation209A0008_attachment
   # motion to impound: a_258e_motion_for_impoundment0019_attachment
@@ -50,20 +54,31 @@ code: |
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
   if need_page1_addendum:
     attachment_temp.append(page1_addendum)
-  attachment_temp.append( complaint_209A_Affidavit_attachment )  
+  attachment_temp.append( complaint_209A_Affidavit_attachment )
+  if addAddendum_affidavit:
+    attachment_temp.append(affidavit_addendum)
   # include page 2 only if there are children
   if plaintiff_has_minor_children: 
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
+    if addAddendum_page2:
+      attachment_temp.append(page2_addendum)
     if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
       attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
+      if need_care_custody_addendum:
+        attachment_temp.append(care_or_custody_proceedings_appendix_variable)
     
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
+    if addAddendum_chdSupport:
+      attachment_temp.append(chdSupport_addendum)
   attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
+  if addAddendum_confidential:
+    attachment_temp.append(confidential_info_addendum)
   attachment_temp.append(defendantinformation209A0008_attachment)
   if asked_for_impoundment:
     attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
-  
+    if addAddendum_impound:
+      attachment_temp.append(impound_addendum)  
   final_attachment_bundle = attachment_temp
 ---
 mandatory: True

@@ -912,7 +912,7 @@ code: |
   else:
     defendant_location_information_other_cutoff = defendant_location_information_other
     
-  if other_parties[0].photo_yes_can_upload:
+  if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
     txtFieldsList_defendant.append(
       {'title': 'Uploaded defendant photo',
       'value': [photo_upload]

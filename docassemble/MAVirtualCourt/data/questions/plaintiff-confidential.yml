@@ -324,11 +324,12 @@ code: |
       })
   else:
     persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information  
-  addAddendum_confidential = False
-  if txtFieldsList_confidential: #if the list is not empty
-    addAddendum_confidential = True
+  addAddendum_confidential = bool(txtFieldsList_confidential)
+  # addAddendum_confidential = False
+  # if txtFieldsList_confidential: #if the list is not empty
+  #   addAddendum_confidential = True
 ---
-if: addAddendum_confidential
+# if: addAddendum_confidential
 attachment:
   - variable name: confidential_info_addendum
     docx template file: 209A_confidential_info_addendum.docx
