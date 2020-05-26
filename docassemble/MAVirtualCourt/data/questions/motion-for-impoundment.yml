@@ -228,9 +228,9 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on }
+      - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
       - "attach_additional_pages": ${'' }
       # These are for the court to fill in and were included accidentally
@@ -295,12 +295,49 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on }
+      - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
       - "attach_additional_pages": ${ '' }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
       - "motion_denied": ${ '' }
+      
+---
+comment: Addenda related code. 
+code: |  
+  txtFieldsList_impoundment = list()      
+  Limit1 = 330
+  sLimit1 = Limit1 - 16   
+  need_impound_addendum = len(case_record_information_to_be_impounded) > Limit1
+  if need_impound_addendum:    
+    case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded[:sLimit1] + " (See Addendum.)" 
+    txtFieldsList_impoundment.append(
+      {'title': '1. Information in the case record to be impounded',
+      'value': [case_record_information_to_be_impounded_cutoff]
+      })
+  else:
+    case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
+    
+  Limit2 = 1000
+  sLimit2 = Limit2 - 16   
+  need_request_addendum = len(request_based_on) > Limit2
+  if need_request_addendum:    
+    request_based_on_cutoff = request_based_on[:sLimit2] + " (See Addendum.)" 
+    txtFieldsList_impoundment.append(
+      {'title': '2. Request the Court to order impoundment',
+      'value': [request_based_on_cutoff]
+      })
+  else:
+    request_based_on_cutoff = request_based_on
+  
+  addAddendum_impound = False
+  if txtFieldsList_impoundment: #if the list is not empty
+    addAddendum_impound = True
+---
+if: addAddendum_impound
+attachment:
+  - variable name: impound_addendum
+    docx template file: 209A_impound_addendum.docx

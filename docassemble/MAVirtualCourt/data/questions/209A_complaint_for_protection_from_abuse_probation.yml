@@ -308,7 +308,7 @@ code: |
   wants_no_contact_for6_age = wants_no_contact_for.item(6-1).age_in_years()
 
   hack_reasons_for_no_contact = showifdef('hack_reasons_for_no_contact', '')
-  reasons_no_contact = hack_reasons_for_no_contact
+  reasons_no_contact = reasons_for_no_contact_cutoff
 
   keep_away_from_schools_daycares = schools_to_stay_away_from.there_are_any
   # TODO: Does this need special DA treatment
@@ -356,7 +356,7 @@ code: |
   # TODO: remove when stitching
   # have_had_custody_cases_yes = have_had_custody_cases
   # have_had_custody_cases_no = not have_had_custody_cases
-  # have_ha                                                                                  d_paternity_cases_yes = have_had_paternity_cases
+  # have_had_paternity_cases_yes = have_had_paternity_cases
   # have_had_paternity_cases_no = not have_had_paternity_cases
   # Important in question display logic in this form
   # defendant_and_plaintiff_are_parents_of_child = True
@@ -1071,3 +1071,38 @@ attachment:
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
       - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
+comment: Addenda related code. 
+code: |  
+  txtFieldsList_page2 = list()      
+  Limit1 = 75
+  sLimit1 = Limit1 - 16   
+  need_noContact_addendum = len(reasons_for_no_contact) > Limit1
+  if need_noContact_addendum:    
+    reasons_for_no_contact_cutoff = reasons_for_no_contact[:sLimit1] + " (See Addendum.)" 
+    txtFieldsList_page2.append(
+      {'title': 'C. CUSTODY - The specific reasons for this request are:',
+      'value': [reasons_for_no_contact_cutoff]
+      })
+  else:
+    reasons_for_no_contact_cutoff = reasons_for_no_contact
+    
+  Limit2 = 70
+  sLimit2 = Limit2 - 16   
+  need_school_addendum = len(school_strings) > Limit2
+  if need_school_addendum:    
+    school_strings_cutoff = school_strings[:sLimit2] + " (See Addendum.)" 
+    txtFieldsList_page2.append(
+      {'title': 'D. CONTACT WITH CHILDREN - I ask the Court to order the Defendant remain away from the following school(s) and day care(s):',
+      'value': [schools_to_stay_away_from_pdf]
+      })
+  else:
+    school_strings_cutoff = school_strings
+  
+  addAddendum_page2 = False
+  if txtFieldsList_page2: #if the list is not empty
+    addAddendum__page2 = True
+---
+if: addAddendum__page2
+attachment:
+  - variable name: page2_addendum
+    docx template file: 209A_page2_addendum.docx

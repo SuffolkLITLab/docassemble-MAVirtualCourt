@@ -676,3 +676,15 @@ attachment:
       - "user_name_print__2": ${ users[0] }
       - "signature_date": ${ signature_date }
       - "user_signature": ${ users[0].signature }
+---
+comment: Addenda related code. 
+code: |  
+  addAddendum_chdSupport = False
+  txtFieldsList_chdSupport = list()      
+  if all_support_children.target_number >4: 
+    addAddendum_chdSupport = True
+---
+if: addAddendum_chdSupport
+attachment:
+  - variable name: chdSupport_addendum
+    docx template file: 209A_chdSupport_addendum.docx

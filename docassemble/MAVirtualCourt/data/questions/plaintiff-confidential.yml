@@ -221,7 +221,7 @@ attachment:
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
-      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff }
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
 ---
@@ -298,7 +298,35 @@ attachment:
       - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
       - "plaintiff_school_name": ${ users[0].school_name }
       - "plaintiff_school_address": ${ users[0].school_address }
-      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff }
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
-      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
-  
+      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
+---
+comment: Addenda related code. 
+code: |  
+  txtFieldsList_confidential = list()
+  if len(users[0].previous_addresses) >= 2:    
+    txtFieldsList_confidential.append(
+      {'title': 'FORMER ADDRESSES',
+      'value': [users[0].previous_addresses]
+      })
+      
+  Limit = 200
+  sLimit = Limit - 16   
+  need_confidential_info_addendum = len(persons_authorized_confidential_information) > Limit
+  if need_confidential_info_addendum:    
+    persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information[:sLimit] + " (See Addendum.)"  
+    txtFieldsList_confidential.append(
+      {'title': 'PERSONS AUTHORIZED BY PLAINTIFF TO HAVE ACCESS TO THIS CONFIDENTIAL INFORMATION',
+      'value': [persons_authorized_confidential_information_cutoff]
+      })
+  else:
+    persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information  
+  addAddendum_confidential = False
+  if txtFieldsList_confidential: #if the list is not empty
+    addAddendum_confidential = True
+---
+if: addAddendum_confidential
+attachment:
+  - variable name: confidential_info_addendum
+    docx template file: 209A_confidential_info_addendum.docx
