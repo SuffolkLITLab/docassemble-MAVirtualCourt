@@ -274,6 +274,8 @@ def filter_letters(letter_strings):
   # There is probably a cute one liner, but this is easy to follow and
   # probably same speed
   unique_letters = set()
+  if isinstance(letter_strings, str):
+    letter_strings = [letter_strings]
   for string in letter_strings:
     if string: # Catch possible None values
       for letter in string:
