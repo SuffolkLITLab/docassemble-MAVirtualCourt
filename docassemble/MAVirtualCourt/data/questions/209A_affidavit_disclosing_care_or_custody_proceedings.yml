@@ -1458,17 +1458,17 @@ attachment:
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
       - "do_not_know_of_other_custody_case": ${ not know_of_other_custody_case }
-      - "other_case_1_user_role": ${other_care_custody_proceedings.item(0).user_role }
+      - "other_case_1_user_role": ${other_care_custody_proceedings.item(0).role() }
       - "other_case_1_letters": ${ other_care_custody_proceedings.item(0).child_letters() }
       - "other_case_1_court": ${ other_care_custody_proceedings.item(0).court_name }
       - "other_case_1_docket": ${ other_care_custody_proceedings.item(0).docket_number }
       - "other_case_1_status": ${ other_care_custody_proceedings.item(0).status() }
-      - "other_case_2_user_role": ${ other_care_custody_proceedings.item(1).user_role }
+      - "other_case_2_user_role": ${ other_care_custody_proceedings.item(1).role() }
       - "other_case_2_letters": ${ other_care_custody_proceedings.item(1).child_letters() }
       - "other_case_2_court": ${ other_care_custody_proceedings.item(1).court_name }
       - "other_case_2_docket": ${ other_care_custody_proceedings.item(1).docket_number }
       - "other_case_2_status": ${ other_care_custody_proceedings.item(1).status() }
-      - "other_case_3_user_role": ${ other_care_custody_proceedings.item(2).user_role }
+      - "other_case_3_user_role": ${ other_care_custody_proceedings.item(2).role() }
       - "other_case_3_letters": ${ other_care_custody_proceedings.item(2).child_letters()}
       - "other_case_3_court": ${ other_care_custody_proceedings.item(2).court_name }
       - "other_case_3_docket": ${ other_care_custody_proceedings.item(2).docket_number }
@@ -1565,17 +1565,17 @@ attachment:
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
       - "do_not_know_of_other_custody_case": ${ not know_of_other_custody_case }
-      - "other_case_1_user_role": ${other_care_custody_proceedings.item(0).user_role }
+      - "other_case_1_user_role": ${other_care_custody_proceedings.item(0).role() }
       - "other_case_1_letters": ${ other_care_custody_proceedings.item(0).child_letters() }
       - "other_case_1_court": ${ other_care_custody_proceedings.item(0).court_name }
       - "other_case_1_docket": ${ other_care_custody_proceedings.item(0).docket_number }
       - "other_case_1_status": ${ other_care_custody_proceedings.item(0).status() }
-      - "other_case_2_user_role": ${ other_care_custody_proceedings.item(1).user_role }
+      - "other_case_2_user_role": ${ other_care_custody_proceedings.item(1).role() }
       - "other_case_2_letters": ${ other_care_custody_proceedings.item(1).child_letters() }
       - "other_case_2_court": ${ other_care_custody_proceedings.item(1).court_name }
       - "other_case_2_docket": ${ other_care_custody_proceedings.item(1).docket_number }
       - "other_case_2_status": ${ other_care_custody_proceedings.item(1).status() }
-      - "other_case_3_user_role": ${ other_care_custody_proceedings.item(2).user_role }
+      - "other_case_3_user_role": ${ other_care_custody_proceedings.item(2).role() }
       - "other_case_3_letters": ${ other_care_custody_proceedings.item(2).child_letters()}
       - "other_case_3_court": ${ other_care_custody_proceedings.item(2).court_name }
       - "other_case_3_docket": ${ other_care_custody_proceedings.item(2).docket_number }

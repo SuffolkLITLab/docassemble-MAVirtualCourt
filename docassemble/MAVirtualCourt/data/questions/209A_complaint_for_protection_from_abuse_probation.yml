@@ -825,6 +825,18 @@ continue button field: explain_no_child_support
 # yesno: have_had_paternity_cases
 # REMOVED in stitchup
 ---
+id: paternity
+comment: |
+  This question is asked iff there are no cases of the "paternity" case_status.
+  This could happen if defendant was adjudicated NOT to be the father, so not a joint child
+  and thus case not disclosed on affidavit of care or custody.
+question: |
+  Paternity Cases
+subquestion: |
+  Are there any current or closed cases that involve both you and
+  ${other_parties.familiar()} that have to do with paternity of a child?
+yesno: ask_had_paternity_case
+---
 id: preview attachment
 continue button field: A_complaint_for_protection_from_abuse_probation_copy0005_preview_question
 question: |
