@@ -244,8 +244,8 @@ code: |
   user_role = plaintiff
   A_Plaintiff_Confidential_Information0011_intro
   # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
-  allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
+  # preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
+  # allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
   #plainitff_address_residential
   str(users[0])
   if lives_in_domestic_violence_shelter:

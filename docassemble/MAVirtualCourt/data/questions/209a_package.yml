@@ -47,8 +47,11 @@ code: |
   # Affidavit care/custody: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment 
   #     care_or_custody_proceedings_appendix_variable, triggered by need_care_custody_addendum
   # Plaintiff info: A_Plaintiff_Confidential_Information0011_attachment
+  #     confidential_info_addendum
   # Defendant info: defendantinformation209A0008_attachment
+  #    defendant_addendum
   # motion to impound: a_258e_motion_for_impoundment0019_attachment
+  #    impound_addendum
   
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
@@ -75,6 +78,8 @@ code: |
   if addAddendum_confidential:
     attachment_temp.append(confidential_info_addendum)
   attachment_temp.append(defendantinformation209A0008_attachment)
+  if addAddendum_defendant:
+    attachment_temp.append(defendant_addendum)
   if asked_for_impoundment:
     attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
     if addAddendum_impound:
@@ -257,6 +262,13 @@ code: |
   docket_numbers.auto_gather=False
   docket_numbers.gathered=True
   needs_attorney_signature = False
+  allowed_courts = [
+      'Boston Municipal Court',
+      'District Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ]
+  preferred_court = ''
   set_interview_defaults = True
 ---
 code: |

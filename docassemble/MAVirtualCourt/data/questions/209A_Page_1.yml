@@ -779,8 +779,8 @@ code: |
 ---
 id: complaint_209A_labeled_page10003
 code: |
-  allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
-  preferred_court = interview_metadata['complaint_209A_labeled_page10003']['preferred court']
+  # allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
+  # preferred_court = interview_metadata['complaint_209A_labeled_page10003']['preferred court']
   # basic_questions_intro_screen 
   # user_saw_what_to_expect
   # users[0].name.first

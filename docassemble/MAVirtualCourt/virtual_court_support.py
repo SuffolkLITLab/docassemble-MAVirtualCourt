@@ -66,6 +66,13 @@ class VCIndividual(Individual):
     if hasattr(self, 'phone_number') and self.phone_number:
       nums.append(self.phone_number + ' (other)')
     return comma_list(nums)
+  
+  def merge_letters(self, new_letters):
+    """If the Individual has a child_letters attribute, add the new letters to the existing list"""
+    if hasattr(self, 'child_letters'):
+      self.child_letters = filter_letters([new_letters, self.child_letters])
+    else:
+      self.child_letters = filter_letters(new_letters)    
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
