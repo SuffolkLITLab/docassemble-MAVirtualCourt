@@ -135,6 +135,12 @@ class OtherProceeding(DAObject):
     else:
       return self.case_status.title()
 
+  def role(self):
+    """Return the letter representing user's role in the case. If it's an adoption case, don't return a role."""
+    if self.case_status == 'adoption':
+      return ''
+    return self.user_role
+
   def case_description(self):
     """Returns a short description of the other case or proceeding meant to display to identify it
     during list gathering in the course of the interview"""

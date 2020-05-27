@@ -1264,12 +1264,19 @@ code: |
 code: |
   need_past_address_appendix_temp = False
   for child in children_of_both:
+    child.too_many_previous_addresses = len(child.previous_addresses) > 2
     if len(child.previous_addresses) > 2:
       need_past_address_appendix_temp = True
-      child.previous_addresses.put_on_appendix = True
-    else:
-      child.previous_addresses.put_on_appendix = False
   need_past_address_appendix = need_past_address_appendix_temp
+---
+code: |
+  need_attorneys_for_children_addendum = len(attorneys_for_children) > 3
+---
+code: |
+  need_attorneys_for_parents_addendum = len(attorneys_for_parents) > 3
+---
+code: |
+  need_gals_investigators_addendum = len(gals_investigators) > 3
 ---
 code: |
   need_children_appendix_temp = False 
@@ -1435,12 +1442,12 @@ question: |
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
      ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
-  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  % if need_care_custody_addendum:
   ${care_or_custody_proceedings_appendix_variable }
   % endif
 ---
 code: |
-  need_care_custody_addendum = need_children_appendix or need_other_parties_appendix or need_past_address_appendix
+  need_care_custody_addendum = need_children_appendix or need_other_parties_appendix or need_past_address_appendix or need_attorneys_for_children_addendum or need_attorneys_for_parents_addendum or need_gals_investigators_addendum
 ---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
