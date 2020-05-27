@@ -58,10 +58,11 @@ code: |
   # day # uncomment for standalone
 
   needs_attorney_signature
-  
-  need_past_address_appendix
-  need_children_appendix
-  need_other_parties_appendix
+
+  # uncomment for standalone  
+  # need_past_address_appendix
+  # need_children_appendix
+  # need_other_parties_appendix
 
   # str(users[0])
   # users[0].address.on_one_line(include_unit=True)
@@ -99,6 +100,87 @@ code: |
   children[i].previous_addresses.gather()
   children[i].child_complete = True
 ---
+if: len(children_of_both) > 1
+question: |
+  Where do ${children_of_both} live right now?
+subquestion: |
+  We need to include this information together with the other information
+  about past care or custody cases.
+fields:
+  - no label: children_address_screener
+    datatype: radio
+    choices:
+      - They all live with me: me
+      - They all live with ${other_parties.familiar()}: defendant
+      - Somewhere else or at more than one address: different
+    show if:
+      code: |
+        users[0].address.on_one_line(include_unit=True) != other_parties[0].address.on_one_line(include_unit=True)
+  - no label: children_address_screener
+    datatype: radio
+    choices:
+      - They all live with me: me
+      - Somewhere else or at more than one address: different
+    show if:
+      code: |
+        users[0].address.on_one_line(include_unit=True) == other_parties[0].address.on_one_line(include_unit=True)
+---
+if: len(children_of_both) <= 1 # Don't think we can ever get to this question w/o children, but just in case!
+question: |
+  Where does ${children_of_both} live right now?
+subquestion: |
+  We need to include this information together with the other information
+  about past care or custody cases.
+fields:
+  - no label: children_address_screener
+    datatype: radio
+    choices:
+      - With me: me
+      - With ${other_parties.familiar()}: defendant
+      - Somewhere else: different
+    show if:
+      code: |
+        users[0].address.on_one_line(include_unit=True) != other_parties[0].address.on_one_line(include_unit=True)
+  - no label: children_address_screener
+    datatype: radio
+    choices:
+      - With me: me
+      - Somewhere else: different
+    show if:
+      code: |
+        users[0].address.on_one_line(include_unit=True) == other_parties[0].address.on_one_line(include_unit=True)
+---
+question: |
+  Have any of your children lived anywhere else in the last 2 years?
+yesno: children_lived_elsewhere
+---
+scan for variables: False
+sets: evaluate_child_addresses
+code: |
+  if children_address_screener == 'me':
+    for child in children_of_both:
+      child.address = users[0].address
+  elif children_address_screener == 'defendant':
+    for child in children_of_both:
+      child.address = other_parties[0].address
+  else:
+    for child in children_of_both:
+      child.address.address
+  if len(children_of_both) > 1 and children_address_screener == 'me' or children_address_screener == 'defendant':
+    if children_lived_elsewhere:
+      for child in children_of_both:
+        child.previous_addresses.there_are_any
+        child.previous_addresses.minimum_number = 1
+        child.previous_addresses.gather()
+    else:
+      for child in children_of_both:
+        child.previous_addresses.there_are_any = False
+  else:
+    for child in children_of_both: # will be only one child
+      child.previous_addresses.gather()
+
+  evaluate_child_addresses = True
+---
 question: |
   Addresses of children
 subquestion: |
@@ -117,7 +199,7 @@ question: |
   Tell us about the ${ordinal(i)} previous address for ${x}
 subquestion: |
   You'll have a chance to add more in the next question
-#list collect: True # This breaks when list collect is turned on
+list collect: True # This breaks when list collect is turned on
 fields:
   - Address: x.previous_addresses[i].address
     address autocomplete: True
@@ -130,11 +212,24 @@ fields:
     default: "MA"
 ---
 question: |
-  Tell us about the ${ordinal(j)} previous address for ${children[i]}
+  Previous Addresses for ${children[i]}
 subquestion: |
-  You'll have a chance to add more in the next question
-#list collect: True # This breaks when list collect is turned on
+  List each address other than ${children[i].address.on_one_line(include_unit=True)}
+  where ${children[i]} has lived in the last 2 years below.
+
+  To add more than one, click ${word("Add another")}.
+list collect:
+  enable: True
+  label: |
+    ${ordinal(j).capitalize()} Address
 fields:
+  - An address previously mentioned: children[i].previous_addresses[j]
+    datatype: object
+    choices: collected_addresses
+    disable others: True
+    object labeler: |
+      lambda y: y.on_one_line(include_unit=True)
+    exclude: children[i].address
   - Address: children[i].previous_addresses[j].address
     address autocomplete: True
   - Unit:     children[i].previous_addresses[j].unit
@@ -159,7 +254,16 @@ yesno: children[i].previous_addresses.there_is_another
 ---
 reconsider: True
 code: |
-  collected_addresses = [child.address for child in children_of_both.elements if defined('child.address.address')] + [user.address for user in users]
+  collected_addresses = list(set([child.address for child in children_of_both.elements if defined('child.address.address')] + [user.address for user in users] + [other_party.address for other_party in other_parties if other_party.address.on_one_line(include_unit=True) != users[0].address.on_one_line(include_unit=True)] + collected_previous_addressess))
+---
+reconsider: True
+code: |
+  temp_previous_addresses = []
+  if defined('children_address_screener'):
+    for child in children_of_both:
+      for address in child.previous_addresses.complete_elements():
+        temp_previous_addresses.append(address)
+  collected_previous_addressess = temp_previous_addresses
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0

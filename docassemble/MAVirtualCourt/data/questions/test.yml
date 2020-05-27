@@ -1,18 +1,8 @@
 ---
-include:
-  - basic-questions.yml
----
-question: |
-  Tell us some vital statistics
-fields:
-  - Options: options
-    datatype: checkboxes
-    choices:
-      - Opt1
-      - Opt2
-      - Opt3
----
-question: |
-  ${children.does_verb("do")}
-  ${interview_url()}
 mandatory: True
+code: |
+  evaluate_child_addresses # 
+
+---
+include:
+  - 209a_package.yml
