@@ -799,7 +799,7 @@ code: |
     email_to_use = court_email
 
   # temporary for testing
-  email_to_use = "massaccess@suffolk.edu"
+  # email_to_use = "massaccess@suffolk.edu"
   
   if task_not_yet_performed('send email'):
     log("Court email is " + court_email)
