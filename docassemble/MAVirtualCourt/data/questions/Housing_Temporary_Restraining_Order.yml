@@ -546,7 +546,7 @@ subquestion: |
   Thank you ${users[0]}. Your form is ready to send to the court. **It is not
   delivered until you complete the delivery process below.**
 
-  1. Click to open the form below in a new window. Correct any errors using the "Make changes" button below.
+  1. Click the preview image below to open the form in a new window. Correct any errors using the "Make changes" button below.
   1. Download and save or print a copy of this form for your 
   records.
   1. Click the "Submit to ${courts[0]}" button to send it to the court. 
