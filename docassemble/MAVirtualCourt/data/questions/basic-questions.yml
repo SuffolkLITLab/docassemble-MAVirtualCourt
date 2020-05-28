@@ -483,7 +483,7 @@ sets:
 question: |
   What court is your case being heard in?
 subquestion: |
-  Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
+  Your case can be heard in one of these courts: ${comma_and_list(allowed_courts)}.
   
   % if preferred_court and found_housing_court:
   We have tried to select the court your case is most likely to be in
@@ -589,16 +589,16 @@ question: |
 subquestion: |
   % if device().is_pc:
   % if defined('tenant.signature'):
-  Click continue.
+  Click ${word("next")}.
   % else:
-  Click continue on this screen once you have finished signing on your phone.
+  Click ${word("next")} on this screen once you have finished signing on your phone.
   % endif
   % else:
   You have been asked to sign this PDF. Click to review it.    
   ${form_to_sign}  
   [Make changes](${url_action('review_all_sections')})
 
-  Click continue on this screen when you're ready to sign.
+  Click ${word("next")} on this screen when you're ready to sign.
   % endif  
 field: signature_wait_screen
 decoration: file-signature
@@ -611,7 +611,7 @@ fields:
       1. Open the camera app or barcode reader app on your phone.
       2. Point it at the screen.
       3. Click the link icon that appears on the camera screen.
-      4. Click ${word("continue")} on your phone.
+      4. Click ${word("next")} on your phone.
       
       <center>
       ${interview_url_as_qr()}
@@ -629,7 +629,7 @@ fields:
     show if: text_link
     default: ${showifdef('users[0].phone_number')}
   - note: |
-      Click ${word("continue")} to add your signature.
+      Click ${word("next")} to add your signature.
     show if: 
       code: |
         not device().is_pc
@@ -683,7 +683,7 @@ code: |
     # Check for Branch 2 or 3
     elif signature_choice == 'phone':
       saw_signature_qrcode
-      # User will click continue. link_cell will only be defined if they chose the texting option
+      # User will click next. link_cell will only be defined if they chose the texting option
       if defined('link_cell') and link_cell and task_not_yet_performed('send signature link'): 
         # They used the text option
         send_sms(task='send signature link', to=link_cell,template=interview_link)
@@ -923,16 +923,16 @@ subquestion: |
   * ${section}
   % endfor
   
-  Press "Continue" to resume the
+  Press "${word("Resume")}" to resume the
   interview.
 buttons:
-  Continue: continue
+  ${word("Resume")}: continue
 ---
 question: |
   Preferred language
 subquestion: |
   You have the right to an interpreter. You should ask
-  for an interpreter if you speak some English but are more comfortable
+  for an interpreter if you speak some English but are more comfortable speaking 
   in a different language.
 fields:
   - I want an interpreter: user_needs_interpreter
