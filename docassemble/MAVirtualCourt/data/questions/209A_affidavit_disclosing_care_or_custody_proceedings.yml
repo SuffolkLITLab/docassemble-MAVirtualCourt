@@ -272,15 +272,15 @@ code: |
         if defined('add.address.address') and len(add.address.address):
           collected_addresses_temp.setdefault(add.on_one_line(include_unit=True), add)
   collected_addresses = list(collected_addresses_temp.values())
----
-reconsider: True
-code: |
-  temp_previous_addresses = []
-  if defined('children_address_screener'):
-    for child in children_of_both:
-      for address in child.previous_addresses.complete_elements():
-        temp_previous_addresses.append(address)
-  collected_previous_addressess = temp_previous_addresses
+# ---
+# reconsider: True
+# code: |
+#   temp_previous_addresses = []
+#   if defined('children_address_screener'):
+#     for child in children_of_both:
+#       for address in child.previous_addresses.complete_elements():
+#         temp_previous_addresses.append(address)
+#   collected_previous_addressess = temp_previous_addresses
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0

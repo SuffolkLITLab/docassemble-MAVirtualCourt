@@ -929,6 +929,7 @@ attachment:
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
+      - "plaintiff_and_defendant_other_case_no": ${ not plaintiff_and_defendant_other_case_yes }    
       - "abuse_suffered_date": ${ incident_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
@@ -1001,6 +1002,7 @@ attachment:
       - "plaintiff_has_minor_children_yes": ${ plaintiff_has_minor_children }
       - "plaintiff_has_minor_children_no": ${ not plaintiff_has_minor_children }
       - "plaintiff_and_defendant_other_case_yes": ${ plaintiff_and_defendant_other_case_yes }
+      - "plaintiff_and_defendant_other_case_no": ${ not plaintiff_and_defendant_other_case_yes }      
       - "abuse_suffered_date": ${ incident_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
       - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
