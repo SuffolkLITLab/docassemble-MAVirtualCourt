@@ -139,6 +139,12 @@ class OtherProceeding(DAObject):
     description += " (" + str(self.children) + ")"
     return description
 
+  def role(self):
+    """Return the letter representing user's role in the case. If it's an adoption case, don't return a role."""
+    if self.case_status == 'adoption':
+      return ''
+    return self.user_role
+
   def __str__(self):
     return self.case_description()
 

@@ -176,16 +176,16 @@ code: |
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
       for case in other_care_custody_proceedings:
         if case.case_status == "paternity":
-          have_had_paternity_cases = True          
+          have_had_paternity_cases = True 
           break # One match is good enough
+      if not have_had_paternity_cases:
+        have_had_paternity_cases = ask_had_paternity_case  # trigger a question if we didn't answer via care/custody questions       
       # Come back to child addresses if needed          
       evaluate_child_addresses # 
   
   # From page 1
   # Other cases involving P/D but not about the children
   other_cases.gather()
-
-
 
   fill_in_court_name # used in aff. of care and custody
   # Set unfilled fields empty, if needed
