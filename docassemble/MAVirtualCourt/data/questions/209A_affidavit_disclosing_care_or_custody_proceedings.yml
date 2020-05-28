@@ -255,7 +255,23 @@ yesno: children[i].previous_addresses.there_is_another
 ---
 reconsider: True
 code: |
-  collected_addresses = list(set([child.address for child in children_of_both.elements if defined('child.address.address')] + [user.address for user in users] + [other_party.address for other_party in other_parties if other_party.address.on_one_line(include_unit=True) != users[0].address.on_one_line(include_unit=True)] + collected_previous_addressess))
+  # We put addresses in a dictionary as a simple hashtable
+  collected_addresses_temp = {}
+
+  # We use dict.setdefault method here so that we never add
+  # the same address twice. Hash will be address.on_one_line() output
+  collected_addresses_temp.setdefault(users[0].address.on_one_line(include_unit=True), users[0].address)
+  collected_addresses_temp.setdefault(other_parties[0].address.on_one_line(include_unit=True), other_parties[0].address)
+  for child in children_of_both:
+    if defined('child.address.address') and len(child.address.address):
+      collected_addresses_temp.setdefault(child.address.on_one_line(include_unit=True),child.address)
+    # we collect one by one, so we don't want to trigger child 7 to figure out what addresses
+    # to include in the drop-down for child1
+    if defined('child.previous_addresses.there_are_any') and child.previous_addresses.there_are_any:
+      for add in child.previous_addresses.complete_elements():
+        if defined('add.address.address') and len(add.address.address):
+          collected_addresses_temp.setdefault(add.on_one_line(include_unit=True), add)
+  collected_addresses = list(collected_addresses_temp.values())
 ---
 reconsider: True
 code: |
