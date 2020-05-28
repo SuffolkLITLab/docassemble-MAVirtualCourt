@@ -703,8 +703,8 @@ code: |
   basic_questions_intro_screen 
   defendantinformation209A0008_intro
   # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
-  allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
+  # preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
+  # allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
   # other_parties[0].name_other
   nav.set_section('section_defendant_info_demographics')
   if other_parties[0].understands_english:
@@ -912,17 +912,18 @@ code: |
   else:
     defendant_location_information_other_cutoff = defendant_location_information_other
     
-  if other_parties[0].photo_yes_can_upload:
+  if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
     txtFieldsList_defendant.append(
       {'title': 'Uploaded defendant photo',
       'value': [photo_upload]
       })
-  
-  addAddendum_defendant = False
-  if txtFieldsList_defendant: #if the list is not empty
-    addAddendum_defendant = True
+
+  addAddendum_defendant = bool(txtFieldsList_defendant)
+  # addAddendum_defendant = False
+  # if txtFieldsList_defendant: #if the list is not empty
+  #   addAddendum_defendant = True
 ---
-if: addAddendum_defendant
+# if: addAddendum_defendant
 attachment:
   - variable name: defendant_addendum
     docx template file: 209A_defendant_addendum.docx

@@ -339,8 +339,8 @@ code: |
   # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
   A_defendant_s_child_support_affidavit_ready_for_upload0004_intro
   # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"]["preferred court"]
-  allowed_courts = interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"]["allowed courts"]
+  # preferred_court = interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"]["preferred court"]
+  # allowed_courts = interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"]["allowed courts"]
   users[0].states_above_true
   str(defendants[0])
   str(plaintiffs[0])

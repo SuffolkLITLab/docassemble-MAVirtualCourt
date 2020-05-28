@@ -244,8 +244,8 @@ code: |
   user_role = plaintiff
   A_Plaintiff_Confidential_Information0011_intro
   # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
-  allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
+  # preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
+  # allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
   #plainitff_address_residential
   str(users[0])
   if lives_in_domestic_violence_shelter:
@@ -324,11 +324,12 @@ code: |
       })
   else:
     persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information  
-  addAddendum_confidential = False
-  if txtFieldsList_confidential: #if the list is not empty
-    addAddendum_confidential = True
+  addAddendum_confidential = bool(txtFieldsList_confidential)
+  # addAddendum_confidential = False
+  # if txtFieldsList_confidential: #if the list is not empty
+  #   addAddendum_confidential = True
 ---
-if: addAddendum_confidential
+# if: addAddendum_confidential
 attachment:
   - variable name: confidential_info_addendum
     docx template file: 209A_confidential_info_addendum.docx

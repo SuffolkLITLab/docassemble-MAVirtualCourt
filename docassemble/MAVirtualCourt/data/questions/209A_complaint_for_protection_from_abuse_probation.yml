@@ -140,8 +140,6 @@ data:
 reconsider: True
 code: |
   children_of_both = children.filter(defendant_is_parent = True)
-  children_of_both.gathered = True
-  build_children_of_both_list  = True
 ---
 id: A_complaint_for_protection_from_abuse_probation_copy0005
 scan for variables: False
@@ -196,7 +194,7 @@ code: |
   # all_children = children + children_cares_for
   
   # Should ask for custody and other things if child of both
-  build_children_of_both_list
+  children_of_both
 
   if len(children_of_both) > 0:
     wants_custody_of
@@ -367,7 +365,7 @@ id: custom_objects
 objects:
   - children: PeopleList.using(ask_number=True)
   - children_cares_for: PeopleList.using(ask_number=True)
-  - children_of_both: PeopleList.using(auto_gather=False)
+#  - children_of_both: PeopleList.using(auto_gather=False) # defined by code
   - wants_custody_of: PeopleList
   - wants_no_contact_for: PeopleList
   - schools_to_stay_away_from: DAList.using(object_type=Person)
@@ -1111,12 +1109,13 @@ code: |
       })
   else:
     school_strings_cutoff = school_strings
-  
-  addAddendum_page2 = False
-  if txtFieldsList_page2: #if the list is not empty
-    addAddendum__page2 = True
+  need_custody_addendum = len(wants_custody_of) > 6
+  need_no_contact_addendum = len(wants_no_contact_for) > 6
+  addAddendum_page2 = need_custody_addendum or need_no_contact_addendum or bool(txtFieldsList_page2)
+  # if : #if the list is not empty
+  #   addAddendum__page2 = True
 ---
-if: addAddendum__page2
+# if: addAddendum__page2 # don't need to make conditional here
 attachment:
   - variable name: page2_addendum
     docx template file: 209A_page2_addendum.docx

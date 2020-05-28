@@ -19,11 +19,9 @@ code: |
   basic_questions_intro_screen 
   # A_affidavit_disclosing_care_or_custody_proceedings0009_intro # enable for standalone
   # Set the preferred/allowed courts for this interview
-  preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
-  allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
-  # courts.gather()
-  # str(courts[0])
-  # fill_in_court_name
+  # preferred_court = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["preferred court"]
+  # allowed_courts = interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"]["allowed courts"]
+
   defendants.there_are_any = True  
   case_name
   # children.there_are_any = True
@@ -64,9 +62,12 @@ code: |
   # need_children_appendix
   # need_other_parties_appendix
 
+  # uncomment for standalone
   # str(users[0])
   # users[0].address.on_one_line(include_unit=True)
-  # str(users[0])  #mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
+  # courts.gather()
+  # fill_in_court_name  
+  # mark_unfilled_fields_empty(interview_metadata["A_affidavit_disclosing_care_or_custody_proceedings0009"])
   # docket_numbers[0]  # Enable this if a standalone form
   # A_affidavit_disclosing_care_or_custody_proceedings0009_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
@@ -82,17 +83,17 @@ code: |
   DCF.address = DAEmpty()
   DCF.address_for_form = DAEmpty()
   DCF.name.first = "Department of Children and Families"
----
-sets: DCF.child_letters
-code: |
-  for case in other_care_custody_proceedings:
-    if hasattr(case, 'other_parties') and case.other_parties and DCF in case.other_parties.complete_elements():
-      if not hasattr(DCF, 'child_letters'):
-        DCF.child_letters = case.child_letters()
-      else:
-        DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
-    else:
-      DCF.child_letters = ''
+# ---
+# sets: DCF.child_letters
+# code: |
+#   for case in other_care_custody_proceedings:
+#     if hasattr(case, 'other_parties') and case.other_parties and DCF in case.other_parties.complete_elements():
+#       if not hasattr(DCF, 'child_letters'):
+#         DCF.child_letters = case.child_letters()
+#       else:
+#         DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
+#     else:
+#       DCF.child_letters = ''
 ---
 code: |
   # children_of_both should have objects pointing to the master children list
@@ -865,6 +866,8 @@ code: |
   month = signature_date.format('MMMM')
   year = signature_date.format('yy')
 ---
+comment: |
+  This is only useful in the standalone one
 question: |
   Docket Number
 subquestion: |
@@ -1054,36 +1057,38 @@ validation code: |
   if len(children_of_both) == 1:
     other_care_custody_proceedings[i].children = children_of_both
   
-  # Prepopulate the list of other parties involved in this case
-  if other_care_custody_proceedings[i].other_party_types.any_true():
-    other_care_custody_proceedings[i].other_parties.clear()
-    if other_care_custody_proceedings[i].other_party_types["defendant"]:
-      other_care_custody_proceedings[i].other_parties.there_are_any=True
-      other_care_custody_proceedings[i].other_parties.append(other_parties[0])
-    if other_care_custody_proceedings[i].other_party_types["dcf"]:
-      other_care_custody_proceedings[i].other_parties.there_are_any=True      
-      other_care_custody_proceedings[i].other_parties.append(DCF)
-    if other_care_custody_proceedings[i].other_party_types["other"]:
-      if len(other_care_custody_proceedings[i].other_parties.elements):  
-        other_care_custody_proceedings[i].other_parties.there_are_any=True
-        other_care_custody_proceedings[i].other_parties.there_is_another = True
-    else:
-      if other_care_custody_proceedings[i].other_party_types["defendant"]:
-        other_care_custody_proceedings[i].other_parties.there_are_any=True
-        other_care_custody_proceedings[i].other_parties.append(other_parties[0])
-        # Assign a child letter to other_parties if they were part of this case
-        if hasattr(other_parties[0],'child_letters') and other_parties[0].child_letters:
-          other_parties[0].child_letters = other_parties[0].child_letters + other_care_custody_proceedings[i].child_letters()
-        else:
-          other_parties[0].child_letters = other_care_custody_proceedings[i].child_letters()
-      if other_care_custody_proceedings[i].other_party_types["dcf"]:
-        other_care_custody_proceedings[i].other_parties.there_are_any=True
-        other_care_custody_proceedings[i].other_parties.append(DCF)
-      other_care_custody_proceedings[i].other_parties.auto_gather=False
-      other_care_custody_proceedings[i].other_parties.gathered=True
-  else:
-    other_care_custody_proceedings[i].other_parties.there_are_any=False
-    
+  # # Prepopulate the list of other parties involved in this case
+  # if other_care_custody_proceedings[i].other_party_types.any_true():
+  #   other_care_custody_proceedings[i].other_parties.clear()
+  #   if other_care_custody_proceedings[i].other_party_types["defendant"]:
+  #     other_care_custody_proceedings[i].other_parties.there_are_any=True
+  #     other_care_custody_proceedings[i].other_parties.append(other_parties[0])
+  #   if other_care_custody_proceedings[i].other_party_types["dcf"]:
+  #     other_care_custody_proceedings[i].other_parties.there_are_any=True      
+  #     other_care_custody_proceedings[i].other_parties.append(DCF)
+  #   if other_care_custody_proceedings[i].other_party_types["other"]:
+  #     if len(other_care_custody_proceedings[i].other_parties.elements):  
+  #       other_care_custody_proceedings[i].other_parties.there_are_any=True
+  #       other_care_custody_proceedings[i].other_parties.there_is_another = True
+  #   else:
+  #     if other_care_custody_proceedings[i].other_party_types["defendant"]:
+  #       other_care_custody_proceedings[i].other_parties.there_are_any=True
+  #       other_care_custody_proceedings[i].other_parties.append(other_parties[0])
+  #       # Assign a child letter to other_parties if they were part of this case
+  #       if hasattr(other_parties[0],'child_letters') and other_parties[0].child_letters:
+  #         other_parties[0].child_letters = other_parties[0].child_letters + other_care_custody_proceedings[i].child_letters()
+  #       else:
+  #         other_parties[0].child_letters = other_care_custody_proceedings[i].child_letters()
+  #     if other_care_custody_proceedings[i].other_party_types["dcf"]:
+  #       other_care_custody_proceedings[i].other_parties.there_are_any=True
+  #       other_care_custody_proceedings[i].other_parties.append(DCF)
+  #     other_care_custody_proceedings[i].other_parties.auto_gather=False
+  #     other_care_custody_proceedings[i].other_parties.gathered=True
+  # else:
+  #   other_care_custody_proceedings[i].other_parties.there_are_any=False
+---
+code: |
+  other_care_custody_proceedings[i].other_parties.there_are_any = other_care_custody_proceedings[i].other_party_types["other"]
 # ---
 # question: |
 #   Who else was involved in this case?
@@ -1108,6 +1113,9 @@ fields:
     datatype: object
     choices: others_in_proceedings
     disable others: True
+    exclude: # Don't ever offer DCF or OP here
+      - DCF
+      - other_parties[0]
   - Name: other_care_custody_proceedings[i].other_parties[j].name.first
   - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
     address autocomplete: True
@@ -1141,14 +1149,22 @@ comment: |
   This builds our list of parties involved in other care/custody proceedings
   for box8. It's also reconsidered on each page load so we can pick from people 
   who were on previous cases on new screens.
+  formerly box8_people.
 code: |
   # It's possible this should be optimized, but I think not unless we had hundreds of cases
   # Start with a set to avoid duplicates
   gathering_temp = set()
   # use .elements to avoid forcing list to be gathered before we work with it here  
   for case in other_care_custody_proceedings.elements:
+    if case.other_party_types["dcf"]:
+      DCF.merge_letters(case.child_letters())
+      gathering_temp.add(DCF)
+    if case.other_party_types["defendant"]:
+      other_parties[0].merge_letters(case.child_letters())
+      gathering_temp.add(other_parties[0])
     if case.other_parties.there_are_any:
       for other_party in case.other_parties.complete_elements():
+        other_party.merge_letters(case.child_letters())
         gathering_temp.add(other_party)
   others_in_proceedings.elements = list(gathering_temp) # I think we need to convert back to a list
   others_in_proceedings.gathered=True
@@ -1157,7 +1173,7 @@ code: |
 code: |
   other_care_custody_proceedings[i].other_parties[j].child_letters = other_care_custody_proceedings[i].child_letters()
 ---
-if: len(other_care_custody_proceedings[i].children) == 1
+if: len(other_care_custody_proceedings[i].children) <= 1
 question: |
   Lawyers in ${ordinal(i)} case
 subquestion: |
@@ -1220,10 +1236,11 @@ fields:
   - note: |
       OK, we will ask for the names of each child's lawyer on the next screen.
     show if: other_care_custody_proceedings[i].atty_for_children
-validation code: |
-  for case in other_care_custody_proceedings:
-    if case.atty_for_children:
-      case.attorneys_for_children.there_are_any=True
+---
+code: |
+  # this could be .there_are_any in the question above directly, but we use
+  # the atty_for_children attribute in our attorneys_for_children list building code
+  other_care_custody_proceedings[i].attorneys_for_children.there_are_any = other_care_custody_proceedings[i].atty_for_children     
 ---
 question: |
   Lawyers for children in your ${other_care_custody_proceedings[i]}?
@@ -1351,12 +1368,19 @@ code: |
 code: |
   need_past_address_appendix_temp = False
   for child in children_of_both:
+    child.too_many_previous_addresses = len(child.previous_addresses) > 2
     if len(child.previous_addresses) > 2:
       need_past_address_appendix_temp = True
-      child.previous_addresses.put_on_appendix = True
-    else:
-      child.previous_addresses.put_on_appendix = False
   need_past_address_appendix = need_past_address_appendix_temp
+---
+code: |
+  need_attorneys_for_children_addendum = len(attorneys_for_children) > 3
+---
+code: |
+  need_attorneys_for_parents_addendum = len(attorneys_for_parents) > 3
+---
+code: |
+  need_gals_investigators_addendum = len(gals_investigators) > 3
 ---
 code: |
   need_children_appendix_temp = False 
@@ -1522,9 +1546,12 @@ question: |
 subquestion: |
   Here is a preview of the form you'll sign on the next page. 
      ${A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview}
-  % if (need_children_appendix or need_other_parties_appendix or need_past_address_appendix):
+  % if need_care_custody_addendum:
   ${care_or_custody_proceedings_appendix_variable }
   % endif
+---
+code: |
+  need_care_custody_addendum = need_children_appendix or need_other_parties_appendix or need_past_address_appendix or need_attorneys_for_children_addendum or need_attorneys_for_parents_addendum or need_gals_investigators_addendum
 ---
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview

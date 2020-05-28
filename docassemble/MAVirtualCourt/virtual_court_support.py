@@ -66,6 +66,13 @@ class VCIndividual(Individual):
     if hasattr(self, 'phone_number') and self.phone_number:
       nums.append(self.phone_number + ' (other)')
     return comma_list(nums)
+  
+  def merge_letters(self, new_letters):
+    """If the Individual has a child_letters attribute, add the new letters to the existing list"""
+    if hasattr(self, 'child_letters'):
+      self.child_letters = filter_letters([new_letters, self.child_letters])
+    else:
+      self.child_letters = filter_letters(new_letters)    
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
@@ -127,6 +134,12 @@ class OtherProceeding(DAObject):
       return 'Pending'
     else:
       return self.case_status.title()
+
+  def role(self):
+    """Return the letter representing user's role in the case. If it's an adoption case, don't return a role."""
+    if self.case_status == 'adoption':
+      return ''
+    return self.user_role
 
   def case_description(self):
     """Returns a short description of the other case or proceeding meant to display to identify it
@@ -273,6 +286,8 @@ def filter_letters(letter_strings):
   # There is probably a cute one liner, but this is easy to follow and
   # probably same speed
   unique_letters = set()
+  if isinstance(letter_strings, str):
+    letter_strings = [letter_strings]
   for string in letter_strings:
     if string: # Catch possible None values
       for letter in string:
