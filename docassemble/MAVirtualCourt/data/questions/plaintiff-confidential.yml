@@ -141,6 +141,12 @@ fields:
 list collect: True    
 ---
 question: |
+  When were you born?
+fields:
+  - Your birthdate: users[0].birthdate
+    datatype: date
+---
+question: |
   Apartment building or multi-family home
 yesno: users[0].apartment_yes 
 subquestion: |
@@ -208,7 +214,7 @@ attachment:
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 
-      - "plaintiff_birthdate": '' #${ users[0].birthdate.format() }
+      - "plaintiff_birthdate": ${ users[0].birthdate.format() }
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
       - plaintiff_phone_home: ${users[0].phone_number }
@@ -258,7 +264,8 @@ code: |
   else:
     users[0].previous_addresses.there_are_any = False    
   # users[0].apartment_yes
-  users[0].workplace_name
+  users[0].birthdate
+  users[0].workplace_name 
   users[0].school_name
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
