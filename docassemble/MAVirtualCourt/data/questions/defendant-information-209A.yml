@@ -585,7 +585,7 @@ attachment code: defendantinformation209A0008_attachment
 need: defendantinformation209A0008
 attachment:
     variable name: defendantinformation209A0008_attachment
-    skip undefined: True
+    # skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
@@ -708,17 +708,14 @@ code: |
   # preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
   # allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
   # other_parties[0].name_other
-  nav.set_section('section_defendant_info_demographics')
   if other_parties[0].understands_english:
     other_parties[0].language_other = ''
 
-  nav.set_section('section_defendant_info_appearance')
   other_parties[0].photo_yes
   other_parties[0].race
   other_parties[0].eye_color # Needed if in the skip_sections code
   other_parties[0].height
 
-  nav.set_section('section_defendant_info_safety')
   other_parties[0].gun_license_carry_possess_yes = defendant_has_guns.any_true()
   if not defendant_has_guns.any_true():
     defendant_weapons_description = DAEmpty()
@@ -733,13 +730,11 @@ code: |
     other_parties[0].psychiatric_emotional_problems_no = True
     other_parties[0].psychiatric_emotional_problems = ''
 
-  nav.set_section('section_defendant_info_location')
   other_parties[0].address.address
   other_parties[0].address_floor  
   other_parties[0].location_best    
   other_parties[0].location_information_other
 
-  nav.set_section('section_defendant_info_employer')
   if defendant_not_employed:
     other_parties[0].employer = "N/A"
     other_parties[0].work_address = ''
@@ -748,7 +743,6 @@ code: |
     other_parties[0].work_department = ''
     other_parties[0].work_hours = ''
 
-  nav.set_section('section_defendant_info_car')    
   if other_parties[0].does_not_have_car:
     other_parties[0].vehicle_make = "N/A"
     other_parties[0].vehicle_color = "N/A"
@@ -797,7 +791,7 @@ subquestion: |
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview
-    skip undefined: True
+    # skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf

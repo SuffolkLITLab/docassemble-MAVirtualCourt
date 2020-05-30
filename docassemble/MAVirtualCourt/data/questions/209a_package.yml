@@ -22,16 +22,18 @@ sections:
   - section_relationship: Your relationship
   - section_affidavit: Your statement
   - section_children: Children  
+  - section_children_relief: Protection for Children
   - section_relief: What you need
-  - section_custody: Custody
+  # - section_custody: Custody
   - section_child_support: Child support
   - section_defendant_info: Identifying Defendant
   - section_your_info: Your information
   - section_privacy: Keeping your information private
   - section_care_custody: Past care or custody cases
   - section_cases_with_defendant: Other cases with Defendant
+  - section_court: Court selection
   - section_signature: Signing
-  - section_filing: Filing
+  - section_filing: Download
 ---
 scan for variables: False
 mandatory: True
@@ -41,6 +43,7 @@ code: |
   ##################### Intro screen
   basic_questions_intro_screen
   main_209A_package_intro
+  nav.set_section('section_basic')  
   who_protecting_screener # We don't use this yet?  
   users[0].name.first
   if who_protecting_screener == "someone else":
@@ -67,11 +70,13 @@ code: |
   user_saw_what_to_expect
 
   ########################## Page 1
+  nav.set_section('section_relationship')
   user_saw_relationship
   defendant_and_plaintiff_are_parents_of_child
   # relationship_to_defendant_unmarried
   
   complaint_209A_labeled_page10003 # Page 1
+  nav.set_section('section_affidavit') # these are part of the affidavit really
   user_saw_abuse_explanation
   defendant_abuse_caused_physical_harm
   if no_abuse_checked:
@@ -82,12 +87,14 @@ code: |
   complaint_209A_Affidavit # Main affidavit
   # From page 1
   incident_date # Filled in with code, I think
+  nav.set_section('section_children')
   if plaintiff_has_minor_children:
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
   # if no_abuse_checked:
   #  abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
     # refer_to_258E_resources # Maybe this info is wrong
 
+  nav.set_section('section_relief')
   ############################ Relief
   # From page 1
   order_defendant_stop_abuse_yes # make sure this gets defined, but it will always be True via a code block
@@ -106,7 +113,7 @@ code: |
   order_relief_ex_parte
 
   ####################### Child support
-  nav.set_section('section_child_support')
+  nav.set_section('section_child_support')  
   if plaintiff_has_minor_children and wants_child_support_yes:
     if not existing_order:
       Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
@@ -122,6 +129,7 @@ code: |
   defendantinformation209A0008
 
   ########################## Plaintiff info
+  nav.set_section('section_your_info')
   A_Plaintiff_Confidential_Information0011
   # Ask for address info of children only if have cases to disclose
   # if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
@@ -132,6 +140,7 @@ code: |
   #       child.address.address
   #       child.previous_addresses.gather()
   
+  nav.set_section('section_privacy')
   impoundment_intro
   if asked_for_impoundment:
     a_258e_motion_for_impoundment0019
@@ -155,10 +164,12 @@ code: |
   
   # From page 1
   # Other cases involving P/D but not about the children
+  nav.set_section('section_cases_with_defendant')
   other_cases.gather()
   cases_other_safe_for_pdf
   plaintiff_and_defendant_other_case_description
 
+  nav.set_section('section_court')
   fill_in_court_name # used in aff. of care and custody
   # Make sure we don't leave any computed values empty
   # we have some that we need to set at end instead of in regular interview flow
@@ -171,7 +182,8 @@ code: |
 
   docket_numbers[0]
   day # Triggers date question in format for aff. of care and custody
-
+  
+  nav.set_section('section_signature')
   preview_209a_package
 
   signature_fields = ['users[0].signature']
@@ -179,6 +191,7 @@ code: |
   users[0].signature
   
   final_attachment_bundle
+  nav.set_section('section_filing')
   download_screen
 ---
 if: |

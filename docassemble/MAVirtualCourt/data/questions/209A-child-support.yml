@@ -538,7 +538,7 @@ attachment:
     variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview
     name: Plaintiff affidavit in support of request for child support order
     filename: Plaintiff_affidavit_in_support_of_request_for_child_support_order
-    skip undefined: True
+    # skip undefined: True
 
     pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf
     decimal places: 2    
@@ -626,7 +626,7 @@ need: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008
 attachment:
     variable name: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
     name: Plaintiff 209A Child Support Affidavit
-    skip undefined: True
+    # skip undefined: True
 
     filename: Plaintiff_209A_Child_Support_Affidavit
     pdf template file: Plaintiff_Affidavit_in_support_of_request_for_child_support_order.pdf

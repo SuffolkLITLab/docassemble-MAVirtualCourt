@@ -578,7 +578,7 @@ code: |
 attachment:
     variable name: complaint_209A_Affidavit_attachment_preview
     name: 209A Complaint Affidavit
-    skip undefined: True
+    # skip undefined: True
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    
@@ -590,7 +590,7 @@ need: complaint_209A_Affidavit
 attachment:
     variable name: complaint_209A_Affidavit_attachment
     name: 209A Complaint Affidavit
-    skip undefined: True
+    # skip undefined: True
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    

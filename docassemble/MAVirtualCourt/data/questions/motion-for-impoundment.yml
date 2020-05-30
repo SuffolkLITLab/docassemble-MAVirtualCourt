@@ -221,7 +221,7 @@ attachment:
     variable name: a_258e_motion_for_impoundment0019_attachment
     name: Motion for Impoundment
     filename: Motion_for_Impoundment
-    skip undefined: True
+    # skip undefined: True
 
     pdf template file: 209a_258e_motion_for_impoundment.pdf
     fields: 
@@ -296,7 +296,7 @@ attachment:
     variable name: a_258e_motion_for_impoundment0019_attachment_preview
     name: Motion for Impoundment
     filename: Motion_for_Impoundment
-    skip undefined: True
+    # skip undefined: True
 
     pdf template file: 209a_258e_motion_for_impoundment.pdf
     fields: 

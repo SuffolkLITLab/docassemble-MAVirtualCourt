@@ -195,7 +195,8 @@ code: |
   
   # Should ask for custody and other things if child of both
   children_of_both
-
+  
+  nav.set_section('section_children_relief')
   if len(children_of_both) > 0:
     wants_custody_of
     for custody_child in wants_custody_of:
@@ -853,7 +854,7 @@ subquestion: |
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview
     name: 209A Page 2
-    skip undefined: True
+    # skip undefined: True
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    
@@ -981,7 +982,7 @@ need: A_complaint_for_protection_from_abuse_probation_copy0005
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
     name: 209A Page 2
-    skip undefined: True
+    # skip undefined: True
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    

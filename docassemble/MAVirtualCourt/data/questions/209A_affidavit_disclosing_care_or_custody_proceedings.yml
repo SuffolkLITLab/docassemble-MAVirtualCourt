@@ -1461,7 +1461,7 @@ attachment:
 need: A_affidavit_disclosing_care_or_custody_proceedings0009
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment
-    skip undefined: True
+    # skip undefined: True
     name: Affidavit of Care
     filename: Affidavit_of_Care
     # editable: False  
@@ -1574,7 +1574,7 @@ attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
     name: Affidavit of Care
     filename: Affidavit_of_Care
-    skip undefined: True
+    # skip undefined: True
     # editable: False    
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
     decimal places: 2    

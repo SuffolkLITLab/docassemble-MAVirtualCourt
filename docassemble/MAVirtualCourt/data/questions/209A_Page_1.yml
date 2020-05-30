@@ -930,7 +930,7 @@ subquestion: |
 ---
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment_preview
-    skip undefined: True
+    # skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
@@ -985,7 +985,7 @@ attachment:
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -1003,7 +1003,7 @@ attachment code: complaint_209A_labeled_page10003_attachment
 need: complaint_209A_labeled_page10003
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment
-    skip undefined: True
+    # skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
@@ -1059,7 +1059,7 @@ attachment:
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---
