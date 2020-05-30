@@ -221,6 +221,8 @@ attachment:
     variable name: a_258e_motion_for_impoundment0019_attachment
     name: Motion for Impoundment
     filename: Motion_for_Impoundment
+    skip undefined: True
+
     pdf template file: 209a_258e_motion_for_impoundment.pdf
     fields: 
       # Some of these fields should be multi-line fields
@@ -232,7 +234,7 @@ attachment:
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${'' }
+      - "attach_additional_pages": ${ addAddendum_impound }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -265,7 +267,12 @@ code: |
   # Wrong type of pdf field
   request_based_on
   impound_information_ex_parte
-  signature_date
+  
+  # Trigger some computed values
+  case_record_information_to_be_impounded_cutoff
+  request_based_on_cutoff
+  addAddendum_impound
+  # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
   # I think we can get rid of this inside the if statement:
@@ -289,6 +296,8 @@ attachment:
     variable name: a_258e_motion_for_impoundment0019_attachment_preview
     name: Motion for Impoundment
     filename: Motion_for_Impoundment
+    skip undefined: True
+
     pdf template file: 209a_258e_motion_for_impoundment.pdf
     fields: 
       # Some of these fields should be multi-line fields
@@ -299,7 +308,7 @@ attachment:
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on_cutoff }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ '' }
+      - "attach_additional_pages": ${ addAddendum_impound }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }

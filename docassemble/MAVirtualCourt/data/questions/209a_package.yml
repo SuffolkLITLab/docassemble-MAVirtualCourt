@@ -3,13 +3,13 @@ include:
  - 209A_Page_1.yml
  #- 209A_page_2.yml # This one is obsolete
  - 209A-child-support.yml
- - plaintiff-confidential.yml
  - defendant-information-209A.yml
  - 209A_affidavit.yml
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
  - 209A-review.yml
+ - plaintiff-confidential.yml 
  - escape.yml
 ---
 features:
@@ -33,59 +33,7 @@ sections:
   - section_signature: Signing
   - section_filing: Filing
 ---
-reconsider: True
-code: |
-  attachment_temp = []  
-  # Build the 209A package. Up to 8 total forms
-  # Page 1: complaint_209A_labeled_page10003_attachment
-  #     page1_addendum
-  # Complaint Affidavit: complaint_209A_Affidavit_attachment
-  #     affidavit_addendum, triggered by addAddendum_affidavit
-  # Page 2: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
-  #     page2_addendum, triggered by addAddendum_page2
-  # Child support: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
-  # Affidavit care/custody: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment 
-  #     care_or_custody_proceedings_appendix_variable, triggered by need_care_custody_addendum
-  # Plaintiff info: A_Plaintiff_Confidential_Information0011_attachment
-  #     confidential_info_addendum
-  # Defendant info: defendantinformation209A0008_attachment
-  #    defendant_addendum
-  # motion to impound: a_258e_motion_for_impoundment0019_attachment
-  #    impound_addendum
-  
-  # Always include page 1 
-  attachment_temp.append(complaint_209A_labeled_page10003_attachment)
-  if need_page1_addendum:
-    attachment_temp.append(page1_addendum)
-  attachment_temp.append( complaint_209A_Affidavit_attachment )
-  if addAddendum_affidavit:
-    attachment_temp.append(affidavit_addendum)
-  # include page 2 only if there are children
-  if plaintiff_has_minor_children: 
-    attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
-    if addAddendum_page2:
-      attachment_temp.append(page2_addendum)
-    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
-      attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
-      if need_care_custody_addendum:
-        attachment_temp.append(care_or_custody_proceedings_appendix_variable)
-    
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
-    attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
-    if addAddendum_chdSupport:
-      attachment_temp.append(chdSupport_addendum)
-  attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
-  if addAddendum_confidential:
-    attachment_temp.append(confidential_info_addendum)
-  attachment_temp.append(defendantinformation209A0008_attachment)
-  if addAddendum_defendant:
-    attachment_temp.append(defendant_addendum)
-  if asked_for_impoundment:
-    attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
-    if addAddendum_impound:
-      attachment_temp.append(impound_addendum)  
-  final_attachment_bundle = attachment_temp
----
+scan for variables: False
 mandatory: True
 code: |
   set_interview_defaults # Set some things that are true on any 209A
@@ -133,7 +81,7 @@ code: |
   nav.set_section('section_affidavit')
   complaint_209A_Affidavit # Main affidavit
   # From page 1
-  abuse_suffered_date # Filled in with code, I think
+  incident_date # Filled in with code, I think
   if plaintiff_has_minor_children:
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
   # if no_abuse_checked:
@@ -145,13 +93,15 @@ code: |
   order_defendant_stop_abuse_yes # make sure this gets defined, but it will always be True via a code block
   if not order_defendant_remain_away_plaintiff_residence_yes:
     If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = DAEmpty()
-  if not order_defendant_pay_yes:
-    losses_caused_by_defendant = DAEmpty()
-    order_defendant_pay_amount = DAEmpty()
+  order_defendant_pay_yes
+  # if not order_defendant_pay_yes:
+  #   losses_caused_by_defendant = DAEmpty()
+  #   order_defendant_pay_amount = DAEmpty()
 
   order_impound_plaintiff_address_residential_yes
-  if not order_other_relief_yes: # triggers asking about relief
-    other_relief = DAEmpty()
+  order_other_relief_yes
+  # if not order_other_relief_yes: # triggers asking about relief
+  #   other_relief = DAEmpty()
 
   order_relief_ex_parte
 
@@ -206,16 +156,26 @@ code: |
   # From page 1
   # Other cases involving P/D but not about the children
   other_cases.gather()
+  cases_other_safe_for_pdf
+  plaintiff_and_defendant_other_case_description
 
   fill_in_court_name # used in aff. of care and custody
-  # Set unfilled fields empty, if needed
-  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
-  # mark_unfilled_fields_empty(interview_metadata["Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008"])
-  # mark_unfilled_fields_empty( interview_metadata["A_Plaintiff_Confidential_Information0011"])
-  # mark_unfilled_fields_empty(interview_metadata["A_defendant_s_child_support_affidavit_ready_for_upload0004"])
-    # mark_unfilled_fields_empty(interview_metadata["a_258e_motion_for_impoundment0019"])
+  # Make sure we don't leave any computed values empty
+  # we have some that we need to set at end instead of in regular interview flow
+  # because we ask them out of order
+  trigger_page1_computed_values 
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
+    if has_participated_custody_case or know_of_other_custody_case_yes:
+      trigger_aff_care_or_custody_computed_variables
+  # Most others can be asked in-line
+
   docket_numbers[0]
   day # Triggers date question in format for aff. of care and custody
+
+  preview_209a_package
+
+  signature_fields = ['users[0].signature']
+  basic_questions_signature_flow
   users[0].signature
   
   final_attachment_bundle
@@ -242,6 +202,20 @@ subquestion: |
   
   Some answers need to be in ${users.familiar()}'s own words.
 field: tell_user_about_first_person_questions  
+---
+question: |
+  Preview your document
+subquestion: |
+  Your document is almost ready to sign. Before you sign it,
+  click on the preview image below to view it in a new window.
+
+  Don't forget to come back to this screen to sign and download
+  your final form.
+
+  ${pdf_concatenate(final_attachment_preview)}
+
+  Click ${word("Next")} when you are ready to sign.
+field: preview_209a_package
 ---
 question: |
   Download screen
@@ -277,28 +251,101 @@ code: |
 ---
 code: |
   # Set no_abuse_checked via the 209A Affidavit questions
-  # Here we set them to the Page1 variables
-  # for incident in incidents_of_abuse:
-  #  if 'fear' in incident.abuse:
-  #    defendant_abuse_caused_fear_of_serious_physical_harm = True
-  #  if 'attempted-physical' in incident.abuse:
-  #    defendant_abuse_attempted_physical_harm = True
-  #  if 'physical' in incident.abuse:
-  #    defendant_abuse_caused_physical_harm = True
-  #  if 'sex' in incident.abuse:
-  #    defendant_abuse_caused_sexual_assault = True
-
-  # defendant_abuse_caused_fear_of_serious_physical_harm = defined('defendant_abuse_caused_fear_of_serious_physical_harm')
-  # defendant_abuse_attempted_physical_harm = defined('defendant_abuse_attempted_physical_harm')
-  # defendant_abuse_caused_physical_harm = defined('defendant_abuse_caused_physical_harm')
-  # defendant_abuse_caused_sexual_assault = defined('defendant_abuse_caused_sexual_assault')
-
   no_abuse_checked = (not defendant_abuse_caused_fear_of_serious_physical_harm 
     and not defendant_abuse_attempted_physical_harm
     and not defendant_abuse_caused_physical_harm
     and not defendant_abuse_caused_sexual_assault)
+# ---
+# code: |
+#   # Refer to the first incident of abuse from the 209A affidavit question
+#   abuse_suffered_date = incidents_of_abuse[0].date
 ---
+reconsider: True
 code: |
-  # Refer to the first incident of abuse from the 209A affidavit question
-  abuse_suffered_date = incidents_of_abuse[0].date
-
+  attachment_temp = []  
+  # Build the 209A package. Up to 8 total forms
+  # Page 1: complaint_209A_labeled_page10003_attachment
+  #     page1_addendum
+  # Complaint Affidavit: complaint_209A_Affidavit_attachment
+  #     affidavit_addendum, triggered by addAddendum_affidavit
+  # Page 2: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
+  #     page2_addendum, triggered by addAddendum_page2
+  # Child support: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment
+  # Affidavit care/custody: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment 
+  #     care_or_custody_proceedings_appendix_variable, triggered by need_care_custody_addendum
+  # Plaintiff info: A_Plaintiff_Confidential_Information0011_attachment
+  #     confidential_info_addendum
+  # Defendant info: defendantinformation209A0008_attachment
+  #    defendant_addendum
+  # motion to impound: a_258e_motion_for_impoundment0019_attachment
+  #    impound_addendum
+  
+  # Always include page 1 
+  attachment_temp.append(complaint_209A_labeled_page10003_attachment)
+  if need_page1_addendum:
+    attachment_temp.append(page1_addendum)
+  attachment_temp.append( complaint_209A_Affidavit_attachment )
+  if addAddendum_affidavit:
+    attachment_temp.append(affidavit_addendum)
+  # include page 2 only if there are children
+  if plaintiff_has_minor_children: 
+    attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
+    if addAddendum_page2:
+      attachment_temp.append(page2_addendum)
+    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+      attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
+      if need_care_custody_addendum:
+        attachment_temp.append(care_or_custody_proceedings_appendix_variable)
+    
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+    attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
+    if addAddendum_chdSupport:
+      attachment_temp.append(chdSupport_addendum)
+  attachment_temp.append(A_Plaintiff_Confidential_Information0011_attachment)
+  if addAddendum_confidential:
+    attachment_temp.append(confidential_info_addendum)
+  attachment_temp.append(defendantinformation209A0008_attachment)
+  if addAddendum_defendant:
+    attachment_temp.append(defendant_addendum)
+  if asked_for_impoundment:
+    attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
+    if addAddendum_impound:
+      attachment_temp.append(impound_addendum)  
+  final_attachment_bundle = attachment_temp
+---
+reconsider: True
+code: |
+  # PREVIEW version of the attachment
+  attachment_preview_temp = []  
+  # Always include page 1 
+  attachment_preview_temp.append(complaint_209A_labeled_page10003_attachment_preview)
+  if need_page1_addendum:
+    attachment_preview_temp.append(page1_addendum)
+  attachment_preview_temp.append( complaint_209A_Affidavit_attachment_preview )
+  if addAddendum_affidavit:
+    attachment_preview_temp.append(affidavit_addendum)
+  # include page 2 only if there are children
+  if plaintiff_has_minor_children: 
+    attachment_preview_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview )
+    if addAddendum_page2:
+      attachment_preview_temp.append(page2_addendum)
+    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+      attachment_preview_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview)
+      if need_care_custody_addendum:
+        attachment_preview_temp.append(care_or_custody_proceedings_appendix_variable)
+    
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+    attachment_preview_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview)
+    if addAddendum_chdSupport:
+      attachment_preview_temp.append(chdSupport_addendum)
+  attachment_preview_temp.append(A_Plaintiff_Confidential_Information0011_attachment_preview)
+  if addAddendum_confidential:
+    attachment_preview_temp.append(confidential_info_addendum)
+  attachment_preview_temp.append(defendantinformation209A0008_attachment_preview)
+  if addAddendum_defendant:
+    attachment_preview_temp.append(defendant_addendum)
+  if asked_for_impoundment:
+    attachment_preview_temp.append(a_258e_motion_for_impoundment0019_attachment_preview)
+    if addAddendum_impound:
+      attachment_preview_temp.append(impound_addendum)  
+  final_attachment_preview = attachment_preview_temp

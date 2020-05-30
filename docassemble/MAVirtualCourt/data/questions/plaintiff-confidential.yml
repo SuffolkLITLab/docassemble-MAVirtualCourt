@@ -1,7 +1,3 @@
-comment: |
-  ARE WE USING THE WRONG FORM? EMMA HOLLIS (SME) HAS A MORE UP-TO-DATE VERSION OF THE FORM (4/15/2020) THAT ASKS FOR INTERPRETER INFORMATION.
-  
-  Just need to figure out how to handle addresses on one line, then we're ready for testing.
 ---
 mandatory: True
 code: |
@@ -190,6 +186,61 @@ fields:
   - 'Work phone number': users[0].workplace_phone
     required: False
 ---
+id: your address
+question: |
+  Your address
+subquestion: |
+  You will have a chance to request this address to be kept
+  private later.
+fields:
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].address.zip 
+---
+id: contact information
+question: |
+  Contact information
+subquestion: |
+  Put at least one way for the court to reach you below.
+
+  You will have a chance to request this contact information
+  to be kept private later.
+fields:
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
+    required: False
+  - Email address: users[0].email    
+    datatype: email
+    required: False
+  - Contact notes: users[0].other_contact_method
+    input type: area
+    required: False
+    help: |
+      If you do not have a phone number or email the court can use, provide
+      specific contact instructions. For example, use a friend's phone number.
+      But the friend must be someone you can trust to tell you the court is
+      trying to reach you.
+validation code: |
+  if (not showifdef('users[0].phone_number') and \
+      (not showifdef('users[0].mobile_number')) and \
+      (not showifdef('users[0].email')) and \
+      (not showifdef('users[0].other_contact_method'))):
+    validation_error(word("You need to provide at least one contact method."))
+help: |
+  You _must_ provide contact information so the court can reach you.
+  
+  You will have a chance to tell the court that you need to keep your address, phone,
+  and email confidential, so that only court staff can see this information. 
+
+---
 progress: 100
 #mandatory: True
 question: |
@@ -211,6 +262,8 @@ need: A_Plaintiff_Confidential_Information0011
 attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment
     name: Plaintiff Confidential Information Form
+    skip undefined: True
+
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 
@@ -257,6 +310,7 @@ code: |
   if lives_in_domestic_violence_shelter:
     domestic_violence_shelter_warning
   users[0].address.address
+  users[0].mobile_number
   users[0].apartment_yes
   if abuser_caused_plaintiff_to_leave_home:
     users[0].previous_addresses.there_are_any = True
@@ -269,6 +323,9 @@ code: |
   users[0].school_name
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
+  # Trigger computed values
+  persons_authorized_confidential_information_cutoff
+  
   # users[0].birthdate
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -290,6 +347,7 @@ subquestion: |
 attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment_preview
     name: Plaintiff Confidential Information Form
+    skip undefined: True
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 

@@ -522,6 +522,7 @@ fields:
     required: False
   - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
     required: False
+    maxlength: 4
 ---
 question: |
   Information for Service
@@ -584,6 +585,7 @@ attachment code: defendantinformation209A0008_attachment
 need: defendantinformation209A0008
 attachment:
     variable name: defendantinformation209A0008_attachment
+    skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
@@ -757,11 +759,16 @@ code: |
   # other_parties[0].birthdate.format()
   str(parents[0])
   str(parents[1])
-  # other_parties[0].phone_number # MB: do we want a phone number required here? It currently is.
+  
+  # Trigger all computed values
+  defendant_race
+  defendant_eye_color
+  defendant_hair_details
+  defendant_location_information_other_cutoff
+  # defendant_has_alias
+
   # signature_date
-  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-  # Comment out the line below if you don't want this behavior. 
-  # mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
+
   # defendantinformation209A0008_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
   # other_parties[0].signature
@@ -790,13 +797,14 @@ subquestion: |
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview
+    skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
     decimal places: 2    
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old'}
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + ' years old'}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }

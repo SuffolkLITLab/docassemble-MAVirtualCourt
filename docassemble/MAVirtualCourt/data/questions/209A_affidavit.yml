@@ -151,14 +151,12 @@ code: |
     affidavit_summary += incident.summary + "\n\n"
   
   saw_incidents
-  
-  # Moved to umbrella 209a package
-  # str(users[0])
-  # signature_date
-  # mark_unfilled_fields_empty(interview_metadata["complaint_209A_Affidavit"])
-  # complaint_209A_Affidavit_preview_question # Pre-canned preview screen
-  # basic_questions_signature_flow
-  # users[0].signature
+
+  # Trigger required computed variables for attachment block
+  addAddendum_affidavit
+  affidavit_intro
+  affidavit_body_cutoff 
+
   complaint_209A_Affidavit = True
 ---
 comment: |
@@ -580,6 +578,7 @@ code: |
 attachment:
     variable name: complaint_209A_Affidavit_attachment_preview
     name: 209A Complaint Affidavit
+    skip undefined: True
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    
@@ -591,6 +590,7 @@ need: complaint_209A_Affidavit
 attachment:
     variable name: complaint_209A_Affidavit_attachment
     name: 209A Complaint Affidavit
+    skip undefined: True
     filename: A_Complaint_Affidavit
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    
