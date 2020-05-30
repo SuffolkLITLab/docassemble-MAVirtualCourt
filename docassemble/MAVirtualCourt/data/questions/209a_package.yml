@@ -101,14 +101,14 @@ code: |
   if not order_defendant_remain_away_plaintiff_residence_yes:
     If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here = DAEmpty()
   order_defendant_pay_yes
-  # if not order_defendant_pay_yes:
-  #   losses_caused_by_defendant = DAEmpty()
-  #   order_defendant_pay_amount = DAEmpty()
+  if not order_defendant_pay_yes:
+    losses_caused_by_defendant = DAEmpty()
+    order_defendant_pay_amount = DAEmpty()
 
   order_impound_plaintiff_address_residential_yes
   order_other_relief_yes
-  # if not order_other_relief_yes: # triggers asking about relief
-  #   other_relief = DAEmpty()
+  if not order_other_relief_yes: # triggers asking about relief
+    other_relief = DAEmpty()
 
   order_relief_ex_parte
 
