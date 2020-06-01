@@ -243,7 +243,7 @@ question: |
 subquestion: |
   Put in the address the court should use to mail papers to you.
 
-  Include at least one way other than mail for the court to contact you.
+  Include at least one other way the court can contact you.
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
@@ -929,13 +929,22 @@ buttons:
   ${word("Resume")}: continue
 ---
 question: |
-  Preferred language
+  Do you need an interpreter?
 subquestion: |
-  You have the right to an interpreter. You should ask
-  for an interpreter if you speak some English but are more comfortable speaking 
-  in a different language.
+  You have the right to an interpreter. 
+  
+  If you are not 100% confident about speaking English, ask for an interpreter. If there is any chance:
+  
+  * You may not understand **everything** that is said in English. Or
+  * Other people in the hearing will not be able to understand you. 
+  
+  Then ask.
+  
+  You do not have to speak only through the interpeter, but you will have one if you need one.
+  
 fields:
-  - I want an interpreter: user_needs_interpreter
+  - I need an interpreter.: user_needs_interpreter
     datatype: yesnoradio
   - My preferred language is: user_preferred_language 
     show if: user_needs_interpreter
+---

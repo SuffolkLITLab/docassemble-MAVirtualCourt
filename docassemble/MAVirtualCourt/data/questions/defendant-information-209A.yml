@@ -291,22 +291,24 @@ subquestion: |
   You already told us that ${other_parties.familiar()}'s address is
   ${other_parties[0].address.on_one_line(include_unit=True)}.
 
-  What is the best place and time to find ${other_parties.familiar()}? Are they staying 
-  somewhere else at the moment? Are there places or friends that they visit at a particular
+  What is the best place and time to find ${other_parties.familiar()}? 
+  
+  Is ${other_parties.familiar()} staying somewhere else at the moment? 
+ 
+  Does ${other_parties.familiar()} go certain places or visit friends at a particular
   time?
 fields:
-  - Currently, what is the _best_ place to find ${other_parties.familiar()}?: other_parties[0].location_best
-  - What _time_ is best to find ${other_parties.familiar()}: other_parties[0].best_times_find
-  - Where _else_ can you find ${other_parties.familiar()}?: other_parties[0].locations_other
-  - Write down any other facts that could help police find ${other_parties.familiar()}: other_parties[0].location_information_other
+  - 'Where is the **best** place to find ${other_parties.familiar()} right now?': other_parties[0].location_best
+  - 'When is the best **time** to find ${other_parties.familiar()}': other_parties[0].best_times_find
+  - 'Where **else** can you find ${other_parties.familiar()}?': other_parties[0].locations_other
+  - 'Tell the court anything more that could help police find ${other_parties.familiar()}.': other_parties[0].location_information_other
     datatype: area
     required: False
 ---
 question: |
-  ${other_parties.familiar()}'s Physical Appearance
+ Do you have a photo of ${other_parties.familiar()}?
 subquestion: |
-  The police will need to be able to identify ${other_parties.familiar()}.
-  Answer the questions below and in the next few questions to tell us more about how they look.
+  A photograph helps the police identify ${other_parties.familiar()}.
 fields:
   - 'Can you provide a photo of ${other_parties.familiar()}?': other_parties[0].photo_yes
     datatype: yesnoradio # MB: Stretch goal: if yes, provide option to upload photo.
@@ -314,7 +316,7 @@ fields:
     datatype: yesnoradio
     help: |
       If it is safe, you can use your phone's camera to take
-      a picture of a photo album. We'll attach this to your
+      a picture of a photo album. We will attach the picture to your
       form to give to the police.
     show if: other_parties[0].photo_yes  
   - no label: photo_upload
@@ -322,7 +324,7 @@ fields:
     show if: other_parties[0].photo_yes_can_upload    
 ---
 question: |
-  ${other_parties.familiar()}'s Physical Appearance
+  ${other_parties.familiar()}'s physical appearance
 fields:
   - "What is  ${other_parties.familiar()}'s race or ethnicity? (check any that apply)": other_parties[0].race
     datatype: checkboxes
@@ -366,7 +368,7 @@ fields:
     hint: e.g., balding, short, long, sideburns, etc.
 ---
 question: |
-  ${other_parties.familiar()}'s Physical Appearance
+  ${other_parties.familiar()}'s physical appearance
 subquestion: |
   Answer as many questions below as you can.  
 fields:
@@ -427,12 +429,12 @@ code: |
   defendant_hair_details = other_parties[0].hair_color + space('other_parties[0].hair_color_other') + space('other_parties[0].hair_other_style')
   defendant_other_description = str(other_parties[0].physical_other.true_values()) + space('other_parties[0].physical_other_details')
 ---
+Comment: |
+  Combine these deets in with Bad Barry's contact information question.
 question: |
-  ${other_parties.familiar()}'s Physical Location
+  What about ${other_parties.familiar()}'s floor and mailbox?
 subquestion: |
-  Please describe where the police can find ${other_parties.familiar()} 
-  by providing the following information.  This information is important so that the police can quickly find ${other_parties.familiar()} 
-  to give them a copy of the restraining order.
+  This information is important so  ${other_parties.familiar()} gets a copy of the restraining order as soon as possible.
 
   You already told us that ${other_parties.familiar()} lives
   at ${other_parties[0].address.on_one_line(include_unit=True)}.
@@ -440,7 +442,7 @@ fields:
   - 'What floor is "${other_parties[0].address.on_one_line(include_unit=True)}" on?': other_parties[0].address_floor
     default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
     required: False
-  - "What name is on the mailbox at ${other_parties.familiar()}'s address? (write None if none).": other_parties[0].name_door_mailbox
+  - "What is the name ${other_parties.familiar()}'s mailbox? Type 'None' if there is no name.": other_parties[0].name_door_mailbox
 ---
 question: |
   ${other_parties.familiar()}'s work information
@@ -510,15 +512,15 @@ fields:
     show if:
       variable: other_parties[0].understands_english
       is: False
-  - "What is the name of ${other_parties.familiar()}'s mother, using her maiden name?": parents[0]
+  - "What is ${other_parties.familiar()}'s mother's maiden name?": parents[0]
     required: False
     help: |
-      This information is used so the police can find the right ${other_parties.familiar()} if other people share his name
-  - "What is the name of ${other_parties.familiar()}'s father?": parents[1]
+      The police use this information to find the right ${other_parties.familiar()} in case other people have the same name.
+  - "What is ${other_parties.familiar()}'s father's name?": parents[1]
     required: False
     help: |
-      This information is used so the police can find the right ${other_parties.familiar()} if other people share his name
-  - ${other_parties.familiar()}'s Birthplace: other_parties[0].birthplace
+      The police use this information to find the right ${other_parties.familiar()} in case other people have the same name.
+  - ${other_parties.familiar()}'s birthplace: other_parties[0].birthplace
     required: False
   - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
     required: False
@@ -526,7 +528,7 @@ fields:
 question: |
   Information for Service
 subquestion: |
-  The following information helps keep you and the police safe during this process. 
+  The following information helps keep you and the police safe. 
 fields:
   - 'Does ${other_parties.familiar()} have a history of violence towards police officers?': other_parties[0].police_violence_yes
     datatype: yesnoradio
@@ -657,15 +659,20 @@ continue button field: defendantinformation209A0008_intro
 question: |
   Defendant's Information Form
 subquestion: |
-  The  next questions are about ${other_parties.familiar()}. This information is
-  used to give (serve) ${other_parties.familiar()} a copy of the restraining
-  order. The police need to give ${other_parties.familiar()} a copy of the
-  restraining order so that ${other_parties.familiar()} knows the restraining
-  order exists and so that ${other_parties.familiar()} knows when the next court
-  date is.  If the police can't serve ${other_parties.familiar()}, you may have
-  to come back to court every ten days until service is done. It is also much
-  harder to prosecute ${other_parties.familiar()} for violating the restraining
-  order.  
+  The  next questions are about ${other_parties.familiar()}. 
+  
+  The police use this information to find and serve ${other_parties.familiar()} with a copy of the restraining order. 
+  
+  The police need to give ${other_parties.familiar()} a copy of the
+  restraining order so that ${other_parties.familiar()} knows:
+  
+  * the court has ordered ${other_parties.familiar()} to stop abusing you and 
+  * where and when to come to court for the 10 day hearing.
+  
+  If the police cannot serve ${other_parties.familiar()}:
+  
+  * You may have to come back to court every 10 days until they can.
+  * ${other_parties.familiar()} will not know about the order so cannot be expected to follow it.
   
   The more information you can provide about ${other_parties.familiar()}'s usual
   location, the sooner the order will be served.
@@ -676,7 +683,7 @@ subquestion: |
   ${other_parties.familiar()}. Call the police even if you are not afraid.
 # ---
 # question: |
-#   Weapons
+#   ss
 # subquestion: |
 #   Check the following if they are true.
 # fields:

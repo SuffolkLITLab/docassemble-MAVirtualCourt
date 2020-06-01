@@ -50,7 +50,7 @@ Comment: |
   If you are not safe at any time you are on this website, use the [FILE: MAVirtualCourts.esc-en.png](https://google.com:kittens) to jump to Google.com.
 
 question: |
-   Ask the court for a 209A Prevention of Abuse Order
+   Ask the court for a 209A Abuse Prevention Order
 subquestion: | 
   **If you are in danger right now, call 911.**
   
@@ -98,7 +98,7 @@ comment: |
   There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
 ---
 question: |
-  Who do you need the order to protect you from?  
+  What is the name of person who is abusing you?  
 fields:
   - First name: other_parties[0].name.first
   - Middle name: other_parties[0].name.middle
@@ -178,9 +178,9 @@ yesno: plaintiff_and_defendant_other_case_yes
 #  Are you the Plaintiff's parent or guardian?
 # noyes: user_is_minor_plaintiff
 ---
-code: |
-  if who_protecting_screener != 'someone else' and plaintiff_is_major_no:
-    user_is_minor_plaintiff = True
+# code: |
+#  if who_protecting_screener != 'someone else' and plaintiff_is_major_no:
+#    user_is_minor_plaintiff = True
 ---
 # event: refer_to_258E_resources
 # question: |
@@ -204,10 +204,11 @@ question: |
 subquestion: |
   People **can** abuse you emotionally, financially, psychologically, and spiritually, but you can only ask the court for a 209A restraining order if the abusive person:    
 
-  - **hurt** you physically;
-  - **tried** to hurt you physically;
-  - **made you scared** of getting physically hurt; or
-  - **forced you** to have sex or sexual contact, or **made you** have sex or sexual contact by threatening you or making you feel that you have no choice.
+  - **hurt** you physically,
+  - **tried** to hurt you physically,
+  - **made you scared** of getting physically hurt,
+  - **forced you** to have sex or sexual contact, or 
+  - **made you** have sex or sexual contact by threatening you or making you feel that you have no choice.
 
    A 209A restraining order is not the only way to stop someone from abusing you. If someone is abusing you in **any** way, speak with a domestic violence advocate for help. They can help you find ways to be safe. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. 
 buttons:
@@ -484,14 +485,24 @@ question: |
   % else:
   Are you at least 18 years old?
   % endif
-yesno: plaintiff_is_major_yes
-help:
-  label: Why does this matter?
-  heading: We can only help people under 18 if a parent, guardian, or advocate files for them
-  content: |
-    Our guide can only help if a parent, guardian, or advocate is also helping and files for you.
-   
-
+subquestion: |
+  We can only help people under 18 if a parent, guardian, or advocate files for them.
+  
+  % if who_protecting_screener == "someone else":
+  What is ${users.familiar()}'s birthdate?
+  % else:
+  What is your birthdate?
+  % endif 
+fields:
+  - no label: users[0].birthdate
+    datatype: date
+---
+code: |  
+  if users[0].birthdate >= today().minus(years=18):
+    plaintiff_is_major_yes = False
+  else:
+    plaintiff_is_major_yes = True
+ 
 #fields:
 #  - 'I am eighteen or older': plaintiff_is_major_yes
 #    datatype: yesnoradio # consensus seems to be that if plaintiff is under 18 AND ISN'T DOING THIS WITH A PARENT OR GUARDIAN, they should get kicked out and referred to an advocate. Wait to hear from KB after talking to CR and LG. doing these for minors is a whole other can of worms and there is a big risk that doing it wrong does more harm than good. Also, the consensus is that the population of kids trying to do 209As without their parents is small.
@@ -569,21 +580,22 @@ question: |
   Your relationship to ${other_parties.familiar()}  
 subquestion: |  
   You and ${other_parties.familiar()} must be {members of the same family or household} to get a 209A order.  
+  
   You may think you are **not** members of the same family or household. But the law says you are.  
-  The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against him.
+  
+  The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against them.
 terms:
   - members of the same family or household: |
       You and ${other_parties.familiar()} are members of the same family or household if you:  
-      1. are both parents of the same child or children,
+      1. have a child or children in common,
       2. are married to each other now,  
       3. used to be married to each other,  
-      4. are related by marriage,  
+      4. are not married but related to each other by marriage, ,  
       5. live in the same household,  
       6. used to live in the same household,  
       7. date each other now or are engaged,  
-      8. used to date each other or used to be engaged,   
-      9. are not married but related to each other by marriage, or  
-      10. are blood relatives. Adopted family members count as blood relatives.
+      8. used to date each other or used to be engaged, or  
+      9. are blood relatives. Adopted family members count as blood relatives.
 continue button field: user_saw_relationship  
 ---
 id: 209A page 1 relationship kids
@@ -689,8 +701,9 @@ subquestion: |
   
   * **hurt** you physically,
   * **tried to hurt** you physically,
-  * **made you scared** of getting physically hurt, or
-  * **forced** you to have sex or sexual contact, or **made** you have sex or sexual contact by threatening you or making you feel that you have no choice.
+  * **made you scared** of getting physically hurt,
+  * **forced** you to have sex or sexual contact, or
+  * **made** you have sex or sexual contact by threatening you or making you feel that you have no choice.
 continue button field: user_saw_abuse_explanation
 ---
 id: identify_the_abuse
@@ -705,7 +718,9 @@ fields:
     datatype: yesnowide
   - '**make** you scared of getting physically hurt?': defendant_abuse_caused_fear_of_serious_physical_harm
     datatype: yesnowide
-  - '**force** you to have sex or sexual contact, or **make** you have sex or sexual contact by threatening you or making you feel that you have no choice?':  defendant_abuse_caused_sexual_assault
+  - '**force** you to have sex or sexual contact, or': defendant_abuse_caused_sexual_assault_force    
+    datatype: yesnowide
+  - '**make** you have sex or sexual contact by threatening you or making you feel that you have no choice?': defendant_abuse_caused_sexual_assault_make
     datatype: yesnowide
 help:
   label: Can you give me some examples?
@@ -716,10 +731,14 @@ help:
     **Physically hurting you** includes shoving, pushing, punching, slapping, kicking, pulling your hair, choking, strangling, throwing things at you, burning you with hot food or cigarettes, stabbing, shooting, or locking you in a room.
     
     **Threatening, making or forcing you to have sex** also includes forced contact with intimate body parts.
-    
-    For children under 18, it can mean any sexual contact.
 
     More - See [Writing Your 209A Affidavit on MassLegalHelp](https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit)
+---
+code: |
+  if defendant_abuse_caused_sexual_assault_force or defendant_abuse_caused_sexual_assault_make:
+    defendant_abuse_caused_sexual_assault = True
+  if not defendant_abuse_caused_sexual_assault_force and not defendant_abuse_caused_sexual_assault_make:
+    defendant_abuse_caused_sexual_assault = False
 ---
 question: |
   Other Cases
@@ -789,15 +808,15 @@ code: |
 
   # defendant_has_alias # We ask this towards end
 
-  if plaintiff_is_major_yes == True:
-    plaintiff_is_major_no = False
-    plaintiff_assistant_name = DAEmpty()
-  else:
-    plaintiff_is_major_no = True
-    dcf_warning_given
-    if user_is_minor_plaintiff:
-      refer_to_advocate
-    plaintiff_assistant_name
+  # if plaintiff_is_major_yes == True:
+  #  plaintiff_is_major_no = False
+  #  plaintiff_assistant_name = DAEmpty()
+  # else:
+  #  plaintiff_is_major_no = True
+  #  dcf_warning_given
+  #  if user_is_minor_plaintiff:
+  #    refer_to_advocate
+  #  plaintiff_assistant_name
 
   # plaintiff defendant relationship
   user_saw_relationship
