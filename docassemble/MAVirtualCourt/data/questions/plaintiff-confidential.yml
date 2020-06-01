@@ -324,19 +324,16 @@ code: |
   sLimit = Limit - 16   
   need_confidential_info_addendum = len(persons_authorized_confidential_information) > Limit
   if need_confidential_info_addendum:    
-    persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information[:sLimit] + " (See Addendum.)"  
+    persons_authorized_confidential_information_cutoff = "(See Addendum.) " + persons_authorized_confidential_information[:sLimit].replace("\r","")  
     txtFieldsList_confidential.append(
       {'title': 'PERSONS AUTHORIZED BY PLAINTIFF TO HAVE ACCESS TO THIS CONFIDENTIAL INFORMATION',
-      'value': [persons_authorized_confidential_information_cutoff]
+      'value': [persons_authorized_confidential_information]
       })
   else:
     persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information  
+    
   addAddendum_confidential = bool(txtFieldsList_confidential)
-  # addAddendum_confidential = False
-  # if txtFieldsList_confidential: #if the list is not empty
-  #   addAddendum_confidential = True
 ---
-# if: addAddendum_confidential
 attachment:
   - variable name: confidential_info_addendum
     docx template file: 209A_confidential_info_addendum.docx

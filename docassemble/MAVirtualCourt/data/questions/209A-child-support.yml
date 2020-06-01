@@ -687,13 +687,8 @@ attachment:
 ---
 comment: Addenda related code. 
 code: |  
-  # addAddendum_chdSupport = False
-  # txtFieldsList_chdSupport = list() 
   addAddendum_chdSupport = len(all_support_children) > 4
-  # if all_support_children.target_number >4: 
-  #   addAddendum_chdSupport = True
 ---
-# if: addAddendum_chdSupport
 attachment:
   - variable name: chdSupport_addendum
     docx template file: 209A_chdSupport_addendum.docx
