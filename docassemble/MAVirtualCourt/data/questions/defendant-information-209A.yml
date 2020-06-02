@@ -522,6 +522,7 @@ fields:
     required: False
   - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
     required: False
+    maxlength: 4
 ---
 question: |
   Information for Service
@@ -584,6 +585,7 @@ attachment code: defendantinformation209A0008_attachment
 need: defendantinformation209A0008
 attachment:
     variable name: defendantinformation209A0008_attachment
+    # skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
@@ -706,17 +708,14 @@ code: |
   # preferred_court = interview_metadata["defendantinformation209A0008"]["preferred court"]
   # allowed_courts = interview_metadata["defendantinformation209A0008"]["allowed courts"]
   # other_parties[0].name_other
-  nav.set_section('section_defendant_info_demographics')
   if other_parties[0].understands_english:
     other_parties[0].language_other = ''
 
-  nav.set_section('section_defendant_info_appearance')
   other_parties[0].photo_yes
   other_parties[0].race
   other_parties[0].eye_color # Needed if in the skip_sections code
   other_parties[0].height
 
-  nav.set_section('section_defendant_info_safety')
   other_parties[0].gun_license_carry_possess_yes = defendant_has_guns.any_true()
   if not defendant_has_guns.any_true():
     defendant_weapons_description = DAEmpty()
@@ -731,13 +730,11 @@ code: |
     other_parties[0].psychiatric_emotional_problems_no = True
     other_parties[0].psychiatric_emotional_problems = ''
 
-  nav.set_section('section_defendant_info_location')
   other_parties[0].address.address
   other_parties[0].address_floor  
   other_parties[0].location_best    
   other_parties[0].location_information_other
 
-  nav.set_section('section_defendant_info_employer')
   if defendant_not_employed:
     other_parties[0].employer = "N/A"
     other_parties[0].work_address = ''
@@ -746,7 +743,6 @@ code: |
     other_parties[0].work_department = ''
     other_parties[0].work_hours = ''
 
-  nav.set_section('section_defendant_info_car')    
   if other_parties[0].does_not_have_car:
     other_parties[0].vehicle_make = "N/A"
     other_parties[0].vehicle_color = "N/A"
@@ -757,11 +753,16 @@ code: |
   # other_parties[0].birthdate.format()
   str(parents[0])
   str(parents[1])
-  # other_parties[0].phone_number # MB: do we want a phone number required here? It currently is.
+  
+  # Trigger all computed values
+  defendant_race
+  defendant_eye_color
+  defendant_hair_details
+  defendant_location_information_other_cutoff
+  # defendant_has_alias
+
   # signature_date
-  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-  # Comment out the line below if you don't want this behavior. 
-  # mark_unfilled_fields_empty(interview_metadata["defendantinformation209A0008"])
+
   # defendantinformation209A0008_preview_question # Pre-canned preview screen
   # basic_questions_signature_flow
   # other_parties[0].signature
@@ -790,13 +791,14 @@ subquestion: |
 ---
 attachment:
     variable name: defendantinformation209A0008_attachment_preview
+    # skip undefined: True
     name: ${other_parties.familiar()}-information-209a
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
     decimal places: 2    
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old'}
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + ' years old'}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
