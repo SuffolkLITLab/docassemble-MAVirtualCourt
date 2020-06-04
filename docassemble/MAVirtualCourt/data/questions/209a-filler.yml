@@ -193,19 +193,6 @@ code: |
   int_children = int( num_children )
   children.target_number = int_children
 
-  log( 'set_children_values', 'console' )
-  set_children = True
-
----
-id: children_names_and_ages
-sets: set_children
-scan for variables: False
-code: |
-
-  # Non-custody children of the right number
-  int_children = int( num_children )
-  children.target_number = int_children
-
   child_i = 0
   for child_i in range( int_children ):
     child_num = str( child_i + 1 )
@@ -227,7 +214,7 @@ code: |
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Custody'
     children_cares_for[ c_child_i ].name.last = 'Jr'
-    date_str = '01/0' + c_child_i + '/2018'
+    date_str = '01/0' + child_num + '/2018'
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
 
   log( 'set_children', 'console' )
