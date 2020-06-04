@@ -1,0 +1,207 @@
+comment: |
+  Allows selecting ways to skip 209A interview content.
+  
+  TODO:
+  1. Prefill as many fields as possible to make the form as
+  fast to go through as possible. Skip nothing, so order is still clear.
+  1. Try to be clear about where different sections/questions are coming from.
+  
+  Pages that are a pain to fill:
+  1. Defendant info pages
+  1. Lots of children
+  1. Affidavit <- maybe tackle this one first with `continue button field`s
+  1. Defendant prior cases info
+  1. Children cases prior info
+  1. Schools/daycares
+  1. Children center/supervision, etc.
+  
+  Pages that still have multiple fields to fill:
+  1. Names
+  1. Addresses
+  1. Contact info
+  1. Children attorneys
+  1. GALs
+  
+  Note: `invalidate()` doesn't work as a way to pre-fill questions
+  and then trigger them anyway.
+---
+objects:
+  - to_fill: DAOrderedDict
+  #- acknowledged_information_use: DAOrderedDict.using('acknowledged_information_use', gathered=True, auto_gather=False, there_are_any=True)
+  - profile: DAOrderedDict
+---
+---
+id: interview_order
+mandatory: True
+scan for variables: False
+code: |
+  set_always_pre_filled
+  
+  if to_fill.set_children:
+    set_children
+---
+id: skipper
+question: |
+  WIP: What do you want to pre-fill or skip?
+fields:
+  #- WIP Skip straight to the PDF: skip_to_pdf
+  #  datatype: yesnowide
+  #- WIP Skip intro (including accepting terms): to_fill.set_intro
+  #  datatype: yesnowide
+  #  default: True
+  - "Pre-fill minor children (this won't pre-fill who their parents are)": to_fill.set_children
+    datatype: yesnowide
+    default: True
+  - Children: num_children
+    show if: to_fill.set_children
+    datatype: radio
+    default: 2
+    choices:
+      - No children: 0
+      - One child: 1
+      - Two children: 2
+      - Eight children: 8
+  - Which of the above children are joint?: which_are_joint
+    show if: set_joint_children
+    datatype: radio
+    default: All
+    choices:
+      - All
+      - None
+      - Don't set: no_set
+  - Custody or care children: num_custody_children
+    show if: to_fill.set_children
+    datatype: radio
+    default: 0
+    choices:
+      - No children: 0
+      - One child: 1
+      - Two children: 2
+      - Eight children: 8
+  # Worth it?
+  #- Pre-fill just the date for incidents of abuse
+css: |
+  <style>
+    .question-offer-profiles input.labelauty + label {
+      padding: .4rem;
+      border: 1px solid darkgray;
+    }
+    .question-offer-profiles hr,
+    .question-offer-profiles .form-group {
+      margin: .4rem;
+    }
+    .question-offer-profiles hr {
+      border-top-color: darkgray;
+    }
+  </style>
+---
+id: pre_fill_always_needed_values
+sets: set_always_pre_filled
+scan for variables: False
+code: |
+  # These always show up, so always pre-fill them
+
+  acknowledged_information_use = DADict(
+    'acknowledged_information_use', there_are_any = True,
+    there_is_another = False, gathered = True
+  )
+  acknowledged_information_use[ 'I accept the terms of use.' ] = True
+  
+  # Don't set first name so the question is triggered
+  #users[0].name.first = 'Pat'
+  users[0].name.middle = 'Pip'
+  users[0].name.last = 'Plaintiff'
+  users[0].name.suffix = 'I'
+  #users[0].birthdate = as_datetime('01/01/1990')
+  users[0].phone_number = '111-1111'
+  
+  #other_parties[0].name.first = 'Drew'
+  other_parties[0].name.middle = 'Dar'
+  other_parties[0].name.last = 'Defendant'
+  other_parties[0].name.suffix = 'II'
+  #other_parties[0].birthdate = as_datetime('12/31/2000')
+  #other_parties[0].phone_number = '222-2222'
+  
+  related_as_couple = DADict('past_engaged')
+  related_as_couple[ 'engaged' ] = True
+  related_as_couple[ 'dating' ] = True
+  related_as_couple[ 'dated' ] = True
+  related_as_couple[ 'past_engaged' ] = True
+  
+  # Worth it?
+  #incidents_of_abuse.appendObject()
+  #incidents_of_abuse[0].date = '01/01'
+  
+  log( 'set_always_pre_filled', 'console' )  
+  set_always_pre_filled = True
+---
+comment: |
+  '''
+  # To use for court map when it arrives. Need to find shorter address.
+  #users[0].address.address = '1 Tremont St'
+  users[0].address.unit = '1'
+  users[0].address.city = 'Boston'
+  users[0].address.state = 'MA'
+  users[0].address.zip = '02108'
+  users[0].address.geolocate()
+  
+  #other_parties[0].address.address = '2 Tremont St'
+  other_parties[0].address.unit = '2'
+  other_parties[0].address.city = 'Boston'
+  other_parties[0].address.state = 'MA'
+  other_parties[0].address.zip = '02108'
+  other_parties[0].address.geolocate()
+  '''
+---
+id: children_names_and_ages
+sets: set_children
+scan for variables: False
+code: |
+
+  # Non-custody children of the right number
+  int_children = int( num_children )
+  children.target_number = int_children
+
+  log( 'set_children_values', 'console' )
+  set_children = True
+
+---
+id: children_names_and_ages
+sets: set_children
+scan for variables: False
+code: |
+
+  # Non-custody children of the right number
+  int_children = int( num_children )
+  children.target_number = int_children
+
+  child_i = 0
+  for child_i in range( int_children ):
+    child_num = str(child_i + 1)
+    #children[ child_i ].name.first = 'Child' + child_num
+    children[ child_i ].name.middle = 'Of'
+    children[ child_i ].name.last = 'Plaintiff'
+    children[ child_i ].name.suffix = 'Jr'
+    date_str = '01/0' + child_num + '/2018'
+    children[ child_i ].birthdate = as_datetime( date_str )
+    if (which_are_joint == 'All'): children[ child_i ].defendant_is_parent = True
+
+  # Children under plaintiff's care or custody
+  int_custody_children = int( num_custody_children )
+  children_cares_for.target_number = int_custody_children
+
+  for c_child_i in range( int_custody_children ):
+    child_num = str(c_child_i + 1)
+    #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num
+    children_cares_for[ c_child_i ].name.middle = 'Child of'
+    children_cares_for[ c_child_i ].name.last = 'Custody'
+    children_cares_for[ c_child_i ].name.last = 'Jr'
+    date_str = '01/0' + c_child_i + '/2018'
+    children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
+
+  log( 'set_children', 'console' )
+  set_children = True
+---
+include:
+  - 209a_package.yml
+---
