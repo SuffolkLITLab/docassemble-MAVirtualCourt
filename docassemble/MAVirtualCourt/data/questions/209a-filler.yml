@@ -45,7 +45,7 @@ code: |
   if to_fill.set_visitation:
     set_visitation
 ---
-id: skipper
+id: filler
 question: |
   WIP: What do you want to pre-fill or skip?
 fields:
@@ -89,27 +89,40 @@ fields:
     show if: to_fill.set_children
   # Worth it?
   #- Pre-fill just the date for incidents of abuse
-  - How many schools/daycares do they have?: num_daycares
+  - note: How many schools/daycares?
+    show if: to_fill.set_daycares
+  - no label: num_daycares
     datatype: integer
     default: 2
     show if: to_fill.set_daycares
   - "Pre-fill visitation orders": to_fill.set_visitation
     datatype: yesnowide
+    show if: to_fill.set_children
   - Pre-fill visitation center info: set_visitation_center
     datatype: yesnowide
     show if: to_fill.set_visitation
 css: |
   <style>
-    .question-offer-profiles input.labelauty + label {
+    .question-filler input.labelauty + label {
       padding: .4rem;
       border: 1px solid darkgray;
+      margin-bottom: .1rem;
     }
-    .question-offer-profiles hr,
-    .question-offer-profiles .form-group {
+    .question-filler hr,
+    .question-filler .form-group {
       margin: .4rem;
     }
-    .question-offer-profiles hr {
+    .question-filler hr {
       border-top-color: darkgray;
+    }
+    
+    .question-filler p {
+      margin-bottom: 0;
+    }
+    
+    .question-filler .form-control {
+      height: 2em;
+      border-color: darkgray;
     }
   </style>
 ---
