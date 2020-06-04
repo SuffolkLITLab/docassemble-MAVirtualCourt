@@ -36,9 +36,14 @@ mandatory: True
 scan for variables: False
 code: |
   set_always_pre_filled
-  
+
   if to_fill.set_children:
     set_children
+  if defined( 'to_fill.set_majors' ) and to_fill.set_majors:
+    set_majors
+    
+  if to_fill.set_visitation:
+    set_visitation
 ---
 id: skipper
 question: |
@@ -49,7 +54,7 @@ fields:
   #- WIP Skip intro (including accepting terms): to_fill.set_intro
   #  datatype: yesnowide
   #  default: True
-  - "Pre-fill minor children (this won't pre-fill who their parents are)": to_fill.set_children
+  - "Pre-fill children (this won't pre-fill who their parents are)": to_fill.set_children
     datatype: yesnowide
     default: True
   - Children: num_children
@@ -78,8 +83,21 @@ fields:
       - One child: 1
       - Two children: 2
       - Eight children: 8
+  - Pre-fill children's schools/daycares: to_fill.set_daycares
+    datatype: yesnowide
+    default: True
+    show if: to_fill.set_children
   # Worth it?
   #- Pre-fill just the date for incidents of abuse
+  - How many schools/daycares do they have?: num_daycares
+    datatype: integer
+    default: 2
+    show if: to_fill.set_daycares
+  - "Pre-fill visitation orders": to_fill.set_visitation
+    datatype: yesnowide
+  - Pre-fill visitation center info: set_visitation_center
+    datatype: yesnowide
+    show if: to_fill.set_visitation
 css: |
   <style>
     .question-offer-profiles input.labelauty + label {
@@ -177,21 +195,21 @@ code: |
 
   child_i = 0
   for child_i in range( int_children ):
-    child_num = str(child_i + 1)
+    child_num = str( child_i + 1 )
     #children[ child_i ].name.first = 'Child' + child_num
     children[ child_i ].name.middle = 'Of'
     children[ child_i ].name.last = 'Plaintiff'
     children[ child_i ].name.suffix = 'Jr'
     date_str = '01/0' + child_num + '/2018'
     children[ child_i ].birthdate = as_datetime( date_str )
-    if (which_are_joint == 'All'): children[ child_i ].defendant_is_parent = True
+    if which_are_joint == 'All': children[ child_i ].defendant_is_parent = True
 
   # Children under plaintiff's care or custody
   int_custody_children = int( num_custody_children )
   children_cares_for.target_number = int_custody_children
 
   for c_child_i in range( int_custody_children ):
-    child_num = str(c_child_i + 1)
+    child_num = str( c_child_i + 1 )
     #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Custody'
@@ -201,6 +219,50 @@ code: |
 
   log( 'set_children', 'console' )
   set_children = True
+---
+id: daycares
+sets: set_daycares
+scan for variables: False
+code: |
+  
+  daycares_int = int( num_daycares )
+  for daycare_i in range( daycares_int ):
+    daycare_num = str( daycare_i + 1 )
+    daycare = schools_to_stay_away_from.appendObject()
+    #daycare.name.text  # Triggers question
+    daycare.address.address = "School " + daycare_num
+    daycare.address.unit = daycare_num
+    daycare.address.city = "Boston"
+    daycare.address.state = 'MA'
+    daycare.address.zip = daycare_num * 5
+
+  log( 'set_daycares', 'console' )
+  set_daycares = True
+---
+id: visitation
+sets: set_visitation
+scan for variables: False
+code: |
+  #wants_center  # Triggers question
+  if set_visitation_center:
+    visitation_center_name = 'Visits R Us'
+    pays_for_center = 'other'
+    other_pays_for_center = 'My Besty'
+
+  wants_supervision = True
+  visitation_supervisor_name_full = 'Val'
+  supervision_time = '5pm'
+  supervision_payer = 'other'
+  other_supervision_payer = 'My Pal'
+
+  wants_pickup = True
+  who_picks_up = 'Picker upper'
+
+  wants_other_order = True
+  other_order = 'Order this.'
+
+  log( 'set_visitation', 'console' )
+  set_visitation = True
 ---
 include:
   - 209a_package.yml
