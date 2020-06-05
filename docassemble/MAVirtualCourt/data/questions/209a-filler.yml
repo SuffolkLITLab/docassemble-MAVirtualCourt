@@ -41,9 +41,13 @@ code: |
     set_children
   if defined( 'to_fill.set_majors' ) and to_fill.set_majors:
     set_majors
-    
-  if to_fill.set_visitation:
+  if defined( 'to_fill.set_daycares' ) and to_fill.set_daycares:
+    set_daycares
+  if defined( 'to_fill.set_visitation' ) and to_fill.set_visitation:
     set_visitation
+  
+  #if to_fill.set_plaintiff_keep_aways:
+  #  set_plaintiff_keep_aways
 ---
 id: filler
 question: |
@@ -95,12 +99,16 @@ fields:
     datatype: integer
     default: 2
     show if: to_fill.set_daycares
-  - "Pre-fill visitation orders": to_fill.set_visitation
+  - Pre-fill visitation orders: to_fill.set_visitation
     datatype: yesnowide
     show if: to_fill.set_children
   - Pre-fill visitation center info: set_visitation_center
     datatype: yesnowide
+    default: True
     show if: to_fill.set_visitation
+  - note: <hr/>
+  #- Pre-fill two orders for defendant to keep away from plaintiff: to_fill.set_plaintiff_keep_aways
+  #  datatype: yesnowide
 css: |
   <style>
     .question-filler input.labelauty + label {
@@ -142,18 +150,18 @@ code: |
   #users[0].name.first = 'Pat'
   users[0].name.middle = 'Pip'
   users[0].name.last = 'Plaintiff'
-  users[0].name.suffix = 'I'
+  users[0].name.suffix = 'II'
   #users[0].birthdate = as_datetime('01/01/1990')
   users[0].phone_number = '111-1111'
   
   #other_parties[0].name.first = 'Drew'
   other_parties[0].name.middle = 'Dar'
   other_parties[0].name.last = 'Defendant'
-  other_parties[0].name.suffix = 'II'
+  other_parties[0].name.suffix = 'III'
   #other_parties[0].birthdate = as_datetime('12/31/2000')
   #other_parties[0].phone_number = '222-2222'
   
-  related_as_couple = DADict('past_engaged')
+  related_as_couple = DADict( 'past_engaged' )
   related_as_couple[ 'engaged' ] = True
   related_as_couple[ 'dating' ] = True
   related_as_couple[ 'dated' ] = True
@@ -213,7 +221,7 @@ code: |
     #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Custody'
-    children_cares_for[ c_child_i ].name.last = 'Jr'
+    children_cares_for[ c_child_i ].name.suffix = 'Jr'
     date_str = '01/0' + child_num + '/2018'
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
 
@@ -263,6 +271,15 @@ code: |
 
   log( 'set_visitation', 'console' )
   set_visitation = True
+---
+id: set_plaintiff_keep_aways
+sets: set_plaintiff_keep_aways
+scan for variables: False
+code: |
+
+
+  #order_defendant_remain_away_plaintiff_residence_yes
+  set_plaintiff_keep_aways = True
 ---
 include:
   - 209a_package.yml
