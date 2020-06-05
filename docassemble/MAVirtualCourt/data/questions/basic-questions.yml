@@ -10,6 +10,7 @@ metadata:
 default screen parts:
   continue button label: |
     Next
+---
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
 generic object: DADict
@@ -787,27 +788,40 @@ code: |
   else:
     found_email = True
 ---
+code: |
+  bcc_failsafe = court_emails.get('Failsafe Address',None)
+---
 need:
+  - bcc_failsafe
   - email_to_court_template
   - court_email
   - should_cc_user
 code: |
   if 'dev' in get_config('url root') or 'test' in get_config('url root'):
-    email_to_use = "massaccess@suffolklitlab.org"
+    bcc_email = "quinten@lemmalegal.com"
+    email_to_use = "massaccess@suffolk.edu"
   else:
     email_to_use = court_email
-
+    bcc_email = bcc_failsafe
+  
+  # temporary for testing
+  # email_to_use = "massaccess@suffolk.edu"
+  
   if task_not_yet_performed('send email'):
-    email_success = True
+    log("Court email is " + court_email)
+    email_success = False
     if should_cc_user:
-      log('Sending email to ' + email_to_use + ' and ccing ' + cc_email + ' for ' + str(users))
-      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', cc=cc_email, attachments=final_form_to_file) # True # until we're ready to turn this on
+      log('Sending email to ' + email_to_use + ' and ccing ' + cc_email + ' for ' + str(users) + ' bcc to ' + bcc_email)
+      email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', cc=cc_email, bcc=bcc_email, attachments=final_form_to_file) # True # until we're ready to turn this on
     else:
-      log('Sending email to ' + email_to_use + ' and no cc ' + ' for ' + str(users))
-      # email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', attachments=final_form_to_file)
+      log('Sending email to ' + email_to_use + ' and no cc ' + ' for ' + str(users) + ' bcc to ' + bcc_email)
+      email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', attachments=final_form_to_file, bcc=bcc_email)
     mark_task_as_performed('send email')
   sent_email_to_court = True
 ---
+need:
+  - comments_to_clerk
+  - package_version_number
 id: ready to email
 question: |
   Final Review With Cover Page
@@ -876,20 +890,24 @@ subject: |
   MassAccess submission from ${users} intended for ${courts[0]}
 content: |
   At ${current_datetime().format_datetime()},
-  ${users} submitted the attached form(s).
+  ${users} submitted the attached ${package_title} form(s).
 
-  % for title in download_titles:
-  * title
-  % endfor
+  &nbsp;        | &nbsp;
+  --------------|-----------
+  Date of email | ${current_datetime().format_datetime()}
+  Pages | ${num_package_pages }  
+  Preferred language | ${ user_preferred_language if user_needs_interpreter else 'English' }
+  Mobile phone | ${showifdef('users[0].mobile_number')}
+  Other phone | ${showifdef('users[0].phone_number')}
+  Email | ${showifdef('users[0].email')}
+  Contact details/other | ${showifdef('users[0].other_contact_method')}
   
-  Please contact them to confirm you received the forms:
+  Comments for clerk: 
   
-  % for user in users:
-  ${user}:  
-  * Phone: ${showifdef('user.phone_number')}
-  * Email: ${showifdef('user.email')}
-  * Other contact method: ${showifdef('user.other_contact_method')}
-  % endfor
+  ${ showifdef('comments_to_clerk')}
+  
+  Please contact ${users} in the next business day to
+  confirm that you received this message.
 ---
 imports:
   - docassemble.MAVirtualCourt # INSTALLED version of the package
