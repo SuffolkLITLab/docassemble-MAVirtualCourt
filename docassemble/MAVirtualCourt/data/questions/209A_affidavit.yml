@@ -69,7 +69,7 @@ subquestion: |
   
   You should know that if the court does not "{impound}" your affidavit, your words will be public record. It is not easy, but if someone wants to go into court to find and read your affidavit, they can.
   
-  Later in this guide, you will get a chance to explain why you need the court to {impound} your affidavit.
+  Later in this guide, you will get a chance to ask the court to {impound} your affidavit.
 
 terms:
   - impound: |
@@ -93,7 +93,7 @@ subquestion: |
   * If you have children write about:
   
       * Times ${other_parties.familiar()} abused your child,
-      * Where your ${children.as_noun()} ${children.did_verb('is')} when ${other_parties.familiar()} was abusing you,
+      * Where your ${children.as_noun()} ${children.did_verb('was')} when ${other_parties.familiar()} was abusing you,
       * Times your child witnessed ${other_parties.familiar()} abusing you, and
       * How the abuse affected your child.
   % endif
@@ -111,7 +111,7 @@ subquestion: |
 
   Start with the most recent abuse first.
 
-  Then tell the judge about other serious incidents, if there are any   
+  Then tell the judge about other serious incidents, if there are any.   
 help:
   label: What should I talk about?
   heading: Is this all?
@@ -122,7 +122,7 @@ help:
     
     One serious incident can be enough to get an Order for Protection. But adding more incidents may improve your chances -- especially if you can show a pattern or trend of abuse. 
     
-    Make it very clear to the judge that you need help.
+    This is your chance to explain why you need help.
 terms:
   - under penalty of perjury: |
       means you swear that what you write is true, as far as you know.
@@ -199,10 +199,10 @@ code: |
         incidents_of_abuse[i].description = incidents_of_abuse[i].police_description
 
   if plaintiff_has_minor_children:
-  #  if incidents_of_abuse[i].injuries_self_child:
-    if not incidents_of_abuse[i].injuries_describe:
-      if incidents_of_abuse[i].injuries_edit:
-        incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
+  #  if incidents_of_abuse[i].injuries_self_child:	
+    incidents_of_abuse[i].injuries_describe	
+    if incidents_of_abuse[i].injuries_edit:	
+      incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
   else:
     if not incidents_of_abuse[i].injuries:
       if incidents_of_abuse[i].injuries_edit:
@@ -363,20 +363,12 @@ id: Affidavit police called?
 question: |
   Were the police called?
 subquestion: |
-  Were the police involved at all?
-  
-  
   It may help you give the judge a better picture if you explain how the police were involved. 
     
   You may have good reasons **not** to talk about the police. Do not feel you have to include anything about the police in your affidavit.
+  
+  Were the police involved at all?
 yesno: incidents_of_abuse[i].police_involved
-help:
-  label: Why does this matter?
-  heading: Why does this matter?
-  content: |
-    It may help you give the judge a better picture if you explain how the police were involved. 
-    
-    But you do not have to talk about the police if you do not want to.
 ---
 id: Affidavit may want to include police
 question: |
@@ -395,9 +387,9 @@ question: |
 subquestion: |
    If you needed the police but you did not call them because you were afraid or you could not call them, it may help you to tell the judge. 
    
-   Do you want to explain why the police were **not** involved?
+   Do not feel you have to explain. You do not have to include anything about the police to get a restraining order. 
    
-   Do not feel you have to explain. You do not have to include anything about the police to get a restraining order.
+   Do you want to explain why the police were **not** involved?   
 yesno: incidents_of_abuse[i].police_why_not
 ---
 id: 209A Affidavit Police involvement
@@ -441,40 +433,41 @@ yesno: incidents_of_abuse[i].injuries_self_child
 id: 209A Affidavit you or child injuries described
 question: |
   Did you include harm to you or your ${children.as_noun()}?
-subquestion: |
-  Did you already describe any injuries that ${ other_parties.familiar() } caused you or your ${children.as_noun()}? 
-  Injuries do not need to be serious.
-  
+subquestion: |  
   Think about:	
   
   * Times ${ other_parties.familiar() } abused your ${children.as_noun()},
-  * Where your ${children.as_noun()} ${children.does_verb('was')} when ${ other_parties.familiar() } was abusing you,
+  * Where your ${children.as_noun()} ${children.did_verb('was')} when ${ other_parties.familiar() } was abusing you,
   * Times your ${children.as_noun()} witnessed ${ other_parties.familiar() } abusing you, and
   * How the abuse affected your ${children.as_noun()}.
   
-yesno: incidents_of_abuse[i].injuries_describe
----
-id: 209A Affidavit you injured
-question: |
-  Were you injured?
-subquestion: |
-  Did you already describe any injuries that ${ other_parties.familiar() } caused you? The injuries do not need to be serious.
-yesno: incidents_of_abuse[i].injuries
----
-id: 209A Affidavit Injuries to include
-question: |
-  Do you need to edit or add anything?
-subquestion: |
-  Do you need to add anything about the harm ${other_parties.familiar()} caused,  or change what you said?
-   
-  % if plaintiff_has_minor_children:
-  Note:
+  
+  **Note:**
+  
   If a child has been abused or witnessed abuse, the judge may: 
    
   * Appoint a Guardian ad Litem to represent the child's interest. 
   * Report the abuse to the Department of Children and Families (DCF) who would probably start an investigation, or 
   * Do both.
-  % endif
+  
+  Did you already describe any injuries that ${ other_parties.familiar() } caused you or your ${children.as_noun()}?
+  
+  Injuries do not need to be serious.
+  
+yesno: incidents_of_abuse[i].injuries_describe
+---
+id: 209A Affidavit you injured
+question: |
+  Did you already describe any injuries you suffered because of ${ other_parties.familiar() }?
+subquestion: |
+   The injuries do not need to be serious.
+yesno: incidents_of_abuse[i].injuries
+---
+id: 209A Affidavit Injuries to include
+question: |
+  Do you need to edit or add anything?
+subquestion: |  
+  Do you need to add anything about the harm ${other_parties.familiar()} caused,  or change what you said?
 yesno: incidents_of_abuse[i].injuries_edit
 ---
 id: 209A Affidavit injuries describe
@@ -545,7 +538,7 @@ fields:
   - no label: incidents_of_abuse[i].summary
     input type: area
     default: |
-      ${ incidents_of_abuse[i].description + " Because of what happened, I felt " +  incidents_of_abuse[i].feelings }
+      ${ incidents_of_abuse[i].description + space(incidents_of_abuse[i].feelings, prefix=' Because of what happened, I felt ') }
 ---
 question: |
   Can you describe another time ${other_parties.familiar()} abused you?
@@ -578,7 +571,7 @@ fields:
 field: saw_incidents
 ---
 code: |
-  affidavit_intro = "The following is a brief summary of the events and does not attempt to capture all the detail of the abuse: "
+  affidavit_intro = "\n The preceding statement is a brief summary of the events and does not attempt to capture all the detail of the abuse. "
 ---
 attachment:
     variable name: complaint_209A_Affidavit_attachment_preview
@@ -587,7 +580,7 @@ attachment:
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    
     fields: 
-      - "affidavit_body": ${ affidavit_intro + affidavit_body_cutoff }
+      - "affidavit_body": ${ affidavit_body_cutoff }
       - "incident_date": ${ incident_date }
 ---
 need: complaint_209A_Affidavit
@@ -600,7 +593,7 @@ attachment:
     fields: 
       - "signature_date": ${ signature_date }
       - "plaintiff_signature": ${ users[0].signature }
-      - "affidavit_body": ${ affidavit_intro + affidavit_body_cutoff }
+      - "affidavit_body": ${ affidavit_body_cutoff }
       - "incident_date": ${ incident_date }
 ---
 code: |
@@ -611,7 +604,7 @@ code: |
   txtFieldsList_affidavit = list()      
   Limit = 5000
   sLimit = Limit - 16   
-  need_affidavit_body_addendum = len(affidavit_body) > Limit
+  need_affidavit_body_addendum = len(affidavit_body + affidavit_intro) > Limit
   if need_affidavit_body_addendum:    
     affidavit_body_cutoff = affidavit_body[:sLimit] + " (See Addendum.)"  
     txtFieldsList_affidavit.append(
@@ -619,7 +612,7 @@ code: |
       'value': [affidavit_body_cutoff]
       })
   else:
-   affidavit_body_cutoff = affidavit_body
+   affidavit_body_cutoff = affidavit_body + affidavit_intro
    
   addAddendum_affidavit = bool(txtFieldsList_affidavit)
   # if txtFieldsList_affidavit: #if the list is not empty

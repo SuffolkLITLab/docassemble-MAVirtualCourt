@@ -61,7 +61,7 @@ code: |
   if addAddendum_affidavit:
     attachment_temp.append(affidavit_addendum)
   # include page 2 only if there are children
-  if plaintiff_has_minor_children: 
+  if include_children_in_order: 
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
     if addAddendum_page2:
       attachment_temp.append(page2_addendum)
@@ -70,7 +70,7 @@ code: |
       if need_care_custody_addendum:
         attachment_temp.append(care_or_custody_proceedings_appendix_variable)
     
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and include_children_in_order and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
     if addAddendum_chdSupport:
       attachment_temp.append(chdSupport_addendum)
@@ -135,7 +135,8 @@ code: |
   # From page 1
   abuse_suffered_date # Filled in with code, I think
   if plaintiff_has_minor_children:
-    A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
+    if include_children_in_order:
+      A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
   # if no_abuse_checked:
   #  abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
     # refer_to_258E_resources # Maybe this info is wrong
@@ -157,11 +158,12 @@ code: |
 
   ####################### Child support
   nav.set_section('section_child_support')
-  if plaintiff_has_minor_children and wants_child_support_yes:
-    if not existing_order:
-      Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
-    else:
-      explain_no_child_support
+  if plaintiff_has_minor_children:
+    if include_children_in_order and wants_child_support_yes:
+      if not existing_order:
+        Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
+      else:
+        explain_no_child_support
 
   ############################## Defendant info
   # From page 1
@@ -190,18 +192,19 @@ code: |
   nav.set_section('section_care_custody')
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-    if has_participated_custody_case or know_of_other_custody_case_yes:
-      have_had_custody_cases = True
-      A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
-      for case in other_care_custody_proceedings:
-        if case.case_status == "paternity":
-          have_had_paternity_cases = True 
-          break # One match is good enough
-      if not have_had_paternity_cases:
-        have_had_paternity_cases = ask_had_paternity_case  # trigger a question if we didn't answer via care/custody questions       
+  if plaintiff_has_minor_children:
+    if include_children_in_order and defendant_and_plaintiff_are_parents_of_child:
+      if has_participated_custody_case or know_of_other_custody_case_yes:
+        have_had_custody_cases = True
+        A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
+        for case in other_care_custody_proceedings:
+          if case.case_status == "paternity":
+            have_had_paternity_cases = True 
+            break # One match is good enough
+        if not have_had_paternity_cases:
+          have_had_paternity_cases = ask_had_paternity_case  # trigger a question if we didn't answer via care/custody questions       
       # Come back to child addresses if needed          
-      evaluate_child_addresses # 
+        evaluate_child_addresses # 
   
   # From page 1
   # Other cases involving P/D but not about the children

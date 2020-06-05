@@ -98,7 +98,7 @@ comment: |
   There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
 ---
 question: |
-  What is the name of person who is abusing you?  
+  What is the name of the person who is abusing you?  
 fields:
   - First name: other_parties[0].name.first
   - Middle name: other_parties[0].name.middle
@@ -107,7 +107,18 @@ fields:
   - Suffix: other_parties[0].name.suffix
     required: False
     code: |
-      name_suffix()  
+      name_suffix()
+  - Gender: other_parties[0].gender
+    choices:
+      - Female: female
+      - Male: male
+      - Non-binary: non-binary
+      - Prefer not to say: prefer-not-to-say
+      - Prefer to write in a different gender: self-described
+  - Gender: other_parties[0].gender
+    show if:
+      variable: other_parties[0].gender
+      is: "self-described"
 ---
 question: |
   What to expect
@@ -240,28 +251,28 @@ fields:
 #      plaintiff_assistant_relationship_to_plaintiff = plaintiff_assistant_relationships_to_plaintiff
 ---
 question: |
-  More facts about ${other_parties.familiar()}
+  Has ${other_parties.familiar()} ever used another name?
 subquestion: |
-  Tell me some other things about ${ other_parties.familiar() }.
+  For example, a last name used before marriage, a nickname, or any name other than ${other_parties[0]}.
 fields:
-  - Has ${other_parties.familiar()} ever used a different first or last name?: defendant_has_alias
+  - no label: defendant_has_alias
     datatype: yesnoradio
-    help: |
-      For example, a last name used before marriage, a nickname, or other
-      name other than their current legal name.
-  - What other name(s) has ${other_parties.familiar()} used?: other_parties[0].name_other
+#   help: |
+#    For example, a last name used before marriage, a nickname, or other
+#    name other than their current legal name.
+  - What other names has ${other_parties.familiar()} used?: other_parties[0].name_other
     show if: defendant_has_alias
-  - ${other_parties.familiar()}'s gender: other_parties[0].gender
-    choices:
-      - Female: female
-      - Male: male
-      - Non-binary: non-binary
-      - Prefer not to say: prefer-not-to-say
-    help: |
-      If you do not select either "Male" or "Female", both checkboxes
-      will be left unchecked on the form. This answer will be used to help
-      identify ${other_parties} to the police to allow them to enforce
-      your order.
+  # - ${other_parties.familiar()}'s gender: other_parties[0].gender
+  #  choices:
+  #   - Female: female
+  #   - Male: male
+  #   - Non-binary: non-binary
+  #   - Prefer not to say: prefer-not-to-say
+  #  help: |
+  #    If you do not select either "Male" or "Female", both checkboxes
+  #    will be left unchecked on the form. This answer will be used to help
+  #    identify ${other_parties[0]} to the police to allow them to enforce
+  #    your order.
   # - Is ${other_parties.familiar()} aged eighteen or older?: defendant_is_major
   #   datatype: yesnoradio
 ---
@@ -364,7 +375,7 @@ question: |
 subquestion: |
   ${other_parties.familiar()} will see the restraining order. 
   
-  What addresses do you need to keep off the restraining order? 
+  Check the box next to any address you need to keep off the restraining order. 
 fields: 
   - "Keep my home address off the order.": order_impound_plaintiff_address_residential_yes
     datatype: yesno
@@ -398,12 +409,12 @@ help:
     * Return any important papers like my passport, birth certificates, immigration papers. 
 ---
 question: |
-  Emergency (temporary) order
+ Do you need a 209A restraining order right away?
 subquestion: |
-  This box is checked automatically so you can get a hearing with the judge right away.
-
   Do you need an emergency order that starts now, before
   the court notifies ${other_parties.familiar()} that you are asking for a restraining order?
+  
+  If you do **not** need the order right away, uncheck the box below.
 fields:      
   - 'I need a restraining order **before** the court tells ${other_parties.familiar()} I am asking for one.': order_relief_ex_parte
     datatype: yesno
@@ -581,7 +592,7 @@ question: |
 subquestion: |  
   You and ${other_parties.familiar()} must be {members of the same family or household} to get a 209A order.  
   
-  You may think you are **not** members of the same family or household. But the law says you are.  
+  You may think you are **not** members of the same family or household. But the law may say you are.  
   
   The next set of questions is to find out if your relationship to ${other_parties.familiar()} is one that means you can get a 209A order against them.
 terms:

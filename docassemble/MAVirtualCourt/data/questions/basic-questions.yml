@@ -712,10 +712,12 @@ subquestion: |
  
   This website can help you complete and file court forms in 3 steps:
   
-  Step 1. Answer questions to prefill your forms.  
-  Step 2. Review the completed forms.  
+  Step 1. Answer questions that will fill in your forms for you.  
+  Step 2. Preview the completed forms.  
   Step 3. Email the forms to the court using this secure website and save copies
   for yourself for later reference.  
+
+  Tap the {green words} in any screen for a definition or more information.
   
   If you have questions about this form or the court process, 
   call the Trial Court’s Emergency HelpLine:  
@@ -739,6 +741,9 @@ fields:
       minlength: |
         You cannot continue unless you agree to the terms of use.        
 continue button field: basic_questions_intro_screen
+terms:
+  green words: |
+    Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
 ---
 code: |
   basic_questions_user_fields = True

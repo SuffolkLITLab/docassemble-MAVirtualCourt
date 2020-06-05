@@ -365,7 +365,7 @@ fields:
       is: "other"
   - What is the style of ${other_parties.familiar()}'s hair?: other_parties[0].hair_other_style
     required: False
-    hint: e.g., balding, short, long, sideburns, etc.
+    help: For example- balding, short, long, sideburns, etc.
 ---
 question: |
   ${other_parties.familiar()}'s physical appearance
@@ -429,20 +429,21 @@ code: |
   defendant_hair_details = other_parties[0].hair_color + space('other_parties[0].hair_color_other') + space('other_parties[0].hair_other_style')
   defendant_other_description = str(other_parties[0].physical_other.true_values()) + space('other_parties[0].physical_other_details')
 ---
-Comment: |
-  Combine these deets in with Bad Barry's contact information question.
-question: |
-  What about ${other_parties.familiar()}'s floor and mailbox?
-subquestion: |
-  This information is important so  ${other_parties.familiar()} gets a copy of the restraining order as soon as possible.
 
-  You already told us that ${other_parties.familiar()} lives
-  at ${other_parties[0].address.on_one_line(include_unit=True)}.
-fields:
-  - 'What floor is "${other_parties[0].address.on_one_line(include_unit=True)}" on?': other_parties[0].address_floor
-    default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
-    required: False
-  - "What is the name ${other_parties.familiar()}'s mailbox? Type 'None' if there is no name.": other_parties[0].name_door_mailbox
+# Comment: |
+#  Combine these deets in with Bad Barry's contact information question.
+# question: |
+#  What about ${other_parties.familiar()}'s floor and mailbox?
+# subquestion: |
+#  This information is important so  ${other_parties.familiar()} gets a copy of the restraining order as soon as possible.
+
+#  You already told us that ${other_parties.familiar()} lives
+#  at ${other_parties[0].address.on_one_line(include_unit=True)}.
+#  fields:
+#  - 'What floor is "${other_parties[0].address.on_one_line(include_unit=True)}" on?': other_parties[0].address_floor
+#    default: ${str(other_parties[0].address.unit)[:1] if defined('other_parties[0].address.unit') and other_parties[0].address.unit.isnumeric() else ''}
+#    required: False
+#  - "What is the name ${other_parties.familiar()}'s mailbox? Type 'None' if there is no name.": other_parties[0].name_door_mailbox
 ---
 question: |
   ${other_parties.familiar()}'s work information
@@ -502,27 +503,27 @@ fields:
     required: False
 ---
 question: |
-  General Information About ${other_parties.familiar()}
+  General information about ${other_parties.familiar()}
 subquestion: |
-  Please provide the following information about ${other_parties.familiar()}.
+  This information helps the police identify and communicate with ${other_parties.familiar()}.
 fields:
   - 'Does ${other_parties.familiar()} understand English?': other_parties[0].understands_english
     datatype: yesnoradio
-  - 'What languages other than English does ${other_parties.familiar()} speak?': other_parties[0].language_other
+  - 'What language does ${other_parties.familiar()} understand?': other_parties[0].language_other
     show if:
       variable: other_parties[0].understands_english
       is: False
-  - "What is ${other_parties.familiar()}'s mother's maiden name?": parents[0]
+  - "${other_parties.familiar()}'s mother's maiden name": parents[0]
     required: False
     help: |
-      The police use this information to find the right ${other_parties.familiar()} in case other people have the same name.
-  - "What is ${other_parties.familiar()}'s father's name?": parents[1]
+      The police use this information to find the right ${other_parties[0]} in case other people have the same name.
+  - "${other_parties.familiar()}'s father's name": parents[1]
     required: False
     help: |
-      The police use this information to find the right ${other_parties.familiar()} in case other people have the same name.
+      The police use this information to find the right ${other_parties[0]} in case other people have the same name.
   - ${other_parties.familiar()}'s birthplace: other_parties[0].birthplace
     required: False
-  - ${other_parties.familiar()}'s Social Security Number (Last Four): other_parties[0].social_security_number
+  - Last 4 digits of ${other_parties.familiar()}'s Social Security Number : other_parties[0].social_security_number
     required: False
 ---
 question: |
@@ -552,6 +553,8 @@ fields:
     address autocomplete: True
   - Unit: other_parties[0].address.unit
     required: False
+  - Floor: other_parties[0].address_floor
+    required: False
   - City: other_parties[0].address.city
   - State: other_parties[0].address.state
     default: MA   
@@ -563,7 +566,9 @@ fields:
   - Other phone number: other_parties[0].phone_number
     required: False
   - Email: other_parties[0].email
-    required: False
+    required: False 
+  - Name on ${other_parties.familiar()}'s mailbox : other_parties[0].name_door_mailbox
+    required: False 
 ---
 progress: 100
 event: download_defendant_info
@@ -718,10 +723,10 @@ code: |
     other_parties[0].language_other = ''
 
   nav.set_section('section_defendant_info_appearance')
-  other_parties[0].photo_yes
   other_parties[0].race
   other_parties[0].eye_color # Needed if in the skip_sections code
-  other_parties[0].height
+  other_parties[0].height  
+  other_parties[0].photo_yes
 
   nav.set_section('section_defendant_info_safety')
   other_parties[0].gun_license_carry_possess_yes = defendant_has_guns.any_true()
@@ -740,7 +745,7 @@ code: |
 
   nav.set_section('section_defendant_info_location')
   other_parties[0].address.address
-  other_parties[0].address_floor  
+  # other_parties[0].address_floor  
   other_parties[0].location_best    
   other_parties[0].location_information_other
 
