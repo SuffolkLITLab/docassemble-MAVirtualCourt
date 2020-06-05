@@ -967,7 +967,7 @@ attachment:
       - "plaintiff_and_defendant_other_case_no": ${ not plaintiff_and_defendant_other_case_yes }    
       - "abuse_suffered_date": ${ incident_date }
       - "defendant_abuse_attempted_physical_harm": ${ defendant_abuse_attempted_physical_harm }
-      - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_attempted_physical_harm }
+      - "defendant_abuse_caused_fear_of_serious_physical_harm": ${ defendant_abuse_caused_fear_of_serious_physical_harm }
       - "defendant_abuse_caused_physical_harm": ${ defendant_abuse_caused_physical_harm }
       - "defendant_abuse_caused_sexual_assault": ${ defendant_abuse_caused_sexual_assault }
       - "order_defendant_stop_abuse_yes": ${ order_defendant_stop_abuse_yes }
