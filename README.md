@@ -1,8 +1,8 @@
 # docassemble.MAVirtualCourt
 
-
+A docassemble extension.
 
 ## Author
 
-Quinten Steenhuis, qsteenhuis@suffolk.edu
+mb.restless.tech@gmail.com
 
