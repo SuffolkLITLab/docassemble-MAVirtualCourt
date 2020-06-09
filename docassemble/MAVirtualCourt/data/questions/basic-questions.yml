@@ -241,7 +241,7 @@ id: your contact information
 question: |
   What is your contact information?
 subquestion: |
-  Put in the address the court should use to mail papers to you.
+  What address should the court use to mail papers to you?
 
   Include at least one other way the court can contact you.
 fields:
@@ -262,13 +262,13 @@ fields:
   - Email address: users[0].email    
     datatype: email
     required: False
-  - Contact notes: users[0].other_contact_method
+  - Other ways to reach you: users[0].other_contact_method
     input type: area
     required: False
     help: |
       If you do not have a phone number or email the court can use, provide
       specific contact instructions. For example, use a friend's phone number.
-      But the friend must be someone you can trust to tell you the court is
+      But the friend must be someone you can rely on to tell you the court is
       trying to reach you.
 validation code: |
   if (not showifdef('users[0].phone_number') and \
@@ -277,7 +277,7 @@ validation code: |
       (not showifdef('users[0].other_contact_method'))):
     validation_error(word("You need to provide at least one contact method."))
 help: |
-  You _must_ provide contact information so the court can reach you.
+  The court **must** be able to reach you. So you have to give them some way to do this.
   
   Some forms allow you to tell the court you need to keep your address, phone,
   and email confidential, so that only court staff can see this information. 

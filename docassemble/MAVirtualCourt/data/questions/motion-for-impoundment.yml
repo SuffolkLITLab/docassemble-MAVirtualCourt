@@ -88,11 +88,11 @@ comment: |
   yesno: do_need_to_fill_out_this_form
 ---
 question:
-  Keeping your information private
+  Keeping your information private - Motion for Impoundment
 subquestion: |
-  If you need to keep any information you have told the court from people who normally can see it, you have the right to ask the court to "impound" information.
+  If you need to keep anything you have told the court from people who normally can see it, you have the right to ask the court to "impound" information.
   
-  You must explain why it is important to keep this information confidential. Your reasons must be more than simply to protect your privacy. You must show that you need the court to keep the information confidential so nobody can use it to harm you.
+  You must explain why it is important to keep this information private. Your reasons must be more than simply to protect your privacy. You must show that you need the court to keep the information private so nobody can use it to harm you.
 
   The next section asks about information you can keep private. If you decide to ask the court to keep information private, your court forms will include a "Motion for Impoundment."
 continue button field: impoundment_intro

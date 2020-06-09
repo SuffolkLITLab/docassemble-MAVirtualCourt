@@ -315,9 +315,9 @@ code: |
     school_strings.append( str(school) + ' ' + school.address.on_one_line(include_unit=True) )
   schools_to_stay_away_from_pdf = comma_and_list( school_strings )
 
-  permit_visitation_yes = no_visitation_restrictions
-  prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
-  prohibit_visitation_yes = prohibit_visitation_pdf
+  permit_visitation_yes = wants_visitation_orders and no_visitation_restrictions
+  # prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
+  # prohibit_visitation_yes = prohibit_visitation_pdf
   
   wants_center_pdf = showifdef('wants_center', False)
   wants_visitation_center_yes = wants_center_pdf
@@ -454,6 +454,8 @@ help:
 
     At the 10 day hearing, ${other_parties.familiar()} can try to convince the judge to change the order. 
 ---
+comment: |
+  Changed code to list only first names of children in question, but then choices for children_of_both in q. id: custody_children became their full names instead of only first names even after I added '.familiar()' to the end.
 # `ordinal()` says 'first', even if there's only one :(
 id: children user is parent of
 question: |
@@ -466,8 +468,7 @@ subquestion: |
   Tell us about your oldest child first.
   % else:
   You have already told us
-  about ${comma_and_list(children.complete_elements())}. 
-
+  about ${comma_and_list([child.familiar() for child in children.complete_elements()])}. 
   Tell us about your ${ordinal(i)} child. 
   % endif
   % endif
@@ -539,6 +540,8 @@ fields:
       You may have to file a guardianship case also.  [Talk to a lawyer](https://MassLegalHelp.org/find-legal-aid) if you need the judge to order ${other_parties.familiar()} to have no contact with this child.
     show if: children_cares_for[i].defendant_is_parent
 ---
+comment: |
+  Changed code to list only first names of children in question id: children user is parent of, but then choices for children_of_both became their full names in this question instead of only first names - even after I added '.familiar()' to the end.
 id: custody_children
 question: |
   Which children do you need the court to give you custody of?
@@ -546,7 +549,7 @@ fields:
   - no label: wants_custody_of
     datatype: object_checkboxes
     choices: |
-      children_of_both
+      children_of_both.familiar()
     none of the above: |
       I do not need the court to order custody.
 ---
@@ -563,7 +566,7 @@ fields:
 ---
 id: reasons_no_contact
 question: |
-  Why should the court order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
+  Why should the judge order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
 subquestion: |
   Did your ${children.as_noun()} witness the abuse you describe in your affidavit? 
   
@@ -781,6 +784,8 @@ subquestion: |
 
 yesno: wants_child_support_yes
 ---
+comment: |
+  for some reason, after this question interview asks id: reasons_no_contact. I cannot figure even if I have said that other_parties.familiar() can contact my child.
 id: do_non_minors_need_child_support
 # TODO: similar to children, get number and then show
 # the right number of individual questions.
@@ -919,7 +924,7 @@ attachment:
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
       # TODO: wrong field type for bool?
       # TODO: better name? (wants_visitation_orders)
-      - "permit_visitation_yes": ${ permit_visitation_yes }
+      - "permit_visitation_yes": ${ wants_visitation_orders and permit_visitation_yes }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
       - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
@@ -971,7 +976,7 @@ attachment:
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and  prohibit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1045,7 +1050,7 @@ attachment:
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf }
       - "permit_visitation_yes": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes": ${ wants_visitation_orders and prohibit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1094,7 +1099,7 @@ attachment:
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and prohibit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok

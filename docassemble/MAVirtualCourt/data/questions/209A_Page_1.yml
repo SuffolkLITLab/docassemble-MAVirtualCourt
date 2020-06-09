@@ -519,11 +519,39 @@ code: |
 #    datatype: yesnoradio # consensus seems to be that if plaintiff is under 18 AND ISN'T DOING THIS WITH A PARENT OR GUARDIAN, they should get kicked out and referred to an advocate. Wait to hear from KB after talking to CR and LG. doing these for minors is a whole other can of worms and there is a big risk that doing it wrong does more harm than good. Also, the consensus is that the population of kids trying to do 209As without their parents is small.
 ---
 question: |
+  Who will be filing these forms with you?
+subquestion: |
+  Since you are under 18, we can only help you if you are filing your forms with the help of:
+  
+  * your parent,
+  * your guardian, or
+  * a domestic violence advocate.
+fields:
+  - no label: plaintiff_assistant_type
+    datatype: radio
+    choices:
+      - My parent is filing with me: parent
+      - My guardian is filing with me: guardian
+      - A domestic violence advocate is filing with me: advocate
+      - I am filing on my own, with no help: self
+---
+question: |
+  What is your ${plaintiff_assistant_type}'s name?
+fields:
+  - ${plaintiff_assistant_type}'s full name: plaintiff_assistant_type_name   
+---
+code: |
+  plaintiff_assistant_name = plaintiff_assistant_type_name
+---
+question: |
   Weapons
 subquestion: |
-  The police need to know if ${other_parties.familiar()} has guns.
+  The police need to be safe when they give ${other_parties.familiar()}:
+  
+  * a copy of the restraining order, and 
+  * notice about the 10 day hearing coming up.
 
-  Does ${other_parties.familiar()} have access or possess any of the following?
+  What does ${other_parties.familiar()} own or have access to?
 fields:
   - no label: defendant_has_guns
     datatype: checkboxes
@@ -582,7 +610,7 @@ subquestion: |
   % if who_protecting_screener == 'someone else':
   It is possible this will happen in ${users.familiar()}'s case.
   % else:
-  It is possible this will happen in ${users.familiar()}'s case.
+  It is possible this will happen in your case.
   % endif
 continue button field: dcf_warning_given
 ---

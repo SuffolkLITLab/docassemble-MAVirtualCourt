@@ -286,7 +286,7 @@ objects:
   - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
 ---
 question: |
-  How can police find ${other_parties.familiar()}?
+  How can the police find ${other_parties.familiar()}?
 subquestion: |
   You already told us that ${other_parties.familiar()}'s address is
   ${other_parties[0].address.on_one_line(include_unit=True)}.
@@ -298,7 +298,7 @@ subquestion: |
   Does ${other_parties.familiar()} go certain places or visit friends at a particular
   time?
 fields:
-  - 'Where is the **best** place to find ${other_parties.familiar()} right now?': other_parties[0].location_best
+  - 'Where is the best **place** to find ${other_parties.familiar()} right now?': other_parties[0].location_best
   - 'When is the best **time** to find ${other_parties.familiar()}': other_parties[0].best_times_find
   - 'Where **else** can you find ${other_parties.familiar()}?': other_parties[0].locations_other
   - 'Tell the court anything more that could help police find ${other_parties.familiar()}.': other_parties[0].location_information_other
@@ -445,6 +445,7 @@ code: |
 #    required: False
 #  - "What is the name ${other_parties.familiar()}'s mailbox? Type 'None' if there is no name.": other_parties[0].name_door_mailbox
 ---
+id: defendant work information
 question: |
   ${other_parties.familiar()}'s work information
 fields:  
@@ -464,6 +465,7 @@ fields:
   - Work hours: other_parties[0].work_hours
     required: False
 ---
+id: defendant car information
 question: |
   Information about ${other_parties.familiar()}'s car
 subquestion: |
@@ -526,10 +528,12 @@ fields:
   - Last 4 digits of ${other_parties.familiar()}'s Social Security Number : other_parties[0].social_security_number
     required: False
 ---
+comment: |
+  We need a "do not know" option here, will this work in PDF if we just change radio buttons to yesnomaybe?
 question: |
-  Information for Service
-subquestion: |
-  The following information helps keep you and the police safe. 
+  Keeping you and the police safe
+# subquestion: |
+#  The following information helps keep you and the police safe. 
 fields:
   - 'Does ${other_parties.familiar()} have a history of violence towards police officers?': other_parties[0].police_violence_yes
     datatype: yesnoradio

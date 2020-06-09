@@ -319,10 +319,10 @@ def section_links(nav):
   return section_link    
 
 def space(var_name, prefix=' ', suffix=''):
-  """If the value as a string is defined, return it prefixed/suffixed. Defaults to prefix 
-  of a space. Helps build a sentence with less cruft. Equivalent to SPACE function in 
+  """If the value as a string is defined, return it prefixed/suffixed. Defaults to prefix
+  of a space. Helps build a sentence with less cruft. Equivalent to SPACE function in
   HotDocs."""
-  if defined(var_name) and var_name:
+  if var_name and isinstance(var_name, str) and defined(var_name):
     return prefix + showifdef(var_name) + suffix
   else:
     return ''

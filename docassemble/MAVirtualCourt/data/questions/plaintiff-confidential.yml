@@ -115,6 +115,15 @@ question: |
 subquestion: |
  Did you ever move because ${other_parties.familiar()} was so abusive?
 yesno: abuser_caused_plaintiff_to_leave_home
+help:
+  label: Does this matter?
+  heading: You can keep ${other_parties.familiar()} from learning where you are living  now.
+  content: |
+    You can ask your local court for a restraining order. 
+    
+    But if ${other_parties.familiar()} has no idea where you live now, you can ask the court that is local to where you **used to live**. 
+    
+    ${other_parties.familiar()} will not be able to use the court location as a clue to the county you live in now.
 ---
 question: |
   Are you staying in a domestic violence shelter right now?  
@@ -158,14 +167,20 @@ yesno: users[0].apartment_yes
 subquestion: |
   Do you live in an apartment building or multi-family home?
 ---
-continue button field: School
-question: |
-  School
-subquestion: |
-  If you're a student, provide your school name and address. If you're not a student, tap "Next".
+comment: |
+  Can we set this up like defendant information screen, id: defendant work information, "I am not in school"? 
+  deleted subquestion: 
+  If you are a student, provide your school name and address. If you're not a student, tap "Next".
   
   Please don't include your childrens' schools.  There will be another place to give that information.
+
+# continue button field: School
+question: |
+  School
 fields:
+  - I am not in school : users[0].not_in_school
+    datatype: yesno
+    disable others: True
   - 'Your school name': users[0].school_name
     required: False
   - 'School address': users[0].school_address
@@ -184,12 +199,16 @@ fields:
     required: False
     datatype: area
 ---
-continue button field: Workplace
+comment: |
+  Can we set this up like defendant information screen, id: defendant work information, "I am not working"? 
+  Deleted subquestion
+# continue button field: Workplace
 question: |
   Workplace
-subquestion: |
-  If you have a job, provide your employer's name and contact information. If you do not have a job, tap "Next".
 fields:
+  - I am not working: users[0].not_working
+    datatype: yesno
+    disable others: True
   - 'Name of your employer/workplace': users[0].workplace_name
     required: False
   - 'Work address': users[0].workplace_address
@@ -248,13 +267,27 @@ comment: |
   This question is used to introduce your interview. Please customize
 continue button field: A_Plaintiff_Confidential_Information0011_intro # SMEs to provide splash page language.
 question: |
-  Plaintiff confidential information
+  Getting and staying in touch with you
 subquestion: |
-  The next questions are about you, including your home, work, and school address. 
+  The next questions ask for your home, work, school, email address and phone numbers. 
   
-  The court needs this information to contact you about your case and to make an order that will help keep you as safe as possible.
+  The court needs this information to:
   
-  ${other_parties.familiar()}, ${other_parties.familiar()}’s lawyer, and the public are not allowed to see this information about you. Only certain **authorized** people can see it. Even then, they must file a Request for Access to Confidential Information form first, to ask the court's permission.
+  * contact you about your case, and
+  * make an order that will help keep you as safe as possible.
+  
+  ${other_parties.familiar()}, ${other_parties.familiar()}’s lawyer, and the public are not allowed to see this information about you.
+  
+  Only certain **authorized** people can see it. Even then, they must file a Request for Access to Confidential Information form first, to ask the court's permission.
+help:
+  label: Who is an "authorized" person?
+  heading: Authorized people
+  content: |
+    People who are authorized to see your addresses and phone numbers are people who may need to contact you as part of their job.   
+    
+    They are the police or other law enforcement officers, prosecutors, victim-witness advocates, domestic violence counselors and sexual assault counselors.  
+    
+    You can give the court permission to share this contact information also with certain people you trust.
 ---
 id: interview_order_A_Plaintiff_Confidential_Information0011
 code: |
@@ -278,8 +311,23 @@ code: |
     users[0].previous_addresses.there_are_any = False    
   # users[0].apartment_yes
   users[0].birthdate
-  users[0].workplace_name 
-  users[0].school_name
+  if not order_impound_plaintiff_address_work_yes:
+    if users[0].not_working:
+      users[0].workplace_name = ''
+      users[0].workplace_address = ''
+      users[0].workplace_phone = ''
+  else:
+    users[0].workplace_name = ''
+    users[0].workplace_address = ''
+    users[0].workplace_phone = ''
+  if not order_impound_plaintiff_address_school:
+    if users[0].not_in_school:
+      users[0].school_name = ''
+      users[0].school_address = ''
+  else:
+    users[0].school_name = ''
+    users[0].school_address = ''
+  
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
   # users[0].birthdate
