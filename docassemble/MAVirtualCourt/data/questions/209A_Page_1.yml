@@ -523,13 +523,13 @@ code: |
   need_gun_addendum = defendant_has_guns["gun"]
 ---
 code: |
-  need_relief_addendum =  len(other_relief) > 215
+  need_relief_addendum =  len(other_relief) > 215 if order_other_relief_yes else False
 ---
 code: |
   other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","")
 ---
 code: |
-  need_losses_addendum = len(losses_caused_by_defendant) > 100
+  need_losses_addendum = len(losses_caused_by_defendant) > 100 if order_defendant_pay_yes else False
 ---
 code: |
   losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","")
@@ -777,6 +777,10 @@ code: |
     not related_by_marriage and \
     not related_by_blood
 ---
+comment: |
+  interview_order
+scan for variables: False
+sets: complaint_209A_labeled_page10003
 id: complaint_209A_labeled_page10003
 code: |
   # allowed_courts = interview_metadata['complaint_209A_labeled_page10003']['allowed courts']
@@ -865,6 +869,13 @@ code: |
   # This comes from the main affidavit    
   # abuse_suffered_date
   # order_relief_ex_parte
+  
+  # # losses_caused_by_defendant_safe_for_pdf
+  # need_losses_addendum
+  # need_relief_addendum
+  # other_relief_safe_for_pdf
+  # need_cases_addendum
+  # cases_other_safe_for_pdf
 
   # Below are only used for standalone interview
   # signature_date 
@@ -874,6 +885,29 @@ code: |
   # users[0].signature
 
   complaint_209A_labeled_page10003 = True
+---
+code: |
+  # Trigger computed values from page 1
+  other_parties[0].gender_male
+  other_parties[0].gender_female
+  defendant_weapons_safe_for_pdf
+  defendant_and_plaintiff_relationship_not_married_but_are_related
+  defendant_relationship_to_plaintiff_is
+  defendant_is_major
+  defendant_and_plaintiff_are_parents_of_child
+  defendant_and_plaintiff_are_not_related_but_live_together
+  defendant_and_plaintiff_used_to_live_together
+  defendant_and_plaintiff_are_dating_or_dated
+  plaintiff_has_minor_children
+  incident_date
+  defendant_abuse_attempted_physical_harm
+  defendant_abuse_caused_physical_harm
+  defendant_abuse_caused_sexual_assault
+  order_impound_plaintiff_address_school
+  need_page1_addendum
+
+  trigger_page1_computed_values = True
+
 ---
 code: |
   plaintiff_and_defendant_other_case_description = \
@@ -896,6 +930,7 @@ subquestion: |
 ---
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment_preview
+    # skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
@@ -950,7 +985,7 @@ attachment:
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -968,6 +1003,7 @@ attachment code: complaint_209A_labeled_page10003_attachment
 need: complaint_209A_labeled_page10003
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment
+    # skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
@@ -1023,7 +1059,7 @@ attachment:
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---

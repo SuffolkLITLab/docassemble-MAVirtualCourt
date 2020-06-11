@@ -195,7 +195,8 @@ code: |
   
   # Should ask for custody and other things if child of both
   children_of_both
-
+  
+  nav.set_section('section_children_relief')
   if len(children_of_both) > 0:
     wants_custody_of
     for custody_child in wants_custody_of:
@@ -272,12 +273,18 @@ code: |
 id: ensure_attachment_values
 code: |
 
+  # TODO QS: This may be worth refactoring later--a lot of code
+  # here that has an unclear purpose.
+  # May make more sense to move into attachment block.
+
   # NOTE: showifdef() is a DA form-filling function
   
   # Vars these attachments need
   # children = all_children
-
-  # How to do this len with possibly 0?
+  
+  # This should just happen right in the attachment
+  # Doesn't make sense to assign to a temporary var
+  # True for most of this block
   requests_custody_yes = len(wants_custody_of.elements) > 0
   wants_custody_of1_name_full = str(wants_custody_of.item(1 - 1))
   wants_custody_of1_age = wants_custody_of.item(1 - 1).age_in_years()
@@ -315,9 +322,9 @@ code: |
     school_strings.append( str(school) + ' ' + school.address.on_one_line(include_unit=True) )
   schools_to_stay_away_from_pdf = comma_and_list( school_strings )
 
-  permit_visitation_yes = no_visitation_restrictions
-  prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
-  prohibit_visitation_yes = prohibit_visitation_pdf
+  permit_visitation_yes = wants_visitation_orders and no_visitation_restrictions
+  # prohibit_visitation_pdf = showifdef('prohibit_visitation', False)
+  # prohibit_visitation_yes = prohibit_visitation_pdf
   
   wants_center_pdf = showifdef('wants_center', False)
   wants_visitation_center_yes = wants_center_pdf
@@ -344,6 +351,12 @@ code: |
   wants_other_order_yes = wants_other_order_pdf
   other_order_pdf = showifdef('other_order', '')
   other_order_discription = other_order_pdf
+
+  # Trigger computed values
+  reasons_no_contact
+  schools_to_stay_away_from_pdf
+  school_strings_cutoff
+  addAddendum_page2
 
   # wants_child_support_yes = len(wants_child_support_for) > 0
   
@@ -847,6 +860,7 @@ subquestion: |
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview
     name: 209A Page 2
+    # skip undefined: True
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    
@@ -891,7 +905,7 @@ attachment:
       # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ permit_visitation_yes }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
-      - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -941,7 +955,7 @@ attachment:
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -974,6 +988,7 @@ need: A_complaint_for_protection_from_abuse_probation_copy0005
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
     name: 209A Page 2
+    # skip undefined: True
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    
@@ -1015,7 +1030,7 @@ attachment:
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1064,7 +1079,7 @@ attachment:
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
-      - "prohibit_visitation_yes__2": ${ prohibit_visitation_yes }
+      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
