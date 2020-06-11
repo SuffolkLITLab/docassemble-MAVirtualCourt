@@ -439,10 +439,40 @@ validation code: |
   if not plaintiff_has_children_cares_for:
     children_cares_for.target_number = 0
 ---
+question: |
+  Do you need the restraining order to include orders to protect your ${children.as_noun()}?
+subquestion: |
+  % if who_protecting_screener == "me and children":
+  You said you need this order to protect you and your ${children.as_noun()}
+  % endif
+  You can ask the court to:
+  
+  * Give you temporary custody of the children you have in common with ${other_parties.familiar()}.
+  * Order ${other_parties.familiar()} to have no contact with your ${children.as_noun()}.
+  * Make orders about when, where and how ${other_parties.familiar()} can spend time or have contact with your ${children.as_noun()}.
+  * Order ${other_parties.familiar()} to stay away from schools, daycare or other places your ${children.as_noun()} might go.
+  * Order ${other_parties.familiar()} to pay child support for the children.
+  * Order anything else you need to keep your ${children.as_noun()} safe.
+
+  The next questions ask you for the name and birthdate of your ${children.as_noun()}, and then ask if you need any of these orders, one at a time.  
+  Do you need the restraining order to include any orders about ${other_parties.familiar()} and your ${children.as_noun()}?
+yesno: include_children_in_order
+help:
+  label: What is "temporary custody"?
+  heading: Temporary custody?
+  content: |
+    A temporary custody order is supposed to be short-term until the court makes a final decision, but often temporary orders end up being permanent.
+    
+    When you ask the court for a 209A order, remember you will be coming back for a hearing in 10 days. So at this first hearing, you can ask the judge to give you custody of your ${children.as_noun()} at least until the 10 day hearing.   
+
+    At the 10 day hearing, ${other_parties.familiar()} can try to convince the judge to change the order. 
+---
+comment: |
+  Changed code to list only first names of children in question, but then choices for children_of_both in q. id: custody_children became their full names instead of only first names even after I added '.familiar()' to the end.
 # `ordinal()` says 'first', even if there's only one :(
 id: children user is parent of
 question: |
-  Your children
+  Your ${ children.as_noun()}
 subquestion: |  
   % if children.target_number == 1:
   Tell us about your child
@@ -451,19 +481,14 @@ subquestion: |
   Tell us about your oldest child first.
   % else:
   You have already told us
-  about ${comma_and_list(children.complete_elements())}. 
-
+  about ${comma_and_list([child.familiar() for child in children.complete_elements()])}. 
   Tell us about your ${ordinal(i)} child. 
   % endif
   % endif
      
   % if i == 0:
-  % if children_cares_for.target_number == 1:
-  The next question asks about the child in your home whom you care for, but is not your own child. For now, just name your own children.
-  % else:
-  % if children_cares_for.target_number > 1:
-  The next question asks about the children in your home whom you care for, but are not your own children. For now, just name your own children.
-  % endif
+  % if children_cares_for.target_number >= 1:
+  For now, just name your own ${ children.as_noun()}.
   % endif
   % endif
  
@@ -494,14 +519,16 @@ question: |
   % if i == 0:
   Tell us about the oldest child in your home who you care and take responsiblity for
   % else:
-  You have already told us
-  about ${comma_and_list(children_cares_for.complete_elements())}. 
-
   Tell us about the ${ordinal(i)} child in your home who you care and take responsiblity for.
   % endif
   % endif
 subquestion: |
   You said you look after a child who lives with you but is not your own. Because they are under 18, the court needs to know about them also.
+  % if i > 0:
+  You have already told us
+  about ${comma_and_list(children_cares_for.complete_elements())}.
+  % endif
+  
 fields:
   - First Name: children_cares_for[i].name.first
   - Middle Name: children_cares_for[i].name.middle
@@ -526,6 +553,8 @@ fields:
       You may have to file a guardianship case also.  [Talk to a lawyer](https://MassLegalHelp.org/find-legal-aid) if you need the judge to order ${other_parties.familiar()} to have no contact with this child.
     show if: children_cares_for[i].defendant_is_parent
 ---
+comment: |
+  Changed code to list only first names of children in question id: children user is parent of, but then choices for children_of_both became their full names in this question instead of only first names - even after I added '.familiar()' to the end.
 id: custody_children
 question: |
   Which children do you need the court to give you custody of?
@@ -533,9 +562,9 @@ fields:
   - no label: wants_custody_of
     datatype: object_checkboxes
     choices: |
-      children_of_both
+      children_of_both.familiar()
     none of the above: |
-      None of them
+      I do not need the court to order custody.
 ---
 id: no_contact_children
 question: |
@@ -550,7 +579,7 @@ fields:
 ---
 id: reasons_no_contact
 question: |
-  Why should the court order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
+  Why should the judge order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
 subquestion: |
   Did your ${children.as_noun()} witness the abuse you describe in your affidavit? 
   
@@ -759,14 +788,17 @@ continue button field: child_support_safety
 #       I do not need court to order ${other_parties.familiar()} to pay support
 id: seeking_child_support
 question: |
-  Do you need the judge to order ${other_parties.familiar()} to pay you child support?
+  Do you need the judge to order ${other_parties.familiar()} to pay child support?
 subquestion: |
-  You can ask the judge for child support for ${children_of_both}.
-  Sometimes, you can also get child support for 
-  any children between the age of 18-22 who you share with ${other_parties.familiar()}.
+  You can ask the judge for child support for ${children_of_both.familiar()}.
+ 
+  Sometimes, the court will also order child support for 
+  any children you share with ${other_parties.familiar()} who are 18-22.
 
 yesno: wants_child_support_yes
 ---
+comment: |
+  for some reason, after this question interview asks id: reasons_no_contact. I cannot figure even if I have said that other_parties.familiar() can contact my child.
 id: do_non_minors_need_child_support
 # TODO: similar to children, get number and then show
 # the right number of individual questions.
@@ -800,19 +832,22 @@ fields:
     required: False
 ---
 question: |
-  Do you already have court-ordered child support?
+  Do you already have a child support order?
 subquestion: |
-  Has the court already ordered child support for any
-  children you have with ${other_parties.familiar()}, including
-  ${comma_and_list(children_of_both, and_string=word("or"))}?
+  Has the court already ordered child support for ${comma_and_list(children_of_both.familiar(), and_string=word("or"))}, or any other children you have with ${other_parties.familiar()}?
 yesno: existing_order
 ---
 question: |
-  It looks like you can't request child support in this interview
+  We cannot ask the judge to order child support in this case
 subquestion: |
   If a judge already made a child support order for 
-  ${comma_and_list(all_support_children, and_string=word("or"))},
-  you can't use this form to change it.
+  ${comma_and_list(all_support_children.familiar(), and_string=word("or"))}, or any other children you have in common with ${other_parties.familiar()},
+  you need to:
+  
+  * Go back to the court that made the child support order, and
+  * File a Complaint for Modification in that court.
+  
+  You cannot combine **changing** a child support order with asking for a 209A restraining order in one case.
 continue button field: explain_no_child_support  
 # ---
 # id: have_there_been_other_cases
@@ -903,7 +938,7 @@ attachment:
       - "schools_to_stay_away_from": ${ school_strings_cutoff }
       # TODO: wrong field type for bool?
       # TODO: better name? (wants_visitation_orders)
-      - "permit_visitation_yes": ${ permit_visitation_yes }
+      - "permit_visitation_yes": ${ wants_visitation_orders and permit_visitation_yes }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
       - "prohibit_visitation_yes": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
