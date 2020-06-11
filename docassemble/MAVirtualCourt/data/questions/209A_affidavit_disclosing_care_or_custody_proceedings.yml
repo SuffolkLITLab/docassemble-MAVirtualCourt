@@ -57,7 +57,7 @@ code: |
 
   needs_attorney_signature
 
-  # uncomment for standalone  
+  # uncomment for standalone
   # need_past_address_appendix
   # need_children_appendix
   # need_other_parties_appendix
@@ -1463,6 +1463,7 @@ attachment:
 need: A_affidavit_disclosing_care_or_custody_proceedings0009
 attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment
+    # skip undefined: True
     name: Affidavit of Care
     filename: Affidavit_of_Care
     # editable: False  
@@ -1575,6 +1576,7 @@ attachment:
     variable name: A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview
     name: Affidavit of Care
     filename: Affidavit_of_Care
+    # skip undefined: True
     # editable: False    
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
     decimal places: 2    
@@ -1654,3 +1656,16 @@ attachment:
       - "attorneys_for_parents_1": ${ str(attorneys_for_parents.item(0)) + ' (' + str(attorneys_for_parents.item(0).represented_party) + ')' if defined('attorneys_for_parents[0]') else ''}
       - "attorneys_for_parents_2": ${ str(attorneys_for_parents.item(1)) +  ' (' + str(attorneys_for_parents.item(1).represented_party) + ')' if defined('attorneys_for_parents[1]') else ''}
       - "attorneys_for_parents_3": ${ str(attorneys_for_parents.item(2)) + ' (' + str(attorneys_for_parents.item(2).represented_party) + ')' if defined('attorneys_for_parents[2]') else ''}
+
+---
+code: |
+  # Trigger computed values
+  case_name
+  confidential_address
+  has_participated_custody_case
+  know_of_other_custody_case
+  impound_affidavit
+  day
+  month
+  year
+  trigger_aff_care_or_custody_computed_variables = True
