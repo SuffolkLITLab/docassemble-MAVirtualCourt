@@ -274,16 +274,8 @@ code: |
   no_abuse_checked = (not defendant_abuse_caused_fear_of_serious_physical_harm 
     and not defendant_abuse_attempted_physical_harm
     and not defendant_abuse_caused_physical_harm
-<<<<<<< HEAD
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
-=======
-    and not defendant_abuse_caused_sexual_assault)
-# ---
-# code: |
-#   # Refer to the first incident of abuse from the 209A affidavit question
-#   abuse_suffered_date = incidents_of_abuse[0].date
->>>>>>> master
 ---
 reconsider: True
 code: |
