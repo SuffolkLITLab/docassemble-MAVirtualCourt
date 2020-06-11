@@ -538,7 +538,7 @@ fields:
 question: |
   What is your ${plaintiff_assistant_type}'s name?
 fields:
-  - ${plaintiff_assistant_type}'s full name: plaintiff_assistant_type_name   
+  - ${plaintiff_assistant_type.capitalize()}'s full name: plaintiff_assistant_type_name   
 ---
 code: |
   plaintiff_assistant_name = plaintiff_assistant_type_name
@@ -988,7 +988,7 @@ subquestion: |
 ---
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment_preview
-    # skip undefined: True
+    skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf
@@ -1061,7 +1061,7 @@ attachment code: complaint_209A_labeled_page10003_attachment
 need: complaint_209A_labeled_page10003
 attachment:
     variable name: complaint_209A_labeled_page10003_attachment
-    # skip undefined: True
+    skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
     pdf template file: complaint_209A_labeled_1.pdf

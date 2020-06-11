@@ -49,18 +49,18 @@ code: |
   if who_protecting_screener == "someone else":
     plaintiff_assistant_relationship_to_plaintiff
   # plaintiff_is_major_yes # Ask for age
-  if plaintiff_is_major_yes == True:
+  if plaintiff_is_major_yes: # Plaintiff over 18
     plaintiff_is_major_no = False
-  # plaintiff_assistant_name = DAEmpty()
+    # plaintiff_assistant_name = DAEmpty()
     plaintiff_assistant_relationship_to_plaintiff = DAEmpty()   
-  else:
+  else: # if not over 18
     plaintiff_is_major_no = True
     if who_protecting_screener == 'someone else':
       if plaintiff_assistant_relationship_to_plaintiff not in ('parent', 'guardian','advocate'):
         refer_to_advocate
       else:
         dcf_warning_given
-    else:
+    else: # not protecting someone else
       if plaintiff_assistant_type == 'self':
         refer_to_advocate
       else:
