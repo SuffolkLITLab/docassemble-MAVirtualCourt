@@ -92,6 +92,7 @@ code: |
   # interview_metadata['Housing_Temporary_Restraining_Order0002']['field_list']
   # interview_metadata['Housing_Temporary_Restraining_Order0002']['built_in_fields_used']    
 ---
+id: list expenses
 question: |
   How did this harm you?
 subquestion: |
@@ -126,6 +127,7 @@ fields:
     hide if: no_expenses
 continue button field: ask_about_expenses
 ---
+id: rent amount
 question: |
   How much is your rent?
 subquestion: |
@@ -135,6 +137,7 @@ fields:
   - Monthly rent: tenant_monthly_rent
     datatype: currency
 ---
+id: name of landlord
 question: |
   Who is your landlord?
 fields:
@@ -163,6 +166,7 @@ fields:
       variable: landlord_type
       is: business
 ---
+id: liability explanation
 question: |
   ${other_parties[0].possessive('liability')}
 subquestion: |
@@ -202,6 +206,7 @@ code: |
   except:
     court_county = ''
 ---
+id: tenant name
 question: |
   What is your name?
 subquestion: |
@@ -211,7 +216,6 @@ fields:
   - Middle: users[0].name.middle
     required: False
   - Last: users[0].name.last
-    required: False
   - Suffix: users[0].name.suffix
     code: |
       name_suffix()
@@ -226,6 +230,7 @@ fields:
   - 'User phone  2': user_phone__2
   - 'User name full  3': user_name_full__3
 ---
+id: requested relief
 question: |
   What are you asking the court to do?
 subquestion: |
@@ -261,6 +266,7 @@ validation code: |
       and not showifdef('requested_action_quiet_enjoyment'):
     validation_error("You must ask the court to do at least one thing.")
 ---
+id: landlords actions
 question: |
   Your landlord's actions
 subquestion: |
@@ -424,6 +430,7 @@ data:
   - variable: user_name_full__2
   - variable: user_signature_verification
 ---
+id: tro intro
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: Housing_Temporary_Restraining_Order0002_intro
@@ -496,6 +503,7 @@ attachment:
       - "user_name_full__3": ${ users }
       - "user_name_full__2": ${ users }      
 ---
+id: landlord phone number
 question: |
   What is your landlord's phone number?
 subquestion: |
@@ -511,6 +519,7 @@ code: |
   user_name_full__3 = users[0].name.full()
   user_phone__2 = users[0].phone_number  
 ---
+id: review before signature
 need: form_to_sign
 continue button field: Housing_Temporary_Restraining_Order0002_preview_question
 question: |
@@ -526,6 +535,7 @@ subquestion: |
 
 progress: 95
 ---
+id: download form
 comment: |
   The attachment email screen relies on final_form_to_file being defined. This
   will be built from the interview_metadata dictionary's contents, but if you
