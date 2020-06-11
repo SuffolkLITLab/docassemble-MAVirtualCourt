@@ -355,7 +355,8 @@ code: |
   # Trigger computed values
   reasons_no_contact
   schools_to_stay_away_from_pdf
-  school_strings_cutoff
+  schools_to_stay_away_from_pdf_cutoff
+  # school_strings_cutoff
   addAddendum_page2
 
   # wants_child_support_yes = len(wants_child_support_for) > 0
