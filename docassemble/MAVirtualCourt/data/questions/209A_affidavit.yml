@@ -581,6 +581,7 @@ attachment:
     fields: 
       - "affidavit_body": ${ affidavit_body_cutoff }
       - "incident_date": ${ incident_date }
+      - "has_addendum": ${ addAddendum_affidavit }      
 ---
 need: complaint_209A_Affidavit
 attachment:
@@ -593,8 +594,9 @@ attachment:
     fields: 
       - "signature_date": ${ signature_date }
       - "plaintiff_signature": ${ users[0].signature }
+      - "has_addendum": ${ addAddendum_affidavit }
+      - "incident_date": ${ incident_date }            
       - "affidavit_body": ${ affidavit_body_cutoff }
-      - "incident_date": ${ incident_date }
 ---
 code: |
   incident_date = str(incidents_of_abuse[0].year) + ", " + incidents_of_abuse[0].date
@@ -602,23 +604,20 @@ code: |
 comment: Addenda related code. 
 code: |  
   txtFieldsList_affidavit = list()      
-  Limit = 5000
+  Limit = 3000
   sLimit = Limit - 16   
   need_affidavit_body_addendum = len(affidavit_body + affidavit_intro) > Limit
   if need_affidavit_body_addendum:    
-    affidavit_body_cutoff = affidavit_body[:sLimit] + " (See Addendum.)"  
+    affidavit_body_cutoff = "(See Addendum.) " + affidavit_body[:sLimit] 
     txtFieldsList_affidavit.append(
       {'title': 'Affidavit',
-      'value': [affidavit_body_cutoff]
+      'value': [affidavit_body]
       })
   else:
    affidavit_body_cutoff = affidavit_body + affidavit_intro
    
   addAddendum_affidavit = bool(txtFieldsList_affidavit)
-  # if txtFieldsList_affidavit: #if the list is not empty
-  #    = True
 ---
-# if: addAddendum_affidavit
 attachment:
   - variable name: affidavit_addendum
     docx template file: 209A_affidavit_addendum.docx

@@ -886,10 +886,10 @@ code: |
   sLimit1 = Limit1 - 16   
   need_defendant_addendum = len(defendant_other_description) > Limit1
   if need_defendant_addendum:    
-    defendant_other_description_cutoff = defendant_other_description[:sLimit1] + " (See Addendum.)" 
+    defendant_other_description_cutoff = "(See Addendum.) " + defendant_other_description[:sLimit1].replace("\r","")
     txtFieldsList_defendant.append(
       {'title': 'OTHER PHYSICAL CHARACTERISTICS',
-      'value': [defendant_other_description_cutoff]
+      'value': [defendant_other_description]
       })
   else:
     defendant_other_description_cutoff = defendant_other_description
@@ -898,10 +898,10 @@ code: |
   sLimit2 = Limit2 - 16   
   need_drug_addendum = len(other_parties[0].drug_alcohol_abuse) > Limit2
   if need_drug_addendum:    
-    other_parties[0].drug_alcohol_abuse_cutoff = other_parties[0].drug_alcohol_abuse[:sLimit2] + " (See Addendum.)" 
+    other_parties[0].drug_alcohol_abuse_cutoff = "(See Addendum.) " + other_parties[0].drug_alcohol_abuse[:sLimit2].replace("\r","") 
     txtFieldsList_defendant.append(
       {'title': 'History of using and/or abusing drugs and/or alcohol',
-      'value': [other_parties[0].drug_alcohol_abuse_cutoff]
+      'value': [other_parties[0].drug_alcohol_abuse]
       })
   else:
     other_parties[0].drug_alcohol_abuse_cutoff = other_parties[0].drug_alcohol_abuse
@@ -910,10 +910,10 @@ code: |
   sLimit3 = Limit3 - 16   
   need_psychiatric_addendum = len(other_parties[0].psychiatric_emotional_problems) > Limit3
   if need_psychiatric_addendum:    
-    other_parties[0].psychiatric_emotional_problems_cutoff = other_parties[0].psychiatric_emotional_problems[:sLimit3] + " (See Addendum.)" 
+    other_parties[0].psychiatric_emotional_problems_cutoff = "(See Addendum.) " + ther_parties[0].psychiatric_emotional_problems[:sLimit3].replace("\r","") 
     txtFieldsList_defendant.append(
       {'title': 'Mental health problems',
-      'value': [other_parties[0].psychiatric_emotional_problems_cutoff]
+      'value': [other_parties[0].psychiatric_emotional_problems]
       })
   else:
     other_parties[0].psychiatric_emotional_problems_cutoff = other_parties[0].psychiatric_emotional_problems
@@ -922,10 +922,10 @@ code: |
   sLimit4 = Limit4 - 16   
   need_location_addendum = len(defendant_location_information_other) > Limit4
   if need_location_addendum:    
-    defendant_location_information_other_cutoff = defendant_location_information_other[:sLimit4] + " (See Addendum.)" 
+    defendant_location_information_other_cutoff = "(See Addendum.) " +  defendant_location_information_other[:sLimit4]  
     txtFieldsList_defendant.append(
       {'title': 'ANY OTHER INFORMATION WHICH MIGHT BE HELFPUL IN LOCATING THE DEFENDANT',
-      'value': [defendant_location_information_other_cutoff]
+      'value': [defendant_location_information_other]
       })
   else:
     defendant_location_information_other_cutoff = defendant_location_information_other
@@ -937,11 +937,7 @@ code: |
       })
 
   addAddendum_defendant = bool(txtFieldsList_defendant)
-  # addAddendum_defendant = False
-  # if txtFieldsList_defendant: #if the list is not empty
-  #   addAddendum_defendant = True
 ---
-# if: addAddendum_defendant
 attachment:
   - variable name: defendant_addendum
     docx template file: 209A_defendant_addendum.docx

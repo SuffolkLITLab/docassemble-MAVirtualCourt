@@ -576,13 +576,13 @@ code: |
   need_relief_addendum =  len(other_relief) > 215 if order_other_relief_yes else False
 ---
 code: |
-  other_relief_safe_for_pdf = other_relief[:215] + " (See Addendum.)" if order_other_relief_yes else ''
+  other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","")
 ---
 code: |
   need_losses_addendum = len(losses_caused_by_defendant) > 100 if order_defendant_pay_yes else False
 ---
 code: |
-  losses_caused_by_defendant_safe_for_pdf = losses_caused_by_defendant[:100] + " (See Addendum.)" if order_defendant_pay_yes else ''
+  losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","")
 ---
 code: |
   need_cases_addendum = len(other_cases) > 1

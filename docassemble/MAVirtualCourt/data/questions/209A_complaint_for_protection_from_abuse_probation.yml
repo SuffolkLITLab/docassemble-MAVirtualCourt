@@ -355,7 +355,8 @@ code: |
   # Trigger computed values
   reasons_no_contact
   schools_to_stay_away_from_pdf
-  school_strings_cutoff
+  schools_to_stay_away_from_pdf_cutoff
+  # school_strings_cutoff
   addAddendum_page2
 
   # wants_child_support_yes = len(wants_child_support_for) > 0
@@ -935,7 +936,7 @@ attachment:
       - "reasons_no_contact": ${ reasons_no_contact }
       # TODO: add '_yes' to field name
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
-      - "schools_to_stay_away_from": ${ school_strings_cutoff }
+      - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       # TODO: wrong field type for bool?
       # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ wants_visitation_orders and permit_visitation_yes }
@@ -988,7 +989,7 @@ attachment:
       - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
       - "reasons_no_contact__2": ${ reasons_no_contact }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
-      - "schools_to_stay_away_from__2": ${ school_strings_cutoff }
+      - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
       - "prohibit_visitation_yes__2": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
@@ -1063,7 +1064,7 @@ attachment:
       - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
       - "reasons_no_contact": ${ reasons_no_contact }
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
-      - "schools_to_stay_away_from": ${ school_strings_cutoff }
+      - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes": ${ permit_visitation_yes }
       - "prohibit_visitation_yes": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name": ${ visitation_center_name }
@@ -1112,7 +1113,7 @@ attachment:
       - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
       - "reasons_no_contact__2": ${ reasons_no_contact }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
-      - "schools_to_stay_away_from__2": ${ school_strings_cutoff }
+      - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
       - "prohibit_visitation_yes__2": ${ wants_visitation_orders and not permit_visitation_yes }
       - "visitation_center_name__2": ${ visitation_center_name }
@@ -1140,32 +1141,29 @@ code: |
   sLimit1 = Limit1 - 16   
   need_noContact_addendum = len(reasons_for_no_contact) > Limit1
   if need_noContact_addendum:    
-    reasons_for_no_contact_cutoff = reasons_for_no_contact[:sLimit1] + " (See Addendum.)" 
+    reasons_for_no_contact_cutoff = "(See Addendum.) " + reasons_for_no_contact[:sLimit1].replace("\r","") 
     txtFieldsList_page2.append(
-      {'title': 'C. CUSTODY - The specific reasons for this request are:',
-      'value': [reasons_for_no_contact_cutoff]
+      {'title': 'D. CONTACT WITH CHILDREN. - The specific reasons for this request are:',
+      'value': [reasons_for_no_contact]
       })
   else:
     reasons_for_no_contact_cutoff = reasons_for_no_contact
     
   Limit2 = 70
   sLimit2 = Limit2 - 16   
-  need_school_addendum = len(school_strings) > Limit2
+  need_school_addendum = len(schools_to_stay_away_from_pdf) > Limit2
   if need_school_addendum:    
-    school_strings_cutoff = school_strings[:sLimit2] + " (See Addendum.)" 
+    schools_to_stay_away_from_pdf_cutoff = "(See Addendum.) " + schools_to_stay_away_from_pdf[:sLimit2].replace("\r","") 
     txtFieldsList_page2.append(
       {'title': 'D. CONTACT WITH CHILDREN - I ask the Court to order the Defendant remain away from the following school(s) and day care(s):',
       'value': [schools_to_stay_away_from_pdf]
       })
   else:
-    school_strings_cutoff = school_strings
+    schools_to_stay_away_from_pdf_cutoff = schools_to_stay_away_from_pdf
   need_custody_addendum = len(wants_custody_of) > 6
   need_no_contact_addendum = len(wants_no_contact_for) > 6
   addAddendum_page2 = need_custody_addendum or need_no_contact_addendum or bool(txtFieldsList_page2)
-  # if : #if the list is not empty
-  #   addAddendum__page2 = True
 ---
-# if: addAddendum__page2 # don't need to make conditional here
 attachment:
   - variable name: page2_addendum
     docx template file: 209A_page2_addendum.docx
