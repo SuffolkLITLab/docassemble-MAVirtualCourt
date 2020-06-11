@@ -543,6 +543,9 @@ fields:
 code: |
   plaintiff_assistant_name = plaintiff_assistant_type_name
 ---
+objects:
+  - defendant_has_guns: DADict.using(auto_gather=False,gathered=True)
+---
 question: |
   Weapons
 subquestion: |
@@ -553,13 +556,14 @@ subquestion: |
 
   What does ${other_parties.familiar()} own or have access to?
 fields:
-  - no label: defendant_has_guns
-    datatype: checkboxes
-    choices:
-      - A gun: gun
-      - Ammunition: ammo
-      - Firearms ID card: FID
-      - License to carry: license
+  - A gun: defendant_has_guns['gun']
+    datatype: yesnomaybe
+  - Ammunition: defendant_has_guns['ammo']
+    datatype: yesnomaybe
+  - Firearms ID card: defendant_has_guns['FID']
+    datatype: yesnomaybe
+  - License to carry: defendant_has_guns['license']
+    datatype: yesnomaybe
   - Describe the gun(s): defendant_weapons_description
     show if: defendant_has_guns["gun"]
 ---
