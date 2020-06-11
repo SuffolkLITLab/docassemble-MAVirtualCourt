@@ -599,7 +599,9 @@ attachment:
       - "affidavit_body": ${ affidavit_body_cutoff }
 ---
 code: |
-  incident_date = str(incidents_of_abuse[0].year) + ", " + incidents_of_abuse[0].date
+  # List the informal part of the date first. I think this is more logical
+  # E.g., Summer, 2020
+  incident_date = incidents_of_abuse[0].date + ", " + str(incidents_of_abuse[0].year)
 ---
 comment: Addenda related code. 
 code: |  

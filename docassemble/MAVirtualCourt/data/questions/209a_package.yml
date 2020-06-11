@@ -156,7 +156,7 @@ code: |
   nav.set_section('section_care_custody')
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both):
     if has_participated_custody_case or know_of_other_custody_case_yes:
       have_had_custody_cases = True
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
@@ -309,7 +309,7 @@ code: |
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
     if addAddendum_page2:
       attachment_temp.append(page2_addendum)
-    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+    if defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases :
       attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
       if need_care_custody_addendum:
         attachment_temp.append(care_or_custody_proceedings_appendix_variable)
@@ -346,7 +346,7 @@ code: |
     attachment_preview_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview )
     if addAddendum_page2:
       attachment_preview_temp.append(page2_addendum)
-    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+    if defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases:
       attachment_preview_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview)
       if need_care_custody_addendum:
         attachment_preview_temp.append(care_or_custody_proceedings_appendix_variable)
