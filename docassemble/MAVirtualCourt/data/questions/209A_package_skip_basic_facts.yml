@@ -196,7 +196,6 @@ sets: skip_custody_no_contact
 scan for variables: False
 code: |
   has_participated_custody_case = True
-  has_participated_custody_case_yes = True
   know_of_other_custody_case_yes = True
 
   wants_custody_of = children_of_both
