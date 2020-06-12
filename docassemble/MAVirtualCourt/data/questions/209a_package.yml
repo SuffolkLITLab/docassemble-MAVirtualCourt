@@ -121,7 +121,7 @@ code: |
 
   ####################### Child support
   nav.set_section('section_child_support')  
-  if plaintiff_has_minor_children and wants_child_support_yes:
+  if plaintiff_has_minor_children and len(children_of_both) and wants_child_support_yes:
       if not existing_order:
         Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
       else:
@@ -138,14 +138,6 @@ code: |
   ########################## Plaintiff info
   nav.set_section('section_your_info')
   A_Plaintiff_Confidential_Information0011
-  # Ask for address info of children only if have cases to disclose
-  # if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-  #   if has_participated_custody_case or know_of_other_custody_case_yes:
-  #     # Get addresses and previous addresses for each child
-  #     explain_addresses_of_children # Not sure we need this
-  #     for child in children_of_both:
-  #       child.address.address
-  #       child.previous_addresses.gather()
   
   nav.set_section('section_privacy')
   impoundment_intro
@@ -157,7 +149,7 @@ code: |
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False
   if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both):
-    if has_participated_custody_case or know_of_other_custody_case_yes:
+    if has_participated_custody_case or know_of_other_custody_case:
       have_had_custody_cases = True
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
       for case in other_care_custody_proceedings:
@@ -182,8 +174,8 @@ code: |
   # we have some that we need to set at end instead of in regular interview flow
   # because we ask them out of order
   trigger_page1_computed_values 
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-    if has_participated_custody_case or know_of_other_custody_case_yes:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both):
+    if has_participated_custody_case or know_of_other_custody_case:
       trigger_aff_care_or_custody_computed_variables
   # Most others can be asked in-line
 
@@ -314,7 +306,7 @@ code: |
       if need_care_custody_addendum:
         attachment_temp.append(care_or_custody_proceedings_appendix_variable)
     
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
     if addAddendum_chdSupport:
       attachment_temp.append(chdSupport_addendum)

@@ -199,10 +199,12 @@ code: |
   nav.set_section('section_children_relief')
   if len(children_of_both) > 0:
     wants_custody_of
+    requests_custody
     for custody_child in wants_custody_of:
       custody_child.seeking_custody = True
 
   wants_no_contact_for
+  request_no_contact
   for contact_child in wants_no_contact_for:
     contact_child.seeking_no_contact = True
 
@@ -286,32 +288,7 @@ code: |
   # Doesn't make sense to assign to a temporary var
   # True for most of this block
   requests_custody_yes = len(wants_custody_of.elements) > 0
-  wants_custody_of1_name_full = str(wants_custody_of.item(1 - 1))
-  wants_custody_of1_age = wants_custody_of.item(1 - 1).age_in_years()
-  wants_custody_of2_name_full = str(wants_custody_of.item(2 - 1))
-  wants_custody_of2_age = wants_custody_of.item(2 - 1).age_in_years()
-  wants_custody_of3_name_full = str(wants_custody_of.item(3 - 1))
-  wants_custody_of3_age = wants_custody_of.item(3 - 1).age_in_years()
-  wants_custody_of4_name_full = str(wants_custody_of.item(4 - 1))
-  wants_custody_of4_age = wants_custody_of.item(4 - 1).age_in_years()
-  wants_custody_of5_name_full = str(wants_custody_of.item(5 - 1))
-  wants_custody_of5_age = wants_custody_of.item(5 - 1).age_in_years()
-  wants_custody_of6_name_full = str(wants_custody_of.item(6 - 1))
-  wants_custody_of6_age = wants_custody_of.item(6 - 1).age_in_years()
   
-  wants_no_contact_for1_name_full = str(wants_no_contact_for.item(1-1))
-  wants_no_contact_for1_age = wants_no_contact_for.item(1-1).age_in_years()
-  wants_no_contact_for2_name_full = str(wants_no_contact_for.item(2-1))
-  wants_no_contact_for2_age = wants_no_contact_for.item(2-1).age_in_years()
-  wants_no_contact_for3_name_full = str(wants_no_contact_for.item(3-1))
-  wants_no_contact_for3_age = wants_no_contact_for.item(3-1).age_in_years()
-  wants_no_contact_for4_name_full = str(wants_no_contact_for.item(4-1))
-  wants_no_contact_for4_age = wants_no_contact_for.item(4-1).age_in_years()
-  wants_no_contact_for5_name_full = str(wants_no_contact_for.item(5-1))
-  wants_no_contact_for5_age = wants_no_contact_for.item(5-1).age_in_years()
-  wants_no_contact_for6_name_full = str(wants_no_contact_for.item(6-1))
-  wants_no_contact_for6_age = wants_no_contact_for.item(6-1).age_in_years()
-
   hack_reasons_for_no_contact = showifdef('hack_reasons_for_no_contact', '')
   reasons_no_contact = reasons_for_no_contact_cutoff
 
@@ -379,7 +356,6 @@ id: custom_objects
 objects:
   - children: PeopleList.using(ask_number=True)
   - children_cares_for: PeopleList.using(ask_number=True)
-#  - children_of_both: PeopleList.using(auto_gather=False) # defined by code
   - wants_custody_of: PeopleList
   - wants_no_contact_for: PeopleList
   - schools_to_stay_away_from: DAList.using(object_type=Person)
@@ -558,25 +534,41 @@ comment: |
   Changed code to list only first names of children in question id: children user is parent of, but then choices for children_of_both became their full names in this question instead of only first names - even after I added '.familiar()' to the end.
 id: custody_children
 question: |
-  Which children do you need the court to give you custody of?
+  Do you need the judge to grant you custody of the children?
 fields:
-  - no label: wants_custody_of
+  - I need the judge to give me custody of ${children_of_both.familiar_or()}: requests_custody
+    datatype: yesnoradio
+  - Which children do you want custody of?: wants_custody_of
+    show if: requests_custody
     datatype: object_checkboxes
     choices: |
-      children_of_both.familiar()
-    none of the above: |
-      I do not need the court to order custody.
+      children_of_both
+    object labeler: |
+      lambda y: y.familiar()
+    none of the above: False 
+    minlength: 1
+validation code: |
+  if not requests_custody:
+    wants_custody_of = PeopleList(gathered=True, auto_gather=False)
 ---
 id: no_contact_children
 question: |
-  Which children do you need the court to order ${other_parties.familiar()} not to contact?
+  Do you need the judge to order ${other_parties.familiar()} not to contact the children?
 fields:
-  - no label: wants_no_contact_for
+  - I need the judge to order no contact for ${comma_and_list([child.familiar() for child in children + children_cares_for], and_string=word("or"))}: request_no_contact
+    datatype: yesnoradio
+  - Which child?: wants_no_contact_for
     datatype: object_checkboxes
+    show if: request_no_contact
     choices: |
       children + children_cares_for
-    none of the above: |
-      ${other_parties.familiar()} can contact my ${children.as_noun()}.
+    object labeler: |
+      lambda y: y.familiar()
+    minlength: 1      
+    none of the above: False
+validation code: |
+  if not request_no_contact:
+    wants_no_contact_for = PeopleList(gathered=True,auto_gather=False)
 ---
 id: reasons_no_contact
 question: |
@@ -909,30 +901,30 @@ attachment:
       - "have_had_paternity_cases_yes": ${ have_had_paternity_cases }
       # TODO: pdf has wrong boolean ('yes')
       - "requests_custody_yes": ${ requests_custody_yes }
-      - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
-      - "wants_custody_of1_age": ${ wants_custody_of1_age }
-      - "wants_custody_of4_name_full": ${ wants_custody_of4_name_full }
-      - "wants_custody_of4_age": ${ wants_custody_of4_age }
-      - "wants_custody_of2_name_full": ${ wants_custody_of2_name_full }
-      - "wants_custody_of2_age": ${ wants_custody_of2_age }
-      - "wants_custody_of5_name_full": ${ wants_custody_of5_name_full }
-      - "wants_custody_of5_age": ${ wants_custody_of5_age }
-      - "wants_custody_of3_name_full": ${ wants_custody_of3_name_full }
-      - "wants_custody_of3_age": ${ wants_custody_of3_age }
-      - "wants_custody_of6_name_full": ${ wants_custody_of6_name_full }
-      - "wants_custody_of6_age": ${ wants_custody_of6_age }
-      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for1_name_full }
-      - "wants_no_contact_for1_age": ${ wants_no_contact_for1_age }
-      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for4_name_full }
-      - "wants_no_contact_for4_age": ${ wants_no_contact_for4_age }
-      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for2_name_full }
-      - "wants_no_contact_for2_age": ${ wants_no_contact_for2_age }
-      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for5_name_full }
-      - "wants_no_contact_for5_age": ${ wants_no_contact_for5_age }
-      - "wants_no_contact_for3_age": ${ wants_no_contact_for3_age }
-      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for6_name_full }
-      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
-      - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
+      - "wants_custody_of1_name_full": ${ wants_custody_of.item(0) }
+      - "wants_custody_of1_age": ${ wants_custody_of.item(0).age_in_years() }
+      - "wants_custody_of2_name_full": ${ wants_custody_of.item(1) }
+      - "wants_custody_of2_age": ${ wants_custody_of.item(1).age_in_years() }
+      - "wants_custody_of3_name_full": ${ wants_custody_of.item(2) }
+      - "wants_custody_of3_age": ${ wants_custody_of.item(2).age_in_years() }
+      - "wants_custody_of4_name_full": ${ wants_custody_of.item(3) }
+      - "wants_custody_of4_age": ${ wants_custody_of.item(3).age_in_years() }
+      - "wants_custody_of5_name_full": ${ wants_custody_of.item(4) }
+      - "wants_custody_of5_age": ${ wants_custody_of.item(4).age_in_years() }
+      - "wants_custody_of6_name_full": ${ wants_custody_of.item(5) }
+      - "wants_custody_of6_age": ${ wants_custody_of.item(5).age_in_years() }
+      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for.item(0) }
+      - "wants_no_contact_for1_age": ${ wants_no_contact_for.item(0).age_in_years() }
+      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for.item(1) }
+      - "wants_no_contact_for2_age": ${ wants_no_contact_for.item(1).age_in_years() }
+      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for.item(2) }
+      - "wants_no_contact_for3_age": ${ wants_no_contact_for.item(2).age_in_years() }
+      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for.item(3) }
+      - "wants_no_contact_for4_age": ${ wants_no_contact_for.item(3).age_in_years() }
+      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for.item(4) }
+      - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).age_in_years() }
+      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
+      - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).age_in_years() }
       - "reasons_no_contact": ${ reasons_no_contact }
       # TODO: add '_yes' to field name
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
@@ -963,30 +955,30 @@ attachment:
       - "have_had_paternity_cases_no__2": ${ not have_had_paternity_cases }
       - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases }
       - "requests_custody_yes__2": ${ requests_custody_yes }
-      - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
-      - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
-      - "wants_custody_of4_name_full__2": ${ wants_custody_of4_name_full }
-      - "wants_custody_of4_age__2": ${ wants_custody_of4_age }
-      - "wants_custody_of2_name_full__2": ${ wants_custody_of2_name_full }
-      - "wants_custody_of2_age__2": ${ wants_custody_of2_age }
-      - "wants_custody_of5_name_full__2": ${ wants_custody_of5_name_full }
-      - "wants_custody_of5_age__2": ${ wants_custody_of5_age }
-      - "wants_custody_of3_name_full__2": ${ wants_custody_of3_name_full }
-      - "wants_custody_of3_age__2": ${ wants_custody_of3_age }
-      - "wants_custody_of6_name_full__2": ${ wants_custody_of6_name_full }
-      - "wants_custody_of6_age__2": ${ wants_custody_of6_age }
-      - "wants_no_contact_for1_name_full__2": ${ wants_no_contact_for1_name_full }
-      - "wants_no_contact_for1_age__2": ${ wants_no_contact_for1_age }
-      - "wants_no_contact_for4_name_full__2": ${ wants_no_contact_for4_name_full }
-      - "wants_no_contact_for4_age__2": ${ wants_no_contact_for4_age }
-      - "wants_no_contact_for2_name_full__2": ${ wants_no_contact_for2_name_full }
-      - "wants_no_contact_for2_age__2": ${ wants_no_contact_for2_age }
-      - "wants_no_contact_for5_name_full__2": ${ wants_no_contact_for5_name_full }
-      - "wants_no_contact_for5_age__2": ${ wants_no_contact_for5_age }
-      - "wants_no_contact_for3_age__2": ${ wants_no_contact_for3_age }
-      - "wants_no_contact_for6_name_full__2": ${ wants_no_contact_for6_name_full }
-      - "wants_no_contact_for3_name_full__2": ${ wants_no_contact_for3_name_full }
-      - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
+      - "wants_custody_of1_name_full": ${ wants_custody_of.item(0) }
+      - "wants_custody_of1_age": ${ wants_custody_of.item(0).age_in_years() }
+      - "wants_custody_of2_name_full": ${ wants_custody_of.item(1) }
+      - "wants_custody_of2_age": ${ wants_custody_of.item(1).age_in_years() }
+      - "wants_custody_of3_name_full": ${ wants_custody_of.item(2) }
+      - "wants_custody_of3_age": ${ wants_custody_of.item(2).age_in_years() }
+      - "wants_custody_of4_name_full": ${ wants_custody_of.item(3) }
+      - "wants_custody_of4_age": ${ wants_custody_of.item(3).age_in_years() }
+      - "wants_custody_of5_name_full": ${ wants_custody_of.item(4) }
+      - "wants_custody_of5_age": ${ wants_custody_of.item(4).age_in_years() }
+      - "wants_custody_of6_name_full": ${ wants_custody_of.item(5) }
+      - "wants_custody_of6_age": ${ wants_custody_of.item(5).age_in_years() }
+      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for.item(0) }
+      - "wants_no_contact_for1_age": ${ wants_no_contact_for.item(0).age_in_years() }
+      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for.item(1) }
+      - "wants_no_contact_for2_age": ${ wants_no_contact_for.item(1).age_in_years() }
+      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for.item(2) }
+      - "wants_no_contact_for3_age": ${ wants_no_contact_for.item(2).age_in_years() }
+      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for.item(3) }
+      - "wants_no_contact_for4_age": ${ wants_no_contact_for.item(3).age_in_years() }
+      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for.item(4) }
+      - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).age_in_years() }
+      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
+      - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).age_in_years() }
       - "reasons_no_contact__2": ${ reasons_no_contact }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
@@ -1038,30 +1030,30 @@ attachment:
       - "have_had_paternity_cases_no": ${ not have_had_paternity_cases }
       - "have_had_paternity_cases_yes": ${ have_had_paternity_cases }
       - "requests_custody_yes": ${ requests_custody_yes }
-      - "wants_custody_of1_name_full": ${ wants_custody_of1_name_full }
-      - "wants_custody_of1_age": ${ wants_custody_of1_age }
-      - "wants_custody_of4_name_full": ${ wants_custody_of4_name_full }
-      - "wants_custody_of4_age": ${ wants_custody_of4_age }
-      - "wants_custody_of2_name_full": ${ wants_custody_of2_name_full }
-      - "wants_custody_of2_age": ${ wants_custody_of2_age }
-      - "wants_custody_of5_name_full": ${ wants_custody_of5_name_full }
-      - "wants_custody_of5_age": ${ wants_custody_of5_age }
-      - "wants_custody_of3_name_full": ${ wants_custody_of3_name_full }
-      - "wants_custody_of3_age": ${ wants_custody_of3_age }
-      - "wants_custody_of6_name_full": ${ wants_custody_of6_name_full }
-      - "wants_custody_of6_age": ${ wants_custody_of6_age }
-      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for1_name_full }
-      - "wants_no_contact_for1_age": ${ wants_no_contact_for1_age }
-      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for4_name_full }
-      - "wants_no_contact_for4_age": ${ wants_no_contact_for4_age }
-      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for2_name_full }
-      - "wants_no_contact_for2_age": ${ wants_no_contact_for2_age }
-      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for5_name_full }
-      - "wants_no_contact_for5_age": ${ wants_no_contact_for5_age }
-      - "wants_no_contact_for3_age": ${ wants_no_contact_for3_age }
-      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for6_name_full }
-      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for3_name_full }
-      - "wants_no_contact_for6_age": ${ wants_no_contact_for6_age }
+      - "wants_custody_of1_name_full": ${ wants_custody_of.item(0) }
+      - "wants_custody_of1_age": ${ wants_custody_of.item(0).age_in_years() }
+      - "wants_custody_of2_name_full": ${ wants_custody_of.item(1) }
+      - "wants_custody_of2_age": ${ wants_custody_of.item(1).age_in_years() }
+      - "wants_custody_of3_name_full": ${ wants_custody_of.item(2) }
+      - "wants_custody_of3_age": ${ wants_custody_of.item(2).age_in_years() }
+      - "wants_custody_of4_name_full": ${ wants_custody_of.item(3) }
+      - "wants_custody_of4_age": ${ wants_custody_of.item(3).age_in_years() }
+      - "wants_custody_of5_name_full": ${ wants_custody_of.item(4) }
+      - "wants_custody_of5_age": ${ wants_custody_of.item(4).age_in_years() }
+      - "wants_custody_of6_name_full": ${ wants_custody_of.item(5) }
+      - "wants_custody_of6_age": ${ wants_custody_of.item(5).age_in_years() }
+      - "wants_no_contact_for1_name_full": ${ wants_no_contact_for.item(0) }
+      - "wants_no_contact_for1_age": ${ wants_no_contact_for.item(0).age_in_years() }
+      - "wants_no_contact_for2_name_full": ${ wants_no_contact_for.item(1) }
+      - "wants_no_contact_for2_age": ${ wants_no_contact_for.item(1).age_in_years() }
+      - "wants_no_contact_for3_name_full": ${ wants_no_contact_for.item(2) }
+      - "wants_no_contact_for3_age": ${ wants_no_contact_for.item(2).age_in_years() }
+      - "wants_no_contact_for4_name_full": ${ wants_no_contact_for.item(3) }
+      - "wants_no_contact_for4_age": ${ wants_no_contact_for.item(3).age_in_years() }
+      - "wants_no_contact_for5_name_full": ${ wants_no_contact_for.item(4) }
+      - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).age_in_years() }
+      - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
+      - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).age_in_years() }
       - "reasons_no_contact": ${ reasons_no_contact }
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
@@ -1087,31 +1079,30 @@ attachment:
       - "have_had_paternity_cases_no__2": ${ not have_had_paternity_cases }
       - "have_had_paternity_cases_yes__2": ${ have_had_paternity_cases }
       - "requests_custody_yes__2": ${ requests_custody_yes }
-      - "wants_custody_of1_name_full__2": ${ wants_custody_of1_name_full }
-      - "wants_custody_of1_age__2": ${ wants_custody_of1_age }
-      - "wants_custody_of4_name_full__2": ${ wants_custody_of4_name_full }
-      - "wants_custody_of4_age__2": ${ wants_custody_of4_age }
-      - "wants_custody_of2_name_full__2": ${ wants_custody_of2_name_full }
-      - "wants_custody_of2_age__2": ${ wants_custody_of2_age }
-      - "wants_custody_of5_name_full__2": ${ wants_custody_of5_name_full }
-      - "wants_custody_of5_age__2": ${ wants_custody_of5_age }
-      - "wants_custody_of3_name_full__2": ${ wants_custody_of3_name_full }
-      - "wants_custody_of3_age__2": ${ wants_custody_of3_age }
-      - "wants_custody_of6_name_full__2": ${ wants_custody_of6_name_full }
-      - "wants_custody_of6_age__2": ${ wants_custody_of6_age }
-      - "wants_no_contact_for1_name_full__2": ${ wants_no_contact_for1_name_full }
-      - "wants_no_contact_for1_age__2": ${ wants_no_contact_for1_age }
-      - "wants_no_contact_for4_name_full__2": ${ wants_no_contact_for4_name_full }
-      - "wants_no_contact_for4_age__2": ${ wants_no_contact_for4_age }
-      - "wants_no_contact_for2_name_full__2": ${ wants_no_contact_for2_name_full }
-      - "wants_no_contact_for2_age__2": ${ wants_no_contact_for2_age }
-      - "wants_no_contact_for5_name_full__2": ${ wants_no_contact_for5_name_full }
-      - "wants_no_contact_for5_age__2": ${ wants_no_contact_for5_age }
-      - "wants_no_contact_for3_age__2": ${ wants_no_contact_for3_age }
-      - "wants_no_contact_for6_name_full__2": ${ wants_no_contact_for6_name_full }
-      - "wants_no_contact_for3_name_full__2": ${ wants_no_contact_for3_name_full }
-      - "wants_no_contact_for6_age__2": ${ wants_no_contact_for6_age }
-      - "reasons_no_contact__2": ${ reasons_no_contact }
+      - "wants_custody_of1_name_full__2": ${ wants_custody_of.item(0) }
+      - "wants_custody_of1_age__2": ${ wants_custody_of.item(0).age_in_years() }
+      - "wants_custody_of2_name_full__2": ${ wants_custody_of.item(1) }
+      - "wants_custody_of2_age__2": ${ wants_custody_of.item(1).age_in_years() }
+      - "wants_custody_of3_name_full__2": ${ wants_custody_of.item(2) }
+      - "wants_custody_of3_age__2": ${ wants_custody_of.item(2).age_in_years() }
+      - "wants_custody_of4_name_full__2": ${ wants_custody_of.item(3) }
+      - "wants_custody_of4_age__2": ${ wants_custody_of.item(3).age_in_years() }
+      - "wants_custody_of5_name_full__2": ${ wants_custody_of.item(4) }
+      - "wants_custody_of5_age__2": ${ wants_custody_of.item(4).age_in_years() }
+      - "wants_custody_of6_name_full__2": ${ wants_custody_of.item(5) }
+      - "wants_custody_of6_age__2": ${ wants_custody_of.item(5).age_in_years() }
+      - "wants_no_contact_for1_name_full__2": ${ wants_no_contact_for.item(0) }
+      - "wants_no_contact_for1_age__2": ${ wants_no_contact_for.item(0).age_in_years() }
+      - "wants_no_contact_for2_name_full__2": ${ wants_no_contact_for.item(1) }
+      - "wants_no_contact_for2_age__2": ${ wants_no_contact_for.item(1).age_in_years() }
+      - "wants_no_contact_for3_name_full__2": ${ wants_no_contact_for.item(2) }
+      - "wants_no_contact_for3_age__2": ${ wants_no_contact_for.item(2).age_in_years() }
+      - "wants_no_contact_for4_name_full__2": ${ wants_no_contact_for.item(3) }
+      - "wants_no_contact_for4_age__2": ${ wants_no_contact_for.item(3).age_in_years() }
+      - "wants_no_contact_for5_name_full__2": ${ wants_no_contact_for.item(4) }
+      - "wants_no_contact_for5_age__2": ${ wants_no_contact_for.item(4).age_in_years() }
+      - "wants_no_contact_for6_name_full__2": ${ wants_no_contact_for.item(5) }
+      - "wants_no_contact_for6_age__2": ${ wants_no_contact_for.item(5).age_in_years() }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ permit_visitation_yes }
@@ -1139,7 +1130,7 @@ code: |
   txtFieldsList_page2 = list()      
   Limit1 = 75
   sLimit1 = Limit1 - 16   
-  need_noContact_addendum = len(reasons_for_no_contact) > Limit1
+  need_noContact_addendum = len(wants_no_contact_for) and len(reasons_for_no_contact) > Limit1
   if need_noContact_addendum:    
     reasons_for_no_contact_cutoff = "(See Addendum.) " + reasons_for_no_contact[:sLimit1].replace("\r","") 
     txtFieldsList_page2.append(
@@ -1147,7 +1138,7 @@ code: |
       'value': [reasons_for_no_contact]
       })
   else:
-    reasons_for_no_contact_cutoff = reasons_for_no_contact
+    reasons_for_no_contact_cutoff = reasons_for_no_contact if len(wants_no_contact_for) else ''
     
   Limit2 = 70
   sLimit2 = Limit2 - 16   

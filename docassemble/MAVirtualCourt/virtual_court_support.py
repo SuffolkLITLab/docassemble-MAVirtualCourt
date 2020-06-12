@@ -41,7 +41,7 @@ class PeopleList(DAList):
     return comma_and_list([person.name.familiar() for person in self])
 
   def familiar_or(self):
-    return comma_and_list([person.name.familiar() for person in self],and_string=word("ord"))
+    return comma_and_list([person.name.familiar() for person in self],and_string=word("or"))
 
 class UniquePeopleList(PeopleList):
   pass

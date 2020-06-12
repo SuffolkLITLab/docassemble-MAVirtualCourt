@@ -302,6 +302,7 @@ fields:
   - 'Where is the best **place** to find ${other_parties.familiar()} right now?': other_parties[0].location_best
   - 'When is the best **time** to find ${other_parties.familiar()}': other_parties[0].best_times_find
   - 'Where **else** can you find ${other_parties.familiar()}?': other_parties[0].locations_other
+    required: False
   - 'Tell the court anything more that could help police find ${other_parties.familiar()}.': other_parties[0].location_information_other
     datatype: area
     required: False
@@ -327,7 +328,7 @@ fields:
 question: |
   ${other_parties.familiar()}'s physical appearance
 fields:
-  - "What is ${other_parties.familiar()}'s race or ethnicity? (check any that apply)": other_parties[0].race
+  - What is ${other_parties.familiar()}'s race or ethnicity? (choose the best description, or "other"): other_parties[0].race
     datatype: radio
     choices:
       - White: White
