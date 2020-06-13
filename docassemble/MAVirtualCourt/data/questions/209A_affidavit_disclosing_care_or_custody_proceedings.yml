@@ -1014,13 +1014,16 @@ fields:
   - Name of court this case was filed in: other_care_custody_proceedings[i].court_name
     show if: other_care_custody_proceedings[i].non_ma_court
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
-    hint: Start typing a court name
-    input type: ajax
-    action: list_family_courts_ajax
-    trigger at: 2
-    hide if: other_care_custody_proceedings[i].non_ma_court
-    help: |
-      If you can't find your court above, try using the [Courthouse locator](https://www.mass.gov/courthouse-locator)
+    datatype: combobox
+    code: |
+      macourts.filter_courts(allowed_courts)
+    # hint: Start typing a court name
+    # input type: ajax
+    # action: list_family_courts_ajax
+    # trigger at: 2
+    # hide if: other_care_custody_proceedings[i].non_ma_court
+    # help: |
+    #   If you can't find your court above, try using the [Courthouse locator](https://www.mass.gov/courthouse-locator)
   - Docket number or case number: other_care_custody_proceedings[i].docket_number
     required: False
   - Which children were involved in this case?: other_care_custody_proceedings[i].children

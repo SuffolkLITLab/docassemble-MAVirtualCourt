@@ -79,6 +79,10 @@ code: |
   nav.set_section('section_relationship')
   user_saw_relationship
   defendant_and_plaintiff_are_parents_of_child
+  plaintiff_has_children_parent_of
+  children.gather()
+  plaintiff_has_children_cares_for
+  children_cares_for.gather()
   # relationship_to_defendant_unmarried
   
   complaint_209A_labeled_page10003 # Page 1
@@ -185,6 +189,7 @@ code: |
   nav.set_section('section_signature')
   preview_209a_package
 
+  users[0].states_above_true
   signature_fields = ['users[0].signature']
   basic_questions_signature_flow
   users[0].signature
@@ -268,6 +273,21 @@ code: |
     and not defendant_abuse_caused_physical_harm
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
+---
+question: |
+  Signing Under Oath
+subquestion: |
+  Your form must be signed "under penalties of perjury."
+  This means that it can be a crime if you lie on this form.
+fields:
+  - no label: users[0].states_above_true
+    datatype: checkboxes
+    minlength: 1
+    choices:
+      - I promise that my answers on this form are the truth under penalties of perjury
+    validation messages:
+      minlength: |
+        You cannot keep going unless you agree that you will tell the truth.
 ---
 reconsider: True
 code: |

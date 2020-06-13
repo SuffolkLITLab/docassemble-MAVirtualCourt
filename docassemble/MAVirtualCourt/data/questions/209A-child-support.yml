@@ -296,20 +296,6 @@ fields:
     required: False
 ---
 question: |
-  Signing Under Oath
-subquestion: |
-  Your child support affidavit must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form.
-fields:
-  - no label: users[0].states_above_true
-    datatype: checkboxes
-    minlength: 1
-    choices:
-      - I promise that my answers on this form are the truth under penalties of perjury
-    validation messages:
-      minlength: |
-        You cannot keep going unless you agree that you will tell the truth.
----
-question: |
   Your Insurance Expenses
 fields:
   - note: |
@@ -451,7 +437,7 @@ code: |
   # of getting a new one. Just tell them we're not
   # filling out this form.
 
-  users[0].states_above_true
+  # users[0].states_above_true
   users[0].name.first # already gathered in a prior interview?
   str(other_parties[0]) # already gathered in a prior interview?
   other_parties[0].defendant_parental_role
