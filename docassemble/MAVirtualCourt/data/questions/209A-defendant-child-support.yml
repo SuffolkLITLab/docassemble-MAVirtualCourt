@@ -161,12 +161,6 @@ code: |
   })
 ---
 question: |
-  Signing Under Oath
-subquestion: |
-  This form must be signed "under penalties of perjury."  This means that it can be a crime if you lie on the form. If you hit continue here, a box will be marked on your final form that says you are signing "under penalties of perjury."
-continue button field: users[0].states_above_true
----
-question: |
   What court division are you filing in?
 subquestion: |
   Enter the appropriate court division.
@@ -389,6 +383,22 @@ code: |
   # basic_questions_signature_flow
   #users[0].signature
   A_defendant_s_child_support_affidavit_ready_for_upload0004 = True
+---
+question: |
+  Signing Under Oath
+subquestion: |
+  Your child support affidavit must be signed "under penalties of perjury."
+  This means that it can be a crime if you lie on the form.
+fields:
+  - no label: users[0].states_above_true
+    datatype: checkboxes
+    minlength: 1
+    choices:
+      - I promise that my answers on this form are the truth under penalties of perjury
+    validation messages:
+      minlength: |
+        You cannot keep going unless you agree that you will tell the truth.
+
 ---
 continue button field: A_defendant_s_child_support_affidavit_ready_for_upload0004_preview_question
 question: |

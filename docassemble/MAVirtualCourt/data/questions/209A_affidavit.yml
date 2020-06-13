@@ -536,7 +536,7 @@ fields:
   - no label: incidents_of_abuse[i].summary
     input type: area
     default: |
-      ${ incidents_of_abuse[i].description + space("incidents_of_abuse[i].feelings", prefix=' Because of what happened, I felt ') }
+      ${ incidents_of_abuse[i].description + space("incidents_of_abuse[" + str(i) + "].feelings", prefix=' Because of what happened, I felt ') }
 ---
 question: |
   Can you describe another time ${other_parties.familiar()} abused you?
