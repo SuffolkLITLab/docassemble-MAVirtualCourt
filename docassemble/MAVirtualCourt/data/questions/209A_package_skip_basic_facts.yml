@@ -218,8 +218,9 @@ code: |
   # of the essence!
   # Old vars
   wants_visitation_orders = True
-  permit_visitation_yes = True
-  prohibit_visitation_yes = False
+  prohibit_visitation = False
+  # permit_visitation_yes = True
+  # prohibit_visitation_yes = False
   visitation_center_name = "The Visitation Center"
   visitation_center_payor_name = "The defendant"
   wants_supervision_yes = True
