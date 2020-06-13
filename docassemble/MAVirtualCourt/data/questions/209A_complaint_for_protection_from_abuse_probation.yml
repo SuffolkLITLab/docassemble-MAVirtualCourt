@@ -202,7 +202,8 @@ code: |
     requests_custody
     for custody_child in wants_custody_of:
       custody_child.seeking_custody = True
-
+  else:
+    wants_custody_of = PeopleList(gathered=True, auto_gather=False)
   wants_no_contact_for
   request_no_contact
   for contact_child in wants_no_contact_for:
@@ -287,7 +288,7 @@ code: |
   # This should just happen right in the attachment
   # Doesn't make sense to assign to a temporary var
   # True for most of this block
-  requests_custody_yes = len(wants_custody_of.elements) > 0
+  requests_custody_yes = len(children_of_both) > 0 and requests_custody and len(wants_custody_of.elements) > 0
   
   hack_reasons_for_no_contact = showifdef('hack_reasons_for_no_contact', '')
   reasons_no_contact = reasons_for_no_contact_cutoff
@@ -1151,8 +1152,8 @@ code: |
       })
   else:
     schools_to_stay_away_from_pdf_cutoff = schools_to_stay_away_from_pdf
-  need_custody_addendum = len(wants_custody_of) > 6
-  need_no_contact_addendum = len(wants_no_contact_for) > 6
+  need_custody_addendum = len(children_of_both) > 0 and requests_custody and len(wants_custody_of) > 6
+  need_no_contact_addendum = len(children + children_cares_for) and len(wants_no_contact_for) > 6
   addAddendum_page2 = need_custody_addendum or need_no_contact_addendum or bool(txtFieldsList_page2)
 ---
 attachment:

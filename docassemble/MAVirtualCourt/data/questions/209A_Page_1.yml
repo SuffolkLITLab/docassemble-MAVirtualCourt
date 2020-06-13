@@ -967,6 +967,7 @@ code: |
   defendant_abuse_caused_sexual_assault
   order_impound_plaintiff_address_school
   need_page1_addendum
+  order_page_two_relief_yes
 
   trigger_page1_computed_values = True
 

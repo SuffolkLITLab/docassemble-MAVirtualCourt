@@ -323,7 +323,7 @@ def space(var_name, prefix=' ', suffix=''):
   """If the value as a string is defined, return it prefixed/suffixed. Defaults to prefix
   of a space. Helps build a sentence with less cruft. Equivalent to SPACE function in
   HotDocs."""
-  if var_name and isinstance(var_name, str) and re.search(r'[A-Za-z][A-Za-z0-9\_]*', var_name) and defined(var_name):
+  if var_name and isinstance(var_name, str) and re.search(r'[A-Za-z][A-Za-z0-9\_]*', var_name) and defined(var_name) and value(var_name):
     return prefix + showifdef(var_name) + suffix
   else:
     return ''
