@@ -1349,11 +1349,11 @@ code: |
   for case in other_care_custody_proceedings.complete_elements():
     # If they selected an attorney and the attorney is a new one 
     # (e.g., a string rather than an Individual)
-    if case.atty_for_user and hasattr(case, 'atty_for_user_name'):
+    if case.is_open and case.atty_for_user and hasattr(case, 'atty_for_user_name'):
       atty = attorneys_for_parents.appendObject()
       atty.name.first = case.atty_for_user_name
       atty.represented_party = users
-    if case.atty_for_defendant and hasattr(case, 'atty_for_defendant_name'):
+    if case.is_open and case.atty_for_defendant and hasattr(case, 'atty_for_defendant_name'):
       atty = attorneys_for_parents.appendObject()
       atty.name.first = case.atty_for_defendant_name                
       atty.represented_party = other_parties
@@ -1364,7 +1364,7 @@ code: |
   # Build the list of attorneys for children
   attorneys_for_children.clear()
   for case in other_care_custody_proceedings.complete_elements():
-    if case.atty_for_children:
+    if case.is_open and case.atty_for_children:
       if len(case.children) == 1:
         atty = attorneys_for_children.appendObject()
         atty.name.first = case.atty_for_children_name
@@ -1374,7 +1374,10 @@ code: |
   attorneys_for_children.gathered=True
 ---
 code: |
-  gals_investigators = other_care_custody_proceedings.get_gals('gals_investigators')
+  if have_pending_cases:
+    gals_investigators = other_care_custody_proceedings.get_gals('gals_investigators')
+  else:
+    gals_investigators = DAList("gals_investigators", gathered=True, auto_gather=False)
 ---
 code: |
   # Assign each child a letter from A..Z, or even AA..AZ, etc.
