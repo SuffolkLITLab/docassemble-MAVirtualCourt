@@ -95,12 +95,12 @@ code: |
 #         DCF.child_letters = filter_letters([case.child_letters(), DCF.child_letters])
 #     else:
 #       DCF.child_letters = ''
----
-code: |
-  # children_of_both should have objects pointing to the master children list
-  children[i].address.address
-  children[i].previous_addresses.gather()
-  children[i].child_complete = True
+# ---
+# code: |
+#   # children_of_both should have objects pointing to the master children list
+#   children[i].address.address
+#   children[i].previous_addresses.gather()
+#   children[i].child_complete = True
 ---
 if: len(children_of_both) > 1
 question: |
@@ -171,8 +171,8 @@ code: |
   if len(children_of_both) > 1 and children_address_screener == 'me' or children_address_screener == 'defendant':
     if children_lived_elsewhere:
       for child in children_of_both:
-        child.previous_addresses.there_are_any
-        child.previous_addresses.minimum_number = 1
+        # child.previous_addresses.there_are_any
+        # child.previous_addresses.minimum_number = 1
         child.previous_addresses.gather()
     else:
       for child in children_of_both:
@@ -195,23 +195,6 @@ continue button field: explain_addresses_of_children
 question: |
   Has ${children[i]} lived anywhere else in the last 2 years?
 yesno: children[i].previous_addresses.there_are_any  
----
-generic object: VCIndividual
-question: |
-  Tell us about the ${ordinal(i)} previous address for ${x}
-subquestion: |
-  You'll have a chance to add more in the next question
-list collect: True # This breaks when list collect is turned on
-fields:
-  - Address: x.previous_addresses[i].address
-    address autocomplete: True
-  - Unit:     x.previous_addresses[i].unit
-    required: False
-  - City: x.previous_addresses[i].city
-  - State: x.previous_addresses[i].state
-    code: |
-      states_list()
-    default: "MA"
 ---
 question: |
   Previous Addresses for ${children[i]}
@@ -242,12 +225,6 @@ fields:
       states_list()
     default: "MA"
 ---
-generic object: VCIndividual
-code: |
-  x.past_addresses_on_one_line = comma_and_list(x.previous_addresses)
-  # Below is a typo in the PDF FIXED on 4/24
-  # x.past_addresses_on_one_line = comma_and_list(x.previous_addresses)
----
 question: |
   Has ${children[i]} lived anywhere else in the last 2 years?
 subquestion: |
@@ -273,15 +250,6 @@ code: |
         if defined('add.address.address') and len(add.address.address):
           collected_addresses_temp.setdefault(add.on_one_line(include_unit=True), add)
   collected_addresses = list(collected_addresses_temp.values())
-# ---
-# reconsider: True
-# code: |
-#   temp_previous_addresses = []
-#   if defined('children_address_screener'):
-#     for child in children_of_both:
-#       for address in child.previous_addresses.complete_elements():
-#         temp_previous_addresses.append(address)
-#   collected_previous_addressess = temp_previous_addresses
 ---
 code: |
   have_pending_cases = len(other_care_custody_proceedings.filter(is_open=True)) > 0
