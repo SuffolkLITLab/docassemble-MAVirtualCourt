@@ -43,7 +43,8 @@ code: |
   other_cases[i].docket_number
   other_cases[i].complete = True
 ---
-Comment: |
+id: ask the court for a 209a order
+comment: |
   Placeholder sentence for escape button.  
   Text to go in Basic Questions intro: 
   We can help you ask the court for a {209A restraining order}. We will ask you questions and use your answers to put together {all the forms} you need.
@@ -75,6 +76,7 @@ terms:
   
 continue button field: main_209A_package_intro
 ---
+id: who needs an order
 # comment: |
 #  Screening question placeholder
 question: |
@@ -97,6 +99,7 @@ comment: |
   Unfortunately, the reporters did not provide links to their interview sessions: Error
   There appears to be an infinite loop. Variables in stack are complaint_209A_labeled_page10003_attachment_preview, complaint_209A_labeled_page10003_preview_question, defendant_relationship_to_plaintiff_is.
 ---
+id: name of abuser
 question: |
   What is the name of the person who is abusing you?  
 fields:
@@ -120,18 +123,29 @@ fields:
       variable: other_parties[0].gender
       is: "self-described"
 ---
+id: what to expect
 question: |
   What to expect
 subquestion: |
-  When you ask the court for an abuse prevention order, the judge can do 3 things:
+  When you ask the court for an abuse prevention order, the judge can do 3
+  things:
 
-  **1.  Deny your request.** Refuse to give you a restraining order. ${other_parties.familiar()} will not get any notice that you asked the court for a restraining order.
+  **1.  Deny your request.** Refuse to give you a restraining order.
+  ${other_parties.familiar()} will not get any notice that you asked the court
+  for a restraining order.
 
-  **2. {Make a temporary order}.** The 2nd hearing will be within 10 days of the temporary order. At the 2nd hearing the judge can hear from both you and ${other_parties.familiar()} at the same time.
+  **2. {Make a temporary order}.** The 2nd hearing will be within 10 days of the
+  temporary order. At the 2nd hearing the judge can hear from both you and
+  ${other_parties.familiar()} at the same time.
 
-  **3. {Not make any order}** until they can hear from both you and ${other_parties.familiar()} at the same time.  If the judge decides **not** to make an order and you decide to go to a hearing where the judge can hear from both of you,  ${other_parties.familiar()} will find out you have asked for a restraining order.
+  **3. {Not make any order}** until they can hear from both you and
+  ${other_parties.familiar()} at the same time.  If the judge decides **not** to
+  make an order and you decide to go to a hearing where the judge can hear from
+  both of you,  ${other_parties.familiar()} will find out you have asked for a
+  restraining order.
   
-  Talk to a domestic violence advocate to learn more about what to expect. Call [SafeLink](https://www.casamyrna.org/get-support/safelink): 877-785-2020.
+  Talk to a domestic violence advocate to learn more about what to expect. Call
+  [SafeLink](https://www.casamyrna.org/get-support/safelink): 877-785-2020.
 continue button field: user_saw_what_to_expect
 Terms:
   Make a temporary order: |
@@ -139,6 +153,7 @@ Terms:
   Not make any order: |
     The judge may decide not to make an order at the first hearing if they think you will be safe from "immediate danger of abuse" from ${other_parties.familiar()}.  If the judge decides not to make an order and you decide to go to a hearing where the judge can hear from both of you, ${other_parties.familiar()} will find out you have asked for a restraining order.
 ---
+id: other cases
 question: |
   Tell us about the other cases you have had with ${other_parties.familiar()}
 subquestion: |  
@@ -158,6 +173,7 @@ fields:
   - Docket number of case: other_cases[i].docket_number
     required: False
 ---
+id: other cases there is another
 question: |
   Other cases involving you and ${other_parties.familiar()}
 subquestion: |
@@ -175,6 +191,7 @@ code: |
   plaintiff_has_children_cares_for
   plaintiff_has_minor_children = plaintiff_has_children_parent_of or plaintiff_has_children_cares_for
 ---
+id: had other cases
 question: |
   Other cases with the Defendant
 subquestion: |
@@ -193,6 +210,7 @@ yesno: plaintiff_and_defendant_other_case_yes
 #  if who_protecting_screener != 'someone else' and plaintiff_is_major_no:
 #    user_is_minor_plaintiff = True
 ---
+id: relationship does not qualify
 # event: refer_to_258E_resources
 # question: |
  # THIS IS PLACEHOLDER SCREEN FOR PEOPLE WHO SHOULD BE FILLING OUT 258E, NOT 209A. SME'S TO PROVIDE LANGUAGE. YOU GET HERE IF YOU CHECK 'NONE OF THE ABOVE' ON THE JURISDICTIONAL QUESTIONS OR YOU CLICK NONE OF THE ABOVE ON THE 'HOW DID THE DEFENDANT ABUSE YOU' QUESTIONS
@@ -207,8 +225,10 @@ buttons:
   - Exit: exit
   - Restart: restart
 ---
+id: abuse does not qualify
 Comment: |
-  This question should probably go in the Affidavit .yml if we decide to KEEP the none of the above option when listing types of abuse.
+  This question should probably go in the Affidavit .yml if we decide to KEEP
+  the none of the above option when listing types of abuse.
 event: abuse_does_not_qualify
 question: |
   In Massachusetts the law about abuse focuses on **physical** abuse. 
@@ -229,6 +249,7 @@ buttons:
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
+id: helper relationship
 question: |
   How are you related to ${users.familiar()}?
 fields:
@@ -250,6 +271,7 @@ fields:
 #    if not plaintiff_assistant_relationships_to_plaintiff == 'other':
 #      plaintiff_assistant_relationship_to_plaintiff = plaintiff_assistant_relationships_to_plaintiff
 ---
+id: defendant alias
 question: |
   Has ${other_parties.familiar()} ever used another name?
 subquestion: |
@@ -301,6 +323,7 @@ code: |
 # fields:
 #   - '${other_parties.familiar()} abused me on the following dates': abuse_suffered_date
 ---
+id: requested orders
 question: |
   What are you asking for?
 subquestion: |
@@ -329,15 +352,19 @@ code: |
   # This is silly to ask--the only reason Plaintiff wants the order
   order_defendant_stop_abuse_yes = True
 ---
-
+id: requested orders payment
 question: |
   Should the judge order ${other_parties.familiar()} to pay you for anything?
 subquestion: |
-  The judge can order ${other_parties.familiar()} to pay for money you lost or spent as a direct result of the abuse.  
+  The judge can order ${other_parties.familiar()} to pay for money you lost or
+  spent as a direct result of the abuse.  
   
-  For example, the judge might order ${other_parties.familiar()} to pay for your lost wages, medical bills, changing locks, or damaged property.  
+  For example, the judge might order ${other_parties.familiar()} to pay for your
+  lost wages, medical bills, changing locks, or damaged property.  
   
-  In some cases, the judge may also order ${other_parties.familiar()} to support **you** financially. This support would be **on top of** any child support you ask for.
+  In some cases, the judge may also order ${other_parties.familiar()} to support
+  **you** financially. This support would be **on top of** any child support you
+  ask for.
 fields:
   - 'I need the judge to order ${other_parties.familiar()} to pay me because of losses I have suffered.': order_defendant_pay_yes
     datatype: yesno
@@ -370,6 +397,7 @@ code: |
   # - 'The Court should order the relief related to my minor children.': order_page_two_relief_yes # stretch goal: if someone who said they don't have kids under eighteen checks this, then ask about kids under eighteen again.
   # datatype: yesno    
 ---
+id: protecting addresses
 question: |
   Protecting your addresses 
 subquestion: |
@@ -384,6 +412,7 @@ fields:
   - "Keep my school address off the order.": order_impound_plaintiff_address_school
     datatype: yesno
 ---
+id: other orders
 question: |
   Is there anything else you need the court to order?
 subquestion: |
@@ -408,6 +437,7 @@ help:
     * Continue to pay insurance premiums.
     * Return any important papers like my passport, birth certificates, immigration papers. 
 ---
+id: order ex parte
 question: |
  Do you need a 209A restraining order right away?
 subquestion: |
@@ -428,68 +458,69 @@ fields:
       variable: order_relief_ex_parte        
       is: False
 ---
-help: |
-  There are four courts that you can choose from to get a 209A Restraining order.
+# help: |
+#   There are four courts that you can choose from to get a 209A Restraining order.
   
-  1. The Boston Municipal Court or District court may be close to where you live.
-  2. There is only one Probate and Family Court and one Superior Court in
-  most counties, which may be further away from where you live.
+#   1. The Boston Municipal Court or District court may be close to where you live.
+#   2. There is only one Probate and Family Court and one Superior Court in
+#   most counties, which may be further away from where you live.
   
-  You can get a 209A restraining order at the District Court near where you live or the Probate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
+#   You can get a 209A restraining order at the District Court near where you live or the Probate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
   
-  If you have moved to another town in Massachusetts since the abuse, you can go to the court where you live now or to the court for an address that you had to leave because of the abuse. 
+#   If you have moved to another town in Massachusetts since the abuse, you can go to the court where you live now or to the court for an address that you had to leave because of the abuse. 
   
-  Some things to think about when you are deciding which court is better for you are:  
+#   Some things to think about when you are deciding which court is better for you are:  
   
-  #### If the other parent wants to visit your child  
-  The District Court is not supposed to order visitation between the other parent and your child as part of a 209A case. The Probate and Family Court can order visitation in a 209A case.  If you want to get visitation settled right away, you might want to go to the Probate and Family Court to file for the 209A restraining order. If you do not want the court to decide about visitation, you might want to go to the District Court for your 209A restraining order. 
+#   #### If the other parent wants to visit your child  
+#   The District Court is not supposed to order visitation between the other parent and your child as part of a 209A case. The Probate and Family Court can order visitation in a 209A case.  If you want to get visitation settled right away, you might want to go to the Probate and Family Court to file for the 209A restraining order. If you do not want the court to decide about visitation, you might want to go to the District Court for your 209A restraining order. 
   
-  #### If the person who abused you is facing criminal charges  
-  If the person who abused you is facing criminal charges related to the domestic violence, you might want to file for your 209A restraining order at the District or Superior Court where that case is. That way, you may be able to work with the same Victim/Witness Advocate for both cases.
+#   #### If the person who abused you is facing criminal charges  
+#   If the person who abused you is facing criminal charges related to the domestic violence, you might want to file for your 209A restraining order at the District or Superior Court where that case is. That way, you may be able to work with the same Victim/Witness Advocate for both cases.
   
-  Read more at: [https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a)
-question: |
-  Where do you want to file your case?
-subquestion: |
-  Which court do you plan to file your case in?
+#   Read more at: [https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a)
+# question: |
+#   Where do you want to file your case?
+# subquestion: |
+#   Which court do you plan to file your case in?
   
-  Choosing the court will change the kind of help you can get on this form. 
-  Click "Help" to learn more.
+#   Choosing the court will change the kind of help you can get on this form. 
+#   Click "Help" to learn more.
   
-  We will help you locate the right court based on your address later on
-  in this form. Give us your best guess now.
-fields:
-  - I want to file my case in: court_selection
-    input type: radio
-    choices:
-      - 'Boston Municipal Court': Municipal Court
-      - 'District Court': District Court
-      - 'Probate and Family Court': Probate Court
-      - 'Superior Court': Superior Court
-comment: |
-  validation code: |
-  if ((court_selection == 'Superior Court') 
-  and defendant_and_plaintiff_are_dating_or_dated 
-  and not defendant_and_plaintiff_are_parents_of_child
-  and related_by_household.all_false()
-  and not related_as_couple.any_true('engaged','past_engaged')
-  and relationship_to_defendant_married.all_false()
-  and not defendant_and_plaintiff_relationship_not_married_but_are_related:
-  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
-  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
-  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] == False) and
-  # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] == False) and
-  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
-  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] == False) and
-  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
-  # (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
-    validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
+#   We will help you locate the right court based on your address later on
+#   in this form. Give us your best guess now.
+# fields:
+#   - I want to file my case in: court_selection
+#     input type: radio
+#     choices:
+#       - 'Boston Municipal Court': Municipal Court
+#       - 'District Court': District Court
+#       - 'Probate and Family Court': Probate Court
+#       - 'Superior Court': Superior Court
+# comment: |
+#   validation code: |
+#   if ((court_selection == 'Superior Court') 
+#   and defendant_and_plaintiff_are_dating_or_dated 
+#   and not defendant_and_plaintiff_are_parents_of_child
+#   and related_by_household.all_false()
+#   and not related_as_couple.any_true('engaged','past_engaged')
+#   and relationship_to_defendant_married.all_false()
+#   and not defendant_and_plaintiff_relationship_not_married_but_are_related:
+#   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_dating_or_dated'] == True) and
+#   # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_married_to_each_other'] == False) and
+#   # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_relationship_formerly_married_to_each_other'] == False) and
+#   # (relationship_to_defendant_marriage_or_kids['defendant_and_plaintiff_are_parents_of_child'] == False) and
+#   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
+#   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_relationship_not_married_but_are_related'] == False) and
+#   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_are_not_related_but_live_together'] == False) and
+#   # (relationship_to_defendant_unmarried['defendant_and_plaintiff_used_to_live_together'] == False)) == True:
+#     validation_error("You cannot file in the Superior Court because you and the Defendant have a dating relationship. Pick another court.")
 # ---
 # code: |
 #   # Used to decide on page2 if we ask the person
 #   # if defendant is also a parent of the child
 #   defendant_and_plaintiff_are_parents_of_child = relationship_to_defendant_married['defendant_and_plaintiff_are_parents_of_child']
 ---
+id: user birthdate
 question: |
   % if who_protecting_screener == "someone else":
   Is ${users.familiar()} at least 18?
@@ -518,6 +549,7 @@ code: |
 #  - 'I am eighteen or older': plaintiff_is_major_yes
 #    datatype: yesnoradio # consensus seems to be that if plaintiff is under 18 AND ISN'T DOING THIS WITH A PARENT OR GUARDIAN, they should get kicked out and referred to an advocate. Wait to hear from KB after talking to CR and LG. doing these for minors is a whole other can of worms and there is a big risk that doing it wrong does more harm than good. Also, the consensus is that the population of kids trying to do 209As without their parents is small.
 ---
+id: form filing helper
 question: |
   Who will be filing these forms with you?
 subquestion: |
@@ -535,6 +567,7 @@ fields:
       - A domestic violence advocate is filing with me: advocate
       - I am filing on my own, with no help: self
 ---
+id: name of assistant
 question: |
   What is your ${plaintiff_assistant_type}'s name?
 fields:
@@ -546,6 +579,7 @@ code: |
 objects:
   - defendant_has_guns: DADict.using(auto_gather=False,gathered=True)
 ---
+id: weapons
 question: |
   Weapons
 subquestion: |
@@ -600,6 +634,7 @@ code: |
 code: |
   need_page1_addendum = need_cases_addendum or need_losses_addendum or need_relief_addendum or need_gun_addendum
 ---
+id: mandated reporters
 question: |
   % if who_protecting_screener == 'someone else':
   Because ${users.familiar()} is under 18
@@ -783,6 +818,7 @@ code: |
   if not defendant_abuse_caused_sexual_assault_force and not defendant_abuse_caused_sexual_assault_make:
     defendant_abuse_caused_sexual_assault = False
 ---
+id: other cases
 question: |
   Other Cases
 subquestion: |
@@ -793,14 +829,15 @@ fields:
   - Date of Case: other_cases[i].date_of_case
   - Docket Number: other_cases[i].docket_number
 ---
+id: refer to advocate
 event: refer_to_advocate
 question: |
- Since
- % if who_protecting_screener == "someone else":
- ${users.familiar()} is not 18: 
- % else:
- you are not 18:
- % endif.
+  Since
+  % if who_protecting_screener == "someone else":
+  ${users.familiar()} is not 18: 
+  % else:
+  you are not 18:
+  % endif.
 subquestion: |
   Our guide can only help if a parent, guardian, or advocate is helping 
   % if who_protecting_screener == "someone else":

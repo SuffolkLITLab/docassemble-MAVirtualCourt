@@ -141,6 +141,7 @@ code: |
       ],
   })
 ---
+id: child support intro
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_intro
@@ -174,6 +175,7 @@ fields:
       - A non-binary parent: "non-binary"
       - None of these or prefer not to say: "none of these"
 ---
+id: defendants insurance
 question: |
   Defendant's Insurance Expenses
 subquestion: |
@@ -211,6 +213,7 @@ fields:
       - "Weekly": weekly
       - "Monthly": monthly
 ---
+id: defendants childcare
 question: |
   Defendant's childcare expenses
 fields:
@@ -246,6 +249,7 @@ fields:
       - "Monthly": monthly
     show if: defendant_pays_child_support
 ---
+id: defendants income
 question: |
   Defendant's Income
 subquestion: |
@@ -265,6 +269,7 @@ fields:
       - "Monthly": monthly
     hide if: dont_know_op_income      
 ---
+id: defendants work
 question: |
   Defendant's Work
 fields:
@@ -273,6 +278,7 @@ fields:
   - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---
+id: defendant not working
 question: |
   ${other_parties.familiar()} is not working
 subquestion: |
@@ -283,6 +289,7 @@ subquestion: |
   and circumstances into account and deviate from the recommended minimum amount.
 continue button field: defendant_not_working_warning_given
 ---
+id: defendants job
 question: |
   Defendant's Work
 subquestion: |
@@ -295,6 +302,7 @@ fields:
     address autocomplete: True
     required: False
 ---
+id: your insurance
 question: |
   Your Insurance Expenses
 fields:
@@ -330,6 +338,7 @@ fields:
       - "Monthly": monthly
     show if: user_has_dental_insurance
 ---
+id: your expenses
 question: |
   Expenses related to your children
 subquestion: |
@@ -351,6 +360,7 @@ fields:
       - "Monthly": monthly
     show if: user_has_child_care_expenses
 ---
+id: other child support costs
 # ${ str(all_support_children) }
 question: |
   Child support
@@ -371,6 +381,7 @@ fields:
       - "Weekly": weekly
       - "Monthly": monthly
 ---
+id: your income
 question: |
   Your Income
 subquestion: |

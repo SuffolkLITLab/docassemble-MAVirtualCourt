@@ -286,6 +286,7 @@ modules:
 objects:
   - parents: DADict # MB: need this to initialize parents because we have it structured as a dictionary
 ---
+id: locating defendant
 question: |
   How can the police find ${other_parties.familiar()}?
 subquestion: |
@@ -307,6 +308,7 @@ fields:
     datatype: area
     required: False
 ---
+id: photo of defendant
 question: |
  Do you have a photo of ${other_parties.familiar()}?
 subquestion: |
@@ -325,6 +327,7 @@ fields:
     datatype: file
     show if: other_parties[0].photo_yes_can_upload    
 ---
+id: defendant appearance
 question: |
   ${other_parties.familiar()}'s physical appearance
 fields:
@@ -372,6 +375,7 @@ fields:
     required: False
     help: For example- balding, short, long, sideburns, etc.
 ---
+id: defendant vital stats
 question: |
   ${other_parties.familiar()}'s physical appearance
 subquestion: |
@@ -509,6 +513,7 @@ fields:
   - "${other_parties.familiar()}'s vehicle license plate number": other_parties[0].vehicle_license_plate
     required: False
 ---
+id: defendant language and parent info
 question: |
   General information about ${other_parties.familiar()}
 subquestion: |
@@ -534,8 +539,10 @@ fields:
     required: False
     maxlength: 4
 ---
+id: defendant safety questions
 comment: |
-  We need a "do not know" option here, will this work in PDF if we just change radio buttons to yesnomaybe?
+  We need a "do not know" option here, will this work in PDF if we just change
+  radio buttons to yesnomaybe?
 question: |
   Keeping you and the police safe
 # subquestion: |
@@ -556,6 +563,7 @@ fields:
       variable: other_parties[0].psychiatric_emotional_problems_yes
       is: True
 ---
+id: defendant contact information
 question: |
   ${other_parties.familiar()}'s contact information  
 fields:
@@ -669,6 +677,7 @@ include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
   - basic-questions.yml
 ---
+id: defendant info intro
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: defendantinformation209A0008_intro
@@ -920,7 +929,7 @@ code: |
   sLimit3 = Limit3 - 16   
   need_psychiatric_addendum = len(other_parties[0].psychiatric_emotional_problems) > Limit3
   if need_psychiatric_addendum:    
-    other_parties[0].psychiatric_emotional_problems_cutoff = "(See Addendum.) " + ther_parties[0].psychiatric_emotional_problems[:sLimit3].replace("\r","") 
+    other_parties[0].psychiatric_emotional_problems_cutoff = "(See Addendum.) " + other_parties[0].psychiatric_emotional_problems[:sLimit3].replace("\r","") 
     txtFieldsList_defendant.append(
       {'title': 'Mental health problems',
       'value': [other_parties[0].psychiatric_emotional_problems]
