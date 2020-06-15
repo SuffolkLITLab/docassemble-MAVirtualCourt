@@ -212,6 +212,7 @@ fields:
       name_suffix()
     required: False  
 ---
+id: explain first person questions
 question: |
   You are helping ${users.familiar()} fill out this form
 subquestion: |
@@ -220,6 +221,7 @@ subquestion: |
   Some answers need to be in ${users.familiar()}'s own words.
 field: tell_user_about_first_person_questions  
 ---
+id: preview form
 question: |
   Preview your document
 subquestion: |
@@ -234,12 +236,12 @@ subquestion: |
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
+id: download
 question: |
   Download screen
 subquestion: |
   ${pdf_concatenate(final_attachment_bundle)}
 event: download_screen  
-
 ---
 comment: |
   Build some variables dynamically
@@ -274,6 +276,7 @@ code: |
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
 ---
+id: affirmation
 question: |
   Signing Under Oath
 subquestion: |

@@ -418,6 +418,7 @@ validation code: |
   if not plaintiff_has_children_cares_for:
     children_cares_for.target_number = 0
 ---
+id: want orders for children
 question: |
   Do you need the restraining order to include orders to protect your ${children.as_noun()}?
 subquestion: |
@@ -832,6 +833,7 @@ subquestion: |
   Has the court already ordered child support for ${comma_and_list(children_of_both.familiar(), and_string=word("or"))}, or any other children you have with ${other_parties.familiar()}?
 yesno: existing_order
 ---
+id: explain no child support
 question: |
   We cannot ask the judge to order child support in this case
 subquestion: |

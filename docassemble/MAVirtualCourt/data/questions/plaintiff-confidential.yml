@@ -88,6 +88,7 @@ code: |
       ],
   })
 ---
+id: interpreter request
 question: |
   Do you need an interpreter?
 subquestion: |
@@ -107,6 +108,7 @@ fields:
   - My preferred language is: user_preferred_language 
     show if: user_needs_interpreter
 ---
+id: fled from home
 question: |
   Former addresses
 subquestion: |
@@ -122,10 +124,12 @@ help:
     
     ${other_parties.familiar()} will not be able to use the court location as a clue to the county you live in now.
 ---
+id: staying in dv shelter
 question: |
   Are you staying in a domestic violence shelter right now?  
 yesno: lives_in_domestic_violence_shelter
 ---
+id: warn dv shelter
 question: |
   Warning!
 subquestion: |
@@ -134,6 +138,7 @@ subquestion: |
   Most shelters have a P.O. Box you can use if the court needs to contact you or mail you anything.
 continue button field: domestic_violence_shelter_warning
 ---
+id: fled from addresses
 question: |
   Former addresses
 subquestion: |
@@ -158,20 +163,14 @@ list collect: True
 #  - Your birthdate: users[0].birthdate
 #    datatype: date
 ---
+id: address is apartment
 question: |
   Apartment building or multi-family home
 yesno: users[0].apartment_yes 
 subquestion: |
   Do you live in an apartment building or multi-family home?
 ---
-comment: |
-  Can we set this up like defendant information screen, id: defendant work information, "I am not in school"? 
-  deleted subquestion: 
-  If you are a student, provide your school name and address. If you're not a student, tap "Next".
-  
-  Please don't include your childrens' schools.  There will be another place to give that information.
-
-# continue button field: School
+id: school address
 question: |
   School
 fields:
@@ -184,6 +183,7 @@ fields:
     address autocomplete: True
     required: False
 ---
+id: authorized viewers
 continue button field: Who_is_allowed_to_see_this_form
 question: |
  Who should be able to see this confidential information?
@@ -196,10 +196,7 @@ fields:
     required: False
     datatype: area
 ---
-comment: |
-  Can we set this up like defendant information screen, id: defendant work information, "I am not working"? 
-  Deleted subquestion
-# continue button field: Workplace
+id: workplace
 question: |
   Workplace
 fields:

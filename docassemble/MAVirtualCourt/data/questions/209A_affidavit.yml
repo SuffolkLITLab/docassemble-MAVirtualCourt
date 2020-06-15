@@ -538,6 +538,7 @@ fields:
     default: |
       ${ incidents_of_abuse[i].description + space("incidents_of_abuse[" + str(i) + "].feelings", prefix=' Because of what happened, I felt ') }
 ---
+id: there is another abuse incident
 question: |
   Can you describe another time ${other_parties.familiar()} abused you?
 subquestion: |
@@ -552,6 +553,7 @@ subquestion: |
   % endif
 yesno: incidents_of_abuse.there_is_another
 ---
+id: saw incidents of abuse
 question: |
   This is what will go into your Affidavit: 
 subquestion: |
