@@ -592,14 +592,16 @@ subquestion: |
 fields:
   - A gun: defendant_has_guns['gun']
     datatype: yesnomaybe
+  - Describe the gun(s): defendant_weapons_description
+    show if: 
+      variable: defendant_has_guns['gun']
+      is: True    
   - Ammunition: defendant_has_guns['ammo']
     datatype: yesnomaybe
   - Firearms ID card: defendant_has_guns['FID']
     datatype: yesnomaybe
   - License to carry: defendant_has_guns['license']
     datatype: yesnomaybe
-  - Describe the gun(s): defendant_weapons_description
-    show if: defendant_has_guns["gun"]
 ---
 code: |
   defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')

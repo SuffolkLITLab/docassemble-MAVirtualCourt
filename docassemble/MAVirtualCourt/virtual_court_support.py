@@ -178,7 +178,7 @@ class OtherProceedingList(DAList):
   def get_gals(self, intrinsic_name):
     GALs = GALList(intrinsic_name, auto_gather=False,gathered=True)
     for case in self:
-      if case.has_gal:
+      if case.is_open and case.has_gal:
         for gal in case.gals:
           if gal.represented_all_children:
             gal.represented_children = case.children

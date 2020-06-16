@@ -39,6 +39,10 @@ code: |
   # initialize_attorney_lists
   other_care_custody_proceedings.gather()
   for case in other_care_custody_proceedings:
+    for person in case.other_parties:
+      person.address.geolocate(person.address_for_form)
+      if not person.address.geolocated:
+        person.address = DAEmpty()
     if case.is_open:
       case.atty_for_user
       if case.atty_for_children and len(case.children) > 1:
@@ -300,7 +304,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts.filter_courts(allowed_courts)
+    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
 continue button field: ask_court_question    
 help: |
   You can get a 209A restraining order at the District Court near where you live or theProbate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
@@ -1127,14 +1131,10 @@ fields:
   - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
     address autocomplete: True
     required: False
-validation code: |
-  other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
-  if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
-    other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
-  # for person in other_care_custody_proceedings[i].other_parties:
-  #   person.address.geolocate(person.address_for_form)
-  #   if not person.address.geolocated:
-  #     person.address = DAEmpty()
+# validation code: |
+  # other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
+  # if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
+  #   other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
 ---
 id: was another person in case
 question: |
