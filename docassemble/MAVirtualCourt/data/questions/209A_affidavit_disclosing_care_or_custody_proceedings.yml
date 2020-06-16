@@ -39,6 +39,10 @@ code: |
   # initialize_attorney_lists
   other_care_custody_proceedings.gather()
   for case in other_care_custody_proceedings:
+    for person in case.other_parties:
+      person.address.geolocate(person.address_for_form)
+      if not person.address.geolocated:
+        person.address = DAEmpty()
     if case.is_open:
       case.atty_for_user
       if case.atty_for_children and len(case.children) > 1:
@@ -1127,14 +1131,10 @@ fields:
   - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
     address autocomplete: True
     required: False
-validation code: |
-  other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
-  if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
-    other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
-  # for person in other_care_custody_proceedings[i].other_parties:
-  #   person.address.geolocate(person.address_for_form)
-  #   if not person.address.geolocated:
-  #     person.address = DAEmpty()
+# validation code: |
+  # other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
+  # if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
+  #   other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
 ---
 id: was another person in case
 question: |
