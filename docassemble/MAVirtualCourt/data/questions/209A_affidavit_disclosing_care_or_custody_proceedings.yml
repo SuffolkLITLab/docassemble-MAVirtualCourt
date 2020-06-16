@@ -304,7 +304,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
+    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"])
 continue button field: ask_court_question    
 help: |
   You can get a 209A restraining order at the District Court near where you live or theProbate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
@@ -986,7 +986,7 @@ fields:
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
     datatype: combobox
     code: |
-      macourts.filter_courts(allowed_courts)
+      macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
     # hint: Start typing a court name
     # input type: ajax
     # action: list_family_courts_ajax
