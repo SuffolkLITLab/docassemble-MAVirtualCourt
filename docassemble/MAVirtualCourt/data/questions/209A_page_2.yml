@@ -156,17 +156,17 @@ attachment:
     decimal places: 2    
     fields: 
       - "child1_name_full": ${ str(children[1-1]) }
-      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child1_age": ${ children[1-1].formatted_age() }
       - "child2_name_full": ${ str(children[2-1]) }
-      - "child2_age": ${ children[2-1].age_in_years() }
+      - "child2_age": ${ children[2-1].formatted_age() }
       - "child3_name_full": ${ str(children[3-1]) }
-      - "child3_age": ${ children[3-1].age_in_years() }
+      - "child3_age": ${ children[3-1].formatted_age() }
       - "child4_name_full": ${ str(children[4-1]) }
-      - "child4_age": ${ children[4-1].age_in_years() }
+      - "child4_age": ${ children[4-1].formatted_age() }
       - "child5_name_full": ${ str(children[5-1]) }
-      - "child5_age": ${ children[5-1].age_in_years() }
+      - "child5_age": ${ children[5-1].formatted_age() }
       - "child6_name_full": ${ str(children[6-1]) }
-      - "child6_age": ${ children[6-1].age_in_years() }
+      - "child6_age": ${ children[6-1].formatted_age() }
       - "user_signature": ${ users[0].signature }
       - "custody_case_yes": ${ custody_case_yes }
       - "custody_case_no": ${ custody_case_no }
@@ -392,17 +392,17 @@ attachment:
     decimal places: 2    
     fields: 
       - "child1_name_full": ${ str(children[1-1]) }
-      - "child1_age": ${ children[1-1].age_in_years() }
+      - "child1_age": ${ children[1-1].formatted_age() }
       - "child2_name_full": ${ str(children[2-1]) }
-      - "child2_age": ${ children[2-1].age_in_years() }
+      - "child2_age": ${ children[2-1].formatted_age() }
       - "child3_name_full": ${ str(children[3-1]) }
-      - "child3_age": ${ children[3-1].age_in_years() }
+      - "child3_age": ${ children[3-1].formatted_age() }
       - "child4_name_full": ${ str(children[4-1]) }
-      - "child4_age": ${ children[4-1].age_in_years() }
+      - "child4_age": ${ children[4-1].formatted_age() }
       - "child5_name_full": ${ str(children[5-1]) }
-      - "child5_age": ${ children[5-1].age_in_years() }
+      - "child5_age": ${ children[5-1].formatted_age() }
       - "child6_name_full": ${ str(children[6-1]) }
-      - "child6_age": ${ children[6-1].age_in_years() }
+      - "child6_age": ${ children[6-1].formatted_age() }
       - "custody_case_yes": ${ custody_case_yes }
       - "custody_case_no": ${ custody_case_no }
       - "paternity_case_no": ${ paternity_case_no }
