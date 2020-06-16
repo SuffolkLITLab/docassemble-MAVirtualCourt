@@ -69,6 +69,7 @@ code: |
       else:
         plaintiff_assistant_relationship_to_plaintiff = plaintiff_assistant_type
         plaintiff_assistant_type_name
+        plaintiff_assistant_name
         dcf_warning_given
 
   if who_protecting_screener == 'someone else':
