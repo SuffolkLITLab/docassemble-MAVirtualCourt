@@ -349,7 +349,6 @@ code: |
     'allowed courts': [
       'Boston Municipal Court',
       'District Court',
-      'Juvenile Court',
       'Probate and Family Court',
       'Superior Court',
     ],
@@ -953,27 +952,6 @@ code: |
 ---
 code: |
   other_care_custody_proceedings.there_are_any = has_participated_custody_case or know_of_other_custody_case
----
-comment: |
-  Build an AJAX input that lists all of the trial court departments, excluding housing
-
-  No longer used--regular combobox offers a better experience
-event: list_family_courts_ajax
-code: |
-  set_save_status('ignore')
-  wordstart = action_argument('wordstart').lower()
-  results = []
-  for court in macourts.filter_courts([
-      'Boston Municipal Court',
-      'District Court',
-      'Juvenile Court',
-      'Probate and Family Court',
-      'Superior Court',
-    ]):
-    for word in court.name.split(" "):
-      if word.lower().startswith(wordstart):
-        results.append(court.name)
-  json_response(results)
 ---
 id: about the other care or custody proceeding
 need: DCF

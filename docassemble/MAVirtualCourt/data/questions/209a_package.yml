@@ -12,6 +12,9 @@ include:
  - plaintiff-confidential.yml 
  - escape.yml
 ---
+modules:
+  - .phone
+---
 features:
   navigation: True
   question help button: True

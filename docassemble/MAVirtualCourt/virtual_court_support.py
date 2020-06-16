@@ -73,7 +73,17 @@ class VCIndividual(Individual):
     if hasattr(self, 'child_letters'):
       self.child_letters = filter_letters([new_letters, self.child_letters])
     else:
-      self.child_letters = filter_letters(new_letters)    
+      self.child_letters = filter_letters(new_letters)
+
+  def formatted_age(self):
+    dd = date_difference(self.birthdate)
+    if dd.years >= 2:
+      return '%d years' % (int(dd.years),)
+    if dd.weeks > 12:
+      return '%d months' % (int(dd.years * 12.0),)
+    if dd.weeks > 2:
+      return '%d weeks' % (int(dd.weeks),)
+    return '%d days' % (int(dd.days),)
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
