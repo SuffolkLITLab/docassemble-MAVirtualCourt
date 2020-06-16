@@ -49,19 +49,25 @@ code: |
   if who_protecting_screener == "someone else":
     plaintiff_assistant_relationship_to_plaintiff
   # plaintiff_is_major_yes # Ask for age
-  if plaintiff_is_major_yes == True:
+  if plaintiff_is_major_yes: # Plaintiff over 18
     plaintiff_is_major_no = False
-  # plaintiff_assistant_name = DAEmpty()
+    # plaintiff_assistant_name = DAEmpty()
     plaintiff_assistant_relationship_to_plaintiff = DAEmpty()   
-  else:
+  else: # if not over 18
     plaintiff_is_major_no = True
     if who_protecting_screener == 'someone else':
       if plaintiff_assistant_relationship_to_plaintiff not in ('parent', 'guardian','advocate'):
         refer_to_advocate
       else:
         dcf_warning_given
-    else:
-      refer_to_advocate
+    else: # not protecting someone else
+      if plaintiff_assistant_type == 'self':
+        refer_to_advocate
+      else:
+        plaintiff_assistant_relationship_to_plaintiff = plaintiff_assistant_type
+        plaintiff_assistant_type_name
+        dcf_warning_given
+
   if who_protecting_screener == 'someone else':
     tell_user_about_first_person_questions   
     
@@ -73,6 +79,10 @@ code: |
   nav.set_section('section_relationship')
   user_saw_relationship
   defendant_and_plaintiff_are_parents_of_child
+  plaintiff_has_children_parent_of
+  children.gather()
+  plaintiff_has_children_cares_for
+  children_cares_for.gather()
   # relationship_to_defendant_unmarried
   
   complaint_209A_labeled_page10003 # Page 1
@@ -89,6 +99,7 @@ code: |
   incident_date # Filled in with code, I think
   nav.set_section('section_children')
   if plaintiff_has_minor_children:
+    include_children_in_order
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
   # if no_abuse_checked:
   #  abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
@@ -114,11 +125,11 @@ code: |
 
   ####################### Child support
   nav.set_section('section_child_support')  
-  if plaintiff_has_minor_children and wants_child_support_yes:
-    if not existing_order:
-      Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
-    else:
-      explain_no_child_support
+  if plaintiff_has_minor_children and len(children_of_both) and wants_child_support_yes:
+      if not existing_order:
+        Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008   # Child support
+      else:
+        explain_no_child_support
 
   ############################## Defendant info
   # From page 1
@@ -131,14 +142,6 @@ code: |
   ########################## Plaintiff info
   nav.set_section('section_your_info')
   A_Plaintiff_Confidential_Information0011
-  # Ask for address info of children only if have cases to disclose
-  # if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-  #   if has_participated_custody_case or know_of_other_custody_case_yes:
-  #     # Get addresses and previous addresses for each child
-  #     explain_addresses_of_children # Not sure we need this
-  #     for child in children_of_both:
-  #       child.address.address
-  #       child.previous_addresses.gather()
   
   nav.set_section('section_privacy')
   impoundment_intro
@@ -149,8 +152,8 @@ code: |
   nav.set_section('section_care_custody')
   have_had_paternity_cases = False # We'll reevaluate below
   have_had_custody_cases  = False
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-    if has_participated_custody_case or know_of_other_custody_case_yes:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both):
+    if has_participated_custody_case or know_of_other_custody_case:
       have_had_custody_cases = True
       A_affidavit_disclosing_care_or_custody_proceedings0009 # Aff. care or custody
       for case in other_care_custody_proceedings:
@@ -175,8 +178,8 @@ code: |
   # we have some that we need to set at end instead of in regular interview flow
   # because we ask them out of order
   trigger_page1_computed_values 
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child:
-    if has_participated_custody_case or know_of_other_custody_case_yes:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both):
+    if has_participated_custody_case or know_of_other_custody_case:
       trigger_aff_care_or_custody_computed_variables
   # Most others can be asked in-line
 
@@ -186,6 +189,7 @@ code: |
   nav.set_section('section_signature')
   preview_209a_package
 
+  users[0].states_above_true
   signature_fields = ['users[0].signature']
   basic_questions_signature_flow
   users[0].signature
@@ -208,6 +212,7 @@ fields:
       name_suffix()
     required: False  
 ---
+id: explain first person questions
 question: |
   You are helping ${users.familiar()} fill out this form
 subquestion: |
@@ -216,6 +221,7 @@ subquestion: |
   Some answers need to be in ${users.familiar()}'s own words.
 field: tell_user_about_first_person_questions  
 ---
+id: preview form
 question: |
   Preview your document
 subquestion: |
@@ -230,12 +236,12 @@ subquestion: |
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
+id: download
 question: |
   Download screen
 subquestion: |
   ${pdf_concatenate(final_attachment_bundle)}
 event: download_screen  
-
 ---
 comment: |
   Build some variables dynamically
@@ -267,11 +273,24 @@ code: |
   no_abuse_checked = (not defendant_abuse_caused_fear_of_serious_physical_harm 
     and not defendant_abuse_attempted_physical_harm
     and not defendant_abuse_caused_physical_harm
-    and not defendant_abuse_caused_sexual_assault)
-# ---
-# code: |
-#   # Refer to the first incident of abuse from the 209A affidavit question
-#   abuse_suffered_date = incidents_of_abuse[0].date
+    and not defendant_abuse_caused_sexual_assault_force
+    and not defendant_abuse_caused_sexual_assault_make)
+---
+id: affirmation
+question: |
+  Signing Under Oath
+subquestion: |
+  Your form must be signed "under penalties of perjury."
+  This means that it can be a crime if you lie on this form.
+fields:
+  - no label: users[0].states_above_true
+    datatype: checkboxes
+    minlength: 1
+    choices:
+      - I promise that my answers on this form are the truth under penalties of perjury
+    validation messages:
+      minlength: |
+        You cannot keep going unless you agree that you will tell the truth.
 ---
 reconsider: True
 code: |
@@ -305,12 +324,12 @@ code: |
     attachment_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment )
     if addAddendum_page2:
       attachment_temp.append(page2_addendum)
-    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+    if defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases :
       attachment_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment)
       if need_care_custody_addendum:
         attachment_temp.append(care_or_custody_proceedings_appendix_variable)
     
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and wants_child_support_yes and not existing_order:
     attachment_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment)
     if addAddendum_chdSupport:
       attachment_temp.append(chdSupport_addendum)
@@ -342,7 +361,7 @@ code: |
     attachment_preview_temp.append( A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview )
     if addAddendum_page2:
       attachment_preview_temp.append(page2_addendum)
-    if defendant_and_plaintiff_are_parents_of_child and have_had_custody_cases:
+    if defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases:
       attachment_preview_temp.append(A_affidavit_disclosing_care_or_custody_proceedings0009_attachment_preview)
       if need_care_custody_addendum:
         attachment_preview_temp.append(care_or_custody_proceedings_appendix_variable)

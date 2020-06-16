@@ -87,15 +87,15 @@ comment: |
     Draft: Do you need to keep any of the information about this case away from the public?
   yesno: do_need_to_fill_out_this_form
 ---
+id: impoundment intro
 question:
-  Keeping information private (impoundment)
+  Keeping your information private - Motion for Impoundment
 subquestion: |
-  If you need to keep any information on this form private, you have
-  the right to ask for the court to "impound" information.
+  If you need to keep anything you have told the court from people who normally can see it, you have the right to ask the court to "impound" information.
+  
+  You must explain why it is important to keep this information private. Your reasons must be more than simply to protect your privacy. You must show that you need the court to keep the information private so nobody can use it to harm you.
 
-  The next section will ask you about information that you can
-  keep private. If you decide to request information to be kept
-  private, your court forms will include a "motion for impoundment".
+  The next section asks about information you can keep private. If you decide to ask the court to keep information private, your court forms will include a "Motion for Impoundment."
 continue button field: impoundment_intro
 ---
 code: |
@@ -104,6 +104,7 @@ code: |
   impound_case_record_information
   asked_for_impoundment = impound_personal_information or impound_case_record_information
 ---
+id: impound other
 question: |
   Keeping information private (impoundment)
 subquestion: |
@@ -121,60 +122,56 @@ fields:
     show if: impound_case_record_information
     input type: area
 ---
+Comment: |
+  At this point we already know if plaintiff has asked court to order defendant to stay away from any addresses. So this question should be more intelligent. 
+  Pursuant to G.L. c. 209A, § 8 or G.L. c. 258E, § 10 - not needed.
+id: impoud contact info  
 question: |
-  Keeping your addresses private
+  Keep private -  information about how to contact you
 subquestion: |
-  You can ask the court to keep your address information private.
+  You can ask the court to keep your addresses from police and court staff who normally would be able to see this information. You can ask the court to keep private your:
 
-  If you answer "Keep my address information private," the following information will be kept private
-  from court personnel and police employees who would otherwise see it in their normal jobs.
-
-  * Address where you live
-  * Address of your school
-  * Your telephone numbers
+  * home address, where you are living right now
+  % if not order_defendant_remain_away_plaintiff_workplace_yes:
+  ,
+  * work address
+  % endif
+  % if not order_defendant_remain_away_plaintiff_school_yes:
+  ,
+  * school address
+  % endif,  and
+  * telephone numbers.
   
-  **This will _not_ apply to any address you ask the court to order ${other_parties.familiar()}
-  to keep away from.**
+  **If you asked the court to order ${other_parties.familiar()} to keep away from any address, the court will not impound that address.**
 
-  Do you need to keep your addresses private?
+  Do you need to keep your addresses and phone numbers private?
 yesno: impound_personal_information
-help: |
-  Pursuant to G.L. c. 209A, § 8 or G.L. c. 258E, § 10, your residential and
-  workplace addresses: 
+help: 
+  label: "What is 'confidential' then?"
+  heading: "Isn't this already supposed to be confidential?"
+  content: |
+    Your home, school and work addresses: 
 
-  * will automatically be kept from being disclosed to the
-    public.
-  * will automatically be kept from being disclosed to the defendant and
-    the defendant’s attorney unless those addresses appear in the court Order
-    becauseyou have requested that the defendant be ordered to remain away from
-    your residence or workplace.
-  * will be available to you, to your attorney, to
-    those you authorize to have access, and to certain persons when access is
-    necessary in the performance oftheir duties (prosecutors, law enforcement
-    officers, victim-witness advocates, sexual assault counselors and, in G.L. c.
-    209A cases only, domestic violence counselors).
-  
-  If you have good reasons why
-  your addresses should not be disclosed to those who would otherwise have
-  access in the course of their duties, you may file this motion with the court
-  requesting a judge to issue an Order of impoundment under Trial Court Uniform
-  Rule VIII on Impoundment Procedure. If you have good reasons, you may also
-  request a judge to impound other information in this case from public
-  inspection. You must explain why there is good cause for a judge to do so.
-  Usually a general preference for privacy is not alone a sufficient reason for
-  a judge to impound court records from public inspection. 
-  
-  If you are requesting
-  an Order of impoundment without prior notice to the defendant and any other
-  interested persons, you must explain why immediate and irreparable injury may
-  otherwise result.
+    * are automatically kept from the public.
+    * are automatically kept from ${ other_parties.familiar() } and
+    ${ other_parties.familiar() }’s lawyer and 
+    * will be available to you, your lawyer, people you give the court permission to show, and to certain persons who may need this information so they can do their job. These are prosecutors, law enforcement officers, victim-witness advocates, sexual assault counselors and domestic violence counselors.
+    
+    But if you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, ${ other_parties.familiar() } and ${ other_parties.familiar() }'s lawyer the order will show the address ${ other_parties.familiar() } must stay away from.
+    
+    If you have good reasons why the court should not share this information with people who normally see the information to do their jobs, you may ask the judge to issue an Order of Impoundment. 
+    
+    Normally, everything in your complaint **except** your address, phone and email information is public. You may also ask the judge to impound this other information from the public. But you need to explain to the judge why your safety depends on impounding this other information. Your need for privacy is not a good enough reason for a judge to decide to impound court records. 
+    
+    If you ask the judge to impound information with **no notice** to ${ other_parties.familiar()} or any other interested persons, you must explain why giving notice would put you at risk of immediate harm that you would not be able to recover from.
 ---
+id: why impound
 question: |
-  Why do you need to keep information private (impounded)?
+  Why do you need the court to impound your information?
 subquestion: |  
-  Privacy alone is usually not enough; examples of good reasons include that the
+  Privacy alone is usually not enough. Good reasons for impounding include the
   information is very sensitive, such as involving sexual assault, or could be
-  very damaging to you and/or your children, or could be used for wrong reasons.
+  very damaging to you or your children, or could be used for reasons that could harm you or your children.
 
   Be specific. Include facts about your safety.
 fields:
@@ -182,20 +179,13 @@ fields:
     input type: area
     rows: 5
 ---
+id: impound ex parte
 question: |
-  Getting an impoundment order without notice to ${other_parties.familiar()}
+  Getting an impoundment order with no notice to ${other_parties.familiar()}
 subquestion: |
-  If you need, you can keep this _request to keep information private_
-  (impoundment) private.
+  You can ask the judge to impound your information with no notice to ${other_parties.familiar()} if you can show the judge you will suffer "immediate and irreparable harm" if the court lets ${other_parties.familiar()} know about this request in advance.
 
-  The judge may agree to give you an order that keeps your information private
-  without letting ${other_parties.familiar()} know about your request in
-  advance.
-
-  You can ask for this if you will suffer "immediate and irreparable harm" if
-  the court lets ${other_parties.familiar()} know about this request in advance.
-
-  Do you need an order without giving notice to ${other_parties.familiar()}?
+  Do you need the court to impound your information **and** not let ${other_parties.familiar()} know in advance that you are ask for impoundment?
 yesno: impound_information_ex_parte
 ---
 progress: 100
@@ -318,35 +308,32 @@ attachment:
 comment: Addenda related code. 
 code: |  
   txtFieldsList_impoundment = list()      
-  Limit1 = 330
+  Limit1 = 300
   sLimit1 = Limit1 - 16   
-  need_impound_addendum = len(case_record_information_to_be_impounded) > Limit1
-  if need_impound_addendum:    
-    case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded[:sLimit1] + " (See Addendum.)" 
+  need_impoundment_addendum = len(case_record_information_to_be_impounded) > Limit1
+  if need_impoundment_addendum:    
+    case_record_information_to_be_impounded_cutoff = "(See Addendum.) " + case_record_information_to_be_impounded[:sLimit1] 
     txtFieldsList_impoundment.append(
       {'title': '1. Information in the case record to be impounded',
-      'value': [case_record_information_to_be_impounded_cutoff]
+      'value': [case_record_information_to_be_impounded]
       })
   else:
     case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
     
-  Limit2 = 1000
+  Limit2 = 700
   sLimit2 = Limit2 - 16   
   need_request_addendum = len(request_based_on) > Limit2
   if need_request_addendum:    
-    request_based_on_cutoff = request_based_on[:sLimit2] + " (See Addendum.)" 
+    request_based_on_cutoff = "(See Addendum.) " + request_based_on[:sLimit2] 
     txtFieldsList_impoundment.append(
       {'title': '2. Request the Court to order impoundment',
-      'value': [request_based_on_cutoff]
+      'value': [request_based_on]
       })
   else:
     request_based_on_cutoff = request_based_on
+    
   addAddendum_impound = bool(txtFieldsList_impoundment)
-  # addAddendum_impound = False
-  # if txtFieldsList_impoundment: #if the list is not empty
-  #   addAddendum_impound = True
 ---
-# if: addAddendum_impound
 attachment:
   - variable name: impound_addendum
     docx template file: 209A_impound_addendum.docx

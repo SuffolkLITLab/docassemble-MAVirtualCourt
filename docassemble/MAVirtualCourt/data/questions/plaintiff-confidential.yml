@@ -88,42 +88,63 @@ code: |
       ],
   })
 ---
+id: interpreter request
 question: |
-  Preferred language
+  Do you need an interpreter?
 subquestion: |
-  You have the right to an interpreter. You should ask
-  for an interpreter if you speak some English but are more comfortable
-  in a different language.
+  You have the right to an interpreter. 
+  
+  If your are not 100% confident about speaking English, ask for an interpreter. If there is any chance:
+  
+  * You may not understand **everything** that is said in English. Or
+  * Other people in the hearing will not be able to understand you. 
+  Ask.
+  
+  You do not have to speak only through the interpeter, but you will have one if you need one.
+  
 fields:
-  - I want an interpreter: user_needs_interpreter
+  - I need an interpreter: user_needs_interpreter
     datatype: yesnoradio
   - My preferred language is: user_preferred_language 
     show if: user_needs_interpreter
 ---
+id: fled from home
 question: |
-  Former Addresses
+  Former addresses
 subquestion: |
-  Have you had to move because of the defendant's abuse?
+ Did you ever move because ${other_parties.familiar()} was so abusive?
 yesno: abuser_caused_plaintiff_to_leave_home
+help:
+  label: Does this matter?
+  heading: You can keep ${other_parties.familiar()} from learning where you are living  now.
+  content: |
+    You can ask your local court for a restraining order. 
+    
+    But if ${other_parties.familiar()} has no idea where you live now, you can ask the court that is local to where you **used to live**. 
+    
+    ${other_parties.familiar()} will not be able to use the court location as a clue to the county you live in now.
 ---
+id: staying in dv shelter
 question: |
-  Current Residence
-subquestion: |
-  Are you living in a domestic violence shelter?
+  Are you staying in a domestic violence shelter right now?  
 yesno: lives_in_domestic_violence_shelter
 ---
+id: warn dv shelter
 question: |
-  WARNING
+  Warning!
 subquestion: |
-  **Do not write the physical address of the domestic violence shelter on any forms.** Provide the public address, which is usually a P.O. Box.
+  **Do not write the physical address of the domestic violence shelter anywhere.** 
+  
+  Most shelters have a P.O. Box you can use if the court needs to contact you or mail you anything.
 continue button field: domestic_violence_shelter_warning
 ---
+id: fled from addresses
 question: |
-  Former or Prior Address
+  Former addresses
 subquestion: |
-  Provide any address you recently left to avoid abuse from ${other_parties.familiar()}
+  Provide any address you recently left to avoid abuse from ${other_parties.familiar()}.
 
-  If you would need to add more than one, click "${word("Add another")}" to add more.
+  If you need to add more than one address, click "${word("Add another")}." 
 fields: 
   - Address: users[0].previous_addresses[i].address
     address autocomplete: True
@@ -136,48 +157,52 @@ fields:
     default: "MA"    
 list collect: True    
 ---
-question: |
-  When were you born?
-fields:
-  - Your birthdate: users[0].birthdate
-    datatype: date
+# question: |
+#  When were you born?
+# fields:
+#  - Your birthdate: users[0].birthdate
+#    datatype: date
 ---
+id: address is apartment
 question: |
   Apartment building or multi-family home
 yesno: users[0].apartment_yes 
 subquestion: |
   Do you live in an apartment building or multi-family home?
 ---
-continue button field: School
+id: school address
 question: |
   School
-subquestion: |
-  If you're a student, provide your school name and address. If you're not a student, tap "Next".
-  
-  Please don't include your childrens' schools.  There will be another place to give that information.
 fields:
+  - I am not in school : users[0].not_in_school
+    datatype: yesno
+    disable others: True
   - 'Your school name': users[0].school_name
     required: False
   - 'School address': users[0].school_address
     address autocomplete: True
     required: False
 ---
+id: authorized viewers
 continue button field: Who_is_allowed_to_see_this_form
 question: |
-  Is there anyone you want to give permission to to see this form?
+ Who should be able to see this confidential information?
 subquestion: |
-  Please list any people who you give permission to see the information on this form.  For example, you can list your lawyer or domestic violence advocate who is helping you. 
+  Give the court the names of people who have your permission to see your addresses, phone numbers and email. 
+  
+  For example, list your lawyer, a domestic violence advocate who is helping you, advocates at a domestic violence program you are working with - really anyone you  need to be able to get this information.
 fields:
   - 'Name(s)': persons_authorized_confidential_information
     required: False
     datatype: area
 ---
-continue button field: Workplace
+id: workplace
 question: |
   Workplace
-subquestion: |
-  If you have a job, provide your employer's name and contact information. If you do not have a job, tap "Next".
 fields:
+  - I am not working: users[0].not_working
+    datatype: yesno
+    disable others: True
   - 'Name of your employer/workplace': users[0].workplace_name
     required: False
   - 'Work address': users[0].workplace_address
@@ -273,7 +298,7 @@ attachment:
       - plaintiff_phone_home: ${users[0].phone_number }
       - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      - "plainitff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
+      - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
@@ -288,13 +313,32 @@ attachment:
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
+id: plaintiff confidential intro
 comment: |
   This question is used to introduce your interview. Please customize
 continue button field: A_Plaintiff_Confidential_Information0011_intro # SMEs to provide splash page language.
 question: |
-  Plaintiff Confidential Information Form.
+  Getting and staying in touch with you
 subquestion: |
-  We are going to ask some more questions about you, including your home, work, and school address.  This information is important so that the court can contact you about your case in the future and so that the court can make an order that will help keep you as safe as possible.
+  The next questions ask for your home, work, school, email address and phone numbers. 
+  
+  The court needs this information to:
+  
+  * contact you about your case, and
+  * make an order that will help keep you as safe as possible.
+  
+  ${other_parties.familiar()}, ${other_parties.familiar()}’s lawyer, and the public are not allowed to see this information about you.
+  
+  Only certain **authorized** people can see it. Even then, they must file a Request for Access to Confidential Information form first, to ask the court's permission.
+help:
+  label: Who is an "authorized" person?
+  heading: Authorized people
+  content: |
+    People who are authorized to see your addresses and phone numbers are people who may need to contact you as part of their job.   
+    
+    They are the police or other law enforcement officers, prosecutors, victim-witness advocates, domestic violence counselors and sexual assault counselors.  
+    
+    You can give the court permission to share this contact information also with certain people you trust.
 ---
 id: interview_order_A_Plaintiff_Confidential_Information0011
 code: |
@@ -319,8 +363,23 @@ code: |
     users[0].previous_addresses.there_are_any = False    
   # users[0].apartment_yes
   users[0].birthdate
-  users[0].workplace_name 
-  users[0].school_name
+  if not order_impound_plaintiff_address_work_yes:
+    if users[0].not_working:
+      users[0].workplace_name = ''
+      users[0].workplace_address = ''
+      users[0].workplace_phone = ''
+  else:
+    users[0].workplace_name = ''
+    users[0].workplace_address = ''
+    users[0].workplace_phone = ''
+  if not order_impound_plaintiff_address_school:
+    if users[0].not_in_school:
+      users[0].school_name = ''
+      users[0].school_address = ''
+  else:
+    users[0].school_name = ''
+    users[0].school_address = ''
+  
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
   # Trigger computed values
@@ -357,7 +416,7 @@ attachment:
       - plaintiff_phone_home: ${users[0].phone_number }
       #- "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      #- "plainitff_address_residential": ${ plainitff_address_residential }
+      #- "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
@@ -382,19 +441,16 @@ code: |
   sLimit = Limit - 16   
   need_confidential_info_addendum = len(persons_authorized_confidential_information) > Limit
   if need_confidential_info_addendum:    
-    persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information[:sLimit] + " (See Addendum.)"  
+    persons_authorized_confidential_information_cutoff = "(See Addendum.) " + persons_authorized_confidential_information[:sLimit].replace("\r","")  
     txtFieldsList_confidential.append(
       {'title': 'PERSONS AUTHORIZED BY PLAINTIFF TO HAVE ACCESS TO THIS CONFIDENTIAL INFORMATION',
-      'value': [persons_authorized_confidential_information_cutoff]
+      'value': [persons_authorized_confidential_information]
       })
   else:
     persons_authorized_confidential_information_cutoff = persons_authorized_confidential_information  
+    
   addAddendum_confidential = bool(txtFieldsList_confidential)
-  # addAddendum_confidential = False
-  # if txtFieldsList_confidential: #if the list is not empty
-  #   addAddendum_confidential = True
 ---
-# if: addAddendum_confidential
 attachment:
   - variable name: confidential_info_addendum
     docx template file: 209A_confidential_info_addendum.docx
