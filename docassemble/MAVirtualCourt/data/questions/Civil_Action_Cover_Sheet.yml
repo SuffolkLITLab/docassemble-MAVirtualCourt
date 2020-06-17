@@ -259,38 +259,56 @@ question: |
 subquestion: |
   [Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action?] 
 fields:
-  - 'Yes': jury_claim_made_yes
-    datatype: yesno
-  - 'No': jury_claim_made_no
-    datatype: yesno
+  - no label: jury_claim
+    datatype: radio
+    choices:
+      - Yes: yes
+      - No: no
+---
+code: |
+  jury_claim_made_yes = jury_claim == "yes"
+  jury_claim_made_no = jury_claim == "no"
 ---
 question: |
   Hidden logic
 subquestion: |
-  Calculated fields
+  Sub-total documented medical expenses to date: $( documented_medical_expenses_total)
 fields:
-  - 'Sub-total documented medical expenses to date': documented_medical_expenses_total
   - 'Total tort claims': total_tort_claims
+---
+code: |
+  documented_medical_expenses_total = documented_medical_expenses_chiropractic + documented_medical_expenses_doctor + documented_medical_expenses_hospital + documented_medical_expenses_other + documented_medical_expenses_physical_therapy
+  datatype: currency
 ---
 question: |
   Is there a claim under G.L. c. 93A?
 subquestion: |
-  Placeholder text
+  Placeholder - Link to law: https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A
 fields:
-  - 'Yes': claim_under_glc_93a_yes
-    datatype: yesno
-  - 'No': claim_under_glc_93a_no
-    datatype: yesno
+  - no label: claim_under_glc93a
+    datatype: radio
+    choices:
+      - Yes: yes
+      - No: no
+---
+code: |
+  claim_under_glc_93a_yes = claim_under_glc93a == "yes"
+  claim_under_glc_93a_no = claim_under_glc93a == "no"
 ---
 question: |
   Is this a class action under Mass. R. Civ. P. 23?
 subquestion: |
-  Placeholder text
+  Placeholder - Link to law: https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions
 fields:
-  - 'Yes': class_action_yes
-    datatype: yesno
-  - 'No': class_action_no
-    datatype: yesno
+  - no label: class_action
+    datatype: radio
+    choices:
+      - Yes: yes
+      - No: no
+---
+code: |
+  class_action_yes = class_action == "yes"
+  class_action_no = class_action == "no"
 ---
 continue button field: Related_actions
 question: |
@@ -316,9 +334,13 @@ subquestion: |
   For instructions on how to fill out this section, refer to [Page 2 of the Civil Action Cover Sheet](https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf).
 fields:
   - 'Code number': code_number
+    required: False
   - 'Type of action': type_of_action
+    required: False
   - 'Track': track
+    required: False
   - 'Description if other': description_if_other
+    required: False
 ---
 continue button field: What_are_Plaintiffs_anticipated_future_medical_and_hospital_expenses
 question: |
@@ -327,6 +349,7 @@ subquestion: |
   Enter the estimated amount, in dollars, of expected future medical and hospital expenses related to the actions covered by this claim. 
 fields:
   - 'Anticipated future medical expenses': anticipated_future_medical_expenses
+    datatype: currency
     help: |
       [Provide details on how to calulate this number.]
 ---
@@ -365,10 +388,9 @@ question: |
   What are Plaintiff's total chiropractic expenses?
 subquestion: |
   Enter the total amount, in dollars, of documented chiropractic expenses incurred in connection with this claim.
-
-
 fields:
   - 'Total documented chiropractic expenses': documented_medical_expenses_chiropractic
+    datatype: currency
     help: |
       You can include all costs related to chiropractor visits. Do not include expenses that were charged by doctors, physical therapists, or other providers (they are covered separately).
 
@@ -380,6 +402,7 @@ subquestion: |
   Enter the total amount, in dollars, of documented expenses incurred visting doctors in connection with this claim.
 fields:
   - 'Total documented doctor expenses': documented_medical_expenses_doctor
+    datatype: currency
     help: |
       You can include all costs related to doctor visits. Do not include expenses that were charged by chiropractors, physical therapists, or other providers (they are covered separately).
 ---
@@ -389,6 +412,7 @@ subquestion: |
   Enter the total amount, in dollars, of documented hospital expenses incurred in connection with this claim.  
 fields:
   - 'Total hospital expenses': documented_medical_expenses_hospital
+    datatype: currency
     help: |
       You can include all expenses incurred with a hospital visit, like emergency room charges, supplies, overnight stays, etc. Do not include expenses that were charged by your doctor or ambulance company, chiropractor, or physical therapist (they are covered separately).
 
@@ -400,6 +424,7 @@ subquestion: |
   Enter the total amount, in dollars, of other medical expenses incurred in connection with this claim.
 fields:
   - 'Total other documented medical expenses': documented_medical_expenses_other
+    datatype: currency
     help: |
       Include all documented medical expenses incurred in connection with this claim that have not been provided in the hospital, doctor, chiropractor, or physical therapy sections.
 
@@ -411,6 +436,7 @@ subquestion: |
   Enter the total amount, in dollars, of documented physical therapy expenses incurred in connection with this claim.
 fields:
   - 'Total documented physical therapy expenses': documented_medical_expenses_physical_therapy
+    datatype: currency
     help: |
       You can include all expenses related to physical therapy. Do not include expenses that were charged by your hospital, ambulance company, chiropractor, or doctor (they are covered separately).
 
@@ -501,7 +527,7 @@ attachment:
       - "collection_of_debt_yes": ${ collection_of_debt_yes }
       - "total_contract_claims": ${ total_contract_claims }
       - "description_of_claim": ${ description_of_claim }
-      - "user_signature_date": ${ user_signature_date }
+      - "user_signature_date": ${ users[0].signature_date }
       - "related_actions": ${ related_actions }
       - "certification_signature_date": ${ certification_signature_date }
       - "certification_signature": ${ certification_signature }
@@ -515,7 +541,7 @@ continue button field: Civil_Action_Cover_Sheet0026_intro
 question: |
   Civil Action Cover Sheet
 subquestion: |
-  Placeholder text
+  A civil cover sheet must be filed with each complaint in Superior Court.
 ---
 id: interview_order_Civil_Action_Cover_Sheet0026
 code: |
@@ -612,6 +638,6 @@ attachment:
       - "collection_of_debt_yes": ${ collection_of_debt_yes }
       - "total_contract_claims": ${ total_contract_claims }
       - "description_of_claim": ${ description_of_claim }
-      - "user_signature_date": ${ user_signature_date }
+      - "user_signature_date": ${ users[0].signature_date }
       - "related_actions": ${ related_actions }
       - "certification_signature_date": ${ certification_signature_date }
