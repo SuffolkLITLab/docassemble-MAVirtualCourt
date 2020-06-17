@@ -62,7 +62,7 @@ subquestion: |
     
   If the abusive person does not obey the order, they  “violate” it. It is a crime to violate a 209A restraining order and the police can arrest them. This order can also order the abusive person to do things like pay utility bills or child support.
   
-    A restraining order is only a part of your overall safety plan. Speak with a domestic violence advocate for more help with safety planning. Call [Safelink](https://www.casamyrna.org/get-support/safelink): 1-877-785-2020.
+    A restraining order is only a part of your overall safety plan. Speak with a domestic violence advocate for more help with safety planning. Call [Safelink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}.
 terms:
  - 209A restraining order: |
     People call these court orders, "Abuse Prevention Orders","restraining orders", "209A orders" and "protective orders".
@@ -145,7 +145,7 @@ subquestion: |
   restraining order.
   
   Talk to a domestic violence advocate to learn more about what to expect. Call
-  [SafeLink](https://www.casamyrna.org/get-support/safelink): 877-785-2020.
+  [SafeLink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}.
 continue button field: user_saw_what_to_expect
 Terms:
   Make a temporary order: |
@@ -218,7 +218,7 @@ event: relationship_does_not_qualify # refer_to_258E_resources
 question: |
   Your relationship with ${other_parties.familiar()} may not be the kind a 209A restraining order covers
 subquestion: |
-  Speak with a domestic violence advocate to be sure. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. 
+  Speak with a domestic violence advocate to be sure. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) ${tel("1-877-785-2020")}. 
   
   An advocate may suggest that you ask the court for a [258E Harassment Prevention Order](https://www.masslegalhelp.org/domestic-violence/harassment-prevention-orders).
 buttons:
@@ -241,7 +241,7 @@ subquestion: |
   - **forced you** to have sex or sexual contact, or 
   - **made you** have sex or sexual contact by threatening you or making you feel that you have no choice.
 
-   A 209A restraining order is not the only way to stop someone from abusing you. If someone is abusing you in **any** way, speak with a domestic violence advocate for help. They can help you find ways to be safe. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) 877-785-2020. 
+   A 209A restraining order is not the only way to stop someone from abusing you. If someone is abusing you in **any** way, speak with a domestic violence advocate for help. They can help you find ways to be safe. Call [SafeLink](https://www.casamyrna.org/get-support/safelink) ${tel("1-877-785-2020")}. 
 buttons:
   - Exit: exit
   - Restart: restart
@@ -592,14 +592,16 @@ subquestion: |
 fields:
   - A gun: defendant_has_guns['gun']
     datatype: yesnomaybe
+  - Describe the gun(s): defendant_weapons_description
+    show if: 
+      variable: defendant_has_guns['gun']
+      is: True    
   - Ammunition: defendant_has_guns['ammo']
     datatype: yesnomaybe
   - Firearms ID card: defendant_has_guns['FID']
     datatype: yesnomaybe
   - License to carry: defendant_has_guns['license']
     datatype: yesnomaybe
-  - Describe the gun(s): defendant_weapons_description
-    show if: defendant_has_guns["gun"]
 ---
 code: |
   defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')
@@ -987,6 +989,9 @@ code: |
 ---
 code: |
   # Trigger computed values from page 1
+  # We need this to let skip undefined work. and in its own block
+  # since we shuffled order of a lot of these questions
+  # plaintiff_assistant_name
   other_parties[0].gender_male
   other_parties[0].gender_female
   defendant_weapons_safe_for_pdf
