@@ -722,7 +722,7 @@ fields:
       - 'We **used** to be engaged.': past_engaged
     none of the above: False
     required: False
-  - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
+  - no label: relationship_to_defendant_married
     datatype: checkboxes
     choices:
       - 'We are married now.': now

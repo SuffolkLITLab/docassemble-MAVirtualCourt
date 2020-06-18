@@ -460,7 +460,7 @@ subquestion: |
   % if i == 0:
   Tell us about your oldest child first.
   % else:
-  You have already told us
+  You told us
   about ${comma_and_list([child.familiar() for child in children.complete_elements()])}. 
   Tell us about your ${ordinal(i)} child. 
   % endif
@@ -537,11 +537,11 @@ comment: |
   Changed code to list only first names of children in question id: children user is parent of, but then choices for children_of_both became their full names in this question instead of only first names - even after I added '.familiar()' to the end.
 id: custody_children
 question: |
-  Do you need the judge to grant you custody of the children?
+  Do you need the judge to give you custody of the ${children.as_noun()}?
 fields:
-  - I need the judge to give me custody of ${children_of_both.familiar_or()}: requests_custody
+  - I need custody of the ${children.as_noun()} I have in common with ${other_parties.familiar()}.: requests_custody
     datatype: yesnoradio
-  - Which children do you want custody of?: wants_custody_of
+  - Which children do you need custody of?: wants_custody_of
     show if: requests_custody
     datatype: object_checkboxes
     choices: |
@@ -558,9 +558,9 @@ id: no_contact_children
 question: |
   Do you need the judge to order ${other_parties.familiar()} not to contact the children?
 fields:
-  - I need the judge to order no contact for ${comma_and_list([child.familiar() for child in children + children_cares_for], and_string=word("or"))}: request_no_contact
+  - I need the judge to order 'No contact.': request_no_contact
     datatype: yesnoradio
-  - Which child?: wants_no_contact_for
+  - Which children?: wants_no_contact_for
     datatype: object_checkboxes
     show if: request_no_contact
     choices: |
