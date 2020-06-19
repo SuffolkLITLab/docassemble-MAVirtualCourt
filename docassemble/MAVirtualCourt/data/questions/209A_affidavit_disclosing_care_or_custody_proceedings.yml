@@ -759,16 +759,30 @@ code: |
 question: |
   Confidential Address
 subquestion: |
-  Do you need your address to be kept secret for any of the following reasons?
+  This form has two pages. The second page that lists addresses and phone
+  numbers can be kept confidential (private) if you need it to be.
+  
+  Do you need your address to be kept private for any of the following reasons?
 fields:
-  - Check any that are true: confidential_address_reasons
+  - Check any that you have good reason to believe: confidential_address_reasons
     datatype: checkboxes
     choices:
-      - This is a 209A (abuse prevention) order
+      - I am filing a 209A (abuse prevention) order
       - I live in a domestic violence shelter
       - I am in danger of abuse
       - My children are in danger of abuse
-      - It should be kept secret for another reason not listed above
+      - I have a legal reason to keep it private that is not listed above
+help:
+  label: When can I keep an address private?
+  content: |
+    You can keep an address private if you believe that:
+    
+    * You live in a shelter for battered persons
+    * You or your children are in danger of physical or emotional abuse
+    * You are filing this form together with a 209A abuse prevention order
+    
+    If you believe that you have another legal reason to keep your
+    address information private, select that option on the previous screen.
 ---
 code: |
   # This checks box 3 on the form
@@ -984,16 +998,10 @@ fields:
   - Name of court this case was filed in: other_care_custody_proceedings[i].court_name
     show if: other_care_custody_proceedings[i].non_ma_court
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
+    hide if: other_care_custody_proceedings[i].non_ma_court
     datatype: combobox
     code: |
-      macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
-    # hint: Start typing a court name
-    # input type: ajax
-    # action: list_family_courts_ajax
-    # trigger at: 2
-    # hide if: other_care_custody_proceedings[i].non_ma_court
-    # help: |
-    #   If you can't find your court above, try using the [Courthouse locator](https://www.mass.gov/courthouse-locator)
+      sorted((set([str(y) for y in macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])])))
   - Docket number or case number: other_care_custody_proceedings[i].docket_number
     required: False
   - Which children were involved in this case?: other_care_custody_proceedings[i].children

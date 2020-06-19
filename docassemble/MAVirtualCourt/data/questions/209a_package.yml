@@ -15,6 +15,14 @@ include:
 modules:
   - .phone
 ---
+code: |
+  allowed_courts = [
+      "Boston Municipal Court",
+      "District Court",
+      "Superior Court",
+      "Probate and Family Court",
+      ]
+---
 features:
   navigation: True
   question help button: True
@@ -177,6 +185,10 @@ code: |
   plaintiff_and_defendant_other_case_description
 
   nav.set_section('section_court')
+  for address in users[0].previous_addresses + [users[0].address]:
+    address.geolocate()
+  all_matches = macourts.matching_courts(users[0].previous_addresses + [users[0].address], court_types=allowed_courts)
+  courts[0]
   fill_in_court_name # used in aff. of care and custody
   # Make sure we don't leave any computed values empty
   # we have some that we need to set at end instead of in regular interview flow
@@ -385,3 +397,67 @@ code: |
     if addAddendum_impound:
       attachment_preview_temp.append(impound_addendum)  
   final_attachment_preview = attachment_preview_temp
+  
+---
+sets:
+  - courts[0]
+id: choose a court
+question: |
+  What court will you file in?
+subquestion: |
+  % if len(all_matches) > 0:
+  Below is a map of the ${comma_and_list(allowed_courts)} court(s) that serve the
+  address you gave us, ${users[0].address.on_one_line()}.
+  
+  % if len(users[0].previous_addresses):
+  We also list courts that serve ${users[0].previous_addresses}.
+  % endif
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
+  
+  Choose the court that offers:
+  
+  1. The help that you need.
+  2. Is in a location you can get to.
+  
+  Click "How do I choose a court?" to learn more.
+  
+  Note: during the Covid-19 emergency, your hearing may happen over the
+  phone and not in person.
+fields:
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
+    object labeler: |
+      lambda y: '**' + str(y) +' (' + y.address.city + ')**' + '[BR]' + y.address.on_one_line() + '[BR]' + y.description
+  - note: |
+      Does the list above look wrong? If you think you should file in a
+      court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)
+    choices: macourts    
+help:
+  label: |
+    How do I choose a court?
+  content: |
+    You can get a 209A restraining order at the District Court near where you live or the Probate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
+  
+    If you have moved to another town in Massachusetts since the abuse, you can go to the court where you live now or to the court for an address that you had to leave because of the abuse. 
+  
+    Some things to think about when you are deciding which court is better for you are:  
+  
+    #### If the other parent wants to visit your child  
+    The District Court is not supposed to order visitation between the other parent and your child as part of a 209A case. The Probate and Family Court can order visitation in a 209A case.  If you want to get visitation settled right away, you might want to go to the Probate and Family Court to file for the 209A restraining order. If you do not want the court to decide about visitation, you might want to go to the District Court for your 209A restraining order. 
+    #### If the person who abused you is facing criminal charges  
+    If the person who abused you is facing criminal charges related to the domestic violence, you might want to file for your 209A restraining order at the District or Superior Court where that case is. That way, you may be able to work with the same Victim/Witness Advocate for both cases.
+  
+    Read more at: [https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a)
+  
