@@ -479,6 +479,8 @@ fields:
   - Last Name: children[i].name.last
   - Suffix: children[i].name.suffix
     required: False
+    code: |
+      name_suffix()
   - Birthdate: children[i].birthdate
     datatype: date
     min: ${ today().minus(years=18) }
