@@ -716,13 +716,15 @@ fields:
   - no label: related_as_couple
     datatype: checkboxes
     choices:
-      - 'I have been dating ${ other_parties.familiar() }.': dating
+      - 'I am dating ${ other_parties.familiar() }.': dating
       - 'We **used** to date.': dated
       - 'We are engaged.': engaged
       - 'We **used** to be engaged.': past_engaged
     none of the above: False
     required: False
-  - 'Were you ever married to ${ other_parties.familiar() }?': relationship_to_defendant_married
+  - note: |
+      Were you ever married to ${other_parties.familiar()}?
+  - no label: relationship_to_defendant_married
     datatype: checkboxes
     choices:
       - 'We are married now.': now
