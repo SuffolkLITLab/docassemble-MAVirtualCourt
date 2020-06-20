@@ -224,10 +224,10 @@ fields:
   - 'Total contract claims': total_contract_claims
     datatype: currency
     help: |
-      [Provide instructions on calculating contact claims.]
+      Provide instructions on calculating contact claims.
   - 'Description of contract claims': description_of_claim
     help: |
-      [Provide example description.]
+      Provide example description.
 ---
 question: |
   Describe Plaintiff's injury
@@ -236,19 +236,19 @@ subquestion: |
 fields:
   - "Description of plaintiff's injury": description_plaintiff_injury
     help: |
-      [Provide example injury description.] 
+      Provide example injury description.
 ---
 continue button field: Does_Plaintiff_have_other_documented_damages
 question: |
   Does Plaintiff have other documented damages?
 subquestion: |
-  If the Plaintiff incurred any other damages related to the actions covered in this claim, enter the total amount and describe the additional damages here. These damages [may] require documentation. 
+  If the Plaintiff incurred any other damages related to the actions covered in this claim, enter the total amount and describe the additional damages here. These damages may require documentation. 
 fields:
   - 'Other documented damages': documented_damages
     datatype: currency
   - 'Description of other documented damages': documented_items_of_damages_other
     help: |
-      [Provide examples of types of additional damages that can be listed here.]
+      Provide examples of types of additional damages that can be listed here.
 ---
 question: |
   Does this action include a claim involving collection of a debt?
@@ -259,7 +259,7 @@ yesno: collection_of_debt_yes
 question: |
   Has a jury claim been made?
 subquestion: |
-  [Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action?] 
+  Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action? 
 fields:
   - no label: jury_claim
     datatype: radio
@@ -274,7 +274,7 @@ code: |
 question: |
   Hidden logic
 subquestion: |
-  Sub-total documented medical expenses to date: $( documented_medical_expenses_total)
+  Sub-total documented medical expenses to date
 fields:
   - 'Total tort claims': total_tort_claims
 ---
@@ -354,19 +354,19 @@ fields:
   - 'Anticipated future medical expenses': anticipated_future_medical_expenses
     datatype: currency
     help: |
-      [Provide details on how to calulate this number.]
+      Provide details on how to calulate this number.
   - 'Anticipated lost wages': anticipated_lost_wages
     datatype: currency
     help: |
-      [Provide details on how to calculate this amount.]
+      Provide details on how to calculate this amount.
   - 'Documented lost wages and compensation': documented_lost_wages
     datatype: currency
     help: |
-      [Insert help text that explains lost wages and compensation.]
+      Insert help text that explains lost wages and compensation.
   - 'Documented property damages': documented_property_damages
     datatype: currency
     help: |
-      [Insert help text that describes property damages.] 
+      Insert help text that describes property damages.
 ---
 #continue button field: What_are_Plaintiffs_anticipated_lost_wages
 #question: |
@@ -596,7 +596,7 @@ code: |
   collection_of_debt_yes
   Contract_claims
   Related_actions
-  documented_medical_expenses_total
+  # documented_medical_expenses_total
   users[0].signature_date
   docket_numbers[0]
   str(plaintiffs[0])
