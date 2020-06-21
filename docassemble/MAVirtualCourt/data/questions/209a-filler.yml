@@ -22,6 +22,12 @@ comment: |
   1. Children attorneys
   1. GALs
   
+  Other info
+  1. Children over 18
+  1. Former addresses
+  1. user_preferred_language
+  1. Other info to keep private
+  
   Note: `invalidate()` doesn't work as a way to pre-fill questions
   and then trigger them anyway.
 ---
@@ -65,7 +71,7 @@ fields:
   #- WIP Skip intro (including accepting terms): to_fill.set_intro
   #  datatype: yesnowide
   #  default: True
-  - "Pre-fill children (this won't pre-fill who their parents are)": to_fill.set_children
+  - "Pre-fill children": to_fill.set_children
     datatype: yesnowide
     default: True
   - Children: num_children
@@ -78,7 +84,8 @@ fields:
       - Two children: 2
       - Eight children: 8
   - Which of the above children are joint?: which_are_joint
-    show if: set_joint_children
+    js show if: |
+      parseInt(val("num_children")) > 0
     datatype: radio
     default: All
     choices:
@@ -94,6 +101,15 @@ fields:
       - One child: 1
       - Two children: 2
       - Eight children: 8
+  - How many of those are children of the defendant?: num_of_just_def
+    js show if: |
+      parseInt(val("num_custody_children")) > 0
+    datatype: radio
+    default: All
+    choices:
+      - All
+      - None
+      - Don't set: no_set
   - Pre-fill children's schools/daycares: to_fill.set_daycares
     datatype: yesnowide
     show if: to_fill.set_children
@@ -112,7 +128,6 @@ fields:
     datatype: yesnowide
     default: True
     show if: to_fill.set_visitation
-  - note: <hr/>
   #- Pre-fill two orders for defendant to keep away from plaintiff: to_fill.set_plaintiff_keep_aways
   #  datatype: yesnowide
   - note: |
@@ -180,12 +195,19 @@ code: |
   users[0].name.middle = 'Pip'
   users[0].name.last = 'Plaintiff'
   users[0].name.suffix = 'II'
-  #users[0].birthdate = as_datetime('01/01/1990')
+  #users[0].birthdate = as_datetime('01/01/1990')  # Trigger
+  
+  # Address/Contact info for future? Trigger not yet known.
+  # Street  # Trigger
+  # Unit, city, state, zip
+  users[0].mobile_number = '000-0000'
   users[0].phone_number = '111-1111'
+  #users[0].email
+  #users[0].other_contact_method
   
   #other_parties[0].name.first = 'Drew'  # Screen trigger
   other_parties[0].name.middle = 'Dar'
-  other_parties[0].name.last = 'Defendant'
+  other_parties[0].name.last = 'Def'
   other_parties[0].name.suffix = 'III'
 
   # other_parties[0].address.address  # Screen trigger
@@ -197,8 +219,8 @@ code: |
   #other_parties[0].address.geolocate()  # Triggers gathering
   other_parties[0].mobile_number = '222-2222'
   other_parties[0].phone_number = '333-3333'
-  other_parties[0].email = 'drew@example.com'
-  other_parties[0].name_door_mailbox = 'Drew'
+  other_parties[0].email = 'def@example.com'
+  other_parties[0].name_door_mailbox = 'Def'
   
   #other_parties[0].location_best  # Screen trigger
   other_parties[0].best_times_find = '2pm'
@@ -251,12 +273,13 @@ code: |
   for child_i in range( int_children ):
     child_num = str( child_i + 1 )
     #children[ child_i ].name.first = 'Child' + child_num
-    children[ child_i ].name.middle = 'Of'
+    children[ child_i ].name.middle = 'Child of'
     children[ child_i ].name.last = 'Plaintiff'
     children[ child_i ].name.suffix = 'Jr'
-    date_str = '01/0' + child_num + '/2018'
+    date_str = '0' + child_num + '/0' + child_num + '/201' + child_num
     children[ child_i ].birthdate = as_datetime( date_str )
     if which_are_joint == 'All': children[ child_i ].defendant_is_parent = True
+    if which_are_joint == 'None': children[ child_i ].defendant_is_parent = False
 
   # Children under plaintiff's care or custody
   int_custody_children = int( num_custody_children )
@@ -268,11 +291,50 @@ code: |
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Custody'
     children_cares_for[ c_child_i ].name.suffix = 'Jr'
-    date_str = '01/0' + child_num + '/2018'
+    date_str = '1' + child_num + '/0' + child_num + '/201' + child_num
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
+    log( num_of_just_def, 'console' )
+    if num_of_just_def == 'All':
+      children_cares_for[ c_child_i ].defendant_is_parent = True
+    if num_of_just_def == 'None':
+      children_cares_for[ c_child_i ].defendant_is_parent = False
 
   log( 'set_children', 'console' )
   set_children = True
+---
+# Wants custody of - can set requests_custody
+comment: |
+  - I need custody of the ${children.as_noun()} I have in common with ${other_parties.familiar()}.: requests_custody
+    datatype: yesnoradio
+  - Which children do you need custody of?: wants_custody_of  # Trigger
+    show if: requests_custody
+    datatype: object_checkboxes
+    choices: |
+      children_of_both
+    object labeler: |
+      lambda y: y.familiar()
+    none of the above: False 
+    minlength: 1
+  validation code: |
+    if not requests_custody:
+      wants_custody_of = PeopleList(gathered=True, auto_gather=False)
+---
+# Wants no contact for - can set request_no_contact
+comment: |
+  - I need the judge to order 'No contact.': request_no_contact
+    datatype: yesnoradio
+  - Which children?: wants_no_contact_for  # Trigger
+    datatype: object_checkboxes
+    show if: request_no_contact
+    choices: |
+      children + children_cares_for
+    object labeler: |
+      lambda y: y.familiar()
+    minlength: 1      
+    none of the above: False
+  validation code: |
+    if not request_no_contact:
+      wants_no_contact_for = PeopleList(gathered=True,auto_gather=False)
 ---
 id: daycares
 sets: set_daycares
@@ -301,7 +363,7 @@ code: |
   if set_visitation_center:
     visitation_center_name = 'Visits R Us'
     pays_for_center = 'other'
-    other_pays_for_center = 'My Besty'
+    other_pays_for_center = 'My Friend'
 
   wants_supervision = True
   visitation_supervisor_name_full = 'Val'
@@ -318,13 +380,21 @@ code: |
   log( 'set_visitation', 'console' )
   set_visitation = True
 ---
+# Children over 18 needing child support names
+# Low priority
+---
 id: set_plaintiff_keep_aways
 sets: set_plaintiff_keep_aways
 scan for variables: False
 code: |
-
-
-  #order_defendant_remain_away_plaintiff_residence_yes
+  #order_defendant_remain_away_plaintiff_residence_yes  # Trigger
+  #order_defendant_no_contact_unless_court_authorized_yes = True
+  #order_defendant_remain_away_plaintiff_workplace_yes = True
+  #order_defendant_remain_away_plaintiff_school_yes = True
+  
+  # Is impoundment part of keep aways mentally for testers?
+  #order_impound_plaintiff_address_residential_yes  # Trigger
+  
   set_plaintiff_keep_aways = True
 ---
 id: defendant_info
@@ -344,7 +414,7 @@ sets: defendant_info_profile_1
 scan for variables: False
 code: |
   #defendant_has_alias  # Screen trigger
-  other_parties[0].name_other = 'Def'
+  other_parties[0].name_other = 'Defe'
   other_parties[0].gender = "female"
   
   #other_parties[0].understands_english  # Screen trigger
@@ -353,9 +423,9 @@ code: |
     'parents', there_are_any = True,
     there_is_another = False, gathered = True
   )
-  parents[0] = 'Drew Mom'
-  parents[1] = 'Drew Dad'
-  other_parties[0].birthplace = 'Birthplace'
+  parents[0] = 'Def Mom'
+  parents[1] = 'Def Dad'
+  other_parties[0].birthplace = 'Denver, CO'
   other_parties[0].social_security_number = '2222'  # Not populating?
   
   #other_parties[0].race  # Screen trigger
@@ -366,7 +436,7 @@ code: |
   other_parties[0].hair_other_style = 'Long'
   
   #other_parties[0].height  # Screen trigger
-  other_parties[0].birthdate = as_datetime('12/22/2000')
+  other_parties[0].birthdate = as_datetime('02/22/2000')
   other_parties[0].weight = '222 lb'
   other_parties[0].physical_build = DADict(
     'other_parties[0].physical_build', there_are_any = True,
@@ -388,7 +458,7 @@ code: |
   defendant_has_guns[ 'ammo' ] = True
   defendant_has_guns[ 'FID' ] = True
   defendant_has_guns[ 'license' ] = True
-  #defendant_weapons_description = 'Big'
+  defendant_weapons_description = 'Big'
   
   #other_parties[0].police_violence_yes  # Screen trigger
   other_parties[0].drug_alcohol_yes = True
