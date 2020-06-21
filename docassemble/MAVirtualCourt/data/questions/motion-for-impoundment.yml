@@ -105,17 +105,22 @@ code: |
 ---
 id: impound other
 question: |
-  Keeping information private (impoundment)
+  Keeping information private - Asking the court to impound
 subquestion: |
-  Unless you ask the court, the forms you file (other than the confidential information form)
-  will become a public record.
+  The only information the court keeps private automatically, is your 
+  % if plaintiff_has_minor_children:
+  ${ children.as_noun()}'s addresses and 
+  % endif
+  your contact information, that goes on the Plaintiff Confidential Information form: your address, phone numbers, email and the best way to reach you. 
 
-  You can ask the court to keep your form private.
+  The rest of the forms you file are public record.  
+  
+  You can ask the court to impound your other forms to keep other information in your forms private. You will need to explain why it is critical to your safety to keep this information private.
 fields:
   - Is there any information on this form that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
   - note: |
-      Explain what you want kept private below
+      Explain what you need the court to keep private below:
     show if: impound_case_record_information      
   - no label: case_record_information_to_be_impounded
     show if: impound_case_record_information
@@ -124,7 +129,7 @@ fields:
 Comment: |
   At this point we already know if plaintiff has asked court to order defendant to stay away from any addresses. So this question should be more intelligent. 
   Pursuant to G.L. c. 209A, § 8 or G.L. c. 258E, § 10 - not needed.
-id: impoud contact info  
+id: impound contact info
 question: |
   Keep private -  information about how to contact you
 subquestion: |
@@ -141,7 +146,7 @@ subquestion: |
   % endif,  and
   * telephone numbers.
   
-  **If you asked the court to order ${other_parties.familiar()} to keep away from any address, the court will not impound that address.**
+  The Court can keep your address from ${other_parties.familiar()} even if the judge orders ${other_parties.familiar()} to stay away from that address. Your restraining order will order ${other_parties.familiar()} to stay away from your address, "wherever that may be."
 
   Do you need to keep your addresses and phone numbers private?
 yesno: impound_personal_information
@@ -156,11 +161,11 @@ help:
     ${ other_parties.familiar() }’s lawyer and 
     * will be available to you, your lawyer, people you give the court permission to show, and to certain persons who may need this information so they can do their job. These are prosecutors, law enforcement officers, victim-witness advocates, sexual assault counselors and domestic violence counselors.
     
-    But if you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, ${ other_parties.familiar() } and ${ other_parties.familiar() }'s lawyer the order will show the address ${ other_parties.familiar() } must stay away from.
+    If you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, the order will say ${ other_parties.familiar() } must stay away from your home, work or school, "whereever that may be."
     
-    If you have good reasons why the court should not share this information with people who normally see the information to do their jobs, you may ask the judge to issue an Order of Impoundment. 
+    If you need the court not to share this information with people who normally see the information to do their jobs, you may ask the judge to issue an Order of Impoundment. 
     
-    Normally, everything in your complaint **except** your address, phone and email information is public. You may also ask the judge to impound this other information from the public. But you need to explain to the judge why your safety depends on impounding this other information. Your need for privacy is not a good enough reason for a judge to decide to impound court records. 
+    Normally, everything in your complaint **except** your address, phone and email information is public. You may ask the judge to impound this other information from the public also. But you need to explain to the judge why your safety depends on impounding this other information. Your need for privacy is not a good enough reason for a judge to decide to impound court records. 
     
     If you ask the judge to impound information with **no notice** to ${ other_parties.familiar()} or any other interested persons, you must explain why giving notice would put you at risk of immediate harm that you would not be able to recover from.
 ---

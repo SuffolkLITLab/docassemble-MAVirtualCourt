@@ -308,8 +308,11 @@ id: your address
 question: |
   Your address
 subquestion: |
-  You will have a chance to request this address to be kept
-  private later.
+  % if order_impound_plaintiff_address_residential_yes:
+  You already asked the court to keep your address off any court orders. But the court needs your address so they can reach you about your case. 
+  % else:
+  The court keeps your address on the Plaintiff Confidential Information form, separate from the rest of your file. 
+  % endif 
 fields:
   - Street address: users[0].address.address
     address autocomplete: True
