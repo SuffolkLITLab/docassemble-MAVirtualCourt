@@ -71,7 +71,7 @@ fields:
   #- WIP Skip intro (including accepting terms): to_fill.set_intro
   #  datatype: yesnowide
   #  default: True
-  - "Pre-fill children (this won't pre-fill who their parents are)": to_fill.set_children
+  - "Pre-fill children": to_fill.set_children
     datatype: yesnowide
     default: True
   - Children: num_children
@@ -84,7 +84,8 @@ fields:
       - Two children: 2
       - Eight children: 8
   - Which of the above children are joint?: which_are_joint
-    show if: to_fill.set_children
+    js show if: |
+      parseInt(val("num_children")) > 0
     datatype: radio
     default: All
     choices:
@@ -100,6 +101,15 @@ fields:
       - One child: 1
       - Two children: 2
       - Eight children: 8
+  - How many of those are children of the defendant?: num_of_just_def
+    js show if: |
+      parseInt(val("num_custody_children")) > 0
+    datatype: radio
+    default: All
+    choices:
+      - All
+      - None
+      - Don't set: no_set
   - Pre-fill children's schools/daycares: to_fill.set_daycares
     datatype: yesnowide
     show if: to_fill.set_children
@@ -283,6 +293,11 @@ code: |
     children_cares_for[ c_child_i ].name.suffix = 'Jr'
     date_str = '1' + child_num + '/0' + child_num + '/201' + child_num
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
+    log( num_of_just_def, 'console' )
+    if num_of_just_def == 'All':
+      children_cares_for[ c_child_i ].defendant_is_parent = True
+    if num_of_just_def == 'None':
+      children_cares_for[ c_child_i ].defendant_is_parent = False
 
   log( 'set_children', 'console' )
   set_children = True
