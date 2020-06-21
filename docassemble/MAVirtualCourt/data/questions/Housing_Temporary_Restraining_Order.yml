@@ -161,7 +161,7 @@ fields:
       variable: landlord_type      
       is: "individual"
     required: False      
-  - Name of organization or business: other_parties[0].name.first
+  - Name of business or organization: other_parties[0].name.first
     show if:
       variable: landlord_type
       is: business

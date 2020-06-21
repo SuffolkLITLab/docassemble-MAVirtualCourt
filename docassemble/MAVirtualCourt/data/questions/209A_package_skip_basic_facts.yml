@@ -10,6 +10,8 @@ subquestion: |
   Skipping a section will provide answers to some of the questions.
   It's not a guarantee of testing, but it can help you quickly
   advance to the right screen to test.
+  
+  ${tel(6073514615)}
 fields:
   - Do you want to skip straight to the PDF?: wants_to_pick_sections
     datatype: radio

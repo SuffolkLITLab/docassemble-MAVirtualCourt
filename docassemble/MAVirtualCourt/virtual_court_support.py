@@ -1,6 +1,6 @@
 from docassemble.base.functions import define, defined, value, comma_and_list, word, comma_list, DANav, url_action, showifdef
 
-from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person
+from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person, date_difference
 from docassemble.assemblylinewizard.interview_generator import map_names
 import re
 
@@ -73,7 +73,17 @@ class VCIndividual(Individual):
     if hasattr(self, 'child_letters'):
       self.child_letters = filter_letters([new_letters, self.child_letters])
     else:
-      self.child_letters = filter_letters(new_letters)    
+      self.child_letters = filter_letters(new_letters)
+
+  def formatted_age(self):
+    dd = date_difference(self.birthdate)
+    if dd.years >= 2:
+      return '%d years' % (int(dd.years),)
+    if dd.weeks > 12:
+      return '%d months' % (int(dd.years * 12.0),)
+    if dd.weeks > 2:
+      return '%d weeks' % (int(dd.weeks),)
+    return '%d days' % (int(dd.days),)
 
 # TODO: create a class for OtherCases we list on page 1. Is this related
 # to the other care/custody proceedings?
@@ -178,7 +188,7 @@ class OtherProceedingList(DAList):
   def get_gals(self, intrinsic_name):
     GALs = GALList(intrinsic_name, auto_gather=False,gathered=True)
     for case in self:
-      if case.has_gal:
+      if case.is_open and case.has_gal:
         for gal in case.gals:
           if gal.represented_all_children:
             gal.represented_children = case.children

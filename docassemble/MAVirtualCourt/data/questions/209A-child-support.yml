@@ -486,6 +486,8 @@ code: |
   if dont_know_op_income:
     other_parties[0].gross_income = "Unknown"
     other_parties[0].gross_income_interval = DAEmpty()
+  else:
+    other_parties[0].gross_income
 
   # insurance
   # This is handled in the attachment block now
@@ -577,7 +579,7 @@ attachment:
       - "user_child_care_other_is_per_week": ${ users.item(0).child_care_other_interval == 'weekly' }
 
       # other party income and expenses
-      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', dont_know_op_income) }
+      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', not dont_know_op_income) }
       - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_interval == 'weekly' }
       - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_interval == 'monthly' }
 
@@ -667,7 +669,7 @@ attachment:
 
       # other party income and expenses
       # other party income and expenses
-      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', dont_know_op_income) }
+      - "other_party_gross_income": ${ yes_no_unknown('other_parties[0].gross_income', not dont_know_op_income) }
       - "other_party_gross_income_is_per_week": ${ other_parties[0].gross_income_interval == 'weekly' }
       - "other_party_gross_income_is_per_month": ${ other_parties[0].gross_income_interval == 'monthly' }
 

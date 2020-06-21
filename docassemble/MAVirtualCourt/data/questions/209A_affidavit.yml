@@ -79,7 +79,7 @@ terms:
 id: 209 Affidavit what to include
 continue button field: complaint_209A_Affidavit_intro_2
 question: |
-  Explaining to the judge why you need a restraining order  
+  Explain to the judge why you need a restraining order  
 subquestion: |
   In your affidavit, do your best to describe the times that ${other_parties.familiar()} abused you. What did ${other_parties.familiar()} say and do?
   
@@ -90,12 +90,12 @@ subquestion: |
   Include information about injuries, medical treatment or dental treatment you needed, destruction of property, or sometimes, the police.
   % if plaintiff_has_minor_children:
   
-  * If you have children write about:
+  * The judge should also know about:
   
       * Times ${other_parties.familiar()} abused your child,
       * Where your ${children.as_noun()} ${children.did_verb('was')} when ${other_parties.familiar()} was abusing you,
-      * Times your child witnessed ${other_parties.familiar()} abusing you, and
-      * How the abuse affected your child.
+      * Times your ${children.as_noun()} witnessed ${other_parties.familiar()} abusing you, and
+      * How the abuse affected your ${children.as_noun()}.
   % endif
 ---
 id: 209A Affidavit you can do it
@@ -105,13 +105,12 @@ question: |
 subquestion: |
   The questions coming up are to help you include all the details the judge needs to know.
   
-  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): 1-877-785-2020. 
+  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}. 
 
   Finally, as you write your affidavit, keep in mind that when you sign your name at the end of this guide, you are declaring, “{under penalty of perjury}” that your answers to all these questions are {true to the best of your knowledge}.
 
-  Start with the most recent abuse first.
-
-  Then tell the judge about other serious incidents, if there are any.   
+  1. Start with the most recent abuse first.  
+  2. Then tell the judge about other serious incidents, if there are any.   
 help:
   label: What should I talk about?
   heading: Is this all?
@@ -125,14 +124,15 @@ help:
     This is your chance to explain why you need help.
 terms:
   - under penalty of perjury: |
-      means you swear that what you write is true, as far as you know.
+      means you swear that what you write is true, as far as you know.  
          
-      Swearing "under penalty of perjury" means the court can punish you if what you write is not true to the best of your knowledge.
+      Swearing "under penalty of perjury" means the court can punish you if what you write is not true to the best of your knowledge.  
       
-      The court cannot punish you if you write about things you saw, heard, or felt.
+      The court cannot punish you if you write about things you saw, heard, or felt.  
       The court cannot punish you if you have good reason to believe that what you write is true.
   - true to the best of your knowledge: |
-      Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it. Something is true to the best of your knowledge if you have good reason to believe it is true.
+      Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it.  
+      Something is true to the best of your knowledge if you have good reason to believe it is true.
 ---
 id: complaint_209A_Affidavit
 code: |
@@ -335,7 +335,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } at ${ incidents_of_abuse[i].location } .
+      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } ${ incidents_of_abuse[i].location }, 
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -523,45 +523,49 @@ fields:
     input type: area
     required: False
 ---
-id: 209A Affidavit Summary
+id: 209A Incident Summary
 question: |
-  Affidavit Summary
-subquestion: |
-  The affidavit must be in your own words.
-  
-  This is what you have told me about this incident, so far. 
-  
-  If you need to add or change anything, you can edit your affidavit in the box below:
+  % if started:
+  The most recent abuse
+  % else:
+  The ${ordinal(i)} incident you described
+  % endif
+subquestion: | 
+  This is what you have told me about this incident, so far.  
+  If you need to add or change anything, you can edit it in the box below:
 fields:
   - no label: incidents_of_abuse[i].summary
     input type: area
+    rows: 10
     default: |
       ${ incidents_of_abuse[i].description + space("incidents_of_abuse[" + str(i) + "].feelings", prefix=' Because of what happened, I felt ') }
 ---
 id: there is another abuse incident
 question: |
   Can you describe another time ${other_parties.familiar()} abused you?
-subquestion: |
-  % if plaintiff_has_minor_children:
-  You said you have at least 1 child under 18. 
+# subquestion: |
+#   % if plaintiff_has_minor_children:
+#   You said you have at least 1 child under 18. 
   
-  Even if ${other_parties.familiar()} did not injure your ${children.as_noun()}, it could be important to include:
+#   Even if ${other_parties.familiar()} did not injure your ${children.as_noun()}, it could be important to include:
   
-  * Where your child was during the incident.
-  * If your ${children.as_noun()} witnessed anything. And
-  * How it affected your ${children.as_noun()}. 
-  % endif
+#   * Where your child was during the incident.
+#   * If your ${children.as_noun()} witnessed anything. And
+#   * How it affected your ${children.as_noun()}. 
+#   % endif
 yesno: incidents_of_abuse.there_is_another
 ---
 id: saw incidents of abuse
 question: |
-  This is what will go into your Affidavit: 
+  This is your Affidavit 
 subquestion: |
-  The affidavit will start with this text:
+  These are your words. Edit this statement in any way you need so that it says exactly what you need to tell the judge.  
+  Once you are satisfied you have told the truth, as far you know, go on to the next set of questions.
+# The affidavit will start with this text:
 
-  > The following is a brief summary of the events 
-  > and does not attempt to capture all the detail 
-  > of the abuse  
+# > The following is a brief summary of the events 
+# > and does not attempt to capture all the detail 
+# > of the abuse  
 fields:
   - no label: affidavit_body
     input type: area
