@@ -39,10 +39,6 @@ code: |
   # initialize_attorney_lists
   other_care_custody_proceedings.gather()
   for case in other_care_custody_proceedings:
-    for person in case.other_parties:
-      person.address.geolocate(person.address_for_form)
-      if not person.address.geolocated:
-        person.address = DAEmpty()
     if case.is_open:
       case.atty_for_user
       if case.atty_for_children and len(case.children) > 1:
@@ -304,7 +300,7 @@ subquestion: |
 fields:
   - Court name: courts[0]
     datatype: object
-    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"])
+    choices: macourts.filter_courts(allowed_courts)
 continue button field: ask_court_question    
 help: |
   You can get a 209A restraining order at the District Court near where you live or theProbate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
@@ -349,6 +345,7 @@ code: |
     'allowed courts': [
       'Boston Municipal Court',
       'District Court',
+      'Juvenile Court',
       'Probate and Family Court',
       'Superior Court',
     ],
@@ -953,6 +950,27 @@ code: |
 code: |
   other_care_custody_proceedings.there_are_any = has_participated_custody_case or know_of_other_custody_case
 ---
+comment: |
+  Build an AJAX input that lists all of the trial court departments, excluding housing
+
+  No longer used--regular combobox offers a better experience
+event: list_family_courts_ajax
+code: |
+  set_save_status('ignore')
+  wordstart = action_argument('wordstart').lower()
+  results = []
+  for court in macourts.filter_courts([
+      'Boston Municipal Court',
+      'District Court',
+      'Juvenile Court',
+      'Probate and Family Court',
+      'Superior Court',
+    ]):
+    for word in court.name.split(" "):
+      if word.lower().startswith(wordstart):
+        results.append(court.name)
+  json_response(results)
+---
 id: about the other care or custody proceeding
 need: DCF
 question: |
@@ -986,7 +1004,7 @@ fields:
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
     datatype: combobox
     code: |
-      macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
+      macourts.filter_courts(allowed_courts)
     # hint: Start typing a court name
     # input type: ajax
     # action: list_family_courts_ajax
@@ -1109,10 +1127,14 @@ fields:
   - Address: other_care_custody_proceedings[i].other_parties[j].address_for_form
     address autocomplete: True
     required: False
-# validation code: |
-  # other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
-  # if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
-  #   other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
+validation code: |
+  other_care_custody_proceedings[i].other_parties[j].address.geolocate(other_care_custody_proceedings[i].other_parties[j].address_for_form)
+  if not other_care_custody_proceedings[i].other_parties[j].address.geolocated:
+    other_care_custody_proceedings[i].other_parties[j].address = DAEmpty()
+  # for person in other_care_custody_proceedings[i].other_parties:
+  #   person.address.geolocate(person.address_for_form)
+  #   if not person.address.geolocated:
+  #     person.address = DAEmpty()
 ---
 id: was another person in case
 question: |
