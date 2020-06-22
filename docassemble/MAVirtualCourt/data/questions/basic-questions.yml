@@ -767,6 +767,30 @@ code: |
   x.gender_male = x.gender == 'male'
   x.gender_other = ((x.gender != 'male') and (x.gender != 'female'))
 ---
+# TODO: Language. Also, checkbox?
+id: perjury intro
+field: knows_about_perjury_oath
+question: |
+  Signing Under Oath
+subquestion: |
+  Everything you say here will have to be be signed "under penalties of perjury." This means that it can be a crime if you lie on this form. Before you sign, you will have to confirm that you did your best to tell the truth.
+---
+id: affirmation and oath of no perjury
+question: |
+  Signing Under Oath
+subquestion: |
+  Your form must be signed "under penalties of perjury."
+  This means that it can be a crime if you lie on this form.
+fields:
+  - no label: users[0].states_above_true
+    datatype: checkboxes
+    minlength: 1
+    choices:
+      - I promise that my answers on this form are the truth under penalties of perjury
+    validation messages:
+      minlength: |
+        You cannot keep going unless you did your best to tell the truth.
+---
 id: gender
 generic object: Individual
 question: |
