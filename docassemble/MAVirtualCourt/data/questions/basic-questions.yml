@@ -502,7 +502,7 @@ subquestion: |
   
   ${map_of(local_housing_court.address)}
   % else:
-  You can try finding your local court by using the [courthouse listings](https://www.mass.gov/guides/find-a-courthouse-serving-you). 
+  You can try finding your local court by using the [court directory](https://www.mass.gov/guides/find-a-courthouse-serving-you). 
   % endif
 fields:
   - Court name: courts[0]
