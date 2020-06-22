@@ -1,5 +1,5 @@
 comment: |
-  Allows selecting ways to skip 209A interview content.
+  Allows selecting ways to pre-fill 209A interview content.
   
   TODO:
   1. Prefill as many fields as possible to make the form as
