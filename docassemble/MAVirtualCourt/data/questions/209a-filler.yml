@@ -5,6 +5,7 @@ comment: |
   1. Prefill as many fields as possible to make the form as
   fast to go through as possible. Skip nothing, so order is still clear.
   1. Try to be clear about where different sections/questions are coming from.
+  1. Overflow. (default or must be chosen?)
   
   Pages that are a pain to fill:
   1. Defendant info pages
@@ -15,16 +16,19 @@ comment: |
   1. Schools/daycares
   1. Children center/supervision, etc.
   
-  Pages that still have multiple fields to fill:
+  Pages that still would have multiple fields to fill:
   1. Names
   1. Addresses
   1. Contact info
   1. Children attorneys
   1. GALs
+  1. Children previous addresses
+  1. Previous cases with defendant and user
   
   Other info
   1. Children over 18
   1. Former addresses
+  1. Work/school locations
   1. user_preferred_language
   1. Other info to keep private
   
@@ -197,13 +201,17 @@ code: |
   users[0].name.suffix = 'II'
   #users[0].birthdate = as_datetime('01/01/1990')  # Trigger
   
-  # Address/Contact info for future? Trigger not yet known.
-  # Street  # Trigger
-  # Unit, city, state, zip
-  users[0].mobile_number = '000-0000'
+  #users[0].address.address = '1 Tremont St'  # Trigger
+  users[0].address.unit = '1'
+  users[0].address.city = 'Boston'
+  users[0].address.state = 'MA'
+  users[0].address.zip = '02108'
+  #users[0].address.geolocate()  # Think triggers gathering
+
+  #users[0].mobile_number = '000-0000'  # Screen trigger
   users[0].phone_number = '111-1111'
-  #users[0].email
-  #users[0].other_contact_method
+  users[0].email = 'pla@example.com'
+  users[0].other_contact_method = 'Mail'
   
   #other_parties[0].name.first = 'Drew'  # Screen trigger
   other_parties[0].name.middle = 'Dar'
