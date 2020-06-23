@@ -280,12 +280,12 @@ fields:
 ---
 code: |
   documented_medical_expenses_total = documented_medical_expenses_chiropractic + documented_medical_expenses_doctor + documented_medical_expenses_hospital + documented_medical_expenses_other + documented_medical_expenses_physical_therapy
-  datatype: currency
+# datatype: currency
 ---
 question: |
   Is there a claim under G.L. c. 93A?
 subquestion: |
-  Placeholder - Link to law: https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A
+  [Additioanl information on claims made under G.L. c. 93A](https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A)
 fields:
   - no label: claim_under_glc93a
     datatype: radio
@@ -300,7 +300,7 @@ code: |
 question: |
   Is this a class action under Mass. R. Civ. P. 23?
 subquestion: |
-  Placeholder - Link to law: https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions
+  [Additional information on class actions under Mass. R. Civ. P. 23](https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions)
 fields:
   - no label: class_action
     datatype: radio
@@ -596,7 +596,7 @@ code: |
   collection_of_debt_yes
   Contract_claims
   Related_actions
-  # documented_medical_expenses_total
+  documented_medical_expenses_total
   users[0].signature_date
   docket_numbers[0]
   str(plaintiffs[0])
