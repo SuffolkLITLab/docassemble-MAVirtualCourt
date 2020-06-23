@@ -61,6 +61,11 @@ code: |
   
   if to_fill.set_defendant_info:
     set_defendant_info
+  
+  timestamp = format_datetime( current_datetime(), 'MM_dd_yy_hh_mm' )
+  filler_filename = '209a_filler_answers_' + timestamp
+  
+  filler_answer_key
 ---
 id: filler
 question: |
@@ -490,6 +495,210 @@ code: |
   other_parties[0].vehicle_license_plate = '22 2222'
 
   defendant_info_profile_1 = True
+---
+id: filler answer key
+field: filler_answer_key
+# Would put this in a different file since this is getting
+# way too long, but I'm sure no one wants it to take up
+# multiple files in the list of files.
+question: |
+  These are the presets the filler has created.
+attachment:
+  - name: Filler answer key
+    filename: ${ filler_filename }
+    description: |
+      Filler answer key for ${ format_datetime( current_datetime(), 'MM/dd/yy at hh:mm' ) }
+    content: |
+      [TIGHTSPACING]
+      
+      # Always pre-filled
+
+      |Field | Value |
+      |---|-|
+      |**User general info**|
+      |_suggested user first name_ | `Pat`|
+      |user middle name |`${ users[0].name.middle }`|
+      |user last name |`${ users[0].name.last }`|
+      |user name suffix |`${ users[0].name.suffix }`|
+      |-|-|
+      |_suggested user birthdate_|`01/01/1990`|
+      |-|-|
+      |_suggested user street address_|`1 Tremont St`|
+      |user unit|`${ users[0].address.unit }`|
+      |user city|`${ users[0].address.city }`|
+      |user state|`${ users[0].address.state }`|
+      |user zip|`${ users[0].address.zip }`|
+      |-|-|
+      |_suggested user mobile number_|`000-0000`|
+      |user phone number|`111-1111`|
+      |user email|`pla@example.com`|
+      |user other contact method description|`Mail`|
+      |**Defendant general info**|-|
+      |-|-|
+      |_suggested defendant first name_|`Drew`|
+      |defendant middle name|`${ other_parties[0].name.middle }`|
+      |defendant last name|`${ other_parties[0].name.last }`|
+      |defendant name suffix|`${ other_parties[0].name.suffix }`|
+      |-|-|
+      |_suggested defendant street address_|`2 Tremont St`|
+      |defendant unit|`${ other_parties[0].address.unit }`|
+      |defendant floor|`${ other_parties[0].address_floor }`|
+      |defendant city|`${ other_parties[0].address.city }`|
+      |defendant state|`${ other_parties[0].address.state }`|
+      |defendant zip|`${ other_parties[0].address.zip }`|
+      |defendant mobile number|`${ other_parties[0].mobile_number }`|
+      |defendant phone number|`${ other_parties[0].phone_number }`|
+      |defendant email|`${ other_parties[0].email }`|
+      |defendant name on mailbox|`${ other_parties[0].name_door_mailbox }`|
+      |-|-|
+      |_suggested best place to find defendant_|`Work`|
+      |best times to find defendant|`${ other_parties[0].best_times_find }`|
+      |other place to find defendant|`${ other_parties[0].locations_other }`|
+      |defendant's other location information (a little weird)|`${ other_parties[0].location_information_other }`|
+      |-|-|
+      |**Defendant and plaintiff relationship**|-|
+      |_This one makes sure you can see all of them checked off on the PDF. Believe it or not, it is actually possible to select all of them at once._|
+      |Are dating|`Yes`|
+      |Previously dated|`Yes`|
+      |Are engaged|`Yes`|
+      |Were engaged|`Yes`|
+
+      # Children
+      
+      % if not to_fill.set_children:
+      No pre-fills
+      
+      % else:
+      _Each child has information based on which number child they are._
+
+      |Field | Value |
+      |---|-|
+      |**Children of plaintiff**| wip |
+      number of children|`${ int( num_children ) }`
+      %if int( num_children ) > 0:
+      _suggested first name_|`Cade1`, `Cade2`, `Cade3`, etc.
+      middle name|`Child of`
+      last name|`Plaintiff`
+      suffix|`Jr`
+      birthdate|`01/01/2011`, `02/02/2012`, `03/03/2013`, etc.
+      defendant is their parent|`${ '`Yes`' if which_are_joint == 'All' else '`No`' if which_are_joint == 'None' else '`Your choice`' }`
+      % endif
+      |**Children in care or custody of plaintiff**| wip |
+      number of children|`${ int( num_custody_children ) }`
+      % if int( num_custody_children ) > 0:
+      _suggested first name_|`Cody1`, `Cody2`, `Cody3`, etc.
+      middle name|`Child of`
+      last name|`Plaintiff`
+      suffix|`Jr`
+      birthdate|`11/01/2011`, `12/02/2012`, `13/03/2013`, etc.
+      defendant is their parent|`${ '`Yes`' if which_are_joint == 'All' else '`No`' if which_are_joint == 'None' else '`Your choice`' }`
+      % endif
+      % if defined( 'to_fill.set_majors' ) and to_fill.set_majors:
+      wip
+      % endif
+      % if defined( 'to_fill.set_daycares' ) and to_fill.set_daycares:
+      |-|-|
+      |**Daycares or schools**|
+      number of daycares or schools| `${ int( num_daycares ) }`
+      facility street address| `School 1`, `School 2`, `School 3`, etc.
+      facility unit| `1`, `2`, `3`, etc.
+      facility city| `Boston`
+      facility state| `MA`
+      facility zip| `11111`, `22222`, `33333`, etc.
+      % endif
+      % if defined( 'to_fill.set_visitation' ):
+      |-|-|
+      |**Visitation orders**|
+      % if to_fill.set_visitation:
+      _suggested wants to allow visitation_| `Yes`
+      % if set_visitation_center:
+      _suggested wants a visitation center_| `Yes`
+      visitation center name| `${ visitation_center_name }`
+      who pays visitation center| `${ pays_for_center }`
+      name of payor| `${ other_pays_for_center }`
+      % else:
+      _suggested wants a visitation center_ | `No`
+      % endif
+      wants supervision during visit | ${ '`Yes`' if wants_supervision else '`No`' }
+      visitation supervisor name | ${ visitation_supervisor_name_full }
+      supervision time | ${ supervision_time }
+      who pays for supervision | ${ supervision_payer }
+      name of supervision payor | ${ other_supervision_payer }
+      wants someone else to pickup the child | ${ 'Yes' if wants_pickup else 'No' }
+      who picks up the child | ${ who_picks_up }
+      wants other visitation order from the court | ${ 'Yes' if wants_other_order else 'No' }
+      the other order | ${ other_order }
+      % else:
+      _suggested wants to allow visitation| `No` 
+      % endif
+      % endif
+      % endif
+
+      # Defendant description
+      
+      % if not to_fill.set_defendant_info:
+      No pre-fills
+
+      % else:
+      | Field | Value |
+      |---|-|
+      |**Background**|
+      |_suggested defendant has an alias|`Yes`|
+      |defendant alias|`${ other_parties[0].name_other }`
+      |defendant gender|`${ other_parties[0].gender }`
+      |-|-|
+      |_suggested defendant understands english_|`No`|
+      |defendant's other language|`${ other_parties[0].language_other }`
+      |defendant's mom|`${ parents[0] }`
+      |defendant's dad|`${ parents[1] }`
+      |defendant's birthplace|`${ other_parties[0].birthplace }`
+      |defendant's social security number (might not be working)|`${ other_parties[0].social_security_number }`
+      |-|-|
+      |**Physical Description**|
+      |_suggested defendant's race_|`White`|
+      |defendant's eye color|`${ other_parties[0].eye_color }`
+      |defendant's other eye description|`${ other_parties[0].eye_other }`
+      |defendant's hair color|`${ other_parties[0].hair_color }`
+      |defendant's hair color description|`${ other_parties[0].hair_color_other }`
+      |defendant's hair other style|`${ other_parties[0].hair_other_style }`
+      |-|-|
+      |_suggested defendant's height_|`5ft`|
+      |defendant's birthdate|`${ other_parties[0].birthdate }`|
+      |defendant's weight|`${ other_parties[0].weight }`|
+      |defendant's physical build|`${ other_parties[0].physical_build }`|
+      |defendant's other physical features|`${ other_parties[0].physical_other }`|
+      |defendant's other physical details|`${ other_parties[0].physical_other_details }`|
+      |-|-|
+      |**Weapons**|-|
+      |_suggested defendant has guns_|`Yes`|
+      |defendant has ammo|`${ '`Yes`' if defendant_has_guns[ 'ammo' ] is True else '`No`' }`|
+      |defendant has FID|`${ '`Yes`' if defendant_has_guns[ 'FID' ] is True else '`No`' }`|
+      |defendant has license|`${ '`Yes`' if defendant_has_guns[ 'license' ] is True else '`No`' }`|
+      |weapons description|`${ defendant_weapons_description }` |
+      |-|-|
+      |**Mental health**|-|
+      |_suggested defendant has been violent towards police_|`Yes`|
+      |defendant uses drugs or alcohol|`${ other_parties[0].drug_alcohol_yes }`
+      |defendant description of substance abuse|`${ other_parties[0].drug_alcohol_abuse }`
+      |defendant has psychiatric emotional problems|`${ other_parties[0].psychiatric_emotional_problems_yes }`
+      |description of psychiatric emotional problems|`${ other_parties[0].psychiatric_emotional_problems }`
+      |-|-|
+      |**Employment & car**|-|
+      _suggested defendant doesn't have a job_|`(already unchecked) No`
+      defendant's employer| `${ other_parties[0].employer }`
+      defendant's work address| `${ other_parties[0].work_address }`
+      defendant's work phone| `${ other_parties[0].work_phone }`
+      defendant's title| `${ other_parties[0].work_title }`
+      defendant's department| `${ other_parties[0].work_department }`
+      defendant's hours| `${ other_parties[0].work_hours }`
+      |-|-|
+      _suggested defendant does not have car_|`No (already unchecked)`
+      defendant car color|`${ other_parties[0].vehicle_color }`
+      defendant car make|`${ other_parties[0].vehicle_make }`
+      defendant car model|`${ other_parties[0].vehicle_model }`
+      defendant car year|`${ other_parties[0].vehicle_year }`
+      defendant license plate|`${ other_parties[0].vehicle_license_plate }`
+      % endif
 ---
 include:
   - 209a_package.yml
