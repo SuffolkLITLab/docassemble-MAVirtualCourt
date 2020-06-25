@@ -549,22 +549,22 @@ attachment:
       - "claim_under_glc_93a_yes": ${ claim_under_glc_93a_yes }
       - "class_action_no": ${ class_action_no }
       - "claim_under_glc_93a_no": ${ claim_under_glc_93a_no }
-      - "documented_medical_expenses_hospital": ${ documented_medical_expenses_hospital }
-      - "documented_medical_expenses_doctor": ${ documented_medical_expenses_doctor }
-      - "documented_medical_expenses_chiropractic": ${ documented_medical_expenses_chiropractic }
-      - "documented_medical_expenses_physical_therapy": ${ documented_medical_expenses_physical_therapy }
-      - "documented_medical_expenses_other": ${ documented_medical_expenses_other }
-      - "documented_medical_expenses_total": ${ documented_medical_expenses_total }
-      - "documented_lost_wages": ${ documented_lost_wages }
-      - "documented_property_damages": ${ documented_property_damages }
-      - "anticipated_future_medical_expenses": ${ anticipated_future_medical_expenses }
-      - "anticipated_lost_wages": ${ anticipated_lost_wages }
-      - "documented_damages": ${ documented_damages }
-      - "documented_items_of_damages_other": ${ documented_items_of_damages_other }
-      - "total_tort_claims": ${ total_tort_claims }
+      - "documented_medical_expenses_hospital": ${ f'{int(round(documented_medical_expenses_hospital)):,}' }
+      - "documented_medical_expenses_doctor": ${ f'{int(round(documented_medical_expenses_doctor )):,}' }
+      - "documented_medical_expenses_chiropractic": ${ f'{int(round(documented_medical_expenses_chiropractic )):,}' }
+      - "documented_medical_expenses_physical_therapy": ${ f'{int(round(documented_medical_expenses_physical_therapy) ):,}' }
+      - "documented_medical_expenses_other": ${ f'{int(round(documented_medical_expenses_other) ):,}' }
+      - "documented_medical_expenses_total": ${ f'{int(round(documented_medical_expenses_total )):,}' }
+      - "documented_lost_wages": ${ f'{int(documented_lost_wages):,}' }
+      - "documented_property_damages": ${ f'{int(round(documented_property_damages)):,}' }
+      - "anticipated_future_medical_expenses": ${ f'{int(round(anticipated_future_medical_expenses)):,}' }
+      - "anticipated_lost_wages": ${ f'{int(round(anticipated_lost_wages)):,}' }
+      - "documented_damages": ${ f'{int(round(documented_damages)):,}' }
+      - "documented_items_of_damages_other": ${ f'{int(round(documented_items_of_damages_other)):,}' }
+      - "total_tort_claims": ${ f'{int(round(total_tort_claims)):,}' }
       - "description_plaintiff_injury": ${ description_plaintiff_injury }
       - "collection_of_debt_yes": ${ collection_of_debt_yes }
-      - "total_contract_claims": ${ total_contract_claims }
+      - "total_contract_claims": ${ f'{int(round(total_contract_claims)):,}' }
       - "description_of_claim": ${ description_of_claim }
       - "user_signature_date": ${ users[0].signature_date }
       - "related_actions": ${ related_actions }
