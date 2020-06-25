@@ -4,7 +4,7 @@ code: |
   if not defined("interview_metadata['Civil_Action_Cover_Sheet0026']"):
     interview_metadata.initializeObject('Civil_Action_Cover_Sheet0026')
   interview_metadata['Civil_Action_Cover_Sheet0026'].update({
-    'title': 'Civil Action Cover Sheet Initial',
+    'title': 'Civil Action Cover Sheet',
     'short title': 'Civil Action Cover Sheet',
     'description': 'Placeholder text',
     'original_form': 'https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf',
@@ -470,7 +470,6 @@ fields:
 #    datatype: currency
 #    help: |
 #      You can include all expenses related to physical therapy. Do not include expenses that were charged by your hospital, ambulance company, chiropractor, or doctor (they are covered separately).
-
 ---
 question: |
   What are your details?
@@ -584,8 +583,7 @@ subquestion: |
 ---
 id: interview_order_Civil_Action_Cover_Sheet0026
 code: |
-  # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.
+  user_role = "plaintiff"
   basic_questions_intro_screen 
   Civil_Action_Cover_Sheet0026_intro
   # Set the preferred/allowed courts for this interview
