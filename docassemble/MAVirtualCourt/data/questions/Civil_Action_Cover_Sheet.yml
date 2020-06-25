@@ -352,14 +352,6 @@ question: |
 subquestion: |
   Placeholder text
 fields:
-  - 'Anticipated future medical expenses': anticipated_future_medical_expenses
-    datatype: currency
-    help: |
-      Provide details on how to calulate this number.
-  - 'Anticipated lost wages': anticipated_lost_wages
-    datatype: currency
-    help: |
-      Provide details on how to calculate this amount.
   - 'Documented lost wages and compensation': documented_lost_wages
     datatype: currency
     help: |
@@ -368,6 +360,14 @@ fields:
     datatype: currency
     help: |
       Insert help text that describes property damages.
+  - 'Anticipated future medical expenses': anticipated_future_medical_expenses
+    datatype: currency
+    help: |
+      Provide details on how to calulate this number.
+  - 'Anticipated lost wages': anticipated_lost_wages
+    datatype: currency
+    help: |
+      Provide details on how to calculate this amount.
 ---
 #continue button field: What_are_Plaintiffs_anticipated_lost_wages
 #question: |
@@ -493,7 +493,6 @@ question: |
 under: |
   ${attorneys}
 signature: certification_signature
-  
 ---
 question: |
   What is the Plaintiff's address?
@@ -525,7 +524,7 @@ attachment:
     variable name: Civil_Action_Cover_Sheet0026_attachment
     name: Civil Action Cover Sheet
     skip undefined: True
-    filename: Civil_Action_Cover_Sheet
+    filename: civil_action_cover_sheet
     pdf template file: Civil_Action_Cover_Sheet.pdf
     fields: 
       - "docket_number": ${ docket_numbers[0] }
