@@ -372,10 +372,11 @@ id: documented_medical_expenses
 question: |
   What are your documented medical expenses to date?
 subquestion: |
-  Enter the total amount, in dollars, of documented hospital expenses incurred in connection with this claim. 
+  Enter the total amount, in dollars, of documented medical expenses incurred in connection with this claim. 
 fields:
   - 'Hospital expenses': documented_medical_expenses_hospital
     datatype: currency
+    required: False
     help: |
       You can include all expenses incurred with a hospital visit, like emergency room charges, supplies, overnight stays, etc. Do not include expenses that were charged by your doctor or ambulance company, chiropractor, or physical therapist (they are covered separately).
   - 'Doctor expenses': documented_medical_expenses_doctor
@@ -394,6 +395,12 @@ fields:
     datatype: currency
     help: |
       Include all documented medical expenses incurred in connection with this claim that have not been provided in the hospital, doctor, chiropractor, or physical therapy sections.
+---
+  code: |
+    if documented_medical_expenses_hospital == "":
+      documented_medical_expenses_hospital = 0
+    else:
+      documented_medical_expenses_hospital = documented_medical_expenses_hospital
 ---
 question: |
   What are your details?
