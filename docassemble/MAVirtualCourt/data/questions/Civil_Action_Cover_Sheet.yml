@@ -281,7 +281,6 @@ fields:
 code: |
   documented_medical_expenses_total = documented_medical_expenses_chiropractic + documented_medical_expenses_doctor + documented_medical_expenses_hospital + documented_medical_expenses_other + documented_medical_expenses_physical_therapy
   total_tort_claims = documented_medical_expenses_total + anticipated_future_medical_expenses + anticipated_lost_wages + documented_lost_wages + documented_property_damages + documented_damages
-# datatype: currency
 ---
 question: |
   Is there a claim under G.L. c. 93A?
@@ -369,58 +368,6 @@ fields:
     help: |
       Provide details on how to calculate this amount.
 ---
-#continue button field: What_are_Plaintiffs_anticipated_lost_wages
-#question: |
-#  What are Plaintiff's anticipated lost wages?
-#subquestion: |
-#  Enter the estimated amount, in dollars, of expected lost wages stemming from the actions covered by this claim.
-#fields:
-#  - 'Anticipated lost wages': anticipated_lost_wages
-#    help: |
-#      [Provide details on how to calculate this amount.]
----
-#continue button field: What_are_Plaintiffs_documented_lost_wages_and_compensation
-#question: |
-#  What are Plaintiff's documented lost wages and compensation?
-#subquestion: |
-#  Enter the total amount, in dollars, of lost wages and compensation that occurred as a result of the actions covered by this claim. You [may/will] need to provide documentation for this amount.
-#fields:
-#  - 'Documented lost wages and compensation': documented_lost_wages
-#    help: |
-#      [Insert help text that explains lost wages and compensation.]
----
-#continue button field: What_are_Plaintiffs_documented_property_damages_to_date
-#question: |
-#  What are Plaintiff's documented property damages to date?
-#subquestion: |
-#  Enter the total cost, in dollars, of property damages that occured as a result of the actions covered by this claim. You [may/will] need to provide documentation for this amount.
-#fields:
-#  - 'Documented property damages': documented_property_damages
-#    help: |
-#      [Insert help text that describes property damages.]
----
-#continue button field: #What_are_Plaintiffs_total_chiropractic_expenses
-#question: |
-#  What are Plaintiff's total chiropractic expenses?
-#subquestion: |
-#  Enter the total amount, in dollars, of documented chiropractic expenses incurred in connection with this claim.
-#fields:
-#  - 'Total documented chiropractic expenses': documented_medical_expenses_chiropractic
-#    datatype: currency
-#    help: |
-#      You can include all costs related to chiropractor visits. Do not include expenses that were charged by doctors, physical therapists, or other providers (they are covered separately).
----
-#continue button field: #What_are_Plaintiffs_total_doctor_expenses
-#question: |
-#  What are Plaintiff's total doctor expenses?
-#subquestion: |
-#  Enter the total amount, in dollars, of documented expenses incurred visiting doctors in connection with this claim.
-#fields:
-#  - 'Total documented doctor expenses': documented_medical_expenses_doctor
-#    datatype: currency
-#    help: |
-#      You can include all costs related to doctor visits. Do not include expenses that were charged by chiropractors, physical therapists, or other providers (they are covered separately).
----
 id: documented_medical_expenses
 question: |
   What are your documented medical expenses to date?
@@ -447,29 +394,6 @@ fields:
     datatype: currency
     help: |
       Include all documented medical expenses incurred in connection with this claim that have not been provided in the hospital, doctor, chiropractor, or physical therapy sections.
----
-#continue button field: What_are_Plaintiffs_total_other_medical_expenses_not_already_provided
-#question: |
-#  What are Plaintiff's total other medical expenses not already provided?
-#subquestion: |
-#  Enter the total amount, in dollars, of other medical expenses incurred in connection with this claim.
-#fields:
-#  - 'Total other documented medical expenses': documented_medical_expenses_other
-#    datatype: currency
-#    help: |
-#      Include all documented medical expenses incurred in connection with this claim that have not been provided in the hospital, doctor, chiropractor, or physical therapy sections.
-
----
-#continue button field: What_are_Plaintiffs_total_physical_therapy_expenses
-#question: |
-#  What are Plaintiff's total physical therapy expenses?
-#subquestion: |
-#  Enter the total amount, in dollars, of documented physical therapy expenses incurred in connection with this claim.
-#fields:
-#  - 'Total documented physical therapy expenses': documented_medical_expenses_physical_therapy
-#    datatype: currency
-#    help: |
-#      You can include all expenses related to physical therapy. Do not include expenses that were charged by your hospital, ambulance company, chiropractor, or doctor (they are covered separately).
 ---
 question: |
   What are your details?
