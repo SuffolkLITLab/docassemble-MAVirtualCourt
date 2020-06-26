@@ -1,0 +1,27 @@
+/* Escape button for dangerous situations */
+.escape {
+  margin: 0;
+  margin-left: .4em;
+}
+
+@media only screen and (max-width: 30em) {
+  .navbar-brand {
+    margin-right: .3rem;
+  }
+
+  #dapagetitle {
+    margin-right: .4em;
+  }
+
+  #dapagetitle .ma_icon {
+    margin-right: 0;
+  }
+
+  .escape {
+    margin-left: .6em;
+  }
+
+  #dahelptoggle {
+    padding: 0;
+  }
+}
