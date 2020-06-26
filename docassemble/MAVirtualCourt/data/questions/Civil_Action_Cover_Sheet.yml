@@ -286,7 +286,7 @@ code: |
 question: |
   Is there a claim under G.L. c. 93A?
 subquestion: |
-  [Additioanl information on claims made under G.L. c. 93A](https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A)
+  [Additional information on claims made under G.L. c. 93A](https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A)
 fields:
   - no label: claim_under_glc93a
     datatype: radio
@@ -363,7 +363,7 @@ fields:
   - 'Anticipated future medical expenses': anticipated_future_medical_expenses
     datatype: currency
     help: |
-      Provide details on how to calulate this number.
+      Provide details on how to calculate this number.
   - 'Anticipated lost wages': anticipated_lost_wages
     datatype: currency
     help: |
@@ -383,7 +383,7 @@ fields:
 #question: |
 #  What are Plaintiff's documented lost wages and compensation?
 #subquestion: |
-#  Enter the total amount, in dollars, of lost wages and compensation that occured as a result of the actions covered by this claim. You [may/will] need to provide documentation for this amount.
+#  Enter the total amount, in dollars, of lost wages and compensation that occurred as a result of the actions covered by this claim. You [may/will] need to provide documentation for this amount.
 #fields:
 #  - 'Documented lost wages and compensation': documented_lost_wages
 #    help: |
@@ -414,7 +414,7 @@ fields:
 #question: |
 #  What are Plaintiff's total doctor expenses?
 #subquestion: |
-#  Enter the total amount, in dollars, of documented expenses incurred visting doctors in connection with this claim.
+#  Enter the total amount, in dollars, of documented expenses incurred visiting doctors in connection with this claim.
 #fields:
 #  - 'Total documented doctor expenses': documented_medical_expenses_doctor
 #    datatype: currency
