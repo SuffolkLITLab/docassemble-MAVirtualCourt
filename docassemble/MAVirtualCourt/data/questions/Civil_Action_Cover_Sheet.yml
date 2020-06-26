@@ -223,11 +223,19 @@ subquestion: |
 fields:
   - 'Total contract claims': total_contract_claims
     datatype: currency
+    required: False
     help: |
       Provide instructions on calculating contact claims.
   - 'Description of contract claims': description_of_claim
+    required: False
     help: |
       Provide example description.
+---
+code: |
+  if total_contract_claims == "":
+    total_contract_claims = 0
+  else:
+    total_contract_claims = total_contract_claims
 ---
 question: |
   Describe Plaintiff's injury
@@ -246,7 +254,9 @@ subquestion: |
 fields:
   - 'Other documented damages': documented_damages
     datatype: currency
+    required: False
   - 'Description of other documented damages': documented_items_of_damages_other
+    required: False
     help: |
       Provide examples of types of additional damages that can be listed here.
 ---
@@ -319,6 +329,7 @@ subquestion: |
   Provide the case number, case name, and county of any related actions. If there are none, skip this question. 
 fields:
   - 'Description of related actions': related_actions
+    required: False
 ---
 question: |
   Signature dates to do
@@ -353,20 +364,42 @@ subquestion: |
 fields:
   - 'Documented lost wages and compensation': documented_lost_wages
     datatype: currency
+    required: False
     help: |
       Insert help text that explains lost wages and compensation.
   - 'Documented property damages': documented_property_damages
     datatype: currency
+    required: False
     help: |
       Insert help text that describes property damages.
   - 'Anticipated future medical expenses': anticipated_future_medical_expenses
     datatype: currency
+    required: False
     help: |
       Provide details on how to calculate this number.
   - 'Anticipated lost wages': anticipated_lost_wages
     datatype: currency
+    required: False
     help: |
       Provide details on how to calculate this amount.
+---
+code: |
+  if documented_lost_wages == "":
+    documented_lost_wages = 0
+  else:
+    documented_lost_wages = documented_lost_wages
+  if documented_property_damages == "":
+    documented_property_damages = 0
+  else:
+    documented_property_damages = documented_property_damages
+  if anticipated_future_medical_expenses == "":
+    anticipated_future_medical_expenses = 0
+  else:
+    anticipated_future_medical_expenses = anticipated_future_medical_expenses
+  if anticipated_lost_wages == "":
+    anticipated_lost_wages = 0
+  else:
+    anticipated_lost_wages = anticipated_lost_wages
 ---
 id: documented_medical_expenses
 question: |
@@ -381,34 +414,55 @@ fields:
       You can include all expenses incurred with a hospital visit, like emergency room charges, supplies, overnight stays, etc. Do not include expenses that were charged by your doctor or ambulance company, chiropractor, or physical therapist (they are covered separately).
   - 'Doctor expenses': documented_medical_expenses_doctor
     datatype: currency
+    required: False
     help: |
       You can include all costs related to doctor visits. Do not include expenses that were charged by chiropractors, physical therapists, or other providers (they are covered separately).
   - 'Chiropractic expenses': documented_medical_expenses_chiropractic
     datatype: currency
+    required: False
     help: |
       You can include all costs related to chiropractor visits. Do not include expenses that were charged by doctors, physical therapists, or other providers (they are covered separately).
   - 'Physical therapy expenses': documented_medical_expenses_physical_therapy
     datatype: currency
+    required: False
     help: |
       You can include all expenses related to physical therapy. Do not include expenses that were charged by your hospital, ambulance company, chiropractor, or doctor (they are covered separately).
   - 'Other documented medical expenses': documented_medical_expenses_other
     datatype: currency
+    required: False
     help: |
       Include all documented medical expenses incurred in connection with this claim that have not been provided in the hospital, doctor, chiropractor, or physical therapy sections.
 ---
-  code: |
-    if documented_medical_expenses_hospital == "":
-      documented_medical_expenses_hospital = 0
-    else:
-      documented_medical_expenses_hospital = documented_medical_expenses_hospital
+code: |
+  if documented_medical_expenses_hospital == "":
+    documented_medical_expenses_hospital = 0
+  else:
+    documented_medical_expenses_hospital = documented_medical_expenses_hospital
+  if documented_medical_expenses_doctor == "":
+    documented_medical_expenses_doctor = 0
+  else:
+    documented_medical_expenses_doctor = documented_medical_expenses_doctor
+  if documented_medical_expenses_chiropractic == "":
+    documented_medical_expenses_chiropractic = 0
+  else:
+    documented_medical_expenses_chiropractic = documented_medical_expenses_chiropractic
+  if documented_medical_expenses_physical_therapy == "":
+    documented_medical_expenses_physical_therapy = 0
+  else:
+    documented_medical_expenses_physical_therapy = documented_medical_expenses_physical_therapy
+  if documented_medical_expenses_other == "":
+    documented_medical_expenses_other = 0
+  else:
+    documented_medical_expenses_other = documented_medical_expenses_other
 ---
 question: |
-  What are your details?
+ What are your details?
 subquestion: |
   Enter your registered address and BBO.
 fields:
   - 'Attorney address': attorneys[0].address
     input type: area
+    required: False
   - 'BBO number': bbo_number
 ---
 question: |
@@ -419,6 +473,8 @@ fields:
   - 'Defendant address': defendants[0].address
     input type: area
 ---
+
+
 question: |
   Sign below, ${attorneys}
 under: |
