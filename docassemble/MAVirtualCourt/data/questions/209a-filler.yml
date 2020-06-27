@@ -83,42 +83,23 @@ fields:
   - "Pre-fill children": to_fill.set_children
     datatype: yesnowide
     default: True
-  - Children: num_children
+  - Number of children: num_children
     show if: to_fill.set_children
-    datatype: radio
+    datatype: integer
     default: 2
-    choices:
-      - No children: 0
-      - One child: 1
-      - Two children: 2
-      - Eight children: 8
   - Which of the above children are joint?: which_are_joint
     js show if: |
       parseInt(val("num_children")) > 0
-    datatype: radio
-    default: All
-    choices:
-      - All
-      - None
-      - Don't set: no_set
-  - Custody or care children: num_custody_children
-    show if: to_fill.set_children
-    datatype: radio
+    datatype: integer
     default: 0
-    choices:
-      - No children: 0
-      - One child: 1
-      - Two children: 2
-      - Eight children: 8
+  - Number of custody or care children: num_custody_children
+    show if: to_fill.set_children
+    datatype: integer
+    default: 0
   - How many of those are children of the defendant?: num_of_just_def
     js show if: |
       parseInt(val("num_custody_children")) > 0
-    datatype: radio
-    default: All
-    choices:
-      - All
-      - None
-      - Don't set: no_set
+    datatype: integer
   - Pre-fill children's schools/daycares: to_fill.set_daycares
     datatype: yesnowide
     show if: to_fill.set_children
@@ -282,35 +263,61 @@ code: |
   int_children = int( num_children )
   children.target_number = int_children
 
-  child_i = 0
+  curr_num_joint = 0
   for child_i in range( int_children ):
-    child_num = str( child_i + 1 )
+    # Prep for date
+    child_num = str( child_i + 1 )[:2]
+    if len( child_num ) == 1: two_digit = '0' + child_num
+    else: two_digit = child_num
     #children[ child_i ].name.first = 'Child' + child_num
     children[ child_i ].name.middle = 'Child of'
     children[ child_i ].name.last = 'Plaintiff'
     children[ child_i ].name.suffix = 'Jr'
-    date_str = '0' + child_num + '/0' + child_num + '/201' + child_num
+    # Birthdate
+    child_num = str( child_i + 1 )[:2]
+    if len( child_num ) == 1: two_digit = '0' + child_num
+    else: two_digit = child_num
+    date_str = two_digit + '/' + two_digit + '/20' + two_digit
     children[ child_i ].birthdate = as_datetime( date_str )
-    if which_are_joint == 'All': children[ child_i ].defendant_is_parent = True
-    if which_are_joint == 'None': children[ child_i ].defendant_is_parent = False
+    log( 'children', 'console' )
+    log( children[ child_i ].birthdate, 'console' )
+    # Defendant
+    if curr_num_joint < int( which_are_joint ):
+      children[ child_i ].defendant_is_parent = True
+    else:
+      children[ child_i ].defendant_is_parent = False
+    curr_num_joint = curr_num_joint + 1
 
   # Children under plaintiff's care or custody
   int_custody_children = int( num_custody_children )
   children_cares_for.target_number = int_custody_children
 
+  curr_num_of_def = 0
   for c_child_i in range( int_custody_children ):
-    child_num = str( c_child_i + 1 )
+    child_num = str( c_child_i + 1 )[:2]
+    two_digit = child_num
+    if len( child_num ) == 1:
+      two_digit = '0' + child_num
     #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num
     children_cares_for[ c_child_i ].name.middle = 'Child of'
-    children_cares_for[ c_child_i ].name.last = 'Custody'
+    children_cares_for[ c_child_i ].name.last = 'Care'
     children_cares_for[ c_child_i ].name.suffix = 'Jr'
-    date_str = '1' + child_num + '/0' + child_num + '/201' + child_num
+    # Birthdate
+    child_num = str( c_child_i + 1 )[:2]
+    if len( child_num ) == 1: two_digit = '0' + child_num
+    else: two_digit = child_num
+    date_str = two_digit + '/' + two_digit + '/20' + two_digit
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
-    log( num_of_just_def, 'console' )
-    if num_of_just_def == 'All':
+    log( 'care of', 'console' )
+    log( children[ child_i ].birthdate, 'console' )
+    log( c_child_i, 'console' )
+    log( two_digit, 'console' )
+    # Defendant
+    if curr_num_of_def < int( num_of_just_def ):
       children_cares_for[ c_child_i ].defendant_is_parent = True
-    if num_of_just_def == 'None':
+    else:
       children_cares_for[ c_child_i ].defendant_is_parent = False
+    curr_num_of_def = curr_num_of_def + 1
 
   log( 'set_children', 'console' )
   set_children = True
@@ -573,7 +580,7 @@ attachment:
 
       |Field | Value |
       |---|-|
-      |**Children of plaintiff**| wip |
+      |**Children of plaintiff**|
       number of children|`${ int( num_children ) }`
       %if int( num_children ) > 0:
       _suggested first name_|`Cade1`, `Cade2`, `Cade3`, etc.
@@ -581,17 +588,17 @@ attachment:
       last name|`Plaintiff`
       suffix|`Jr`
       birthdate|`01/01/2011`, `02/02/2012`, `03/03/2013`, etc.
-      defendant is their parent|`${ '`Yes`' if which_are_joint == 'All' else '`No`' if which_are_joint == 'None' else '`Your choice`' }`
+      defendant is their parent|`${ int( which_are_joint ) }`
       % endif
-      |**Children in care or custody of plaintiff**| wip |
+      |**Children in care or custody of plaintiff**|
       number of children|`${ int( num_custody_children ) }`
       % if int( num_custody_children ) > 0:
       _suggested first name_|`Cody1`, `Cody2`, `Cody3`, etc.
       middle name|`Child of`
-      last name|`Plaintiff`
+      last name|`Care`
       suffix|`Jr`
       birthdate|`11/01/2011`, `12/02/2012`, `13/03/2013`, etc.
-      defendant is their parent|`${ '`Yes`' if which_are_joint == 'All' else '`No`' if which_are_joint == 'None' else '`Your choice`' }`
+      defendant is their parent|`${ int( num_of_just_def ) }`
       % endif
       % if defined( 'to_fill.set_majors' ) and to_fill.set_majors:
       wip
