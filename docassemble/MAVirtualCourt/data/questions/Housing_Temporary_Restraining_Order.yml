@@ -3,9 +3,9 @@ include:
   #- docassemble.MAVirtualCourt:basic-questions.yml
   - basic-questions.yml
 ---
-mandatory: True
-code: |
-  set_parts(title = "Housing Temporary Restraining Order")
+metadata:
+  title: |
+    Housing Temporary Restraining Order
 ---
 features:
   navigation: True
