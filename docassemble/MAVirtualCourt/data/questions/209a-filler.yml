@@ -69,7 +69,7 @@ code: |
 ---
 id: filler
 question: |
-  WIP: What do you want to pre-fill or skip?
+  WIP: What do you want to pre-fill?
 subquestion: |
   Note: {You will have to activley support the properties you pick.}
   You can always edit pre-filled information as long as you see the
