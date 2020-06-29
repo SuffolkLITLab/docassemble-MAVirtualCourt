@@ -265,22 +265,13 @@ code: |
 
   curr_num_joint = 0
   for child_i in range( int_children ):
-    # Prep for date
-    child_num = str( child_i + 1 )[:2]
-    if len( child_num ) == 1: two_digit = '0' + child_num
-    else: two_digit = child_num
-    #children[ child_i ].name.first = 'Child' + child_num
+    #children[ child_i ].name.first = 'Child' + child_num  # Trigger
     children[ child_i ].name.middle = 'Child of'
     children[ child_i ].name.last = 'Plaintiff'
     children[ child_i ].name.suffix = 'Jr'
     # Birthdate
-    child_num = str( child_i + 1 )[:2]
-    if len( child_num ) == 1: two_digit = '0' + child_num
-    else: two_digit = child_num
-    date_str = two_digit + '/' + two_digit + '/20' + two_digit
+    date_str = '01/01/2011'
     children[ child_i ].birthdate = as_datetime( date_str )
-    log( 'children', 'console' )
-    log( children[ child_i ].birthdate, 'console' )
     # Defendant
     if curr_num_joint < int( which_are_joint ):
       children[ child_i ].defendant_is_parent = True
@@ -294,24 +285,13 @@ code: |
 
   curr_num_of_def = 0
   for c_child_i in range( int_custody_children ):
-    child_num = str( c_child_i + 1 )[:2]
-    two_digit = child_num
-    if len( child_num ) == 1:
-      two_digit = '0' + child_num
-    #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num
+    #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num  # Trigger
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Care'
     children_cares_for[ c_child_i ].name.suffix = 'Jr'
     # Birthdate
-    child_num = str( c_child_i + 1 )[:2]
-    if len( child_num ) == 1: two_digit = '0' + child_num
-    else: two_digit = child_num
-    date_str = two_digit + '/' + two_digit + '/20' + two_digit
+    date_str = '02/02/2012'
     children_cares_for[ c_child_i ].birthdate = as_datetime( date_str )
-    log( 'care of', 'console' )
-    log( children[ child_i ].birthdate, 'console' )
-    log( c_child_i, 'console' )
-    log( two_digit, 'console' )
     # Defendant
     if curr_num_of_def < int( num_of_just_def ):
       children_cares_for[ c_child_i ].defendant_is_parent = True
@@ -587,7 +567,7 @@ attachment:
       middle name|`Child of`
       last name|`Plaintiff`
       suffix|`Jr`
-      birthdate|`01/01/2011`, `02/02/2012`, `03/03/2013`, etc.
+      birthdate|${ children[0].birthdate }
       defendant is their parent|`${ int( which_are_joint ) }`
       % endif
       |**Children in care or custody of plaintiff**|
@@ -597,7 +577,7 @@ attachment:
       middle name|`Child of`
       last name|`Care`
       suffix|`Jr`
-      birthdate|`11/01/2011`, `12/02/2012`, `13/03/2013`, etc.
+      birthdate| ${ children_cares_for[0].birthdate }
       defendant is their parent|`${ int( num_of_just_def ) }`
       % endif
       % if defined( 'to_fill.set_majors' ) and to_fill.set_majors:
