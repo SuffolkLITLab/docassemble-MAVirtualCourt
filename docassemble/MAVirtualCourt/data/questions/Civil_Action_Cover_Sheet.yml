@@ -534,7 +534,6 @@ attachment:
     filename: civil_action_cover_sheet
     pdf template file: Civil_Action_Cover_Sheet.pdf
     fields: 
-      - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }
       - "court_county": ${ courts[0].address.county }
       - "defendant": ${ str(defendants[0]) }
@@ -610,7 +609,6 @@ code: |
   Related_actions
   documented_medical_expenses_total
   users[0].signature_date
-  docket_numbers[0]
   str(plaintiffs[0])
   courts[0].address.county
   str(defendants[0])
@@ -640,7 +638,6 @@ attachment:
     filename: Civil_Action_Cover_Sheet
     pdf template file: Civil_Action_Cover_Sheet.pdf
     fields: 
-      - "docket_number": ${ docket_numbers[0] }
       - "plaintiff": ${ str(plaintiffs[0]) }
       - "court_county": ${ courts[0].address.county }
       - "defendant": ${ str(defendants[0]) }
