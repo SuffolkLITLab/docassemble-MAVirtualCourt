@@ -370,6 +370,7 @@ fields:
     datatype: yesno
   - 'The judge should order ${other_parties.familiar()} to pay me:': order_defendant_pay_amount
     datatype: currency
+    min: 0
     show if:
       variable: order_defendant_pay_yes
       is: True
@@ -1040,6 +1041,7 @@ attachment:
     skip undefined: True
     name: 209A Complaint Page 1
     filename: A_Complaint_Page_1
+    editable: False
     pdf template file: complaint_209A_labeled_1.pdf
     decimal places: 2    
     fields: 

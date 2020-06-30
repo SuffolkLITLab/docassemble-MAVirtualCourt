@@ -1558,7 +1558,7 @@ attachment:
     name: Affidavit of Care
     filename: Affidavit_of_Care
     # skip undefined: True
-    # editable: False    
+    editable: False    
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
     decimal places: 2    
     fields: 

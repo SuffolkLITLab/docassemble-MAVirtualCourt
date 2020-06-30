@@ -340,12 +340,13 @@ fields:
       - Asian: Asian
       - Native Hawaiian or Other Pacific Islander: Pacific Is.
       - Hispanic or Latino/Latina/Latinx: Hispanic
-      - Multi racial: Multiracial
+      - Multiracial: Multiracial
       - Other: other
   - Other race: other_parties[0].race_other
     show if: 
       variable: other_parties[0].race
       is: other
+    maxlength: 9      
   - "What is ${other_parties.familiar()}'s eye color?": other_parties[0].eye_color
     choices:
       - Amber: Amber
@@ -356,8 +357,12 @@ fields:
       - Hazel: Hazel
       - Red: Red
       - Other/unknown: other/unknown
-  - Other details about ${other_parties.familiar()}'s eyes: other_parties[0].eye_other
+  - Other eye color: other_parties[0].eye_other
     required: False
+    show if:
+      variable: other_parties[0].eye_color
+      is: 'other/unknown'
+    maxlength: 9
   - "What is ${other_parties.familiar()}'s hair color?": other_parties[0].hair_color
     choices:
       - Brown: Brown
@@ -371,9 +376,7 @@ fields:
     show if:
       variable: other_parties[0].hair_color
       is: "other"
-  - What is the style of ${other_parties.familiar()}'s hair?: other_parties[0].hair_other_style
-    required: False
-    help: For example- balding, short, long, sideburns, etc.
+    maxlength: 9     
 ---
 id: defendant vital stats
 question: |
@@ -434,8 +437,8 @@ fields:
 ---
 code: |
   defendant_race = other_parties[0].race if not other_parties[0].race == 'other' else other_parties[0].race_other
-  defendant_eye_color = other_parties[0].eye_color
-  defendant_hair_details = other_parties[0].hair_color + space('other_parties[0].hair_color_other') + space('other_parties[0].hair_other_style')
+  defendant_eye_color = other_parties[0].eye_color if not other_parties[0].eye_color == 'other/unknown' else other_parties[0].eye_other
+  defendant_hair_details = other_parties[0].hair_color if not other_parties[0].hair_color == "other" else other_parties[0].hair_color_other
   defendant_other_description = str(other_parties[0].physical_other.true_values()) + space('other_parties[0].physical_other_details')
 ---
 
@@ -828,6 +831,7 @@ attachment:
     variable name: defendantinformation209A0008_attachment_preview
     # skip undefined: True
     name: ${other_parties.familiar()}-information-209a
+    editable: False
     filename: Defendantinformation209a
     pdf template file: defendant-information-209A.pdf
     decimal places: 2    

@@ -354,7 +354,7 @@ validation code: |
       (not showifdef('users[0].mobile_number')) and \
       (not showifdef('users[0].email')) and \
       (not showifdef('users[0].other_contact_method'))):
-    validation_error(word("You need to provide at least one contact method."))
+    validation_error(word("You need to provide at least one contact method."), field="users[0].other_contact_method")
 help: |
   You _must_ provide contact information so the court can reach you.
   
@@ -411,6 +411,7 @@ attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment_preview
     name: Plaintiff Confidential Information Form
     # skip undefined: True
+    editable: False
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 

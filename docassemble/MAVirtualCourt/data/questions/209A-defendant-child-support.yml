@@ -174,12 +174,14 @@ subquestion: |
 fields:
   - 'How much in total do you pay for health insurance?': users[0].health_insurance_payment
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].health_insurance_payment_weekly_or_monthly
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - 'How much do you pay for dental and/or vision insurance?': users[0].dental_vision_insurance_payment
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].dental_vision_insurance_payment_weekly_or_monthly
     choices:
       - "Weekly": weekly
@@ -194,6 +196,7 @@ subquestion: |
 fields:
   - 'How much do you pay for childcare for the children that you share with the Defendant?': users[0].child_care_expenses
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].child_care_expenses_weekly_or_monthly
     choices:
       - "Weekly": weekly
@@ -208,6 +211,7 @@ fields:
     datatype: yesnoradio
   - 'How much do you pay in child support obligations?': users[0].child_care_other
     datatype: currency
+    min: 0
     show if:
       variable: pays_child_support
       is: True
@@ -229,6 +233,7 @@ subquestion: |
 fields:
   - "What is your gross income (before taxes)?": users[0].gross_income
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].gross_income_weekly_or_monthly
     choices:
       - "Weekly": weekly

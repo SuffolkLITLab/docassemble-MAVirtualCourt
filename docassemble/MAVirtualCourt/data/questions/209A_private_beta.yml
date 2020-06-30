@@ -2,7 +2,7 @@
 include: 
   - 209a_package.yml
 ---
-id: basic questions intro screen
+id: private beta intro screen
 question: |
   Mass Access Project Private Beta
 subquestion: |
@@ -23,3 +23,10 @@ fields:
       minlength: |
         You cannot continue unless you agree to the terms of use.        
 continue button field: basic_questions_intro_screen
+right: |
+  % if user_has_saved_answers:
+  ${fa_icon("bell", color="primary", size="sm")}
+  Saved answers available!  
+  
+  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
+  % endif    
