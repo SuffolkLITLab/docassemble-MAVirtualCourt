@@ -370,7 +370,7 @@ code: |
       if need_care_custody_addendum:
         attachment_preview_temp.append(care_or_custody_proceedings_appendix_variable)
     
-  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and wants_child_support_yes and not existing_order:
+  if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and not existing_order and wants_child_support_yes:
     attachment_preview_temp.append( Plaintiff_Affidavit_in_support_of_request_for_child_support_order0008_attachment_preview)
     if addAddendum_chdSupport:
       attachment_preview_temp.append(chdSupport_addendum)
