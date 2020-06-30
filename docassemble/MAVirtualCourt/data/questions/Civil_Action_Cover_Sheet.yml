@@ -593,9 +593,9 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["Civil_Action_Cover_Sheet0026"]["preferred court"]
   allowed_courts = interview_metadata["Civil_Action_Cover_Sheet0026"]["allowed courts"]
-  plaintiffs[0].address
-  attorneys[0].address
-  defendants[0].address
+  plaintiffs[0].address.address
+  attorneys[0].address.address
+  defendants[0].address.address
   jury_claim_made_yes
   code_number
   claim_under_glc_93a_yes
