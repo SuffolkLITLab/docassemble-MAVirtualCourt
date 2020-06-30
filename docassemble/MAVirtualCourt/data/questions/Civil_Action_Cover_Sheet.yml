@@ -4,7 +4,7 @@ code: |
   if not defined("interview_metadata['Civil_Action_Cover_Sheet0026']"):
     interview_metadata.initializeObject('Civil_Action_Cover_Sheet0026')
   interview_metadata['Civil_Action_Cover_Sheet0026'].update({
-    'title': 'Civil Action Cover Sheet - intial',
+    'title': 'Civil Action Cover Sheet - intial commit MM',
     'short title': 'Civil Action Cover Sheet',
     'description': 'Placeholder text',
     'original_form': 'https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf',
