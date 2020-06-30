@@ -215,7 +215,7 @@ code: |
       ],
   })
 ---
-continue button field: Contract_claims
+id: contract claims
 question: |
   Does this action involve contract claims?
 subquestion: |
@@ -237,15 +237,18 @@ code: |
   else:
     total_contract_claims = total_contract_claims
 ---
+id: plaintiff injury
 question: |
   Describe Plaintiff's injury
 subquestion: |
   Include the nature and extent of injury.
 fields:
   - "Description of plaintiff's injury": description_plaintiff_injury
+    required: false
     help: |
       Provide example injury description.
 ---
+id: other documented damages
 continue button field: Does_Plaintiff_have_other_documented_damages
 question: |
   Does Plaintiff have other documented damages?
@@ -260,12 +263,14 @@ fields:
     help: |
       Provide examples of types of additional damages that can be listed here.
 ---
+id: claim involving collection of debt
 question: |
   Does this action include a claim involving collection of a debt?
 subquestion: |
   The debt must be incurred pursuant to a revolving credit agreement. Mass. R. Civ. P. 8.1(a).
 yesno: collection_of_debt_yes
 ---
+id: jury claim
 question: |
   Has a jury claim been made?
 subquestion: |
@@ -292,6 +297,7 @@ code: |
   documented_medical_expenses_total = documented_medical_expenses_chiropractic + documented_medical_expenses_doctor + documented_medical_expenses_hospital + documented_medical_expenses_other + documented_medical_expenses_physical_therapy
   total_tort_claims = documented_medical_expenses_total + anticipated_future_medical_expenses + anticipated_lost_wages + documented_lost_wages + documented_property_damages + documented_damages
 ---
+id: claim under G.L. c. 93A
 question: |
   Is there a claim under G.L. c. 93A?
 subquestion: |
@@ -307,6 +313,7 @@ code: |
   claim_under_glc_93a_yes = claim_under_glc93a == "yes"
   claim_under_glc_93a_no = claim_under_glc93a == "no"
 ---
+id: class action
 question: |
   Is this a class action under Mass. R. Civ. P. 23?
 subquestion: |
@@ -322,6 +329,7 @@ code: |
   class_action_yes = class_action == "yes"
   class_action_no = class_action == "no"
 ---
+id: related actions
 continue button field: Related_actions
 question: |
   Are there any actions related to this civil action pending in the Superior Court? 
@@ -331,6 +339,7 @@ fields:
   - 'Description of related actions': related_actions
     required: False
 ---
+id: signature dates
 question: |
   Signature dates to do
 subquestion: |
@@ -341,6 +350,7 @@ fields:
   - 'Date of certification signature': certification_signature_date
     datatype: date
 ---
+id: action and track designation
 question: |
   Type of action and track designation
 subquestion: |
@@ -356,7 +366,7 @@ fields:
     required: False
 # comment: I think the first three fields should be required because the user will need to fill those in. If not too complex, we may be able to include some show if logic for description if other?
 ---
-id: other_damages
+id: other damages
 question: |
   Placeholder text: What are your other damages?
 subquestion: |
@@ -401,7 +411,7 @@ code: |
   else:
     anticipated_lost_wages = anticipated_lost_wages
 ---
-id: documented_medical_expenses
+id: documented medical expenses
 question: |
   What are your documented medical expenses to date?
 subquestion: |
@@ -489,6 +499,7 @@ fields:
   - 'Plaintiff address': plaintiffs[0].address
     input type: area
 ---
+id: download screen
 progress: 100
 mandatory: True
 question: |
@@ -559,8 +570,7 @@ attachment:
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
-comment: |
-  This question is used to introduce your interview. Please customize
+id: introduction page
 continue button field: Civil_Action_Cover_Sheet0026_intro
 question: |
   Civil Action Cover Sheet
@@ -587,7 +597,7 @@ code: |
   Does_Plaintiff_have_other_documented_damages
   description_plaintiff_injury
   collection_of_debt_yes
-  Contract_claims
+  total_contract_claims
   Related_actions
   documented_medical_expenses_total
   users[0].signature_date
@@ -605,6 +615,7 @@ code: |
   users[0].signature
   Civil_Action_Cover_Sheet0026 = True
 ---
+id: preview screen
 continue button field: Civil_Action_Cover_Sheet0026_preview_question
 question: |
   Placeholder preview screen
