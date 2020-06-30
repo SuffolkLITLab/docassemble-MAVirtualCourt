@@ -268,7 +268,16 @@ question: |
   Does this action include a claim involving collection of a debt?
 subquestion: |
   The debt must be incurred pursuant to a revolving credit agreement. Mass. R. Civ. P. 8.1(a).
-yesno: collection_of_debt_yes
+fields:
+  - no label: collection_of_debt
+    datatype: radio
+    choices: 
+      - Yes: yes
+      - No: no
+---
+code: |
+  collection_of_debt_yes = collection_of_debt == "yes"
+  collection_of_debt_no = collection_of_debt == "no"
 ---
 id: jury claim
 question: |
