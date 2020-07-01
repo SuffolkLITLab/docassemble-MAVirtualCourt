@@ -134,8 +134,7 @@ subquestion: |
   ${other_parties.familiar()} will not get any notice that you asked the court
   for a restraining order.
 
-  **2. {Make a temporary order}.** The 2nd hearing will be within 10 days of the
-  temporary order. At the 2nd hearing the judge can hear from both you and
+  **2. {Make a temporary order}.** The judge will give you a restraining order that lasts 10 days, until the 2nd hearing. At the 2nd hearing the judge can hear from both you and
   ${other_parties.familiar()} at the same time.
 
   **3. {Not make any order}** until they can hear from both you and

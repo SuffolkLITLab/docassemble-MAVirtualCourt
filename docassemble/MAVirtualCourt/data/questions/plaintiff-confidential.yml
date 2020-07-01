@@ -298,10 +298,11 @@ attachment:
       - "plaintiff_birthdate": ${ users[0].birthdate.format() }
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
-      - plaintiff_phone_home: ${users[0].phone_number }
+      - "plaintiff_phone_home": ${users[0].phone_number }
       - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
+      - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
@@ -366,22 +367,8 @@ code: |
     users[0].previous_addresses.there_are_any = False    
   # users[0].apartment_yes
   users[0].birthdate
-  if not order_impound_plaintiff_address_work_yes:
-    if users[0].not_working:
-      users[0].workplace_name = ''
-      users[0].workplace_address = ''
-      users[0].workplace_phone = ''
-  else:
-    users[0].workplace_name = ''
-    users[0].workplace_address = ''
-    users[0].workplace_phone = ''
-  if not order_impound_plaintiff_address_school:
-    if users[0].not_in_school:
-      users[0].school_name = ''
-      users[0].school_address = ''
-  else:
-    users[0].school_name = ''
-    users[0].school_address = ''
+  users[0].not_working
+  users[0].not_in_school
   
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
@@ -416,10 +403,11 @@ attachment:
       - "plaintiff_birthdate": ${ users[0].birthdate.format() }
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
-      - plaintiff_phone_home: ${users[0].phone_number }
+      - "plaintiff_phone_home": ${users[0].phone_number }
       #- "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      #- "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
+      - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
+      - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
