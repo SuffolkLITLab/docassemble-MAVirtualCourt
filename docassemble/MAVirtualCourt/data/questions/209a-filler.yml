@@ -279,7 +279,7 @@ code: |
   complaint_209A_Affidavit_intro_3 = True
   
   incidents_of_abuse.auto_gather=False
-  for abuse_i in range( 20 ):
+  for abuse_i in range( 30 ):
     i_num = str( abuse_i )
     #incident = incidents_of_abuse.appendObject( DADict )
     incidents_of_abuse[ abuse_i ].year = '200' + i_num[ -1 ]
@@ -532,7 +532,8 @@ code: |
   other_parties[0].hair_color_other = 'Pink'
   other_parties[0].hair_other_style = 'Long'
   
-  #other_parties[0].height  # Screen trigger
+  #dont_know_birthdate = False   # Screen trigger
+  other_parties[0].height = '5 ft'
   other_parties[0].birthdate = as_datetime('02/22/2000')
   other_parties[0].weight = '222 lb'
   other_parties[0].physical_build = DADict(
@@ -584,7 +585,7 @@ code: |
     other_parties[0].understands_english = False  # Screen trigger
     other_parties[0].photo_yes = False  # Triggers one question
     other_parties[0].race = 'White'  # Screen trigger
-    other_parties[0].height = '5 ft'  # Screen trigger
+    dont_know_birthdate = False   # Screen trigger
     defendant_has_guns['gun'] = True  # Screen trigger
     other_parties[0].police_violence_yes = True  # Screen trigger
     defendant_not_employed = False  # Screen trigger
