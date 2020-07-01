@@ -1,65 +1,9 @@
 comment: |
-  Inserts quick exit button for sensitive interviews into
-  the page header.
+  Packages two files to provide a quick quick exit button for sensitive interviews.
   
-  Will not be compatible with all browsers. JQuery doesn't
-  offer that kind of support.
-  
-  Why is this js in here, in `right:` instead of the static folder?
-  Because when I tried that, the escape button only got
-  created on the first page and then never again.
-  
-  Why is the css in here in that case?
-  Because then they're both in the same file and I don't have
-  to dig to find each and then jump around between them. If
-  problems come up, we can deal with them.
+  Will not be compatible with all browsers. JQuery doesn't offer that kind of support.
 ---
-default screen parts:
-  right: ${ escape_button }
+features:
+  javascript: escape.js
+  css: escape.css
 ---
-id: escape_button_and_its_placement
-template: escape_button
-content: |
-  <script>
-
-    // Can't use `let` in here
-    var escaper = escaper || document.createElement( 'a' );
-    escaper.setAttribute( 'class', 'escape btn btn-danger' );
-    escaper.setAttribute( 'href', 'https://google.com' );
-    escaper.innerHTML = 'Escape';
-
-    // Add to navbar
-    var after = document.getElementById( 'damobile-toggler' );
-    after.parentNode.insertBefore( escaper, after );
-
-  </script>
-
-  <style>
-    
-    .escape {
-      margin: 0;
-      margin-left: .4em;
-    }
-    
-    @media only screen and (max-width: 30em) {
-      .navbar-brand {
-        margin-right: .3rem;
-      }
-      
-      #dapagetitle {
-        margin-right: .4em;
-      }
-      
-      #dapagetitle .ma_icon {
-        margin-right: 0;
-      }
-
-      .escape {
-        margin-left: .6em;
-      }
-      
-      #dahelptoggle {
-        padding: 0;
-      }
-    }
-  </style>

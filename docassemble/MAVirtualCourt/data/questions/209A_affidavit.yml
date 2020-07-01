@@ -105,7 +105,7 @@ question: |
 subquestion: |
   The questions coming up are to help you include all the details the judge needs to know.
   
-  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): 1-877-785-2020. 
+  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}. 
 
   Finally, as you write your affidavit, keep in mind that when you sign your name at the end of this guide, you are declaring, “{under penalty of perjury}” that your answers to all these questions are {true to the best of your knowledge}.
 

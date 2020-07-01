@@ -16,7 +16,6 @@ code: |
     'allowed courts': [
       'Boston Municipal Court',
       'District Court',
-      'Juvenile Court',
       'Probate and Family Court',
       'Superior Court',
     ],
