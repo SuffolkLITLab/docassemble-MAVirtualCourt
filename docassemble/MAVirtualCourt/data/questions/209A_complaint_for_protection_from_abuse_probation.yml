@@ -244,11 +244,11 @@ code: |
   # Will allow visitation without restrictions perhaps?
   # NOTE: this seems to misunderstand the purpose of this variable
   # no_visitation_restrictions = not wants_visitation_orders
-  if existing_order:
+  if len(children_of_both) and existing_order:
     explain_no_child_support
     wants_child_support_yes = False
     majors_needing_support.there_are_any = False
-  else:
+  elif len(children_of_both):
     child_support_safety
     wants_child_support_yes
     if need_help_for_majors:
@@ -484,6 +484,7 @@ fields:
   - Birthdate: children[i].birthdate
     datatype: date
     min: ${ today().minus(years=18) }
+    max: ${ today() }
     validation messages:
       min: |
         The court asks only for children under 18.
@@ -518,9 +519,12 @@ fields:
   - Last Name: children_cares_for[i].name.last
   - Suffix: children_cares_for[i].name.suffix
     required: False
+    code: |
+      name_suffix()
   - Birthdate: children_cares_for[i].birthdate
     datatype: date
     min: ${ today().minus(years=18) }
+    max: ${ today() }    
     validation messages:
       min: |
         The court asks only for children under 18.
@@ -829,7 +833,7 @@ fields:
   - Suffix: majors_needing_support[i].name.suffix
     required: False
 ---
-id: existing order
+id: do you already have a child support order
 question: |
   Do you already have a child support order?
 subquestion: |
@@ -895,7 +899,8 @@ subquestion: |
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment_preview
     name: 209A Page 2
-    # skip undefined: True
+    skip undefined: True
+    editable: False
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    
@@ -1023,7 +1028,7 @@ need: A_complaint_for_protection_from_abuse_probation_copy0005
 attachment:
     variable name: A_complaint_for_protection_from_abuse_probation_copy0005_attachment
     name: 209A Page 2
-    # skip undefined: True
+    skip undefined: True
     filename: A_Page_2
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    

@@ -174,12 +174,14 @@ subquestion: |
 fields:
   - 'How much in total do you pay for health insurance?': users[0].health_insurance_payment
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].health_insurance_payment_weekly_or_monthly
     choices:
       - "Weekly": weekly
       - "Monthly": monthly
   - 'How much do you pay for dental and/or vision insurance?': users[0].dental_vision_insurance_payment
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].dental_vision_insurance_payment_weekly_or_monthly
     choices:
       - "Weekly": weekly
@@ -194,6 +196,7 @@ subquestion: |
 fields:
   - 'How much do you pay for childcare for the children that you share with the Defendant?': users[0].child_care_expenses
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].child_care_expenses_weekly_or_monthly
     choices:
       - "Weekly": weekly
@@ -208,6 +211,7 @@ fields:
     datatype: yesnoradio
   - 'How much do you pay in child support obligations?': users[0].child_care_other
     datatype: currency
+    min: 0
     show if:
       variable: pays_child_support
       is: True
@@ -229,6 +233,7 @@ subquestion: |
 fields:
   - "What is your gross income (before taxes)?": users[0].gross_income
     datatype: currency
+    min: 0
   - "Weekly or monthly": users[0].gross_income_weekly_or_monthly
     choices:
       - "Weekly": weekly
@@ -291,30 +296,30 @@ attachment:
       - "child2_name_full": ${ str(children[2-1]) }
       - "child4_name_full": ${ str(children[4-1]) }
       - "user_name_full__2": ${ str(users[0]) }
-      - "user_signature": ${ users[0].signature }
       - "court_division": ${ courts[0] }
       - "is_father": ${ is_father }
       - "is_mother": ${ is_mother }
       - "user_work_job_title": ${ users[0].work_job_title }
       - "user_work_employer_name": ${ users[0].work_employer_name }
       - "user_work_address_on_one_line": ${ users[0].work_address_on_one_line }
-      - "gross_income_per_week": ${ users[0].weekly_gross_income }
-      - "gross_income_per_month": ${  users[0].monthly_gross_income }
-      - "gross_income": ${ users[0].gross_income }
-      - "expenses_health_insurance": ${ users[0].health_insurance_payment }
+      - "gross_income_per_week": ${  thousands(users[0].weekly_gross_income) }
+      - "gross_income_per_month": ${  thousands(users[0].monthly_gross_income) }
+      - "gross_income": ${ thousands(users[0].gross_income) }
+      - "expenses_health_insurance": ${ thousands(users[0].health_insurance_payment) }
       - "expenses_health_insurance_per_week": ${ users[0].weekly_health_insurance }
       - "expenses_health_insurance_per_month": ${ users[0].monthly_health_insurance }
-      - "expenses_dental_and_vision_insurance": ${ users[0].dental_vision_insurance_payment }
+      - "expenses_dental_and_vision_insurance": ${ thousands(users[0].dental_vision_insurance_payment) }
       - "expenses_dental_and_vision_insurance_per_week": ${ users[0].weekly_health_insurance }
       - "expenses_dental_and_vision_insurance_per_month": ${ users[0].monthly_health_insurance }
-      - "expenses_child_care_for_child1_child2_child3_child4": ${ users[0].child_care_expenses }
+      - "expenses_child_care_for_child1_child2_child3_child4": ${ thousands(users[0].child_care_expenses) }
       - "expenses_child_care_for_child1_child2_child3_child4_per_week": ${ users[0].weekly_child_care }
-      - "expenses_child_care_for_child1_child2_child3_child4_per_month": ${ users[0].monthly_child_care }
+      - "expenses_child_care_for_child1_child2_child3_child4_per_month": ${ users[0].weekly_child_care }
       - "expenses_other_child_support_per_month": ${ users[0].monthly_child_care_other }
-      - "expenses_other_child_support": ${ users[0].child_care_other }
+      - "expenses_other_child_support": ${ thousands(users[0].child_care_other) }
       - "expenses_other_child_support_per_week": ${ users[0].weekly_child_care_other }
       - "user_oath": ${ users[0].states_above_true }
-      - "user_signature_date": ${ users[0].signature_date }
+      - "user_signature_date": ${ users[0].signature_date }      
+      - "user_signature": ${ users[0].signature }
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -430,20 +435,20 @@ attachment:
       - "user_work_job_title": ${ users[0].work_job_title }
       - "user_work_employer_name": ${ users[0].work_employer_name }
       - "user_work_address_on_one_line": ${ users[0].work_address_on_one_line }
-      - "gross_income_per_week": ${  users[0].weekly_gross_income }
-      - "gross_income_per_month": ${  users[0].monthly_gross_income }
-      - "gross_income": ${ users[0].gross_income }
-      - "expenses_health_insurance": ${ users[0].health_insurance_payment }
+      - "gross_income_per_week": ${  thousands(users[0].weekly_gross_income) }
+      - "gross_income_per_month": ${  thousands(users[0].monthly_gross_income) }
+      - "gross_income": ${ thousands(users[0].gross_income) }
+      - "expenses_health_insurance": ${ thousands(users[0].health_insurance_payment) }
       - "expenses_health_insurance_per_week": ${ users[0].weekly_health_insurance }
       - "expenses_health_insurance_per_month": ${ users[0].monthly_health_insurance }
-      - "expenses_dental_and_vision_insurance": ${ users[0].dental_vision_insurance_payment }
+      - "expenses_dental_and_vision_insurance": ${ thousands(users[0].dental_vision_insurance_payment) }
       - "expenses_dental_and_vision_insurance_per_week": ${ users[0].weekly_health_insurance }
       - "expenses_dental_and_vision_insurance_per_month": ${ users[0].monthly_health_insurance }
-      - "expenses_child_care_for_child1_child2_child3_child4": ${ users[0].child_care_expenses }
+      - "expenses_child_care_for_child1_child2_child3_child4": ${ thousands(users[0].child_care_expenses) }
       - "expenses_child_care_for_child1_child2_child3_child4_per_week": ${ users[0].weekly_child_care }
       - "expenses_child_care_for_child1_child2_child3_child4_per_month": ${ users[0].weekly_child_care }
       - "expenses_other_child_support_per_month": ${ users[0].monthly_child_care_other }
-      - "expenses_other_child_support": ${ users[0].child_care_other }
+      - "expenses_other_child_support": ${ thousands(users[0].child_care_other) }
       - "expenses_other_child_support_per_week": ${ users[0].weekly_child_care_other }
       - "user_oath": ${ users[0].states_above_true }
       - "user_signature_date": ${ users[0].signature_date }

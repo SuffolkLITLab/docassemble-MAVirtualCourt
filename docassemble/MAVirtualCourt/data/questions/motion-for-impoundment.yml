@@ -291,7 +291,7 @@ attachment:
     name: Motion for Impoundment
     filename: Motion_for_Impoundment
     # skip undefined: True
-
+    editable: False
     pdf template file: 209a_258e_motion_for_impoundment.pdf
     fields: 
       # Some of these fields should be multi-line fields
