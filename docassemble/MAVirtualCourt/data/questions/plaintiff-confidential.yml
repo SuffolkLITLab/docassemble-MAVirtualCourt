@@ -1,97 +1,4 @@
 ---
-include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
----
-id: plaintiff confidential intro
-comment: |
-  This question is used to introduce your interview. Please customize
-continue button field: A_Plaintiff_Confidential_Information0011_intro # SMEs to provide splash page language.
-question: |
-  Getting and staying in touch with you
-subquestion: |
-  The next questions ask for your home, work, school, email address and phone numbers. 
-  
-  The court needs this information to:
-  
-  * contact you about your case, and
-  * make an order that will help keep you as safe as possible.
-  
-  ${other_parties.familiar()}, ${other_parties.familiar()}’s lawyer, and the public are not allowed to see this information about you.
-  
-  Only certain **authorized** people can see it. Even then, they must file a Request for Access to Confidential Information form first, to ask the court's permission.
-help:
-  label: Who is an "authorized" person?
-  heading: Authorized people
-  content: |
-    People who are authorized to see your addresses and phone numbers are people who may need to contact you as part of their job.   
-    
-    They are the police or other law enforcement officers, prosecutors, victim-witness advocates, domestic violence counselors and sexual assault counselors.  
-    
-    You can give the court permission to share this contact information also with certain people you trust.
----
-id: interview_order_A_Plaintiff_Confidential_Information0011
-code: |
-  # This is a placeholder to control logic flow in this interview
-  # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
-  user_role = plaintiff
-  A_Plaintiff_Confidential_Information0011_intro
-  # Set the preferred/allowed courts for this interview
-  # preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
-  # allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
-  #plainitff_address_residential
-  str(users[0])
-  if lives_in_domestic_violence_shelter:
-    domestic_violence_shelter_warning
-  users[0].address.address
-  users[0].mobile_number
-  users[0].apartment_yes
-  if abuser_caused_plaintiff_to_leave_home:
-    users[0].previous_addresses.there_are_any = True
-    users[0].previous_addresses.gather()
-  else:
-    users[0].previous_addresses.there_are_any = False    
-  # users[0].apartment_yes
-  users[0].birthdate
-  if not order_impound_plaintiff_address_work_yes:
-    if users[0].not_working:
-      users[0].workplace_name = ''
-      users[0].workplace_address = ''
-      users[0].workplace_phone = ''
-  else:
-    users[0].workplace_name = ''
-    users[0].workplace_address = ''
-    users[0].workplace_phone = ''
-  if not order_impound_plaintiff_address_school:
-    if users[0].not_in_school:
-      users[0].school_name = ''
-      users[0].school_address = ''
-  else:
-    users[0].school_name = ''
-    users[0].school_address = ''
-  
-  Who_is_allowed_to_see_this_form
-  user_needs_interpreter
-  # Trigger computed values
-  persons_authorized_confidential_information_cutoff
-  
-  # users[0].birthdate
-  # signature_date
-  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
-  # Comment out the line below if you don't want this behavior. 
-  # mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
-  # A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
-  # basic_questions_signature_flow
-  # users[0].signature
-  A_Plaintiff_Confidential_Information0011 = True
----
-continue button field: A_Plaintiff_Confidential_Information0011_preview_question
-question: |
-  Placeholder preview screen
-subquestion: |
-  Here is a preview of the form you'll sign on the next page. 
-  
-   ${A_Plaintiff_Confidential_Information0011_attachment_preview}
----
 mandatory: True
 code: |
   interview_metadata # make sure we initialize the object
@@ -383,7 +290,7 @@ need: A_Plaintiff_Confidential_Information0011
 attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment
     name: Plaintiff Confidential Information Form
-    # skip undefined: True
+    skip undefined: True
 
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
@@ -391,11 +298,11 @@ attachment:
       - "plaintiff_birthdate": ${ users[0].birthdate.format() }
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
-      - plaintiff_phone_home: ${users[0].phone_number }
+      - "plaintiff_phone_home": ${users[0].phone_number }
       - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
-      - plaintiff_email: ${ users[0].email }
+      - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
@@ -407,21 +314,100 @@ attachment:
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
 ---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+id: plaintiff confidential intro
+comment: |
+  This question is used to introduce your interview. Please customize
+continue button field: A_Plaintiff_Confidential_Information0011_intro # SMEs to provide splash page language.
+question: |
+  Getting and staying in touch with you
+subquestion: |
+  The next questions ask for your home, work, school, email address and phone numbers. 
+  
+  The court needs this information to:
+  
+  * contact you about your case, and
+  * make an order that will help keep you as safe as possible.
+  
+  ${other_parties.familiar()}, ${other_parties.familiar()}’s lawyer, and the public are not allowed to see this information about you.
+  
+  Only certain **authorized** people can see it. Even then, they must file a Request for Access to Confidential Information form first, to ask the court's permission.
+help:
+  label: Who is an "authorized" person?
+  heading: Authorized people
+  content: |
+    People who are authorized to see your addresses and phone numbers are people who may need to contact you as part of their job.   
+    
+    They are the police or other law enforcement officers, prosecutors, victim-witness advocates, domestic violence counselors and sexual assault counselors.  
+    
+    You can give the court permission to share this contact information also with certain people you trust.
+---
+id: interview_order_A_Plaintiff_Confidential_Information0011
+code: |
+  # This is a placeholder to control logic flow in this interview
+  # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
+  user_role = plaintiff
+  A_Plaintiff_Confidential_Information0011_intro
+  # Set the preferred/allowed courts for this interview
+  # preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]
+  # allowed_courts = interview_metadata["A_Plaintiff_Confidential_Information0011"]["allowed courts"]
+  #plainitff_address_residential
+  str(users[0])
+  if lives_in_domestic_violence_shelter:
+    domestic_violence_shelter_warning
+  users[0].address.address
+  users[0].mobile_number
+  users[0].apartment_yes
+  if abuser_caused_plaintiff_to_leave_home:
+    users[0].previous_addresses.there_are_any = True
+    users[0].previous_addresses.gather()
+  else:
+    users[0].previous_addresses.there_are_any = False    
+  # users[0].apartment_yes
+  users[0].birthdate
+  users[0].not_working
+  users[0].not_in_school
+  
+  Who_is_allowed_to_see_this_form
+  user_needs_interpreter
+  # Trigger computed values
+  persons_authorized_confidential_information_cutoff
+  
+  # users[0].birthdate
+  # signature_date
+  # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
+  # Comment out the line below if you don't want this behavior. 
+  # mark_unfilled_fields_empty(interview_metadata["A_Plaintiff_Confidential_Information0011"])
+  # A_Plaintiff_Confidential_Information0011_preview_question # Pre-canned preview screen
+  # basic_questions_signature_flow
+  # users[0].signature
+  A_Plaintiff_Confidential_Information0011 = True
+---
+continue button field: A_Plaintiff_Confidential_Information0011_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${A_Plaintiff_Confidential_Information0011_attachment_preview}
+---
 attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment_preview
     name: Plaintiff Confidential Information Form
-    # skip undefined: True
+    skip undefined: True
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 
       - "plaintiff_birthdate": ${ users[0].birthdate.format() }
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
-      - plaintiff_phone_home: ${users[0].phone_number }
+      - "plaintiff_phone_home": ${users[0].phone_number }
       #- "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
-      - plaintiff_email: ${ users[0].email }
       - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
+      - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
       - "plaintiff_workplace_name": ${ users[0].workplace_name }
