@@ -279,7 +279,8 @@ code: |
   complaint_209A_Affidavit_intro_3 = True
   
   incidents_of_abuse.auto_gather=False
-  for abuse_i in range( 30 ):
+  num_incidents = 30
+  for abuse_i in range( num_incidents ):
     i_num = str( abuse_i )
     #incident = incidents_of_abuse.appendObject( DADict )
     incidents_of_abuse[ abuse_i ].year = '200' + i_num[ -1 ]
@@ -292,7 +293,7 @@ code: |
     incidents_of_abuse[ abuse_i ].injuries_edit = False
     incidents_of_abuse[ abuse_i ].medical_add = False
     incidents_of_abuse[ abuse_i ].feelings = 'bad'
-    incidents_of_abuse[ abuse_i ].summary = incidents_of_abuse[ abuse_i ].description + space("incidents_of_abuse[" + str( abuse_i ) + "].feelings", prefix=' Because of what happened, I felt ') + 'INCIDENT ' + i_num + ' END'
+    incidents_of_abuse[ abuse_i ].summary = incidents_of_abuse[ abuse_i ].description + space("incidents_of_abuse[" + str( abuse_i ) + "].feelings", prefix=' Because of what happened, I felt ') + 'INCIDENT ' + i_num + '/' + str( num_incidents ) + ' END'
 
   incidents_of_abuse.gathered = True
 
@@ -727,7 +728,7 @@ attachment:
       wants other visitation order from the court | ${ 'Yes' if wants_other_order else 'No' }
       the other order | ${ other_order }
       % else:
-      _suggested wants to allow visitation| `No` 
+      _suggested wants to allow visitation_| `No` 
       % endif
       % endif
       % endif
@@ -741,7 +742,7 @@ attachment:
       | Field | Value |
       |---|-|
       |**Background**|
-      |_suggested defendant has an alias|`Yes`|
+      |_suggested defendant has an alias_|`Yes`|
       |defendant alias|`${ other_parties[0].name_other }`
       |defendant gender|`${ other_parties[0].gender }`
       |-|-|
@@ -760,7 +761,7 @@ attachment:
       |defendant's hair color description|`${ other_parties[0].hair_color_other }`
       |defendant's hair other style|`${ other_parties[0].hair_other_style }`
       |-|-|
-      |_suggested defendant's height_|`5ft`|
+      |suggested defendant's height|`${ other_parties[0].height }`|
       |defendant's birthdate|`${ other_parties[0].birthdate }`|
       |defendant's weight|`${ other_parties[0].weight }`|
       |defendant's physical build|`${ other_parties[0].physical_build }`|
