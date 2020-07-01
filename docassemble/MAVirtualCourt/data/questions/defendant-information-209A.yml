@@ -619,7 +619,7 @@ attachment:
     decimal places: 2    
     fields: 
       - "defendant_name": ${ str(other_parties[0]) }
-      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + 'years old' }
+      - "defendant_birthdate": ${ other_parties[0].birthdate.format() if not dont_know_birthdate else 'About ' + str(other_parties[0].age) + ' years old'}
       - "parent_name": ${ str(parents[0]) }
       - "parent2_name": ${ str(parents[2-1]) }
       - "defendant_phone_home": ${ other_parties[0].phone_number }
