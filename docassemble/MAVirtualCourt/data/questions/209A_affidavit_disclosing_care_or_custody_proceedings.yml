@@ -207,16 +207,16 @@ yesno: children[i].previous_addresses.there_are_any
 ---
 id: child past addresses
 question: |
-  Previous Addresses for ${children[i]}
+  ${ordinal(j).capitalize()} Previous Addresses for ${children[i]}
 subquestion: |
   List each address other than ${children[i].address.on_one_line(include_unit=True)}
   where ${children[i]} has lived in the last 2 years below.
 
-  To add more than one, click ${word("Add another")}.
-list collect:
-  enable: True
-  label: |
-    ${ordinal(j).capitalize()} Address
+#To add more than one, click ${word("Add another")}.
+#list collect:
+#  enable: True
+#  label: |
+#    ${ordinal(j).capitalize()} Address
 fields:
   - An address previously mentioned: children[i].previous_addresses[j]
     datatype: object
@@ -234,6 +234,7 @@ fields:
     code: |
       states_list()
     default: "MA"
+  - Zip: children[i].previous_addresses[j].zip
 ---
 id: child has another past address
 question: |
@@ -759,16 +760,30 @@ code: |
 question: |
   Confidential Address
 subquestion: |
-  Do you need your address to be kept secret for any of the following reasons?
+  This form has two pages. The second page that lists addresses and phone
+  numbers can be kept confidential (private) if you need it to be.
+  
+  Do you need your address to be kept private for any of the following reasons?
 fields:
-  - Check any that are true: confidential_address_reasons
+  - Check any that you have good reason to believe: confidential_address_reasons
     datatype: checkboxes
     choices:
-      - This is a 209A (abuse prevention) order
+      - I am filing a 209A (abuse prevention) order
       - I live in a domestic violence shelter
       - I am in danger of abuse
       - My children are in danger of abuse
-      - It should be kept secret for another reason not listed above
+      - I have a legal reason to keep it private that is not listed above
+help:
+  label: When can I keep an address private?
+  content: |
+    You can keep an address private if you believe that:
+    
+    * You live in a shelter for battered persons
+    * You or your children are in danger of physical or emotional abuse
+    * You are filing this form together with a 209A abuse prevention order
+    
+    If you believe that you have another legal reason to keep your
+    address information private, select that option on the previous screen.
 ---
 code: |
   # This checks box 3 on the form
@@ -873,7 +888,7 @@ comment: |
 question: |
   Docket Number
 subquestion: |
-  If you know the docket number for this case, enter it below
+  If you know the docket number for this case, enter it below.
 fields:
   - I do not know the docket number: dont_know_docket_number
     datatype: yesno
@@ -926,15 +941,25 @@ id: prior custody cases screener
 Comment: |
   User needs the option to say no, they know of no prior custody cases.
 question: |
-  Prior Custody Cases
+  Prior Care or Custody Cases
 subquestion: |
-  Have you ever been part of a custody or other case about the children, 
-  as either a witness or a party?
+  Do you know about any court cases that
+  had to do with custody or the care of the children?
   
-  "Other case" includes any custody case, divorce, child support, paternity
-  case, visitation case, adoption, juvenile delinquency, DCF case involving
-  care and protection. If you're not sure, it's safer to answer yes.
+  This may include any case that involved:
+
+  * custody  
+  * a 209A restraining order
+  * divorce or annulment
+  * child requiring assistance
+  * child support
+  * paternity
+  * visitation
+  * adoption
+  * juvenile delinquency
+  * DCF case involving care and protection
   
+  Answer yes even if the judge did not make a decision about custody.
   We'll ask you more about any cases in the next few questions.
 fields:
   - no label: custody_case_participation
@@ -958,8 +983,7 @@ need: DCF
 question: |
   Tell us about the ${ordinal(i)} case involving ${comma_and_list(children_of_both, and_string=word("or"))}
 subquestion: |
-  Include the best information you know. It is okay to leave information blank
-  if you're not sure, or to write down what you remember.
+  Include the best information you know. If you’re not sure, it is okay to leave information blank or to write down what you remember.
 
   Only include information about cases that involve the children.
 
@@ -984,16 +1008,10 @@ fields:
   - Name of court this case was filed in: other_care_custody_proceedings[i].court_name
     show if: other_care_custody_proceedings[i].non_ma_court
   - Name of court this case was filed in:  other_care_custody_proceedings[i].court_name
+    hide if: other_care_custody_proceedings[i].non_ma_court
     datatype: combobox
     code: |
-      macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])
-    # hint: Start typing a court name
-    # input type: ajax
-    # action: list_family_courts_ajax
-    # trigger at: 2
-    # hide if: other_care_custody_proceedings[i].non_ma_court
-    # help: |
-    #   If you can't find your court above, try using the [Courthouse locator](https://www.mass.gov/courthouse-locator)
+      sorted((set([str(y) for y in macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court", "Juvenile Court"])])))
   - Docket number or case number: other_care_custody_proceedings[i].docket_number
     required: False
   - Which children were involved in this case?: other_care_custody_proceedings[i].children
@@ -1316,7 +1334,7 @@ question: |
   Are there any other cases you would like to tell us about?
 subquestion: |
   So far you have told us about ${quantity_noun(len(other_care_custody_proceedings.elements), word("case"))}: 
-  ${comma_and_list(other_care_custody_proceedings.elements)}
+  ${comma_and_list(other_care_custody_proceedings.elements)}.
 yesno: other_care_custody_proceedings.there_is_another
 ---
 reconsider: True
@@ -1474,9 +1492,9 @@ attachment:
       - "child2_name_last_first": ${ children_of_both.item(1).name.lastfirst() }
       - "child3_name_last_first": ${ children_of_both.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).past_addresses_on_one_line if not confidential_address else '' } 
-      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).past_addresses_on_one_line if not confidential_address else '' }
-      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).past_addresses_on_one_line if not confidential_address else '' }
+      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).previous_addresses if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).previous_addresses if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).previous_addresses if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
@@ -1558,7 +1576,7 @@ attachment:
     name: Affidavit of Care
     filename: Affidavit_of_Care
     # skip undefined: True
-    editable: False    
+    # editable: False    
     pdf template file: 209A_affidavit_disclosing_care_or_custody_proceedings_remarked.pdf
     decimal places: 2    
     fields: 
@@ -1586,9 +1604,9 @@ attachment:
       - "child2_name_last_first": ${ children_of_both.item(1).name.lastfirst() }
       - "child3_name_last_first": ${ children_of_both.item(2).name.lastfirst() }
       - "confidential_address": ${ confidential_address }
-      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).past_addresses_on_one_line if not confidential_address else '' } 
-      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).past_addresses_on_one_line if not confidential_address else '' }
-      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).past_addresses_on_one_line if not confidential_address else '' }
+      - "child1_past_addresses_on_one_line": ${ children_of_both.item(0).previous_addresses if not confidential_address else '' } 
+      - "child2_past_addresses_on_one_line": ${ children_of_both.item(1).previous_addresses if not confidential_address else '' }
+      - "child3_past_addresses_on_one_line": ${ children_of_both.item(2).previous_addresses if not confidential_address else '' }
       - "has_participated_custody_case": ${ has_participated_custody_case }
       - "has_not_participated_custody_case": ${ not has_participated_custody_case }
       - "know_of_other_custody_case": ${ know_of_other_custody_case }
