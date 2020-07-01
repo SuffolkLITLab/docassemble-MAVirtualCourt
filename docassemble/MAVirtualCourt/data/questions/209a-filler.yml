@@ -46,6 +46,8 @@ mandatory: True
 scan for variables: False
 code: |
   set_always_pre_filled
+  
+  if wants_to_skip[ 'affidavit' ]: skip_affidavit
 
   if to_fill.set_children:
     set_children
@@ -111,7 +113,7 @@ fields:
     datatype: integer
     default: 2
     show if: to_fill.set_daycares
-  - Pre-fill visitation orders: to_fill.set_visitation
+  - Pre-fill wants all visitation orders: to_fill.set_visitation
     datatype: yesnowide
     show if: to_fill.set_children
   - Pre-fill visitation center info: set_visitation_center
@@ -130,6 +132,22 @@ fields:
   - Set those details: to_fill.set_defendant_info
     datatype: yesnowide
     default: True
+  - note: |
+      <hr/>
+      #### Skip completely
+      <hr/>
+      You can choose to skip your pre-filled answers completely instead of just pre-filling them. This will only skip fields that you've already chosen to pre-fill unless otherwise described - options saying '(independent)' will be skipped despite not being chosen from the pre-fill section.
+  - no label: wants_to_skip
+    datatype: checkboxes
+    required: False
+    none of the above: False
+    choices:
+      - Some basic plaintiff/defendant information, like names: basic_info
+      - Creation of children: basic_children
+      - Schools/daycares: daycares
+      - Visitation centers: vistation
+      - Defendant description: defendant_description
+      - "Affidavit describing abuse (independent)": affidavit
 under: |
   We hope this speed up testing because the tester won't have to
   type in as much text. Note: some data will **always** be filled
@@ -233,8 +251,58 @@ code: |
   #incidents_of_abuse.appendObject()
   #incidents_of_abuse[0].date = '01/01'
   
+  if wants_to_skip[ 'basic_info' ]:
+    users[0].name.first = 'Pat'  # Screen trigger
+    users[0].birthdate = as_datetime('01/01/1990')  # Trigger
+    users[0].address.address = '1 Tremont St'  # Trigger
+    users[0].mobile_number = '000-0000'  # Screen trigger
+    other_parties[0].name.first = 'Drew'  # Screen trigger
+    other_parties[0].address.address = '2 Tremont St'  # Screen trigger
+    other_parties[0].location_best = 'Work'  # Screen trigger
+  
   log( 'set_always_pre_filled', 'console' )  
   set_always_pre_filled = True
+---
+id: skip affidavit
+sets: skip_affidavit
+scan for variables: False
+code: |
+  user_saw_abuse_explanation = True
+  defendant_abuse_caused_physical_harm = True
+  defendant_abuse_attempted_physical_harm = True
+  defendant_abuse_caused_fear_of_serious_physical_harm = True
+  defendant_abuse_caused_sexual_assault_force = True
+  defendant_abuse_caused_sexual_assault_make = True
+  
+  complaint_209A_Affidavit_intro = True
+  complaint_209A_Affidavit_intro_2 = True
+  complaint_209A_Affidavit_intro_3 = True
+  
+  incidents_of_abuse.auto_gather=False
+  for abuse_i in range( 20 ):
+    i_num = str( abuse_i )
+    #incident = incidents_of_abuse.appendObject( DADict )
+    incidents_of_abuse[ abuse_i ].year = '200' + i_num[ -1 ]
+    incidents_of_abuse[ abuse_i ].date = ordinal_number( abuse_i + 1, use_word=False )
+    incidents_of_abuse[ abuse_i ].time_of_day = i_num + 'pm'
+    incidents_of_abuse[ abuse_i ].location = 'INCIDENT ' + i_num + ' START my living room'
+    incidents_of_abuse[ abuse_i ].description = 'I got pushed against the wall. The neigbors called and the police came.'
+    incidents_of_abuse[ abuse_i ].police_included = True
+    incidents_of_abuse[ abuse_i ].injuries_describe = True
+    incidents_of_abuse[ abuse_i ].injuries_edit = False
+    incidents_of_abuse[ abuse_i ].medical_add = False
+    incidents_of_abuse[ abuse_i ].feelings = 'bad'
+    incidents_of_abuse[ abuse_i ].summary = incidents_of_abuse[ abuse_i ].description + space("incidents_of_abuse[" + str( abuse_i ) + "].feelings", prefix=' Because of what happened, I felt ') + 'INCIDENT ' + i_num + ' END'
+
+  incidents_of_abuse.gathered = True
+
+  affidavit_summary = ''
+  for incident in incidents_of_abuse:
+    affidavit_summary += incident.summary + '\n\n'
+  affidavit_body = affidavit_summary
+  saw_incidents = True
+
+  skip_affidavit = True
 ---
 comment: |
   '''
@@ -266,6 +334,9 @@ code: |
   curr_num_joint = 0
   for child_i in range( int_children ):
     #children[ child_i ].name.first = 'Child' + child_num  # Trigger
+    if wants_to_skip[ 'basic_children' ]:
+      plaintiff_has_children_parent_of = True
+      children[ child_i ].name.first = 'Cade' + str( child_i )
     children[ child_i ].name.middle = 'Child of'
     children[ child_i ].name.last = 'Plaintiff'
     children[ child_i ].name.suffix = 'Jr'
@@ -286,6 +357,9 @@ code: |
   curr_num_of_def = 0
   for c_child_i in range( int_custody_children ):
     #children_cares_for[ c_child_i ].name.first = 'Cody' + child_num  # Trigger
+    if wants_to_skip[ 'basic_children' ]:
+      plaintiff_has_children_cares_for = True
+      children_cares_for[ c_child_i ].name.first = 'Cody' + str( c_child_i )
     children_cares_for[ c_child_i ].name.middle = 'Child of'
     children_cares_for[ c_child_i ].name.last = 'Care'
     children_cares_for[ c_child_i ].name.suffix = 'Jr'
@@ -298,6 +372,17 @@ code: |
     else:
       children_cares_for[ c_child_i ].defendant_is_parent = False
     curr_num_of_def = curr_num_of_def + 1
+  
+  if wants_to_skip[ 'basic_children' ]:
+    plaintiff_has_minor_children = True
+    if int( which_are_joint ) > 0:
+      defendant_and_plaintiff_are_parents_of_child = True
+    else:
+      defendant_and_plaintiff_are_parents_of_child = False
+    if int( num_custody_children ) > 0:
+      plaintiff_has_children_cares_for = True
+    else:
+      plaintiff_has_children_cares_for = False
 
   log( 'set_children', 'console' )
   set_children = True
@@ -345,12 +430,15 @@ code: |
   for daycare_i in range( daycares_int ):
     daycare_num = str( daycare_i + 1 )
     daycare = schools_to_stay_away_from.appendObject()
-    #daycare.name.text  # Triggers question
-    daycare.address.address = "School " + daycare_num
+    if wants_to_skip[ 'daycares' ]:
+      daycare.name.text = 'School ' + daycare_num  # Triggers question
+    daycare.address.address = daycare_num + 'School St'
     daycare.address.unit = daycare_num
-    daycare.address.city = "Boston"
+    daycare.address.city = 'Boston'
     daycare.address.state = 'MA'
     daycare.address.zip = daycare_num * 5
+  schools_to_stay_away_from.there_is_another = False
+  schools_to_stay_away_from.gathered = True
 
   log( 'set_daycares', 'console' )
   set_daycares = True
@@ -359,7 +447,14 @@ id: visitation
 sets: set_visitation
 scan for variables: False
 code: |
-  #wants_center  # Triggers question
+
+  if wants_to_skip[ 'vistation' ]:
+    # Not sure what this affects
+    # include_children_in_order = True  # Triggers one question
+    wants_visitation_orders = True  # Triggers one question
+    prohibit_visitation = False  # Triggers one question
+    wants_center = True  # Triggers screen
+
   if set_visitation_center:
     visitation_center_name = 'Visits R Us'
     pays_for_center = 'other'
@@ -428,6 +523,8 @@ code: |
   other_parties[0].birthplace = 'Denver, CO'
   other_parties[0].social_security_number = '2222'  # Not populating?
   
+  #other_parties[0].photo_yes = False  # Triggers one question
+  
   #other_parties[0].race  # Screen trigger
   other_parties[0].eye_color = 'Amber'
   other_parties[0].eye_other = 'Round'
@@ -480,6 +577,18 @@ code: |
   other_parties[0].vehicle_model = 'A model'
   other_parties[0].vehicle_year = '2020'
   other_parties[0].vehicle_license_plate = '22 2222'
+
+  if wants_to_skip[ 'defendant_description' ]:
+    defendantinformation209A0008_intro = True
+    defendant_has_alias = True  # Screen trigger
+    other_parties[0].understands_english = False  # Screen trigger
+    other_parties[0].photo_yes = False  # Triggers one question
+    other_parties[0].race = 'White'  # Screen trigger
+    other_parties[0].height = '5 ft'  # Screen trigger
+    defendant_has_guns['gun'] = True  # Screen trigger
+    other_parties[0].police_violence_yes = True  # Screen trigger
+    defendant_not_employed = False  # Screen trigger
+    other_parties[0].does_not_have_car = False  # Screen trigger
 
   defendant_info_profile_1 = True
 ---
@@ -587,7 +696,8 @@ attachment:
       |-|-|
       |**Daycares or schools**|
       number of daycares or schools| `${ int( num_daycares ) }`
-      facility street address| `School 1`, `School 2`, `School 3`, etc.
+      _suggested name_| School 1, School 2, School 3, etc.
+      facility street address| `1 School St`, `2 School St`, `3 School St`, etc.
       facility unit| `1`, `2`, `3`, etc.
       facility city| `Boston`
       facility state| `MA`
