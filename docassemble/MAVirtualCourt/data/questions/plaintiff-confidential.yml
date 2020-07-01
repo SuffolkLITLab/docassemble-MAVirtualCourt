@@ -88,6 +88,10 @@ code: |
       ],
   })
 ---
+objects:
+  - users[0].workplaces: DAList.using(object_type=DAObject, ask_number=True, complete_attribute='name')
+  - users[0].schools: DAList.using(object_type=DAObject, ask_number=True, complete_attribute='name')
+---
 id: interpreter request
 question: |
   Do you need an interpreter?
@@ -170,18 +174,76 @@ yesno: users[0].apartment_yes
 subquestion: |
   Do you live in an apartment building or multi-family home?
 ---
-id: school address
+id: has school address
 question: |
-  School
+  Do you currently attend school?
+subquestion: |
+  Answer "yes" if you are attending school and would like
+  the order to protect your school address(es).
 fields:
-  - I am not in school : users[0].not_in_school
-    datatype: yesno
-    disable others: True
-  - 'Your school name': users[0].school_name
+  - no label: users[0].schools.there_are_any
+    datatype: yesnoradio
+  - How many school addresses do you want to protect on this form?: users[0].schools.target_number
+    datatype: integer
+    min: 1
+    show if:
+      users[0].schools.there_are_any 
+---
+id: plaintiff school details
+question: |
+  % if users[0].schools.target_number > 1:
+  Tell us about your ${ordinal(i)} school
+  % else:
+  Tell us about the school you attend
+  % endif
+fields:
+  - Name of school: users[0].schools[i].name
+  - Address: users[0].schools[i].school_address
     required: False
-  - 'School address': users[0].school_address
+    address autocomplete: True    
+---
+id: has work address
+question: |
+  Do you currently work outside of your home?
+subquestion: |
+  Answer "yes" if you have a job outside of your home and would like the order
+  to protect your work address(es).
+fields:
+  - no label: users[0].workplaces.there_are_any
+    datatype: yesnoradio
+  - How many workplace addresses do you want to protect on this form?: users[0].workplaces.target_number
+    datatype: integer
+    min: 1
+    show if:
+      users[0].workplaces.there_are_any 
+---
+id: plaintiff work details
+question: |
+  % if users[0].workplaces.target_number > 1:
+  Tell us about your ${ordinal(i)} workplace
+  % else:
+  Tell us about your work
+  % endif
+fields:
+  - Name of workplace: users[0].workplaces[i].name
+  - Address: users[0].workplaces[i].work_address
+    required: False
     address autocomplete: True
-    required: False
+  - Phone: users[0].workplaces[i].phone 
+    required: False   
+# ---
+# id: school address
+# question: |
+#   School
+# fields:
+#   - I am not in school : users[0].not_in_school
+#     datatype: yesno
+#     disable others: True
+#   - 'Your school name': users[0].school_name
+#     required: False
+#   - 'School address': users[0].school_address
+#     address autocomplete: True
+#     required: False
 ---
 id: authorized viewers
 continue button field: Who_is_allowed_to_see_this_form
@@ -195,21 +257,21 @@ fields:
   - 'Name(s)': persons_authorized_confidential_information
     required: False
     datatype: area
----
-id: workplace
-question: |
-  Workplace
-fields:
-  - I am not working: users[0].not_working
-    datatype: yesno
-    disable others: True
-  - 'Name of your employer/workplace': users[0].workplace_name
-    required: False
-  - 'Work address': users[0].workplace_address
-    required: False
-    address autocomplete: True
-  - 'Work phone number': users[0].workplace_phone
-    required: False
+# ---
+# id: workplace
+# question: |
+#   Workplace
+# fields:
+#   - I am not working: users[0].not_working
+#     datatype: yesno
+#     disable others: True
+#   - 'Name of your employer/workplace': users[0].workplace_name
+#     required: False
+#   - 'Work address': users[0].workplace_address
+#     required: False
+#     address autocomplete: True
+#   - 'Work phone number': users[0].workplace_phone
+#     required: False
 ---
 id: your address
 question: |
@@ -291,7 +353,6 @@ attachment:
     variable name: A_Plaintiff_Confidential_Information0011_attachment
     name: Plaintiff Confidential Information Form
     skip undefined: True
-
     filename: Plaintiff_Confidential_Information_Form
     pdf template file: 209A_Plaintiff_Confidential_Information_first_quality_check_ready_for_upload.pdf
     fields: 
@@ -299,20 +360,20 @@ attachment:
       - "plaintiff_name": ${ str(users[0]) }
       - "plaintiff_phone": ${ users[0].mobile_number }
       - "plaintiff_phone_home": ${users[0].phone_number }
-      - "plaintiff_signature": ${ users[0].signature }
       - "signature_date": ${ signature_date }
       - "plaintiff_address_residential": ${ users[0].address.on_one_line(include_unit=True) }
       - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
-      - "plaintiff_workplace_name": ${ users[0].workplace_name }
-      - "plaintiff_workplace_address": ${ users[0].workplace_address }
-      - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
-      - "plaintiff_school_name": ${ users[0].school_name }
-      - "plaintiff_school_address": ${ users[0].school_address }
+      - "plaintiff_workplace_name": ${ users[0].workplaces.item(0).name }
+      - "plaintiff_workplace_address": ${ users[0].workplaces.item(0).work_address }
+      - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
+      - "plaintiff_school_name": ${ users[0].schools.item(0).name }
+      - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
-      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''}
+      - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
+      - "plaintiff_signature": ${ users[0].signature }
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -367,8 +428,10 @@ code: |
     users[0].previous_addresses.there_are_any = False    
   # users[0].apartment_yes
   users[0].birthdate
-  users[0].not_working
-  users[0].not_in_school
+  users[0].workplaces.gather()
+  users[0].schools.gather()
+  # users[0].not_working
+  # users[0].not_in_school
   
   Who_is_allowed_to_see_this_form
   user_needs_interpreter
@@ -411,11 +474,11 @@ attachment:
       - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
-      - "plaintiff_workplace_name": ${ users[0].workplace_name }
-      - "plaintiff_workplace_address": ${ users[0].workplace_address }
-      - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
-      - "plaintiff_school_name": ${ users[0].school_name }
-      - "plaintiff_school_address": ${ users[0].school_address }
+      - "plaintiff_workplace_name": ${ users[0].workplaces.item(0).name }
+      - "plaintiff_workplace_address": ${ users[0].workplaces.item(0).work_address }
+      - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
+      - "plaintiff_school_name": ${ users[0].schools.item(0).name }
+      - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
@@ -428,7 +491,19 @@ code: |
       {'title': 'FORMER ADDRESSES',
       'value': [users[0].previous_addresses]
       })
-      
+  
+  if len(users[0].schools) >= 2:
+    txtFieldsList_confidential.append(
+      {'title': 'SCHOOL ADRESSES',
+      'value': [school.name + ': ' + school.school_address for school in users[0].schools]}
+    )
+
+  if len(users[0].workplaces) >= 2:
+    txtFieldsList_confidential.append(
+      {'title': 'WORKPLACE ADRESSES',
+      'value': [workplace.name + ': ' + workplace.work_address + (' (' + workplace.phone +')' if len(workplace.phone) else '') for workplace in users[0].workplaces]}
+    )
+
   Limit = 200
   sLimit = Limit - 16   
   need_confidential_info_addendum = len(persons_authorized_confidential_information) > Limit
