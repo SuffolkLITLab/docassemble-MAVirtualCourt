@@ -290,37 +290,6 @@ fields:
     required: False      
 list collect: True      
 ---
-if: |
-  not defined('preferred_court') or preferred_court != 'Housing Court'
-id: court information
-sets:
-  - courts[0].name
-question: |
-  What court is your case being heard in?
-subquestion: |
-  Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
-  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
-  
-  Click ${word("help")} to learn more about choosing a court. This can be complicated in a 209A restraining order.
-fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"])
-continue button field: ask_court_question    
-help: |
-  You can get a 209A restraining order at the District Court near where you live or theProbate and Family Court in your county.  If you live in Boston, you can go to the Boston Municipal Court (BMC) near where you live instead of a District Court. You can also go to the Superior Court in your county.  Most people get 209A restraining orders from District Court, BMC, or Probate and Family Court.  Superior Court restraining orders are rare but may be an option when other available courts are closed due to the COVID-19 crisis. 
-  
-  If you have moved to another town in Massachusetts since the abuse, you can go to the court where you live now or to the court for an address that you had to leave because of the abuse. 
-  
-  Some things to think about when you are deciding which court is better for you are:  
-  
-  #### If the other parent wants to visit your child  
-  The District Court is not supposed to order visitation between the other parent and your child as part of a 209A case. The Probate and Family Court can order visitation in a 209A case.  If you want to get visitation settled right away, you might want to go to the Probate and Family Court to file for the 209A restraining order. If you do not want the court to decide about visitation, you might want to go to the District Court for your 209A restraining order. 
-  #### If the person who abused you is facing criminal charges  
-  If the person who abused you is facing criminal charges related to the domestic violence, you might want to file for your 209A restraining order at the District or Superior Court where that case is. That way, you may be able to work with the same Victim/Witness Advocate for both cases.
-  
-  Read more at: [https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a)
----
 code: |
   if 'District' in courts[0].name:
     courts[0].division_district_court = courts[0].division
