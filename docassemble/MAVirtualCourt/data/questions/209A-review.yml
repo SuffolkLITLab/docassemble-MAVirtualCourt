@@ -63,13 +63,53 @@ review:
     button: |
       You said ${other_parties.familiar()}'s
       gender is "${other_parties[0].gender}".
-########################################### Statement
+########################################### Relationship
+---
+event: section_relationship
+question: |
+  Your relationship to ${other_parties.familiar()}
+review:
+  - Edit household status: related_by_household
+    button: |
+      ${related_by_household.true_values()}    
+  - Edit couple status: related_as_couple
+    button: |
+      ${related_as_couple.true_values()}
+  - Edit marriage status: relationship_to_defendant_married
+    button: |
+      ${ relationship_to_defendant_married }
+  - Edit in-law relationship: related_by_marriage
+    button: |
+      ${related_by_marriage} ${showifdef('defendant_relationship_to_plaintiff_is')}
+  - Edit blood relationship: related_by_blood
+    button: |
+      ${related_by_blood} ${showifdef('defendant_relationship_to_plaintiff_is')}
+########################################### Affidavit
 ---
 event: section_affidavit  
 question: |
-  Your statement
+  Your affidavit
 subquestion: |
 review:
+  - Edit abuse: 
+      - defendant_abuse_caused_physical_harm
+      - defendant_abuse_attempted_physical_harm
+      - defendant_abuse_caused_fear_of_serious_physical_harm
+      - defendant_abuse_caused_sexual_assault_force
+      - defendant_abuse_caused_sexual_assault_make
+    button: |
+      % if defendant_abuse_caused_physical_harm:
+      * Physical harm
+      % endif
+      % if defendant_abuse_attempted_physical_harm:
+      * Attempted physical harm
+      % endif
+      % if defendant_abuse_caused_fear_of_serious_physical_harm:
+      * Threatend or made me fear physical harm
+      % endif
+      % if defendant_abuse_caused_sexual_assault_force:
+      * Threatened or made me have sex or contact with an intimate body part
+      % endif
   - Edit your statement: affidavit_body
     button: |
       Here is what your affidavit says right now:
@@ -85,33 +125,49 @@ review:
 
 #################################### Children
 ---
-continue button field: section_children
-continue button label: ${word("Resume")}
+event: section_children
+need: 
+  - children.table_without_addresses
+  - children.table_with_addresses
+  - children_cares_for.table
 question: |
   Review information about your children
 subquestion: |
-  You told us that you
-  % if plaintiff_has_minor_children:
-  do
-  % else:
-  do not
-  % endif
-  have children.
+review:
+  - Edit children with ${other_parties.familiar()}: defendant_and_plaintiff_are_parents_of_child
+    button: |
+      % if defendant_and_plaintiff_are_parents_of_child:
+      You do have children with ${other_parties.familiar()}.
+      % else:
+      You do not have children with ${other_parties.familiar()}.
+      % endif
+  - Edit children you are the parent of: plaintiff_has_children_parent_of
+    button: |
+      % if len(children):
+      ${children.table_with_addresses}
+      % endif
 
-  [Change response](${url_action('plaintiff_has_minor_children')}).
+      ${children.add_action()}
+    show if: |
+      plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases
+  - Edit children you are the parent of: plaintiff_has_children_parent_of
+    button: |
+      % if len(children):
+      ${children.table_without_addresses}
+      % endif
 
-  % if plaintiff_has_minor_children:
-  #### Children you are the parent of
-  ${children.table}
+      ${children.add_action()}
+    show if: |
+      not defined('have_had_custody_cases')
+  - Edit children you take care of: plaintiff_has_children_cares_for
+    button: |
+      % if len(children_cares_for):
+      ${children_cares_for.table}
+      % endif
 
-  ${children.add_action()}
-  #### Children who you take care of that you are not the parent of
-  ${children_cares_for.table}
-
-  ${ children_cares_for.add_action() }
-  % endif
+      ${ children_cares_for.add_action() }
 ---
-table: children.table
+table: children.table_with_addresses
 rows: children
 columns:
   - Name: |
@@ -121,13 +177,25 @@ columns:
   - Child of ${other_parties.familiar()}: |
       yesno(row_item.defendant_is_parent).title()
   - Address: |
-      (row_item.address.on_one_line(include_unit=True) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if defined('children[' + str(row_index) + '].address') else 'N/A'
+      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
   - Past addresses: |
-      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
+      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table')) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
 edit:
   - name.first
   - birthdate
-  - defendant_is_parent
+---
+table: children.table_without_addresses
+rows: children
+columns:
+  - Name: |
+      str(row_item)
+  - Birthdate: |
+      row_item.birthdate.format()
+  - Child of ${other_parties.familiar()}: |
+      yesno(row_item.defendant_is_parent).title()
+edit:
+  - name.first
+  - birthdate
 ---
 table: children.aff_table
 rows: children_of_both
@@ -169,6 +237,204 @@ edit:
   - name.first
   - birthdate
   - defendant_is_parent  
+############################# Protection for children
+---
+event: section_children_relief
+need: 
+  - schools_to_stay_away_from.table
+  - majors_needing_support.name_table
+question: |
+  Protections for children
+review:
+  - Edit custody: requests_custody
+    button: |
+      ${word(yesno(requests_custody))},
+      % if requests_custody:
+      ${wants_custody_of}
+      % endif
+  - Edit no contact: request_no_contact      
+    button: |
+      ${word(yesno(request_no_contact))},
+      % if request_no_contact:
+      ${wants_no_contact_for}
+      % endif
+  - Edit reasons: reasons_for_no_contact
+    button: |
+      ${reasons_for_no_contact}
+  - Edit schools to stay away from: schools_to_stay_away_from.there_are_any
+    button: |
+      ${word(yesno(schools_to_stay_away_from.there_are_any))}
+
+      ${schools_to_stay_away_from.table}
+
+      ${schools_to_stay_away_from.add_action()}
+  - Edit include visitation orders: wants_visitation_orders
+    button: |
+      ${word(yesno(wants_visitation_orders))}
+  - Edit visitation is allowed: prohibit_visitation
+    button: |
+      ${word(yesno(prohibit_visitation))}
+  - Edit use visitation center: wants_center
+    button: |
+      ${word(yesno(wants_center))}  
+---
+event: section_child_support
+question: |
+  Child support affidavit
+review:       
+  - Edit existing child support order: existing_order
+    button: |
+      ${word(yesno(existing_order))}        
+  - Edit want child support: wants_child_support_yes
+    button: |
+      ${word(yesno(wants_child_support_yes))}
+  - Edit want child support for children over 18: majors_needing_support.there_are_any
+    button: |
+      ${word(yesno(majors_needing_support.there_are_any))}  
+
+      % if majors_needing_support.there_are_any:
+      ${majors_needing_support.name_table}
+
+      ${majors_needing_support.add_action()}
+      % endif
+  - Edit parent relationship: other_parties[0].defendant_parental_role      
+    button: |
+      ${other_parties.familiar()} is the "${word(other_parties[0].defendant_parental_role)}"
+      of ${children_of_both}.
+  - Edit ${other_parties.familiar()}'s insurance expenses: 
+    - other_has_health_insurance
+    - other_has_dental
+    button: |
+      % if other_has_health_insurance:
+      ${other_parties.familiar()} pays ${currency(other_parties[0].health_insurance)} for
+      health insurance.
+      % endif
+      % if other_has_dental:
+      ${other_parties.familiar()} pays ${currency(other_parties[0].dental_insurance)} for
+      dental and/or vision insurance.
+      % endif      
+  - Edit ${other_parties.familiar()}'s childcare expenses: other_has_childcare
+    button: |
+      ${word(yesno(other_has_childcare))}
+      % if other_has_childcare:
+      , ${currency(other_parties[0].child_care_expenses)}.
+      % endif
+  - Edit ${other_parties.familiar()}'s other child support: defendant_pays_child_support
+    button: |
+      ${word(yesno(defendant_pays_child_support))}
+      % if defendant_pays_child_support:
+      , ${currency(other_parties[0].child_support_other)}
+      % endif
+  - Edit ${other_parties.familiar()}'s income: dont_know_op_income
+    button: |
+      % if dont_know_op_income:
+      I don't know.
+      % else:
+      ${ currency(other_parties[0].gross_income)}
+      % endif
+  - Edit ${other_parties.familiar()}'s employment:   other_parties[0].gainfully_employed
+    button: |
+      ${word(yesno(other_parties[0].gainfully_employed))}      
+  - Edit ${other_parties.familiar()}'s job: other_parties[0].occupation      
+    button: |
+      ${other_parties[0].occupation}  
+      Working for ${other_parties[0].employer}
+  - Edit your health insurance: user_has_health_insurance
+    button: |
+      ${word(yesno(user_has_health_insurance))}
+      % if user_has_health_insurance:
+      , ${currency(users[0].health_insurance)}
+      % endif
+  - Edit your dental/vision insurance: user_has_dental_insurance
+    button: |
+      ${word(yesno(user_has_dental_insurance))}
+      % if user_has_dental_insurance:
+      , ${currency(users[0].dental_vision_insurance)}
+      % endif  
+  - Edit your childcare expenses: user_has_child_care_expenses
+    button: |
+      ${word(yesno(user_has_child_care_expenses))}  
+      % if user_has_child_care_expenses:
+      , ${currency(users[0].child_care_expenses)}.
+      % endif
+  - Edit your child support costs: pays_child_support
+    button: |
+      ${word(yesno(pays_child_support))}
+      % if pays_child_support:
+      , ${currency(users[0].child_care_other)}
+      % endif
+  - Edit your income: user_has_income
+    button: |
+      ${word(yesno(user_has_income))}
+      % if user_has_income:
+      , ${currency(users[0].gross_income)}.
+      % endif
+---
+generic object: PeopleList
+table: x.name_table
+rows: x
+columns:
+  - Name: |
+      row_item
+edit:
+  - name.first      
+---
+table: schools_to_stay_away_from.table
+rows: schools_to_stay_away_from
+columns:
+  - Name: |
+      row_item.name.text
+  - Address: |
+      row_item.address.on_one_line()
+edit:
+  - name.text      
+############################# Relief for Plaintiff
+---
+event: section_relief
+question: |
+  What you need
+review:
+  - Edit no contact: order_defendant_no_contact_unless_court_authorized_yes
+    button: |
+      ${word(yesno(order_defendant_no_contact_unless_court_authorized_yes))}
+  - Edit stay away: order_defendant_remain_away_plaintiff_residence_yes 
+    button: |
+      ${word(yesno(order_defendant_remain_away_plaintiff_residence_yes))}
+  - Edit stay away from workplace: order_defendant_remain_away_plaintiff_workplace_yes
+    button: |
+      ${word(yesno(order_defendant_remain_away_plaintiff_workplace_yes))}
+  - Edit stay away from school: order_defendant_remain_away_plaintiff_school_yes
+    button: |
+      ${word(yesno(order_defendant_remain_away_plaintiff_school_yes))}
+  - Edit order ${other_parties.familiar()} to pay: order_defendant_pay_yes 
+    button: |
+      ${word(yesno(order_defendant_pay_yes))}
+      % if order_defendant_pay_yes:
+      , ${currency(order_defendant_pay_amount)}. Because: ${fix_punctuation(losses_caused_by_defendant)}.
+      % endif
+  - Edit temporary support: order_defendant_pay_temporary_support_to_plaintiff_yes
+    button: |
+      ${word(yesno(order_defendant_pay_temporary_support_to_plaintiff_yes))}
+  - Edit addresses that are protected: order_impound_plaintiff_address_residential_yes
+    button: |
+      % if order_impound_plaintiff_address_residential_yes:
+      * Protect my home address
+      % endif
+      % if order_impound_plaintiff_address_work_yes:
+      * Protect my work address
+      % endif
+      % if order_impound_plaintiff_address_school:
+      * Protect my school address
+      % endif
+  - Edit other relief: order_other_relief_yes 
+    button: |
+      ${word(yesno(order_other_relief_yes))}
+      % if order_other_relief_yes:
+      , ${fix_punctuation(other_relief)}
+      % endif
+  - Edit get an order right away: order_relief_ex_parte 
+    button: |
+      ${word(yesno(order_relief_ex_parte))}
 ############################# Past care or custody cases
 ---
 continue button field: section_care_custody
@@ -252,13 +518,13 @@ edit:
   - docket_number
   - is_open
 ---
+event: other_care_custody_proceedings[i].review_parties
 question: |
   Review parties for ${other_care_custody_proceedings[i]}
 subquestion: |
   ${other_care_custody_proceedings[i].review_parties_table}
 
   ${other_care_custody_proceedings[i].other_parties.add_action()}
-continue button field: other_care_custody_proceedings[i].review_parties
 ---
 table: other_care_custody_proceedings[i].review_parties_table
 rows: other_care_custody_proceedings[i].other_parties
@@ -272,10 +538,13 @@ edit:
   - address.address            
 ############################# Other cases with Defendant
 ---
-continue button field: section_cases_with_defendant
+event: section_cases_with_defendant
 question: |
   Other cases you had with ${other_parties.familiar()}
-
+review:
+  - Edit paternity cases: ask_had_paternity_case
+    button: |
+      ${word(yesno(ask_had_paternity_case))}
 ###################################### Other party information
 ---
 event: section_defendant_info
