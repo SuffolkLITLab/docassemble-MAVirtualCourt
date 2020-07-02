@@ -246,6 +246,7 @@ code: |
   related_as_couple[ 'dating' ] = True
   related_as_couple[ 'dated' ] = True
   related_as_couple[ 'past_engaged' ] = True
+  related_as_couple.there_is_another = False
   
   # Worth it?
   #incidents_of_abuse.appendObject()
