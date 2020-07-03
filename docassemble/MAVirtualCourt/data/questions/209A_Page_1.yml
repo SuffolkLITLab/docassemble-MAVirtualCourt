@@ -263,7 +263,8 @@ fields:
   #  show if:
   #    code: |
   #      plaintiff_assistant_relationships_to_plaintiff == 'other'
-  - 'My name is': plaintiff_assistant_name   
+  - 'My name is': plaintiff_assistant_name
+    maxlength: 30  
 ---
 # code: |
 #  if plaintiff_is_major_no:
@@ -283,6 +284,7 @@ fields:
 #    name other than their current legal name.
   - What other names has ${other_parties.familiar()} used?: other_parties[0].name_other
     show if: defendant_has_alias
+    maxlength: 42
   # - ${other_parties.familiar()}'s gender: other_parties[0].gender
   #  choices:
   #   - Female: female
@@ -742,6 +744,7 @@ fields:
     datatype: yesnoradio
   - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
     show if: related_by_marriage
+    maxlength: 32
 terms:
   in-law relationship: |
     Examples of being related by marriage are in-law relationships like:
@@ -762,6 +765,7 @@ fields:
     datatype: yesnoradio
   - '${ other_parties.familiar() } is my': defendant_relationship_to_plaintiff_is
     show if: related_by_blood
+    maxlength: 32
 terms: 
   - blood relative: |
       Examples of blood relatives:  
