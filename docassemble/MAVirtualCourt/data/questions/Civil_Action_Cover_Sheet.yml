@@ -366,11 +366,11 @@ subquestion: |
   For instructions on how to fill out this section, refer to [Page 2 of the Civil Action Cover Sheet](https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf).
 fields:
   - 'Code number': code_number
-    required: False
+    required: True
   - 'Type of action': type_of_action
-    required: False
+    required: True
   - 'Track': track
-    required: False
+    required: True
   - 'Description if other': description_if_other
     required: False
 # comment: I think the first three fields should be required because the user will need to fill those in. If not too complex, we may be able to include some show if logic for description if other?
