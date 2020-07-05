@@ -4,7 +4,7 @@ code: |
   if not defined("interview_metadata['Civil_Action_Cover_Sheet0026']"):
     interview_metadata.initializeObject('Civil_Action_Cover_Sheet0026')
   interview_metadata['Civil_Action_Cover_Sheet0026'].update({
-    'title': 'Civil Action Cover Sheet - Initial',
+    'title': 'Civil Action Cover Sheet',
     'short title': 'Civil Action Cover Sheet',
     'description': 'Placeholder text',
     'original_form': 'https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf',
@@ -268,32 +268,20 @@ question: |
   Does this action include a claim involving collection of a debt?
 subquestion: |
   The debt must be incurred pursuant to a revolving credit agreement. Mass. R. Civ. P. 8.1(a).
-fields:
-  - no label: collection_of_debt
-    datatype: radio
-    choices: 
-      - Yes: yes
-      - No: no
----
-code: |
-  collection_of_debt_yes = collection_of_debt == "yes"
-  collection_of_debt_no = collection_of_debt == "no"
+yesno: collection_of_debt_yes
+#Comment: Do not need 'no' to populate on PDF because there is only a checkbox for 'yes'.
 ---
 id: jury claim
 question: |
   Has a jury claim been made?
 subquestion: |
-  Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action? 
+  Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action?
 fields:
-  - no label: jury_claim
-    datatype: radio
-    choices:
-      - Yes: yes
-      - No: no
----
-code: |
-  jury_claim_made_yes = jury_claim == "yes"
-  jury_claim_made_no = jury_claim == "no"
+  - 'Yes': jury_claim_made_yes
+    datatype: yesno
+  - 'No': jury_claim_made_no
+    datatype: yesno
+#Comment: Need to make this required and change yesno to continue button.
 ---
 question: |
   Hidden logic
@@ -312,15 +300,11 @@ question: |
 subquestion: |
   [Additional information on claims made under G.L. c. 93A](https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A)
 fields:
-  - no label: claim_under_glc93a
-    datatype: radio
-    choices:
-      - Yes: yes
-      - No: no
----
-code: |
-  claim_under_glc_93a_yes = claim_under_glc93a == "yes"
-  claim_under_glc_93a_no = claim_under_glc93a == "no"
+  - 'Yes': claim_under_glc_93a_yes
+    datatype: yesno
+  - 'No': claim_under_glc_93a_no
+    datatype: yesno
+#Comment: Need to make this required and change yesno to continue button.
 ---
 id: class action
 question: |
@@ -328,15 +312,11 @@ question: |
 subquestion: |
   [Additional information on class actions under Mass. R. Civ. P. 23](https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions)
 fields:
-  - no label: class_action
-    datatype: radio
-    choices:
-      - Yes: yes
-      - No: no
----
-code: |
-  class_action_yes = class_action == "yes"
-  class_action_no = class_action == "no"
+  - 'Yes': class_action_yes
+    datatype: yesno
+  - 'No': class_action_no
+    datatype: yesno
+#Comment: Need to make this required and change yesno to continue button.
 ---
 id: related actions
 continue button field: Related_actions
