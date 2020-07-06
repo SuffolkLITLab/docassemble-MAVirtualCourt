@@ -276,12 +276,7 @@ question: |
   Has a jury claim been made?
 subquestion: |
   Have you, or someone on your behalf, made a jury claim for the amounts covered in this civil action?
-fields:
-  - 'Yes': jury_claim_made_yes
-    datatype: yesno
-  - 'No': jury_claim_made_no
-    datatype: yesno
-#Comment: Need to make this required and change yesno to continue button.
+yesno: jury_claim_made_yes
 ---
 question: |
   Hidden logic
@@ -299,24 +294,14 @@ question: |
   Is there a claim under G.L. c. 93A?
 subquestion: |
   [Additional information on claims made under G.L. c. 93A](https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A)
-fields:
-  - 'Yes': claim_under_glc_93a_yes
-    datatype: yesno
-  - 'No': claim_under_glc_93a_no
-    datatype: yesno
-#Comment: Need to make this required and change yesno to continue button.
+yesno: claim_under_glc_93a_yes
 ---
 id: class action
 question: |
   Is this a class action under Mass. R. Civ. P. 23?
 subquestion: |
   [Additional information on class actions under Mass. R. Civ. P. 23](https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions)
-fields:
-  - 'Yes': class_action_yes
-    datatype: yesno
-  - 'No': class_action_no
-    datatype: yesno
-#Comment: Need to make this required and change yesno to continue button.
+yesno: class_action_yes
 ---
 id: related actions
 continue button field: Related_actions
@@ -524,15 +509,15 @@ attachment:
       - "bbo_number": ${ bbo_number }
       - "defendant_address": ${ defendants[0].address }
       - "jury_claim_made_yes": ${ jury_claim_made_yes }
-      - "jury_claim_made_no": ${ jury_claim_made_no }
+      - "jury_claim_made_no": ${ not jury_claim_made_yes }
       - "code_number": ${ code_number }
       - "type_of_action": ${ type_of_action }
       - "track": ${ track }
       - "description_if_other": ${ description_if_other }
       - "class_action_yes": ${ class_action_yes }
       - "claim_under_glc_93a_yes": ${ claim_under_glc_93a_yes }
-      - "class_action_no": ${ class_action_no }
-      - "claim_under_glc_93a_no": ${ claim_under_glc_93a_no }
+      - "class_action_no": ${ not class_action_yes }
+      - "claim_under_glc_93a_no": ${ not claim_under_glc_93a_yes }
       - "documented_medical_expenses_hospital": ${ f'{int(round(documented_medical_expenses_hospital)):,}' }
       - "documented_medical_expenses_doctor": ${ f'{int(round(documented_medical_expenses_doctor )):,}' }
       - "documented_medical_expenses_chiropractic": ${ f'{int(round(documented_medical_expenses_chiropractic )):,}' }
@@ -627,15 +612,15 @@ attachment:
       - "bbo_number": ${ bbo_number }
       - "defendant_address": ${ defendants[0].address }
       - "jury_claim_made_yes": ${ jury_claim_made_yes }
-      - "jury_claim_made_no": ${ jury_claim_made_no }
+      - "jury_claim_made_no": ${ not jury_claim_made_yes }
       - "code_number": ${ code_number }
       - "type_of_action": ${ type_of_action }
       - "track": ${ track }
       - "description_if_other": ${ description_if_other }
       - "class_action_yes": ${ class_action_yes }
       - "claim_under_glc_93a_yes": ${ claim_under_glc_93a_yes }
-      - "class_action_no": ${ class_action_no }
-      - "claim_under_glc_93a_no": ${ claim_under_glc_93a_no }
+      - "class_action_no": ${ not class_action_yes }
+      - "claim_under_glc_93a_no": ${ not claim_under_glc_93a_yes }
       - "documented_medical_expenses_hospital": ${ f'{int(round(documented_medical_expenses_hospital)):,}' }
       - "documented_medical_expenses_doctor": ${ f'{int(round(documented_medical_expenses_doctor )):,}' }
       - "documented_medical_expenses_chiropractic": ${ f'{int(round(documented_medical_expenses_chiropractic )):,}' }
