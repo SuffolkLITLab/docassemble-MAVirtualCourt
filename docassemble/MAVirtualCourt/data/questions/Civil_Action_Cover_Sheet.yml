@@ -219,6 +219,37 @@ code: |
       ],
   })
 ---
+objects:
+  - attorney: VCIndividual
+---
+id: representation
+question: |
+  Representation
+subquestion: |
+  Placeholder text
+fields:
+  - Are you representing yourself?: is_self_represented
+    datatype: yesnoradio
+  - 'Attorney BBO Number': users[0].bbo_number
+    show if:
+      variable: is_self_represented
+      is: False
+---
+id: name of attorney
+question: |
+  You are the attorney. Tell us your name below and we will ask for the Plaintiff's name later.
+subquestion: |
+  Placeholder text.
+fields:
+  - First name: attorney.name.first
+  - Middle name: attorney.name.middle
+    required: False
+  - Last name: attorney.name.last
+  - Suffix: attorney.name.suffix
+    code: |
+      name_suffix()
+    required: False
+---
 id: contract claims
 question: |
   Does this action involve contract claims?
@@ -448,7 +479,7 @@ question: |
 subquestion: |
   Enter your registered address and BBO.
 fields:
-  - 'Attorney address': attorneys[0].address
+  - 'Attorney address': attorney.address
     input type: area
     required: False
   - 'BBO number': bbo_number
@@ -464,9 +495,9 @@ fields:
 
 
 question: |
-  Sign below, ${attorneys}
+  Sign below, ${attorney}
 under: |
-  ${attorneys}
+  ${attorney}
 signature: certification_signature
 ---
 question: |
@@ -591,10 +622,10 @@ attachment:
       - "plaintiff": ${ str(plaintiffs[0]) }
       - "court_county": ${ courts[0].address.county }
       - "defendant": ${ str(defendants[0]) }
-      - "attorney": ${ str(attorneys[0]) }
+      - "attorney": ${ attorney }
       - "user_signature": ${ users[0].signature }
       - "plaintiff_address": ${ plaintiffs[0].address }
-      - "attorney_address": ${ attorneys[0].address }
+      - "attorney_address": ${ attorney.address }
       - "bbo_number": ${ bbo_number }
       - "defendant_address": ${ defendants[0].address }
       - "jury_claim_made_yes": ${ jury_claim_made_yes }
@@ -644,8 +675,9 @@ code: |
   # Set the preferred/allowed courts for this interview
   preferred_court = interview_metadata["Civil_Action_Cover_Sheet0026"]["preferred court"]
   allowed_courts = interview_metadata["Civil_Action_Cover_Sheet0026"]["allowed courts"]
+  is_self_represented
   plaintiffs[0].address.address
-  attorneys[0].address.address
+  attorney.address.address
   defendants[0].address.address
   jury_claim_made_yes
   code_number
@@ -663,7 +695,7 @@ code: |
   str(plaintiffs[0])
   courts[0].address.county
   str(defendants[0])
-  str(attorneys[0])
+  str(attorney)
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
   # Comment out the line below if you don't want this behavior. 
   # mark_unfilled_fields_empty(interview_metadata["Civil_Action_Cover_Sheet0026"])
@@ -693,9 +725,9 @@ attachment:
       - "plaintiff": ${ str(plaintiffs[0]) }
       - "court_county": ${ courts[0].address.county }
       - "defendant": ${ str(defendants[0]) }
-      - "attorney": ${ str(attorneys[0]) }
+      - "attorney": ${ attorney }
       - "plaintiff_address": ${ plaintiffs[0].address }
-      - "attorney_address": ${ attorneys[0].address }
+      - "attorney_address": ${ attorney.address }
       - "bbo_number": ${ bbo_number }
       - "defendant_address": ${ defendants[0].address }
       - "jury_claim_made_yes": ${ jury_claim_made_yes }
