@@ -91,6 +91,7 @@ code: |
 objects:
   - users[0].workplaces: DAList.using(object_type=DAObject, ask_number=True, complete_attribute='name')
   - users[0].schools: DAList.using(object_type=DAObject, ask_number=True, complete_attribute='name')
+  - users[0].other_addresses: AddressList
 ---
 id: interpreter request
 question: |
@@ -177,13 +178,10 @@ subquestion: |
 id: has school address
 question: |
   Do you currently attend school?
-subquestion: |
-  Answer "yes" if you are attending school and would like
-  the order to protect your school address(es).
 fields:
   - no label: users[0].schools.there_are_any
     datatype: yesnoradio
-  - How many school addresses do you want to protect on this form?: users[0].schools.target_number
+  - How many schools are you attending right now?: users[0].schools.target_number
     datatype: integer
     min: 1
     show if:
@@ -205,13 +203,10 @@ fields:
 id: has work address
 question: |
   Do you currently work outside of your home?
-subquestion: |
-  Answer "yes" if you have a job outside of your home and would like the order
-  to protect your work address(es).
 fields:
   - no label: users[0].workplaces.there_are_any
     datatype: yesnoradio
-  - How many workplace addresses do you want to protect on this form?: users[0].workplaces.target_number
+  - How many places do you work right now?: users[0].workplaces.target_number
     datatype: integer
     min: 1
     show if:
@@ -293,6 +288,38 @@ fields:
       states_list()
     default: MA      
   - Zip: users[0].address.zip 
+  - I live at more than one address: users[0].other_addresses.there_are_any
+    datatype: yesno
+---
+id: other address where plaintiff lives
+question: |
+  Tell us about the ${ordinal(i)} other address where you live
+subquestion: |
+  You already told us about ${users[0].address.on_one_line()}
+  % if len(users[0].other_addresses.complete_elements()):
+  as well as ${users[0].other_addresses.complete_elements()}
+  % endif
+fields:
+  - Street address: users[0].other_addresses[i].address
+    address autocomplete: True
+  - Unit: users[0].other_addresses[i].unit
+    required: False
+  - City: users[0].other_addresses[i].city
+  - State: users[0].other_addresses[i].state
+    code: |
+      states_list()
+    default: MA      
+  - Zip: users[0].other_addresses[i].zip 
+---
+id: has another other address
+question: |
+  Do you have any other address where you currently live to tell us about?
+subquestion: |
+  You already told us about ${users[0].address.on_one_line()}
+  % if len(users[0].other_addresses.complete_elements()):
+  as well as ${users[0].other_addresses.complete_elements()}
+  % endif
+yesno: users[0].other_addresses.there_is_another  
 ---
 id: contact information
 question: |
@@ -419,6 +446,7 @@ code: |
   if lives_in_domestic_violence_shelter:
     domestic_violence_shelter_warning
   users[0].address.address
+  users[0].other_addresses.gather()
   users[0].mobile_number
   users[0].apartment_yes
   if abuser_caused_plaintiff_to_leave_home:
@@ -502,6 +530,12 @@ code: |
     txtFieldsList_confidential.append(
       {'title': 'WORKPLACE ADRESSES',
       'value': [workplace.name + ': ' + workplace.work_address + (' (' + workplace.phone +')' if len(workplace.phone) else '') for workplace in users[0].workplaces]}
+    )
+  
+  if len(users[0].other_addresses) > 0:
+    txtFieldsList_confidential.append(
+      {'title': 'OTHER ADDRESSES',
+       'value': [address.on_one_line() for address in users[0].other_addresses]}
     )
 
   Limit = 200
