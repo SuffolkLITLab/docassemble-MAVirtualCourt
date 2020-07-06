@@ -1027,14 +1027,16 @@ code: |
   current_interview_url = user_info().filename
 ---
 code: |
-  user_has_saved_answers = len(interview_list(filename=current_interview_url)) > 1 if interview_list(filename=current_interview_url) else False
+  user_has_saved_answers = len(interview_list(filename=current_interview_url)[0]) > 1 if interview_list(filename=current_interview_url) else False
 ---
 id: load saved answers
 event: load_answer
+comment: |
+  Docassemble 1.1.44 enabled pagination of interview_list()
 question: |
   You have saved answers available for this online form
 subquestion: |
-  % for interview in interview_list(filename=current_interview_url):
+  % for interview in interview_list(filename=current_interview_url)[0]:
   * ${'<a class="xyz" href="' + interview_url(i=current_interview_url, session=interview['session']) + '">' +  interview['title'] +  (' (' + interview.get("subtitle",'') + ')' if interview.get('subtitle') else '')  +"</a>" }  Last visited ${format_date(interview['modtime'])}, currently on page **${interview['dict'].get('_internal',{}).get('steps')}**
   % endfor
   
