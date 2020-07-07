@@ -6,6 +6,7 @@
 
 ################################### Basic Facts
 ---
+id: section_basic
 event: section_basic
 question: |
   Basic facts
@@ -65,6 +66,7 @@ review:
       gender is "${other_parties[0].gender}".
 ########################################### Relationship
 ---
+id: section_relationship
 event: section_relationship
 question: |
   Your relationship to ${other_parties.familiar()}
@@ -86,6 +88,7 @@ review:
       ${related_by_blood} ${showifdef('defendant_relationship_to_plaintiff_is')}
 ########################################### Affidavit
 ---
+id: section_affidavit
 event: section_affidavit  
 question: |
   Your affidavit
@@ -125,6 +128,7 @@ review:
 
 #################################### Children
 ---
+id: section_children
 event: section_children
 need: 
   - children.table_without_addresses
@@ -145,6 +149,8 @@ review:
     button: |
       % if len(children):
       ${children.table_with_addresses}
+      % else:
+      You said you do not have any children you are the parent of.
       % endif
 
       ${children.add_action()}
@@ -154,6 +160,8 @@ review:
     button: |
       % if len(children):
       ${children.table_without_addresses}
+      % else:
+      You said you do not have any children you take care of but are not the parent of.
       % endif
 
       ${children.add_action()}
@@ -207,6 +215,7 @@ columns:
   - Past addresses: |
       str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table'))
 ---
+id: review previous addresses
 continue button field: children[i].previous_addresses.review_table
 question: |
   ${children[i].name.familiar()}'s Past Addresses
@@ -239,6 +248,7 @@ edit:
   - defendant_is_parent  
 ############################# Protection for children
 ---
+id: section_children_relief
 event: section_children_relief
 need: 
   - schools_to_stay_away_from.table
@@ -278,7 +288,9 @@ review:
     button: |
       ${word(yesno(wants_center))}  
 ---
+id: section_child_support
 event: section_child_support
+need: children_of_both
 question: |
   Child support affidavit
 review:       
@@ -297,7 +309,7 @@ review:
 
       ${majors_needing_support.add_action()}
       % endif
-  - Edit parent relationship: other_parties[0].defendant_parental_role      
+  - Edit parent relationship: other_parties[0].defendant_parental_role  
     button: |
       ${other_parties.familiar()} is the "${word(other_parties[0].defendant_parental_role)}"
       of ${children_of_both}.
@@ -390,6 +402,7 @@ edit:
   - name.text      
 ############################# Relief for Plaintiff
 ---
+id: section_relief
 event: section_relief
 question: |
   What you need
@@ -437,6 +450,7 @@ review:
       ${word(yesno(order_relief_ex_parte))}
 ############################# Past care or custody cases
 ---
+id: section_care_custody
 continue button field: section_care_custody
 question: |
   Review Care or Custody Proceedings
@@ -518,6 +532,7 @@ edit:
   - docket_number
   - is_open
 ---
+id: review_parties
 event: other_care_custody_proceedings[i].review_parties
 question: |
   Review parties for ${other_care_custody_proceedings[i]}
@@ -538,6 +553,8 @@ edit:
   - address.address            
 ############################# Other cases with Defendant
 ---
+id: section_cases_with_defendant
+need: other_cases.table
 event: section_cases_with_defendant
 question: |
   Other cases you had with ${other_parties.familiar()}
@@ -545,14 +562,64 @@ review:
   - Edit paternity cases: ask_had_paternity_case
     button: |
       ${word(yesno(ask_had_paternity_case))}
+  - Edit other cases: 
+    - plaintiff_and_defendant_other_case_yes
+    - recompute:
+      - other_cases.there_are_any
+    button: |
+      ${word(yesno('plaintiff_and_defendant_other_case_yes'))}
+      % if plaintiff_and_defendant_other_case_yes:
+      ${other_cases.table}
+      % endif
+      ${other_cases.add_action()}
+---
+table: other_cases.table
+rows: other_cases
+columns:
+  - Court name: |
+      row_item.court_name
+  - Type: |
+      row_item.type_of_case
+  - Date: |
+      row_item.date.format()
+  - Docket number: |
+      row_item.docket_number   
+edit:
+  - court_name   
+---
+###################################### Court
+---
+id: section_court
+event: section_court
+question: |
+  Your court
+review:
+  - Edit court: courts[0]
+    button: |
+      ${courts[0]}
+---
+###################################### Signature
+id: signature
+event: section_signature
+question: |
+  Your signature
+review:
+  - Edit signature: users[0].signature
+    button: |
+      ${users[0].signature}      
 ###################################### Other party information
 ---
+id: section_defendant_info
 event: section_defendant_info
 question: |
   Identifying the Defendant
 review:
-  - note: |
-      #### Demographic information about ${other_parties.familiar()}
+  - Edit alias: defendant_has_alias
+    button: |
+      ${yesno(defendant_has_alias)}
+      % if defendant_has_alias:
+      , ${ other_parties[0].name_other }
+      % endif
   - Edit birthdate: dont_know_birthdate
     button: |
       You said ${other_parties.familiar()}
@@ -582,8 +649,6 @@ review:
       % else:
       does not understand English, and prefers ${other_parties[0].language_other}.
       % endif
-  - note: |
-      What ${other_parties.familiar()} looks like
   - Edit photo status:
     - other_parties[0].photo_yes
     button: |
@@ -621,8 +686,6 @@ review:
       - defendant_other_description
     button: |
       ${defendant_other_description}
-  - note: |
-      #### Defendant contact information
   - Edit contact:
     - other_parties[0].phone_number
     button: |
@@ -638,8 +701,6 @@ review:
       - defendant_location_information_other
     button: |
       ${defendant_location_information_other}
-  - note: |
-      Information about work      
   - Edit work:
     - defendant_not_employed
     button: |
@@ -650,8 +711,7 @@ review:
       is
       % endif
       working.
-  - Edit employer:
-    - other_parties[0].employer
+  - Edit employer: other_parties[0].employer
     button: |
       ${other_parties[0].employer}  
       ${showifdef('other_parties[0].work_address')}  
@@ -659,8 +719,6 @@ review:
       ${showifdef('other_parties[0].work_title')}  
       ${showifdef('other_parties[0].work_department')}  
       ${showifdef('other_parties[0].work_hours')}
-  - note: |
-      Information about vehicle
   - Edit car status:
     - other_parties[0].does_not_have_car
   - Edit car:
@@ -671,8 +729,6 @@ review:
       ${showifdef('other_parties[0].vehicle_model')}  
       ${showifdef('other_parties[0].vehicle_year')}  
       ${showifdef('other_parties[0].vehicle_license_plate')}
-  - note: |
-      Information for service
   - Edit service information:
     - other_parties[0].police_violence_yes
     button: |
@@ -683,4 +739,52 @@ review:
     - defendant_has_guns
     button: |
       ${defendant_has_guns.true_values()}  ${showifdef('defendant_weapons_description')}  
+################################################# Plaintiff confidential information
+---
+table: users[0].previous_addresses.table
+rows: users[0].previous_addresses
+columns:
+  - Address: |
+      str(row_item)
+edit:
+  - row_item.address
+---
+event: section_your_info
+need: users[0].previous_addresses.table
+question: |
+  Information about you
+review:
+  - Edit needs interpreter: user_needs_interpreter
+    button: |
+      ${word(yesno('user_needs_interpreter'))}
+  - Edit left home because of abuse: abuser_caused_plaintiff_to_leave_home
+    button: |
+      ${word(yesno('abuser_caused_plaintiff_to_leave_home'))}
+
+      % if abuser_caused_plaintiff_to_leave_home:
+      ${users[0].previous_addresses.table}
+
+      % endif
+      ${users[0].previous_addresses.add_action()}
+  - Edit lives in DV shelter: lives_in_domestic_violence_shelter
+    button: |
+      ${word(yesno('lives_in_domestic_violence_shelter'))}
+  - Edit lives in apartment: users[0].apartment_yes
+    button: |
+      ${word(yesno('users[0].apartment_yes'))}
+  #########################################
+  # TODO: implement review for new address for school, work fields
+  #########################################
+  - Edit who can view this form: persons_authorized_confidential_information
+    button: |
+      ${persons_authorized_confidential_information}
+  - Edit address: users[0].address.address
+    button: |
+      ${users[0].address}
+  - Edit contact information: users[0].mobile_number
+    button: |
+      ${users[0].mobile_number}  
+      ${users[0].phone_number}  
+      ${users[0].email}  
+      ${users[0].other_contact_method}  
       

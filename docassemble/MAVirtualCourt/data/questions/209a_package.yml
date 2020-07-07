@@ -23,8 +23,8 @@ sections:
   - section_intro: Introduction
   - section_basic: Basic information
   - section_relationship: Your relationship
+  - section_children: Children
   - section_affidavit: Your affidavit
-  - section_children: Children  
   - section_children_relief: Protection for Children
   - section_relief: What you need
   # - section_custody: Custody
@@ -36,7 +36,7 @@ sections:
   - section_cases_with_defendant: Other cases with Defendant
   - section_court: Court selection
   - section_signature: Signing
-  - section_filing: Download
+  - download_screen: Download
 ---
 scan for variables: False
 mandatory: True
@@ -82,6 +82,7 @@ code: |
   ########################## Page 1
   nav.set_section('section_relationship')
   user_saw_relationship
+  nav.set_section('section_children')
   defendant_and_plaintiff_are_parents_of_child
   plaintiff_has_children_parent_of
   children.gather()
@@ -101,7 +102,6 @@ code: |
   complaint_209A_Affidavit # Main affidavit
   # From page 1
   incident_date # Filled in with code, I think
-  nav.set_section('section_children')
   if plaintiff_has_minor_children:
     include_children_in_order
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
@@ -240,11 +240,45 @@ subquestion: |
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
+initial: True
+code: |
+  after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
+  court_closed_today = (today().dow > 5)
+---
+reconsider:
+  - final_attachment_bundle
 id: download
 question: |
-  Download screen
+  Your form is ready to download and file
 subquestion: |
-  ${pdf_concatenate(final_attachment_bundle)}
+
+  1. Look over the form below.
+  1. If it looks correct, download or email it to yourself.
+  1. You still need to deliver it to :
+
+  * The ${courts[0]} and
+  * ${other_parties.familiar()}. The court will help you deliver it to ${other_parties.familiar()}.
+  
+  4. Call the ${courts[0]}'s clerk:  
+  <a href="tel:${courts[0].phone}">${courts[0].phone}</a> to find out how they want you to send them the motion.
+  % if court_closed_today:
+  4. The court is closed today. If you want help filing this form now, you can call your local police station.
+  % elif after_hours:
+  5. The court is only open between 8:30 AM and 4:30 PM. If you want help filing this form now, you can call your local police station.
+  % endif
+  6. Your hearing will probably be over the phone. But the address
+  of your court is ${courts[0].address.on_one_line()}.
+
+  ${pdf_concatenate(final_attachment_bundle)}  
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+# attachment:
+#   pdf template file: 
+#     code: |
+#       pdf_concatenate(final_attachment_bundle)
+#   name: 209A Domestic Violence Restraining order
+#   filename: 209A_dv_protective_order
+#   fields:
+#     - Nothing: Nothing
 event: download_screen  
 ---
 comment: |
