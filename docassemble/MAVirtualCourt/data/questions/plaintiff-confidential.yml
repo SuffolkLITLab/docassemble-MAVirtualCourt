@@ -110,7 +110,8 @@ subquestion: |
 fields:
   - I need an interpreter: user_needs_interpreter
     datatype: yesnoradio
-  - My preferred language is: user_preferred_language 
+  - My preferred language is: user_preferred_language
+    maxlength: 42
     show if: user_needs_interpreter
 ---
 id: fled from home
@@ -196,6 +197,7 @@ question: |
   % endif
 fields:
   - Name of school: users[0].schools[i].name
+    maxlength: 100
   - Address: users[0].schools[i].school_address
     required: False
     address autocomplete: True    
@@ -221,6 +223,7 @@ question: |
   % endif
 fields:
   - Name of workplace: users[0].workplaces[i].name
+    maxlength: 100
   - Address: users[0].workplaces[i].work_address
     required: False
     address autocomplete: True
@@ -331,8 +334,10 @@ subquestion: |
   to be kept private later.
 fields:
   - Mobile number: users[0].mobile_number
+    maxlength: 14
     required: False
   - Other phone number: users[0].phone_number
+    maxlength: 14
     required: False
   - Email address: users[0].email    
     datatype: email

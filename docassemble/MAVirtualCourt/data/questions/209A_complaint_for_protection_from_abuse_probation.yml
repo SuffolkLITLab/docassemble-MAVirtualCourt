@@ -703,6 +703,7 @@ fields:
     datatype: yesnowide
   - What visitation center?: visitation_center_name
     required: False
+    maxlength: 52
     show if: wants_center
   - Who should pay the visitation center’s fees?: pays_for_center
     input type: radio
@@ -712,6 +713,7 @@ fields:
       - Me: "plaintiff"
       - Someone else: "other"
   - Who?: other_pays_for_center
+    maxlength: 52
     show if:
       variable: pays_for_center
       is: "other"
@@ -724,9 +726,11 @@ fields:
   #- '**Should someone else supervise ${other_parties.familiar()}’s visits?**': wants_supervision
     datatype: yesnowide
   - Who should the supervisor be?: visitation_supervisor_name_full
+    maxlength: 52
     show if: wants_supervision
   - When should the visitation happen?: supervision_time
     #datatype: time # Need something more flexible
+    maxlength: 28
     show if: wants_supervision
   - Professional supervisors charge fees.  Who should pay those fees?: supervision_payer
     input type: radio
@@ -737,6 +741,7 @@ fields:
       - Someone else: "other"
     required: False
   - Who?: other_supervision_payer
+    maxlength: 32
     show if:
       variable: supervision_payer
       is: "other"
@@ -749,6 +754,7 @@ fields:
   #- '**Should someone else to pick up and drop off the children for visits?**': wants_pickup
     datatype: yesnowide
   - Who should pick up and drop off the child(ren)?: who_picks_up
+    maxlength: 44
     show if: wants_pickup
   - html: |
       <hr>
@@ -760,6 +766,7 @@ fields:
     datatype: yesnowide
   - What else do you need the court to order?: other_order
     input type: area
+    maxlength: 186
     show if: wants_other_order
 ---
 id: child support
