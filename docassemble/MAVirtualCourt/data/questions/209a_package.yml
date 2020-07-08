@@ -41,7 +41,7 @@ sections:
 scan for variables: False
 mandatory: True
 code: |
-  set_dev_vars  # Package-specific var(s) to aid development
+  package_version_number  # Ensure the package version number is defined so available for show_id.js
 
   set_interview_defaults # Set some things that are true on any 209A
   
@@ -208,8 +208,6 @@ id: dev hud etc
 code: |
   # For info at the top of the screen on dev and test servers
   package_version_number = str( docassemble.MAVirtualCourt.__version__ )
-
-  set_dev_vars = True
 ---
 if: |
   who_protecting_screener == "someone else"
