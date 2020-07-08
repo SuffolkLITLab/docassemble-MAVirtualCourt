@@ -148,24 +148,23 @@ continue button field: Plaintiff_Affidavit_in_support_of_request_for_child_suppo
 question: |
   Plaintiff's Affidavit in Support of Request for Child support Order
 subquestion: |
-  If you legally have legal custody of your child,  then you can ask the court
+  If you have legal custody of your child,  you can ask the court
   to order the other parent to pay child support. To do that, you need to fill
   out this Affidavit in Support of Request for a Child Support Order. The
-  following questions will ask you about the other parent's job, their employer,
+  following questions ask you about the other parent's job, their employer,
   and their income and expenses (to the best of your knowledge). You will also
   provide your income and expenses. This way, the court can look at each
-  parents' financial situation to calculate how much the child support will be. 
+  parent's financial situation to calculate how much the child support will be. 
 ---
 id: mother_or_father
 question: |
   What is ${other_parties.familiar()}'s relationship to the children?
 subquestion: |  
-  The child support affidavit asks you to explain whether ${other_parties.familiar()}
-  is "the mother" or "the father" of the children you want to get child support for.
+  The child support affidavit asks you to tell the court if ${other_parties.familiar()}
+  is "the mother" or "the father" of the children you need child support for.
 
-  Please answer below. If you choose an answer other than "mother" or "father" we will
-  leave this section blank on the form. A judge may still expect you to choose one of those
-  two options.
+  If you choose an answer that is not "mother" or "father" this section will be blank on the form. A judge may still ask you to pick one of those
+  2 options.
 fields:
   - ${other_parties.familiar()} is: other_parties[0].defendant_parental_role
     input type: radio
@@ -177,9 +176,9 @@ fields:
 ---
 id: defendants insurance
 question: |
-  Defendant's Insurance Expenses
+  ${other_parties.familiar()} insurance expenses
 subquestion: |
-  Tell us more about the defendant's expenses, the best that you can.
+  Tell as much as you can about ${other_parties.familiar()} expenses. If you do not know the answer, just skip the question.
 fields:
   - note: |
       **Does ${other_parties.familiar()} pay for health insurance?**
@@ -217,7 +216,7 @@ fields:
 ---
 id: defendants childcare
 question: |
-  Defendant's childcare expenses
+  ${other_parties.familiar()} childcare expenses
 fields:
   - note: |
       **Does ${other_parties.familiar()} pay for childcare expenses for the children you share?**
@@ -255,12 +254,12 @@ fields:
 ---
 id: defendants income
 question: |
-  Defendant's Income
+  ${other_parties.familiar()} income
 subquestion: |
-  As far as you know, what is the defendant's gross income? "gross" means before taxes.  You can give either weekly or monthly income.
+  As far as you know, what is ${other_parties.familiar()}'s' gross income? "gross" means before taxes.  You can give either weekly or monthly income.
   
   Put in the best information you know, even if you do not know the
-  exact amount. Click "I don't know" if you don't have any idea.
+  exact amount. Click "I do not know" if you have no idea.
 fields:
   - I don't know ${other_parties.familiar()}'s income amount.: dont_know_op_income
     datatype: yesno
@@ -276,10 +275,10 @@ fields:
 ---
 id: defendants work
 question: |
-  Defendant's Work
+  ${other_parties.familiar()}'s Work
 fields:
   - note: |
-      **Is ${other_parties.familiar()} gainfully employed (earning money from their work)?**
+      **Does ${other_parties.familiar()} earning money from their work?**
   - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---
@@ -296,12 +295,13 @@ continue button field: defendant_not_working_warning_given
 ---
 id: defendants job
 question: |
-  Defendant's Work
+  ${other_parties.familiar()}'s Work
 subquestion: |
   Where and how does ${other_parties.familiar()} work?
 fields:
   - 'Occupation': other_parties[0].occupation
   - 'Employer': other_parties[0].employer
+    maxlength: 67
     required: False
   - 'Employer Address': other_parties[0].work_address
     address autocomplete: True
@@ -309,14 +309,14 @@ fields:
 ---
 id: your insurance
 question: |
-  Your Insurance Expenses
+  Your insurance expenses
 fields:
   - note: |
       **Do you pay for health insurance?**
   - no label: user_has_health_insurance
     datatype: yesnoradio
   - note: |
-      How much in total do you pay for health insurance?
+      How much do you pay for health insurance?
     show if: user_has_health_insurance
   - no label: users[0].health_insurance
     datatype: currency
@@ -329,11 +329,11 @@ fields:
     show if: user_has_health_insurance
   - note: |
       <hr/>
-      **Do you pay for dental and/or vision insurance?**
+      **Do you pay for dental or vision insurance, or both?**
   - no label: user_has_dental_insurance
     datatype: yesnoradio
   - note: |
-      How much do you pay for dental and/or vision insurance?
+      How much do you pay for dental or vision insurance or both?
     show if: user_has_dental_insurance
   - no label: users[0].dental_vision_insurance
     datatype: currency
@@ -347,9 +347,9 @@ fields:
 ---
 id: your expenses
 question: |
-  Expenses related to your children
+  Your childcare expenses
 subquestion: |
-   This amount includes reasonable childcare costs due to a parent’s gainful employment or training or education of the parent necessary to obtain gainful employment. E.g. daycare, babysitting, and private school costs
+   Include all your expenses for childcare so that you can go to work or get training or education so you **can** get work. Include expenses like the cost of daycare, babysitting, and private school costs.
 fields:
   - note: |
       **Do you pay for childcare for the children that you share with the defendant?**
@@ -395,7 +395,7 @@ question: |
   Your Income
 subquestion: |
   "Gross income" means your income before taxes are taken
-  out of your check.  You can enter either your weekly or monthly income. Click "Help" to learn more. 
+  out of your check.  You can enter your weekly or your monthly income. Tap "Help" to learn more. 
 fields:
   - note: |
       **Do you have income?**
@@ -414,7 +414,7 @@ fields:
       - "Monthly": monthly
     show if: user_has_income
 help: |      
-   For purposes of the Child Support Guidelines, income is defined as gross income from whatever source, regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. However, income derived from a means-tested public assistance program (for example, TAFDC, SNAP, means-tested veterans’ benefits and SSI benefits) shall not be counted as income for either parent. So while income from working would include salaries, wages, overtime, tips, self-employment income, commissions, and bonuses, for example, there are many other kinds of income, not from working, that count under the Guidelines. Some of these include workers' compensation, unemployment compensation, social security disability benefits (except those due to a child's own disability), and net rental income. For a full list of sources of income to be included, read pages 4-5 [here](https://www.mass.gov/doc/2018-child-support-guidelines/download). 
+   For the Child Support Guidelines, income is gross income from any source. It does not matter if the Internal Revenue Code, Massachusetts Department of Revenue or any oher taxing authority counts the income. But do not count any income from a means-tested public assistance program like, TAFDC, SNAP, means-tested veterans’ benefits or SSI benefits for either parent. Include all income from work:  salaries, wages, overtime, tips, self-employment income, commissions, and bonuses. But the Guidelines say you must also include other kinds of income. Some of these are workers' compensation, unemployment compensation, social security disability benefits that are not because of your child's disability, and net rental income. For a full list of sources of income to  include, read [pages 4-5 of the guidelines](https://www.mass.gov/doc/2018-child-support-guidelines/download#page=4). 
 # ---
 # comment: |
 #   Moved to page 2
