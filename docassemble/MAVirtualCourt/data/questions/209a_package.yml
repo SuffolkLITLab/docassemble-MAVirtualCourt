@@ -41,6 +41,8 @@ sections:
 scan for variables: False
 mandatory: True
 code: |
+  package_version_number  # Ensure the package version number is defined so available for show_id.js
+
   set_interview_defaults # Set some things that are true on any 209A
   
   ##################### Intro screen
@@ -201,6 +203,11 @@ code: |
   final_attachment_bundle
   nav.set_section('section_filing')
   download_screen
+---
+id: dev hud etc
+code: |
+  # For info at the top of the screen on dev and test servers
+  package_version_number = str( docassemble.MAVirtualCourt.__version__ )
 ---
 if: |
   who_protecting_screener == "someone else"
