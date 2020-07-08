@@ -105,24 +105,27 @@ code: |
 ---
 id: impound other
 question: |
-  Keeping information private - Asking the court to impound
+  Keeping other information private - Asking the court to impound
 subquestion: |
+  % if impound_personal_information:
   The only information the court keeps private automatically, is your 
   % if plaintiff_has_minor_children:
   ${ children.as_noun()}'s addresses and 
   % endif
   your contact information, that goes on the Plaintiff Confidential Information form: your address, phone numbers, email and the best way to reach you. 
 
-  The rest of the forms you file are public record.  
+  The rest of the forms you file are public record.
+  % endif  
   
-  You can ask the court to impound your other forms to keep other information in your forms private. You will need to explain why it is critical to your safety to keep this information private.
+  You can ask the court to impound your other forms to keep other information in your forms private. You need to explain why it is critical to your safety to keep this information private.
 fields:
-  - Is there any information on this form that you need to keep private?: impound_case_record_information
+  - Is there any **other** information you have given that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
   - note: |
       Explain what you need the court to keep private below:
     show if: impound_case_record_information      
   - no label: case_record_information_to_be_impounded
+    maxlength: 364
     show if: impound_case_record_information
     input type: area
 ---
@@ -180,6 +183,7 @@ subquestion: |
   Be specific. Include facts about your safety.
 fields:
   - The information should be kept private because: request_based_on
+    maxlength: 864
     input type: area
     rows: 5
 ---
@@ -189,8 +193,15 @@ question: |
 subquestion: |
   You can ask the judge to impound your information with no notice to ${other_parties.familiar()} if you can show the judge you will suffer "immediate and irreparable harm" if the court lets ${other_parties.familiar()} know about this request in advance.
 
-  Do you need the court to impound your information **and** not let ${other_parties.familiar()} know in advance that you are asking for impoundment?
-yesno: impound_information_ex_parte
+  If you do **not** need the order right away, uncheck the box below.
+fields:
+  - 'I need the judge to impound my information **before** the court tells ${other_parties.familiar()} that I am asking the court to impound this information.': impound_information_ex_parte
+    datatype: yesno
+    default: True
+  - note: |
+      **Warning**: if you uncheck this box, the court will tell  ${other_parties.familiar()} that are asking the court to impound your information. 
+    show if: 
+      variable: impound_information_ex_parte
 ---
 progress: 100
 event: download_impoundment
