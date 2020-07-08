@@ -197,6 +197,7 @@ question: |
   % endif
 fields:
   - Name of school: users[0].schools[i].name
+    maxlength: 100
   - Address: users[0].schools[i].school_address
     required: False
     address autocomplete: True    
@@ -222,6 +223,7 @@ question: |
   % endif
 fields:
   - Name of workplace: users[0].workplaces[i].name
+    maxlength: 100
   - Address: users[0].workplaces[i].work_address
     required: False
     address autocomplete: True
