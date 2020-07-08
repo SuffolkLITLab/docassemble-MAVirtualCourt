@@ -300,8 +300,9 @@ subquestion: |
   Where and how does ${other_parties.familiar()} work?
 fields:
   - 'Occupation': other_parties[0].occupation
-  - 'Employer': other_parties[0].employer
     maxlength: 67
+  - 'Employer': other_parties[0].employer
+    maxlength: 69
     required: False
   - 'Employer Address': other_parties[0].work_address
     address autocomplete: True
