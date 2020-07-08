@@ -469,3 +469,52 @@ help: |
   to work with the same Victim/Witness Advocate for both cases.
   
   [Read more](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a).
+---
+comment: |
+  TODO: integrate a method to display form title on intro screen dynamically
+id: basic questions intro screen
+question: |
+  Ask the court for a 209A Abuse Prevention Order: MassAccess Project
+subquestion: |
+ 
+  This website can help you complete and file court forms in 3 steps:
+  
+  Step 1. Answer questions that will fill in your forms for you.  
+  Step 2. Preview the completed forms.  
+  Step 3. Email the forms to the court using this secure website and save copies
+  for yourself for later reference.  
+
+  Tap the {green words} in any screen for a definition or more information.
+  
+  If you have questions about this form or the court process, 
+  call the Trial Court’s Emergency HelpLine:  
+  833-91-COURT (833-912-6878)  
+  Monday-Friday  
+  8:30am - 4:30pm
+
+  % if chat_partners_available().help:
+  Live help is currently available in this interview. Click the speech bubble
+  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+  % endif
+
+fields:
+  - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False    
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.        
+continue button field: basic_questions_intro_screen
+terms:
+  green words: |
+    Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
+right: |
+  % if user_has_saved_answers:
+  ${fa_icon("bell", color="primary", size="sm")}
+  Saved answers available!  
+  
+  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
+  % endif    
