@@ -8,7 +8,7 @@ include:
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
- - 209A-review.yml
+ # - 209A-review.yml
  - plaintiff-confidential.yml 
  - escape.yml
 ---
@@ -247,14 +247,37 @@ subquestion: |
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
+initial: True
+code: |
+  after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
+  court_closed_today = (today().dow > 5)
+---
+reconsider:
+  - final_attachment_bundle
 id: download
 question: |
-  Download screen
+  Your form is ready to download and file
 subquestion: |
-  ${pdf_concatenate(final_attachment_bundle)}
-event: download_screen  
+  1. Look over the form below.
+  1. If it looks correct, download or email it to yourself.
+  1. You still need to deliver it to :
+  * The ${courts[0]} and
+  * ${other_parties.familiar()}. The court will help you deliver it to ${other_parties.familiar()}.
+  
+  4. Call the ${courts[0]}'s clerk:  
+  <a href="tel:${courts[0].phone}">${courts[0].phone}</a> to find out how they want you to send them the motion.
+  % if court_closed_today:
+  4. The court is closed today. If you want help filing this form now, you can call your local police station.
+  % elif after_hours:
+  5. The court is only open between 8:30 AM and 4:30 PM. If you want help filing this form now, you can call your local police station.
+  % endif
+  6. Your hearing will probably be over the phone. But the address
+  of your court is ${courts[0].address.on_one_line()}.
+  ${pdf_concatenate(final_attachment_bundle)}  
 ---
 comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+
   Build some variables dynamically
 ---
 code: |
