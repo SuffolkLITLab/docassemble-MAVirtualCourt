@@ -707,6 +707,13 @@ terms:
       * are roommates, or
       * live in the same house or apartment.   
 ---
+code: |
+  # check for dating only relationship for use on the court selection page
+  is_dating_only = (related_as_couple["dating"] or related_as_couple["dated"]) \
+                    and not len(related_as_couple.true_values()) > 1 \
+                    and not relationship_to_defendant_married.any_true() \
+                    and not related_by_marriage and not related_by_blood
+---
 comment: |
   Adding punctuation at the end of each list item as screen readers need punctuation at the end of each to be able to convey list to user.
 id: 209A page 1 couple relationship
