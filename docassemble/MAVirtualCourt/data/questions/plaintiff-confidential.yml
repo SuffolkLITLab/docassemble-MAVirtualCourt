@@ -105,7 +105,8 @@ subquestion: |
 fields:
   - I need an interpreter: user_needs_interpreter
     datatype: yesnoradio
-  - My preferred language is: user_preferred_language 
+  - My preferred language is: user_preferred_language
+    maxlength: 42
     show if: user_needs_interpreter
 ---
 id: fled from home
@@ -178,6 +179,7 @@ fields:
     datatype: yesno
     disable others: True
   - 'Your school name': users[0].school_name
+    maxlength: 103
     required: False
   - 'School address': users[0].school_address
     address autocomplete: True
@@ -204,11 +206,13 @@ fields:
     datatype: yesno
     disable others: True
   - 'Name of your employer/workplace': users[0].workplace_name
+    maxlength: 103
     required: False
   - 'Work address': users[0].workplace_address
     required: False
     address autocomplete: True
   - 'Work phone number': users[0].workplace_phone
+    maxlength: 14
     required: False
 ---
 id: your address
@@ -242,8 +246,10 @@ subquestion: |
   to be kept private later.
 fields:
   - Mobile number: users[0].mobile_number
+    maxlength: 14
     required: False
   - Other phone number: users[0].phone_number
+    maxlength: 14
     required: False
   - Email address: users[0].email    
     datatype: email
