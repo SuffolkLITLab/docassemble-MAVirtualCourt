@@ -199,9 +199,12 @@ fields:
     datatype: yesno
     default: True
   - note: |
-      **Warning**: if you uncheck this box, the court will tell  ${other_parties.familiar()} that are asking the court to impound your information. 
+      **Warning**: if you uncheck this box, the court will tell
+      ${other_parties.familiar()} that you are asking the court to impound 
+      your information.
     show if: 
       variable: impound_information_ex_parte
+      is: False
 ---
 progress: 100
 event: download_impoundment
@@ -237,7 +240,7 @@ attachment:
       - "impound_case_record_information": ${ impound_case_record_information }
       - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on_cutoff }
+      - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
       - "attach_additional_pages": ${ addAddendum_impound }
       # These are for the court to fill in and were included accidentally
@@ -275,7 +278,7 @@ code: |
   
   # Trigger some computed values
   case_record_information_to_be_impounded_cutoff
-  request_based_on_cutoff
+  # request_based_on_cutoff
   addAddendum_impound
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -311,7 +314,7 @@ attachment:
       - "impound_case_record_information": ${ impound_case_record_information }
       - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on_cutoff }
+      - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
       - "attach_additional_pages": ${ addAddendum_impound }
       # These are for the court to fill in and were included accidentally
@@ -335,17 +338,17 @@ code: |
   else:
     case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
     
-  Limit2 = 700
-  sLimit2 = Limit2 - 16   
-  need_request_addendum = len(request_based_on) > Limit2
-  if need_request_addendum:    
-    request_based_on_cutoff = "(See Addendum.) " + request_based_on[:sLimit2] 
-    txtFieldsList_impoundment.append(
-      {'title': '2. Request the Court to order impoundment',
-      'value': [request_based_on]
-      })
-  else:
-    request_based_on_cutoff = request_based_on
+  # Limit2 = 700
+  # sLimit2 = Limit2 - 16   
+  # need_request_addendum = len(request_based_on) > Limit2
+  #if need_request_addendum:    
+  #  request_based_on_cutoff = "(See Addendum.) " + request_based_on[:sLimit2] 
+  #  txtFieldsList_impoundment.append(
+  #    {'title': '2. Request the Court to order impoundment',
+  #    'value': [request_based_on]
+  #    })
+  #else:
+  #  request_based_on_cutoff = request_based_on
     
   addAddendum_impound = bool(txtFieldsList_impoundment)
 ---
