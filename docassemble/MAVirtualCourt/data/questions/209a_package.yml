@@ -202,6 +202,7 @@ code: |
   
   final_attachment_bundle
   nav.set_section('section_filing')
+  final_attachment_collection.finished
   download_screen
 ---
 id: dev hud etc
@@ -274,6 +275,7 @@ subquestion: |
 
   ${pdf_concatenate(final_attachment_bundle)} 
 event: download_screen  
+attachment code: final_attachment_collection
 ---
 comment: |
   ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
@@ -549,3 +551,16 @@ right: |
   
   ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
   % endif    
+---
+objects:
+  - final_attachment_collection: DAFileCollection
+---
+code: |
+  final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
+  final_attachment_collection.info = {'name': '209A DV Restraining Order', 
+                      'filename': '209a_restraining_order',
+                      'description': '',
+                      'file': {'pdf': final_attachment_collection.pdf.number},
+                      'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
+                      }
+  final_attachment_collection.finished = True
