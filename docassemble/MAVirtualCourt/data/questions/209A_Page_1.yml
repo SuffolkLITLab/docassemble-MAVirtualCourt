@@ -606,13 +606,14 @@ fields:
     datatype: yesnomaybe
 ---
 code: |
-  defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')
+  defendant_weapons = comma_list(defendant_has_guns.true_values()) + space('defendant_weapons_description', prefix=' - ')
+  defendant_weapons_safe_for_pdf = defendant_weapons + (" (see Addendum)" if len(defendant_weapons) > 40 else '')
 ---
 code: |
   defendant_weapons_for_addendum = comma_list(defendant_has_guns.true_values()) + ( " Description of guns: " + defendant_weapons_description if defendant_has_guns["gun"] else '')
 ---
 code: |
-  need_gun_addendum = defendant_has_guns["gun"]
+  need_gun_addendum = len(defendant_weapons) > 40
 ---
 code: |
   need_relief_addendum =  len(other_relief) > 215 if order_other_relief_yes else False
