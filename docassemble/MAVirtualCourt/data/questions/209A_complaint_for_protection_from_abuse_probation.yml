@@ -1155,7 +1155,7 @@ code: |
   else:
     reasons_for_no_contact_cutoff = reasons_for_no_contact if request_no_contact else ''
     
-  Limit2 = 70
+  Limit2 = 95
   sLimit2 = Limit2 - 16   
   need_school_addendum = len(schools_to_stay_away_from_pdf) > Limit2
   if need_school_addendum:    
