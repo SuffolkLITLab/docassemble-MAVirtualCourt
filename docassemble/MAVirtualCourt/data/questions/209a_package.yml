@@ -8,7 +8,7 @@ include:
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
- - 209A-review.yml
+ # - 209A-review.yml
  - plaintiff-confidential.yml 
  - escape.yml
 ---
@@ -41,6 +41,8 @@ sections:
 scan for variables: False
 mandatory: True
 code: |
+  package_version_number  # Ensure the package version number is defined so available for show_id.js
+
   set_interview_defaults # Set some things that are true on any 209A
   
   ##################### Intro screen
@@ -202,6 +204,11 @@ code: |
   nav.set_section('section_filing')
   download_screen
 ---
+id: dev hud etc
+code: |
+  # For info at the top of the screen on dev and test servers
+  package_version_number = str( docassemble.MAVirtualCourt.__version__ )
+---
 if: |
   who_protecting_screener == "someone else"
 question: |
@@ -240,12 +247,36 @@ subquestion: |
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
+initial: True
+code: |
+  after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
+  court_closed_today = (today().dow > 5)
+---
+comment: |
+  In 209A complaints plaintiff does not serve defendant, police do at the court's bidding. Also plaintiff probably asks for ex parte hearing, again they would not serve defendant. Even if plaintiff does not ask for ex parte hearing, I think the court clerk will explain to them how to serve defendant. 
+reconsider:
+  - final_attachment_bundle
 id: download
 question: |
-  Download screen
+  Your forms are ready to download and file.
 subquestion: |
-  ${pdf_concatenate(final_attachment_bundle)}
+  1. Look over the forms below.
+  1. If they look correct, download them or email them to yourself.
+  1. You still need to deliver them to the ${courts[0]}, when you are ready.
+  4. Call the ${courts[0]}'s clerk: <a href="tel:${courts[0].phone}">${courts[0].phone}</a> to find out how they want you to send your forms to them.
+  % if court_closed_today:
+  4. The court is closed today. If you need help to file these forms now, call your local police station.
+  % elif after_hours:
+  5. The court is only open between 8:30 AM and 4:30 PM. If you need help to file this form now, call your local police station.
+  % endif
+  6. Your hearing will probably be over the phone or Zoom video conference.  
+     The address of your court, if you need it, is: ${courts[0].address.on_one_line()}.  
+
+  ${pdf_concatenate(final_attachment_bundle)} 
 event: download_screen  
+---
+comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
 ---
 comment: |
   Build some variables dynamically
@@ -291,7 +322,7 @@ fields:
     datatype: checkboxes
     minlength: 1
     choices:
-      - I promise that my answers on this form are the truth under penalties of perjury
+      - I promise that my answers on this form are the truth under penalties of perjury.
     validation messages:
       minlength: |
         You cannot keep going unless you agree that you will tell the truth.
