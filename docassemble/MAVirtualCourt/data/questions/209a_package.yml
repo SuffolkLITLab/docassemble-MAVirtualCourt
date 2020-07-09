@@ -273,7 +273,8 @@ subquestion: |
   % endif
   6. Your hearing will probably be over the phone. But the address
   of your court is ${courts[0].address.on_one_line()}.
-  ${pdf_concatenate(final_attachment_bundle)}  
+  ${pdf_concatenate(final_attachment_bundle)} 
+event: download_screen  
 ---
 comment: |
   ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
