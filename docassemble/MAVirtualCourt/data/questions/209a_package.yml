@@ -316,21 +316,33 @@ code: |
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
 ---
-id: affirmation
+id: Signing under oath
 question: |
-  Signing Under Oath
+  Signing under oath 
 subquestion: |
-  Your form must be signed "under penalties of perjury."
-  This means that it can be a crime if you lie on this form.
+  When you sign your name you are declaring, "{under penalty of perjury}” that what you put in your affidavit is {true to the best of your knowledge}.
+  
+  Do you swear under penalty of perjury that all your answers to the questions in this interview are true, to the best of your knowledge?
 fields:
   - no label: users[0].states_above_true
     datatype: checkboxes
     minlength: 1
     choices:
-      - I promise that my answers on this form are the truth under penalties of perjury.
+      - I swear that my answers on this form are the truth under penalties of perjury.
     validation messages:
       minlength: |
-        You cannot keep going unless you agree that you will tell the truth.
+        You cannot keep going unless you did your best to tell the truth.
+terms:
+  - under penalty of perjury: |
+      means you swear your answers are true, as far as you know.  
+         
+      Swearing "under penalty of perjury" means the court can punish you if your answers are not true to the best of your knowledge.  
+      
+      The court cannot punish you if your answers are about things you saw, heard, or felt.  
+      The court cannot punish you if you have good reason to believe that your answers are true.
+  - true to the best of your knowledge: |
+      Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it.  
+      Something is true to the best of your knowledge if you have good reason to believe it is true.
 ---
 reconsider: True
 code: |
@@ -521,6 +533,9 @@ subquestion: |
   for yourself for later reference.  
 
   Tap the {green words} in any screen for a definition or more information.
+  
+  This form can take anywhere between **30 minutes to an hour and half**
+  to complete, depending on your specific situation.
   
   If you have questions about this form or the court process, 
   call the Trial Court’s Emergency HelpLine:  

@@ -414,7 +414,7 @@ validation code: |
 ---
 id: want orders for children
 question: |
-  Do you need the restraining order to include orders to protect your ${children.as_noun()}?
+  Orders to protect your ${children.as_noun()}
 subquestion: |
   % if who_protecting_screener == "me and children":
   You said you need this order to protect you and your ${children.as_noun()}
@@ -428,9 +428,9 @@ subquestion: |
   * Order ${other_parties.familiar()} to pay child support for the children.
   * Order anything else you need to keep your ${children.as_noun()} safe.
 
-  The next questions ask you for the name and birthdate of your ${children.as_noun()}, and then ask if you need any of these orders, one at a time.  
-  Do you need the restraining order to include any orders about ${other_parties.familiar()} and your ${children.as_noun()}?
-yesno: include_children_in_order
+  The next questions ask if you need any of these orders, one at a time.  
+
+continue button field: include_children_in_order
 help:
   label: What is "temporary custody"?
   heading: Temporary custody?
