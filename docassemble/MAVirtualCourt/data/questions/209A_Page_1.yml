@@ -56,9 +56,10 @@ subquestion: |
   **If you are in danger right now, call 911.**
   
   Please make sure you are in a {safe place}.
+  The application for a 209A is at least 5 pages long. It can take up to 1 and 1/2 hours to answer all the questions.
+
   
   An Abuse Prevention Order can help protect you from an abusive partner, a family member, or someone in your household. In Massachusetts, we often call this order a {209A restraining order}.
- 
     
   If the abusive person does not obey the order, they  “violate” it. It is a crime to violate a 209A restraining order and the police can arrest them. This order can also order the abusive person to do things like pay utility bills or child support.
   
@@ -118,10 +119,13 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
+    help: |
+      If you do not select "Male" or "Female", both checkboxes will be empty on the form. The police use your answer to help them identify the person who is abusing you and enforce your restraining order.  
   - Gender: other_parties[0].gender
     show if:
       variable: other_parties[0].gender
       is: "self-described"
+
 ---
 id: what to expect
 question: |
@@ -292,7 +296,7 @@ fields:
   #   - Non-binary: non-binary
   #   - Prefer not to say: prefer-not-to-say
   #  help: |
-  #    If you do not select either "Male" or "Female", both checkboxes
+  #    If you do not select "Male" or "Female", both checkboxes
   #    will be left unchecked on the form. This answer will be used to help
   #    identify ${other_parties[0]} to the police to allow them to enforce
   #    your order.
@@ -389,7 +393,7 @@ code: |
   requested_relief_for_minors = requests_custody_yes or wants_other_order_yes or \
     len(wants_custody_of) > 0 or len(wants_no_contact_for) > 0 or len(schools_to_stay_away_from) > 0 \
     or (len(children_of_both) and wants_child_support_yes) or \
-    wants_visitation_orders
+    (len(children_of_both) and wants_visitation_orders)
 ---
 code: |
   # This box should always be checked if the person 
@@ -733,7 +737,7 @@ fields:
     none of the above: False
     required: False
   - note: |
-      Were you ever married to ${other_parties.familiar()}?
+      ### Were you ever married to ${other_parties.familiar()}?
   - no label: relationship_to_defendant_married
     datatype: checkboxes
     choices:

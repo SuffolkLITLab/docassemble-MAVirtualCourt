@@ -906,14 +906,14 @@ fields:
 #  - 'Month': month
 #  - 'Year': year
 ---
+comment: |
+  Post MVP give user 4 choices below - I am now involved in c&c case, I was involved in c&c case
 id: prior custody cases screener
-Comment: |
-  User needs the option to say no, they know of no prior custody cases.
 question: |
-  Prior Care or Custody Cases
+  Other care or custody cases
 subquestion: |
-  Do you know about any court cases that
-  had to do with custody or the care of the children?
+  Do you know about any other court cases that
+  include decisions about the care or custody of ${children_of_both()}?
   
   This may include any case that involved:
 

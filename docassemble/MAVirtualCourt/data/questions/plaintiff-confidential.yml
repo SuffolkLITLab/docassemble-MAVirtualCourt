@@ -348,7 +348,7 @@ fields:
     help: |
       If you do not have a phone number or email the court can use, provide
       specific contact instructions. For example, use a friend's phone number.
-      But the friend must be someone you can trust to tell you the court is
+      But the friend must be someone you can count on to tell you the court is
       trying to reach you.
 validation code: |
   if (not showifdef('users[0].phone_number') and \

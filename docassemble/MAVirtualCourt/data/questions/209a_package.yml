@@ -202,6 +202,7 @@ code: |
   
   final_attachment_bundle
   nav.set_section('section_filing')
+  final_attachment_collection.finished
   download_screen
 ---
 id: dev hud etc
@@ -273,7 +274,11 @@ subquestion: |
      The address of your court, if you need it, is: ${courts[0].address.on_one_line()}.  
 
   ${pdf_concatenate(final_attachment_bundle)} 
-event: download_screen  
+event: download_screen   
+attachment code: final_attachment_collection
+---
+comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
 ---
 comment: |
   ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
@@ -311,21 +316,33 @@ code: |
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
 ---
-id: affirmation
+id: Signing under oath
 question: |
-  Signing Under Oath
+  Signing under oath 
 subquestion: |
-  Your form must be signed "under penalties of perjury."
-  This means that it can be a crime if you lie on this form.
+  When you sign your name you are declaring, "{under penalty of perjury}” that what you put in your affidavit is {true to the best of your knowledge}.
+  
+  Do you swear under penalty of perjury that all your answers to the questions in this interview are true, to the best of your knowledge?
 fields:
   - no label: users[0].states_above_true
     datatype: checkboxes
     minlength: 1
     choices:
-      - I promise that my answers on this form are the truth under penalties of perjury.
+      - I swear that my answers on this form are the truth under penalties of perjury.
     validation messages:
       minlength: |
-        You cannot keep going unless you agree that you will tell the truth.
+        You cannot keep going unless you did your best to tell the truth.
+terms:
+  - under penalty of perjury: |
+      means you swear your answers are true, as far as you know.  
+         
+      Swearing "under penalty of perjury" means the court can punish you if your answers are not true to the best of your knowledge.  
+      
+      The court cannot punish you if your answers are about things you saw, heard, or felt.  
+      The court cannot punish you if you have good reason to believe that your answers are true.
+  - true to the best of your knowledge: |
+      Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it.  
+      Something is true to the best of your knowledge if you have good reason to believe it is true.
 ---
 reconsider: True
 code: |
@@ -484,20 +501,22 @@ help: |
   
   Some things to think about when you are deciding which court is better for you
   are:  
-  
+
   #### If the other parent wants to visit your child  
   The District Court is not supposed to order visitation between the other
   parent and your child as part of a 209A case. The Probate and Family Court can
   order visitation in a 209A case.  If you want to get visitation settled right
-  away, you might want to go to the Probate and Family Court to file for the
+  away, you may want to go to the Probate and Family Court to file for the
   209A restraining order. If you do not want the court to decide about
   visitation, you might want to go to the District Court for your 209A
   restraining order. 
   #### If the person who abused you is facing criminal charges  
   If the person who abused you is facing criminal charges related to the
-  domestic violence, you might want to file for your 209A restraining order at
+  domestic violence, you may want to file for your 209A restraining order at
   the District or Superior Court where that case is. That way, you may be able
   to work with the same Victim/Witness Advocate for both cases.
+  #### If you are already in Probate and Family Court with another case  
+  Sometimes, it is easier and less complicated to file your 209A Application in Probate and Family Court **if you already have a case going on there now**. If you file in District Court, they may have to get in touch with the Probate and Family Court - this back and forth may slow things down and take more time that you do not have.
   
   [Read more](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a).
 ---
@@ -508,16 +527,15 @@ question: |
   Ask the court for a 209A Abuse Prevention Order: MassAccess Project
 subquestion: |
  
-  This website can help you complete and file court forms in 3 steps:
+  This website can help you complete and file your forms in 3 steps:
   
   Step 1. Answer questions that will fill in your forms for you.  
   Step 2. Preview the completed forms.  
-  Step 3. Email the forms to the court using this secure website and save copies
-  for yourself for later reference.  
+  Step 3. Email the forms to yourself or download them so you can send the forms to the court or keep them as part of your safety plan.
 
   Tap the {green words} in any screen for a definition or more information.
   
-  If you have questions about this form or the court process, 
+  If you have questions about these forms or the court process, 
   call the Trial Court’s Emergency HelpLine:  
   833-91-COURT (833-912-6878)  
   Monday-Friday  
@@ -549,3 +567,16 @@ right: |
   
   ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
   % endif    
+---
+objects:
+  - final_attachment_collection: DAFileCollection
+---
+code: |
+  final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
+  final_attachment_collection.info = {'name': '209A DV Restraining Order', 
+                      'filename': '209a_restraining_order',
+                      'description': '',
+                      'file': {'pdf': final_attachment_collection.pdf.number},
+                      'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
+                      }
+  final_attachment_collection.finished = True
