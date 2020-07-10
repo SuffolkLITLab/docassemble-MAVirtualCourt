@@ -907,14 +907,13 @@ fields:
 #  - 'Year': year
 ---
 id: prior custody cases screener
-Comment: |
-  User needs the option to say no, they know of no prior custody cases.
 question: |
-  Prior Care or Custody Cases
+  Other Care or Custody Cases
 subquestion: |
   Do you know about any court cases that
-  had to do with custody or the care of the children?
-  
+  have to do with the custody or care of the children you have with
+  ${other_parties.familiar()}?
+    
   This may include any case that involved:
 
   * custody  
@@ -934,7 +933,7 @@ fields:
   - no label: custody_case_participation
     datatype: radio
     choices:
-      - I have been **part of** another case involving ${comma_and_list(children_of_both, and_string=word("or"))}: participated
+      - I am now or have been **part of** another case involving ${comma_and_list(children_of_both, and_string=word("or"))}: participated
       - I was not part of any other case, but I **know** about another case involving ${comma_and_list(children_of_both, and_string=word("or"))}: know of
       - I don't know about any other cases involving ${comma_and_list(children_of_both, and_string=word("or"))}: no cases    
 ---
