@@ -364,6 +364,8 @@ code: |
   # motion to impound: a_258e_motion_for_impoundment0019_attachment
   #    impound_addendum
   
+  # always include cover page for user
+  attachment_temp.append(next_steps)
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
   if need_page1_addendum:
@@ -582,3 +584,7 @@ code: |
                       'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
                       }
   final_attachment_collection.finished = True
+---
+attachment: 
+  docx template file: 209A_next_steps_for_user.docx
+  variable name: next_steps
