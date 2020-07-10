@@ -278,7 +278,7 @@ question: |
   ${other_parties.familiar()}'s Work
 fields:
   - note: |
-      **Does ${other_parties.familiar()} earning money from their work?**
+      **Does ${other_parties.familiar()} earn money from their work?**
   - no label: other_parties[0].gainfully_employed
     datatype: yesnoradio
 ---

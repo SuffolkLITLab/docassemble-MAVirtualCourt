@@ -281,6 +281,9 @@ comment: |
   ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
 ---
 comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+---
+comment: |
   Build some variables dynamically
 ---
 code: |
