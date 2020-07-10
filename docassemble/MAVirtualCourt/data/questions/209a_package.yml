@@ -243,7 +243,7 @@ subquestion: |
   Don't forget to come back to this screen to sign and download
   your final form.
 
-  ${pdf_concatenate(final_attachment_preview)}
+  ${pdf_concatenate(final_attachment_preview, filename="209a_preview.pdf")}
 
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
@@ -273,7 +273,7 @@ subquestion: |
   6. Your hearing will probably be over the phone or Zoom video conference.  
      The address of your court, if you need it, is: ${courts[0].address.on_one_line()}.  
 
-  ${pdf_concatenate(final_attachment_bundle)} 
+  ${pdf_concatenate(final_attachment_bundle, filename="209a_petition.pdf")} 
 event: download_screen  
 attachment code: final_attachment_collection
 ---
@@ -578,7 +578,7 @@ objects:
 code: |
   final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
   final_attachment_collection.info = {'name': '209A DV Restraining Order', 
-                      'filename': '209a_restraining_order',
+                      'filename': '209a_abuse_prevention_petition',
                       'description': '',
                       'file': {'pdf': final_attachment_collection.pdf.number},
                       'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
