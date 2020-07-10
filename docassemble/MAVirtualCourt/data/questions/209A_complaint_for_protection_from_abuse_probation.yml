@@ -219,7 +219,7 @@ code: |
   actual_supervision_payer = ''
 
   # visitation_info
-  if wants_visitation_orders:
+  if len(children_of_both) and wants_visitation_orders:
     if not prohibit_visitation:
       wants_center  # Asks all the questions
 
@@ -944,9 +944,9 @@ attachment:
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       # TODO: wrong field type for bool?
       # TODO: better name? (wants_visitation_orders)
-      - "permit_visitation_yes": ${ wants_visitation_orders and not prohibit_visitation }
+      - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
-      - "prohibit_visitation_yes": ${ wants_visitation_orders and prohibit_visitation }
+      - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -995,8 +995,8 @@ attachment:
       - "reasons_no_contact__2": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes__2": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1070,8 +1070,8 @@ attachment:
       - "reasons_no_contact": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1118,8 +1118,8 @@ attachment:
       - "wants_no_contact_for6_age__2": ${ wants_no_contact_for.item(5).formatted_age() }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes__2": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok

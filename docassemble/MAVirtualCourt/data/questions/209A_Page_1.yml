@@ -389,7 +389,7 @@ code: |
   requested_relief_for_minors = requests_custody_yes or wants_other_order_yes or \
     len(wants_custody_of) > 0 or len(wants_no_contact_for) > 0 or len(schools_to_stay_away_from) > 0 \
     or (len(children_of_both) and wants_child_support_yes) or \
-    wants_visitation_orders
+    (len(children_of_both) and wants_visitation_orders)
 ---
 code: |
   # This box should always be checked if the person 
