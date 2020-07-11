@@ -193,6 +193,7 @@ code: |
   day # Triggers date question in format for aff. of care and custody
   
   nav.set_section('section_signature')
+  signature_date
   preview_209a_package
 
   users[0].states_above_true
@@ -238,14 +239,14 @@ question: |
   Preview your document
 subquestion: |
   Your document is almost ready to sign. Before you sign it,
-  click on the preview image below to view it in a new window.
+  tap on the preview image below to view it in a new window.
 
-  Don't forget to come back to this screen to sign and download
-  your final form.
+  Remember to come back to this screen to sign and download
+  your final set of forms.
 
   ${pdf_concatenate(final_attachment_preview)}
 
-  Click ${word("Next")} when you are ready to sign.
+  Tap ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
 initial: True
@@ -259,7 +260,7 @@ reconsider:
   - final_attachment_bundle
 id: download
 question: |
-  Your forms are ready to download and file.
+  Your forms are ready to download and file
 subquestion: |
   1. Look over the forms below.
   1. If they look correct, download them or email them to yourself.
@@ -458,7 +459,7 @@ subquestion: |
   You can try finding your local court by using the [Courthouse
   Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
   
-  Click ${word("help")} to learn more about choosing a court. This can be
+  Tap ${word("help")} to learn more about choosing a court. This can be
   complicated in a 209A restraining order.
 fields:
   - Court name: courts[0]
@@ -520,6 +521,18 @@ help: |
   
   [Read more](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a).
 ---
+id: signature date
+question: |
+  When do you plan to file your application?
+subquestion: |
+  We automatically answer "today" for you, below. You can change the date.
+  
+  If you are keeping these forms as part of your safety plan, you can always cross out today's date and write in the date you actually file.
+fields: 
+  - Date: signature_date
+    datatype: date
+    default: ${today().format("yyyy-MM-dd")}
+---
 comment: |
   TODO: integrate a method to display form title on intro screen dynamically
 id: basic questions intro screen
@@ -573,7 +586,7 @@ objects:
 ---
 code: |
   final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
-  final_attachment_collection.info = {'name': '209A DV Restraining Order', 
+  final_attachment_collection.info = {'name': '209A (Abuse Prevention Order/Restraining Order) Application', 
                       'filename': '209a_restraining_order',
                       'description': '',
                       'file': {'pdf': final_attachment_collection.pdf.number},

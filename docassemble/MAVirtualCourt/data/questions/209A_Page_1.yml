@@ -158,7 +158,7 @@ Terms:
 ---
 id: other cases
 question: |
-  Tell us about the other cases you have had with ${other_parties.familiar()}
+  Tell the court about the other cases you have had with ${other_parties.familiar()}
 subquestion: |  
   If you need to add more, click ${word("Add another")}.
 list collect: True
@@ -196,7 +196,7 @@ code: |
 ---
 id: had other cases
 question: |
-  Other cases with the Defendant
+  Other cases with ${other_parties.familiar()}
 subquestion: |
   Have you ever had any other cases with ${other_parties.familiar()} for divorce, annulment, separate support, or abuse prevention?
 yesno: plaintiff_and_defendant_other_case_yes

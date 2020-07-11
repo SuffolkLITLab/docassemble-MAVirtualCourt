@@ -882,7 +882,7 @@ comment: |
   This could happen if defendant was adjudicated NOT to be the father, so not a joint child
   and thus case not disclosed on affidavit of care or custody.
 question: |
-  Paternity Cases
+  Paternity cases
 subquestion: |
   Are there any current or closed cases that involve both you and
   ${other_parties.familiar()} that have to do with paternity of a child?
