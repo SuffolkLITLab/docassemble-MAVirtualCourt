@@ -532,9 +532,17 @@ code: |
     )
 
   if len(users[0].workplaces) >= 2:
+    descriptions = []
+    for workplace in users[0].workplaces:
+      desc = workplace.name
+      if workplace.work_address:
+        desc += ': ' + workplace.work_address
+      if workplace.phone:
+        desc += ' (' + workplace.phone + ')'
+      descriptions.append(desc)
     txtFieldsList_confidential.append(
       {'title': 'WORKPLACE ADRESSES',
-      'value': [workplace.name + ': ' + workplace.work_address + (' (' + workplace.phone +')' if len(workplace.phone) else '') for workplace in users[0].workplaces]}
+      'value': descriptions}
     )
   
   if len(users[0].other_addresses) > 0:
