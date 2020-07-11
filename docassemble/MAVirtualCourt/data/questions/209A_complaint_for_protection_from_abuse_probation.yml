@@ -556,7 +556,7 @@ validation code: |
 ---
 id: no_contact_children
 question: |
-  Do you need the judge to order ${other_parties.familiar()} not to contact your ${children.as_noun}?
+  Do you need the judge to order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
 fields:
   - I need the judge to order 'No contact.': request_no_contact
     datatype: yesnoradio
@@ -833,6 +833,7 @@ fields:
   - Last Name: majors_needing_support[i].name.last
   - Suffix: majors_needing_support[i].name.suffix
     required: False
+    code: name_suffix()
 ---
 id: do you already have a child support order
 question: |

@@ -914,8 +914,8 @@ id: prior custody cases screener
 question: |
   Other care or custody cases
 subquestion: |
-  Do you know about any other court cases when the judge made or is making
-  decisions about the care or custody of ${children_of_both()}?
+  Do you know about any other court cases where the judge made or is making
+  decisions about the care or custody of ${children_of_both}?
     
   This may include any case that involved:
 
