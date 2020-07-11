@@ -243,7 +243,7 @@ subquestion: |
   Don't forget to come back to this screen to sign and download
   your final form.
 
-  ${pdf_concatenate(final_attachment_preview)}
+  ${pdf_concatenate(final_attachment_preview, filename="209a_preview.pdf")}
 
   Click ${word("Next")} when you are ready to sign.
 field: preview_209a_package
@@ -273,7 +273,7 @@ subquestion: |
   6. Your hearing will probably be over the phone or Zoom video conference.  
      The address of your court, if you need it, is: ${courts[0].address.on_one_line()}.  
 
-  ${pdf_concatenate(final_attachment_bundle)} 
+  ${pdf_concatenate(final_attachment_bundle, filename="209a_petition.pdf")} 
 event: download_screen  
 attachment code: final_attachment_collection
 ---
@@ -364,6 +364,8 @@ code: |
   # motion to impound: a_258e_motion_for_impoundment0019_attachment
   #    impound_addendum
   
+  # always include cover page for user
+  attachment_temp.append(next_steps)
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
   if need_page1_addendum:
@@ -576,9 +578,13 @@ objects:
 code: |
   final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
   final_attachment_collection.info = {'name': '209A DV Restraining Order', 
-                      'filename': '209a_restraining_order',
+                      'filename': '209a_abuse_prevention_petition',
                       'description': '',
                       'file': {'pdf': final_attachment_collection.pdf.number},
                       'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
                       }
   final_attachment_collection.finished = True
+---
+attachment: 
+  docx template file: 209A_next_steps_for_user.docx
+  variable name: next_steps
