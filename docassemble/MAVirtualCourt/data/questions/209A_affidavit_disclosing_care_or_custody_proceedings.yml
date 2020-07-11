@@ -106,13 +106,15 @@ code: |
 #   children[i].previous_addresses.gather()
 #   children[i].child_complete = True
 ---
+comment: |
+  Post MVP I think we can skip subquestion here, it seems a bit wordy, unnecesary?
 id: where children live
 if: len(children_of_both) > 1
 question: |
-  Where do ${children_of_both} live right now?
+  Where do ${children_of_both.familiar()} live right now?
 subquestion: |
   We need to include this information together with the other information
-  about past care or custody cases.
+  about other care or custody cases.
 fields:
   - no label: children_address_screener
     datatype: radio
@@ -132,13 +134,15 @@ fields:
       code: |
         users[0].address.on_one_line(include_unit=True) == other_parties[0].address.on_one_line(include_unit=True)
 ---
+comment: |
+  Post MVP I think we can skip subquestion here, it seems a bit wordy, unnecesary?
 id: where children live
 if: len(children_of_both) <= 1 # Don't think we can ever get to this question w/o children, but just in case!
 question: |
-  Where does ${children_of_both} live right now?
+  Where does ${children_of_both.familiar()} live right now?
 subquestion: |
   We need to include this information together with the other information
-  about past care or custody cases.
+  about other care or custody cases.
 fields:
   - no label: children_address_screener
     datatype: radio
@@ -908,11 +912,10 @@ fields:
 ---
 id: prior custody cases screener
 question: |
-  Other Care or Custody Cases
+  Other care or custody cases
 subquestion: |
-  Do you know about any court cases that
-  have to do with the custody or care of the children you have with
-  ${other_parties.familiar()}?
+  Do you know about any other court cases where the judge made or is making
+  decisions about the care or custody of ${children_of_both}?
     
   This may include any case that involved:
 
@@ -957,7 +960,7 @@ subquestion: |
 
   You will have a chance to add more cases later.
 fields:  
-  - What is the best description of this case (you do not need to be exact): other_care_custody_proceedings[i].case_status
+  - What is the best description of this case? You do not need the exact name.: other_care_custody_proceedings[i].case_status
     choices:
       - A different 209A restraining order: different 209A restraining order
       - Adoption: adoption
@@ -1299,9 +1302,14 @@ columns:
 ---
 id: another care custody case
 question: |
-  Are there any other cases you would like to tell us about?
+  Are there any other cases?
 subquestion: |
-  So far you have told us about ${quantity_noun(len(other_care_custody_proceedings.elements), word("case"))}: 
+  So far you have told the court about
+  % if len(other_care_custody_proceedings.elements) > 1:
+  ${len(other_care_custody_proceedings.elements)} cases: 
+  % else:
+  ${len(other_care_custody_proceedings.elements)} case: 
+  % endif
   ${comma_and_list(other_care_custody_proceedings.elements)}.
 yesno: other_care_custody_proceedings.there_is_another
 ---

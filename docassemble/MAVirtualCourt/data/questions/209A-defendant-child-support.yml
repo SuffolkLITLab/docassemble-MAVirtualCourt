@@ -170,7 +170,7 @@ fields:
 question: |
   Your Insurance Expenses
 subquestion: |
-  What are your insurance expenses?  You can give either weekly or monthly answers.
+  What are your insurance expenses?  You can give weekly or monthly answers.
 fields:
   - 'How much in total do you pay for health insurance?': users[0].health_insurance_payment
     datatype: currency
@@ -190,7 +190,7 @@ fields:
 question: |
   Expenses related to your children
 subquestion: |
-   What are your expenses related to your children?  You can give either weekly or monthly answers.
+   What are your expenses related to your children?  You can give weekly or monthly answers.
 
    This amount includes reasonable childcare costs due to a parent’s gainful employment or training or education of the parent necessary to obtain gainful employment. E.g. daycare, babysitting, and private school costs
 fields:
@@ -227,7 +227,7 @@ fields:
 question: |
   Your Income
 subquestion: |
-  What is your gross income? "Gross" means your income before taxes are taken out of your check.  You can enter either your weekly or monthly income.
+  What is your gross income? "Gross" means your income before taxes are taken out of your check.  You can enter your weekly or monthly income.
   
    For purposes of these guidelines, income is defined as gross income from whatever source regardless of whether that income is recognized by the Internal Revenue Code or reported to the Internal Revenue Service or state Department of Revenue or other taxing authority. 
 fields:

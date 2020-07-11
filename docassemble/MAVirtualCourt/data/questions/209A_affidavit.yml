@@ -223,8 +223,12 @@ question: |
     Most recent date
   % endif
 subquestion: |
-  When was the last time ${other_parties.familiar()} abused you?
-  We need to put the year on the form.
+  % if started:
+    When did this happen?
+  % else:
+    When was the last time ${other_parties.familiar()} abused you?  
+    We need to put the year on the form.
+  % endif
   
   For the date, try to remember the exact date. If you are not sure of the exact date, do not guess.
 fields:
@@ -527,7 +531,7 @@ fields:
 ---
 id: 209A Incident Summary
 question: |
-  % if started:
+  % if incidents_of_abuse[i] == incidents_of_abuse[0]:
   The most recent abuse
   % else:
   The ${ordinal(i)} incident you described

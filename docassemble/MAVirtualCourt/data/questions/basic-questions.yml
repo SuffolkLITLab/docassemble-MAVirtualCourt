@@ -558,7 +558,7 @@ id: docket numbers
 question: |
   What is the docket number for this case?
 subquestion: |
-  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
+  If there are multiple docket numbers on this form, you can tap "${word("Add another")}"
   to add more than one.
 list collect: True
 fields:
@@ -580,7 +580,7 @@ decoration: file-signature
 question: |
   Sign your court forms
 subquestion: |
-  Your forms are almost ready. You will need to sign them first.
+  Your forms are almost ready. You need to sign them first.
   
   Use the mouse or touchpad on your computer or
   sign with your finger on your phone. 
@@ -658,7 +658,7 @@ fields:
 help: |
   Many smartphones will automatically find the link on this screen when you use
   the camera app. The link
-  may "float" up from the screen into a small icon you can click.
+  may "float" up from the screen into a small icon you can tap.
   If your phone does not do this, use the text option instead.
 continue button field: saw_signature_qrcode
 ---
@@ -673,7 +673,7 @@ field: signature_phone_followup
 template: interview_link
 content: |
   Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
-  click the link below:  
+  tap the link below:  
   ${interview_url()}
 ---
 code: |

@@ -417,7 +417,7 @@ question: |
   Orders to protect your ${children.as_noun()}
 subquestion: |
   % if who_protecting_screener == "me and children":
-  You said you need this order to protect you and your ${children.as_noun()}
+  You said you need this order to protect you and your ${children.as_noun()}.
   % endif
   You can ask the court to:
   
@@ -556,7 +556,7 @@ validation code: |
 ---
 id: no_contact_children
 question: |
-  Do you need the judge to order ${other_parties.familiar()} not to contact the children?
+  Do you need the judge to order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
 fields:
   - I need the judge to order 'No contact.': request_no_contact
     datatype: yesnoradio
@@ -833,6 +833,7 @@ fields:
   - Last Name: majors_needing_support[i].name.last
   - Suffix: majors_needing_support[i].name.suffix
     required: False
+    code: name_suffix()
 ---
 id: do you already have a child support order
 question: |
@@ -882,7 +883,7 @@ comment: |
   This could happen if defendant was adjudicated NOT to be the father, so not a joint child
   and thus case not disclosed on affidavit of care or custody.
 question: |
-  Paternity Cases
+  Paternity cases
 subquestion: |
   Are there any current or closed cases that involve both you and
   ${other_parties.familiar()} that have to do with paternity of a child?
@@ -943,7 +944,6 @@ attachment:
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       # TODO: wrong field type for bool?
-      # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
       - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }

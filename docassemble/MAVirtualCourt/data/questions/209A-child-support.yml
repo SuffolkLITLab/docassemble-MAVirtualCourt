@@ -149,22 +149,24 @@ question: |
   Plaintiff's Affidavit in Support of Request for Child support Order
 subquestion: |
   If you have legal custody of your child,  you can ask the court
-  to order the other parent to pay child support. To do that, you need to fill
-  out this Affidavit in Support of Request for a Child Support Order. The
-  following questions ask you about the other parent's job, their employer,
-  and their income and expenses (to the best of your knowledge). You will also
-  provide your income and expenses. This way, the court can look at each
-  parent's financial situation to calculate how much the child support will be. 
+  to order ${other_parties.familiar()} to pay child support. 
+  
+  You need to fill out an Affidavit in Support of Request for a Child Support Order. The
+  following questions ask you about ${other_parties.familiar()}'s job, their employer,
+  and their income and expenses. Answer as much as you know. You will also
+  need to provide your income and expenses. This way, the court can look at each
+  parent's finances and calculate how much the child support will be. 
+
+  Reminder: The judge will not order support right away. You have to wait for the judge to decide about child support at the hearing 10 days later.
 ---
 id: mother_or_father
 question: |
-  What is ${other_parties.familiar()}'s relationship to the children?
+  What is ${other_parties.familiar()}'s relationship to ${all_support_children}?
 subquestion: |  
   The child support affidavit asks you to tell the court if ${other_parties.familiar()}
   is "the mother" or "the father" of the children you need child support for.
 
-  If you choose an answer that is not "mother" or "father" this section will be blank on the form. A judge may still ask you to pick one of those
-  2 options.
+  If you choose an answer that is not "mother" or "father," this section will be blank on the form. The judge may still ask you to pick mother or father.
 fields:
   - ${other_parties.familiar()} is: other_parties[0].defendant_parental_role
     input type: radio
@@ -176,9 +178,9 @@ fields:
 ---
 id: defendants insurance
 question: |
-  ${other_parties.familiar()} insurance expenses
+  ${other_parties.familiar()}'s insurance expenses
 subquestion: |
-  Tell as much as you can about ${other_parties.familiar()} expenses. If you do not know the answer, just skip the question.
+  Tell the court as much as you can about ${other_parties.familiar()} expenses. 
 fields:
   - note: |
       **Does ${other_parties.familiar()} pay for health insurance?**
@@ -216,7 +218,7 @@ fields:
 ---
 id: defendants childcare
 question: |
-  ${other_parties.familiar()} childcare expenses
+  ${other_parties.familiar()}'s childcare expenses
 fields:
   - note: |
       **Does ${other_parties.familiar()} pay for childcare expenses for the children you share?**
@@ -240,7 +242,7 @@ fields:
   - no label: defendant_pays_child_support
     datatype: yesnomaybe
   - note: |
-      How much does ${other_parties.familiar()} pay in other child support obligations?
+      How much child support does ${other_parties.familiar()} pay for other children? 
     show if: defendant_pays_child_support
   - no label: other_parties[0].child_support_other
     datatype: currency
@@ -254,9 +256,9 @@ fields:
 ---
 id: defendants income
 question: |
-  ${other_parties.familiar()} income
+  ${other_parties.familiar()}'s income
 subquestion: |
-  As far as you know, what is ${other_parties.familiar()}'s' gross income? "gross" means before taxes.  You can give either weekly or monthly income.
+  As far as you know, what is ${other_parties.familiar()}'s gross income? "Gross" means before taxes.  You can give weekly or monthly income.
   
   Put in the best information you know, even if you do not know the
   exact amount. Click "I do not know" if you have no idea.
@@ -295,7 +297,7 @@ continue button field: defendant_not_working_warning_given
 ---
 id: defendants job
 question: |
-  ${other_parties.familiar()}'s Work
+  ${other_parties.familiar()}'s work
 subquestion: |
   Where and how does ${other_parties.familiar()} work?
 fields:
@@ -350,10 +352,10 @@ id: your expenses
 question: |
   Your childcare expenses
 subquestion: |
-   Include all your expenses for childcare so that you can go to work or get training or education so you **can** get work. Include expenses like the cost of daycare, babysitting, and private school costs.
+   Include everything you spend on childcare for ${ children_of_both } so you can go to work or get training or education so you **can** get work. Include expenses like the cost of daycare, babysitting, and private school costs.
 fields:
   - note: |
-      **Do you pay for childcare for the children that you share with the defendant?**
+      **Do you pay for childcare for the children you share with ${ other_parties.familiar()}?**
   - no label: user_has_child_care_expenses
     datatype: yesnoradio
   - note: |
@@ -375,7 +377,7 @@ question: |
   Child support
 fields:
   - note: |
-      **Are you ordered to pay child support for  any children other than ${all_support_children}?**
+      **Do you have to pay child support for any children other than ${all_support_children}?**
   - no label: pays_child_support
     datatype: yesnoradio
   - note: |

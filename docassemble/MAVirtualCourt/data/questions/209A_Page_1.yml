@@ -55,12 +55,10 @@ question: |
 subquestion: | 
   **If you are in danger right now, call 911.**
   
-  Please make sure you are in a {safe place}. This form can take anywhere
-  between **30 minutes and an hour and a half** to complete, depending
-  on your specific situation.
+  Please make sure you are in a {safe place}.
+  The application for a 209A is at least 5 pages long. It can take up to 1 and 1/2 hours to answer all the questions.
   
   An Abuse Prevention Order can help protect you from an abusive partner, a family member, or someone in your household. In Massachusetts, we often call this order a {209A restraining order}.
- 
     
   If the abusive person does not obey the order, they  “violate” it. It is a crime to violate a 209A restraining order and the police can arrest them. This order can also order the abusive person to do things like pay utility bills or child support.
   
@@ -120,10 +118,13 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
+    help: |
+      If you do not select "Male" or "Female", both checkboxes will be empty on the form. The police use your answer to help them identify the person who is abusing you and enforce your restraining order.  
   - Gender: other_parties[0].gender
     show if:
       variable: other_parties[0].gender
       is: "self-described"
+
 ---
 id: what to expect
 question: |
@@ -156,7 +157,7 @@ Terms:
 ---
 id: other cases
 question: |
-  Tell us about the other cases you have had with ${other_parties.familiar()}
+  Tell the court about the other cases you have had with ${other_parties.familiar()}
 subquestion: |  
   If you need to add more, click ${word("Add another")}.
 list collect: True
@@ -194,7 +195,7 @@ code: |
 ---
 id: had other cases
 question: |
-  Other cases with the Defendant
+  Other cases with ${other_parties.familiar()}
 subquestion: |
   Have you ever had any other cases with ${other_parties.familiar()} for divorce, annulment, separate support, or abuse prevention?
 yesno: plaintiff_and_defendant_other_case_yes
@@ -294,7 +295,7 @@ fields:
   #   - Non-binary: non-binary
   #   - Prefer not to say: prefer-not-to-say
   #  help: |
-  #    If you do not select either "Male" or "Female", both checkboxes
+  #    If you do not select "Male" or "Female", both checkboxes
   #    will be left unchecked on the form. This answer will be used to help
   #    identify ${other_parties[0]} to the police to allow them to enforce
   #    your order.
@@ -735,7 +736,7 @@ fields:
     none of the above: False
     required: False
   - note: |
-      Were you ever married to ${other_parties.familiar()}?
+      ### Were you ever married to ${other_parties.familiar()}?
   - no label: relationship_to_defendant_married
     datatype: checkboxes
     choices:

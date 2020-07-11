@@ -193,6 +193,7 @@ code: |
   day # Triggers date question in format for aff. of care and custody
   
   nav.set_section('section_signature')
+  signature_date
   preview_209a_package
 
   users[0].states_above_true
@@ -238,14 +239,14 @@ question: |
   Preview your document
 subquestion: |
   Your document is almost ready to sign. Before you sign it,
-  click on the preview image below to view it in a new window.
+  tap on the preview image below to view it in a new window.
 
-  Don't forget to come back to this screen to sign and download
-  your final form.
+  Remember to come back to this screen to sign and download
+  your final set of forms.
 
   ${pdf_concatenate(final_attachment_preview, filename="209a_preview.pdf")}
 
-  Click ${word("Next")} when you are ready to sign.
+  Tap ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
 initial: True
@@ -259,7 +260,7 @@ reconsider:
   - final_attachment_bundle
 id: download
 question: |
-  Your forms are ready to download and file.
+  Your forms are ready to download and file
 subquestion: |
   1. Look over the forms below.
   1. If they look correct, download them or email them to yourself.
@@ -460,7 +461,7 @@ subquestion: |
   You can try finding your local court by using the [Courthouse
   Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
   
-  Click ${word("help")} to learn more about choosing a court. This can be
+  Tap ${word("help")} to learn more about choosing a court. This can be
   complicated in a 209A restraining order.
 fields:
   - Court name: courts[0]
@@ -503,22 +504,36 @@ help: |
   
   Some things to think about when you are deciding which court is better for you
   are:  
-  
+
   #### If the other parent wants to visit your child  
   The District Court is not supposed to order visitation between the other
   parent and your child as part of a 209A case. The Probate and Family Court can
   order visitation in a 209A case.  If you want to get visitation settled right
-  away, you might want to go to the Probate and Family Court to file for the
+  away, you may want to go to the Probate and Family Court to file for the
   209A restraining order. If you do not want the court to decide about
   visitation, you might want to go to the District Court for your 209A
   restraining order. 
   #### If the person who abused you is facing criminal charges  
   If the person who abused you is facing criminal charges related to the
-  domestic violence, you might want to file for your 209A restraining order at
+  domestic violence, you may want to file for your 209A restraining order at
   the District or Superior Court where that case is. That way, you may be able
   to work with the same Victim/Witness Advocate for both cases.
+  #### If you are already in Probate and Family Court with another case  
+  Sometimes, it is easier and less complicated to file your 209A Application in Probate and Family Court **if you already have a case going on there now**. If you file in District Court, they may have to get in touch with the Probate and Family Court - this back and forth may slow things down and take more time that you do not have.
   
   [Read more](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a).
+---
+id: signature date
+question: |
+  When do you plan to file your application?
+subquestion: |
+  We automatically answer "today" for you, below. You can change the date.
+  
+  If you are keeping these forms as part of your safety plan, you can always cross out today's date and write in the date you actually file.
+fields: 
+  - Date: signature_date
+    datatype: date
+    default: ${today().format("yyyy-MM-dd")}
 ---
 comment: |
   TODO: integrate a method to display form title on intro screen dynamically
@@ -527,12 +542,11 @@ question: |
   Ask the court for a 209A Abuse Prevention Order: MassAccess Project
 subquestion: |
  
-  This website can help you complete and file court forms in 3 steps:
+  This website can help you complete and file your forms in 3 steps:
   
   Step 1. Answer questions that will fill in your forms for you.  
   Step 2. Preview the completed forms.  
-  Step 3. Email the forms to the court using this secure website and save copies
-  for yourself for later reference.  
+  Step 3. Email the forms to yourself or download them so you can send the forms to the court or keep them as part of your safety plan.
 
   Tap the {green words} in any screen for a definition or more information.
   
@@ -577,8 +591,8 @@ objects:
 ---
 code: |
   final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
-  final_attachment_collection.info = {'name': '209A DV Restraining Order', 
-                      'filename': '209a_abuse_prevention_petition',
+  final_attachment_collection.info = {'name': '209A (Abuse Prevention Order/Restraining Order) Application', 
+                      'filename': '209a_restraining_order_application',
                       'description': '',
                       'file': {'pdf': final_attachment_collection.pdf.number},
                       'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
