@@ -428,7 +428,7 @@ subquestion: |
   * Order ${other_parties.familiar()} to pay child support for the children.
   * Order anything else you need to keep your ${children.as_noun()} safe.
 
-  The next questions ask you for the name and birthdate of your ${children.as_noun()}, and then ask if you need any of these orders, one at a time.  
+  The next questions ask if you need any of these orders, one at a time.  
 
 continue button field: include_children_in_order
 help:
@@ -944,7 +944,6 @@ attachment:
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       # TODO: wrong field type for bool?
-     # TODO: better name? (wants_visitation_orders)
       - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
       - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
