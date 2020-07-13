@@ -1075,7 +1075,7 @@ attachment:
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
-      - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_name": ${ plaintiff_assistant_name if plaintiff_is_major_no else '' }
       - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
@@ -1149,7 +1149,7 @@ attachment:
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
-      - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_name": ${ plaintiff_assistant_name if plaintiff_is_major_no else '' }
       - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
