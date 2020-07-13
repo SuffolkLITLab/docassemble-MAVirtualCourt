@@ -1099,9 +1099,9 @@ attachment:
       # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
-      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
-      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
-      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
+      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
@@ -1173,9 +1173,9 @@ attachment:
       # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
-      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
-      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
-      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
+      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
       - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
