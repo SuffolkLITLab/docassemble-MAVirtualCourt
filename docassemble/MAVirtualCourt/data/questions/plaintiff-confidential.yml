@@ -518,22 +518,24 @@ attachment:
 ---
 comment: Addenda related code. 
 code: |  
+  # txtFieldsList is an array of dictionaries that contain the title
+  # and then a *list* of items that can be reduced to text in the addendum
   txtFieldsList_confidential = list()
   if len(users[0].previous_addresses) >= 2:    
     txtFieldsList_confidential.append(
-      {'title': 'FORMER ADDRESSES',
-      'value': [users[0].previous_addresses]
+      {'title': 'FORMER ADDRESSES (CONTINUED)',
+      'value': users[0].previous_addresses[1:]
       })
   
   if len(users[0].schools) >= 2:
     txtFieldsList_confidential.append(
-      {'title': 'SCHOOL ADRESSES',
-      'value': [school.name + ': ' + school.school_address for school in users[0].schools]}
+      {'title': 'SCHOOL ADRESSES (CONTINUED)',
+      'value': [school.name + ': ' + school.school_address for school in users[0].schools[1:]]}
     )
 
   if len(users[0].workplaces) >= 2:
     descriptions = []
-    for workplace in users[0].workplaces:
+    for workplace in users[0].workplaces[1:]: # skip index 0
       desc = workplace.name
       if workplace.work_address:
         desc += ': ' + workplace.work_address
@@ -541,13 +543,13 @@ code: |
         desc += ' (' + workplace.phone + ')'
       descriptions.append(desc)
     txtFieldsList_confidential.append(
-      {'title': 'WORKPLACE ADRESSES',
+      {'title': 'WORKPLACE ADRESSES (CONTINUED)',
       'value': descriptions}
     )
   
   if len(users[0].other_addresses) > 0:
     txtFieldsList_confidential.append(
-      {'title': 'OTHER ADDRESSES',
+      {'title': 'OTHER HOME ADDRESSES',
        'value': [address.on_one_line() for address in users[0].other_addresses]}
     )
 
