@@ -108,7 +108,7 @@ question: |
   Keeping other information private - Asking the court to impound
 subquestion: |
   % if impound_personal_information:
-  The only information the court keeps private automatically, is your 
+  The only information the court keeps private automatically, is  
   % if plaintiff_has_minor_children:
   ${ children.as_noun()}'s addresses and 
   % endif
