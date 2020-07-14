@@ -550,15 +550,9 @@ subquestion: |
 
   Tap the {green words} in any screen for a definition or more information.
   
-  This form can take anywhere between **30 minutes to an hour and half**
+  This form can take up to 1 and 1/2 hours
   to complete, depending on your specific situation.
   
-  If you have questions about this form or the court process, 
-  call the Trial Court’s Emergency HelpLine:  
-  833-91-COURT (833-912-6878)  
-  Monday-Friday  
-  8:30am - 4:30pm
-
   % if chat_partners_available().help:
   Live help is currently available in this interview. Click the speech bubble
   (:comment-alt:) in the navigation bar to connect to a live advocate for help.
