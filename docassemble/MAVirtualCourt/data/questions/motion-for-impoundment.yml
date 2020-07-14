@@ -193,7 +193,7 @@ question: |
 subquestion: |
   You can ask the judge to impound your information with no notice to ${other_parties.familiar()} if you can show the judge you will suffer "immediate and irreparable harm" if the court lets ${other_parties.familiar()} know about this request in advance.
 
-  If you do **not** need the order right away, uncheck the box below.
+  If you do not need the judge to impound the information **before** the court tells ${other_parties.familiar()}, uncheck the box below.
 fields:
   - 'I need the judge to impound my information **before** the court tells ${other_parties.familiar()} that I am asking the court to impound this information.': impound_information_ex_parte
     datatype: yesno
