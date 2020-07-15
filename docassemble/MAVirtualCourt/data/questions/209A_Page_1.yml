@@ -727,7 +727,9 @@ code: |
   is_dating_only = (related_as_couple["dating"] or related_as_couple["dated"]) \
                     and not len(related_as_couple.true_values()) > 1 \
                     and not relationship_to_defendant_married.any_true() \
-                    and not related_by_marriage and not related_by_blood
+                    and not defendant_and_plaintiff_relationship_not_married_but_are_related
+                    # and not defendant_and_plaintiff_are_parents_of_child
+                    # and not related_by_marriage and not related_by_blood
 ---
 comment: |
   Adding punctuation at the end of each list item as screen readers need punctuation at the end of each to be able to convey list to user.
