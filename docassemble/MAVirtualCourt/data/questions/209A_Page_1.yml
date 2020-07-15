@@ -369,6 +369,8 @@ subquestion: |
   In some cases, the judge may also order ${other_parties.familiar()} to support
   **you** financially. This support would be **on top of** any child support you
   ask for.
+  
+  Keep your answer short. You can tell the judge more at the hearing.  
 fields:
   - 'I need the judge to order ${other_parties.familiar()} to pay me because of losses I have suffered.': order_defendant_pay_yes
     datatype: yesno
@@ -380,6 +382,8 @@ fields:
       is: True
   - 'This is why the judge should order ${other_parties.familiar()} to pay me:': losses_caused_by_defendant
     input type: area
+    rows: 2
+    maxlength: 113
     show if:
       variable: order_defendant_pay_yes
       is: True
@@ -422,11 +426,14 @@ question: |
   Is there anything else you need the court to order?
 subquestion: |
   Is there anything else you need the court to order ${other_parties.familiar()} to do?
+  
+  Keep your answer short. You can tell the judge more at the hearing.
 fields:
   - 'I need the judge to order something else': order_other_relief_yes
     datatype: yesno
   - 'I also need the judge to order:': other_relief
-    input type: area 
+    input type: area
+    maxlength: 200
     show if:
       variable: order_other_relief_yes
       is: True
@@ -618,17 +625,21 @@ code: |
 code: |
   need_gun_addendum = len(defendant_weapons) > 40
 ---
+# Unused
 code: |
   need_relief_addendum =  len(other_relief) > 215 if order_other_relief_yes else False
 ---
+# Unused
 code: |
-  other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","")
+  other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","").replace("\n","")
 ---
+# Unused
 code: |
   need_losses_addendum = len(losses_caused_by_defendant) > 100 if order_defendant_pay_yes else False
 ---
+# Unused
 code: |
-  losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","")
+  losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","").replace("\n","")
 ---
 code: |
   need_cases_addendum = len(other_cases) > 1
@@ -640,7 +651,7 @@ code: |
       showifdef('case.docket_number') for case in other_cases[:1]]) + " (See Addendum)"
 ---
 code: |
-  need_page1_addendum = need_cases_addendum or need_losses_addendum or need_relief_addendum or need_gun_addendum
+  need_page1_addendum = need_cases_addendum or need_gun_addendum
 ---
 id: mandated reporters
 question: |
@@ -1104,11 +1115,11 @@ attachment:
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if order_defendant_pay_yes else '' }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes else '' }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -1178,11 +1189,11 @@ attachment:
       - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if order_defendant_pay_yes else '' }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief if order_other_relief_yes  else '' }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---
