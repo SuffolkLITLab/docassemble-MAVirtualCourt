@@ -238,11 +238,11 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ addAddendum_impound }
+      - "attach_additional_pages": ${ False }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -277,7 +277,7 @@ code: |
   impound_information_ex_parte
   
   # Trigger some computed values
-  case_record_information_to_be_impounded_cutoff
+  # case_record_information_to_be_impounded_cutoff
   # request_based_on_cutoff
   addAddendum_impound
   # signature_date
@@ -312,11 +312,11 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
       - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ addAddendum_impound }
+      - "attach_additional_pages": ${ False }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -325,18 +325,18 @@ attachment:
 ---
 comment: Addenda related code. 
 code: |  
-  txtFieldsList_impoundment = list()      
-  Limit1 = 300
-  sLimit1 = Limit1 - 16   
-  need_impoundment_addendum = len(case_record_information_to_be_impounded) > Limit1
-  if need_impoundment_addendum:    
-    case_record_information_to_be_impounded_cutoff = "(See Addendum.) " + case_record_information_to_be_impounded[:sLimit1] 
-    txtFieldsList_impoundment.append(
-      {'title': '1. Information in the case record to be impounded',
-      'value': [case_record_information_to_be_impounded]
-      })
-  else:
-    case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
+  # txtFieldsList_impoundment = list()      
+  # Limit1 = 300
+  # sLimit1 = Limit1 - 16   
+  # need_impoundment_addendum = len(case_record_information_to_be_impounded) > Limit1
+  # if need_impoundment_addendum:    
+  #  case_record_information_to_be_impounded_cutoff = "(See Addendum.) " + case_record_information_to_be_impounded[:sLimit1] 
+  #  txtFieldsList_impoundment.append(
+  #    {'title': '1. Information in the case record to be impounded',
+  #    'value': [case_record_information_to_be_impounded]
+  #    })
+  # else:
+  #  case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
     
   # Limit2 = 700
   # sLimit2 = Limit2 - 16   
@@ -350,7 +350,8 @@ code: |
   #else:
   #  request_based_on_cutoff = request_based_on
     
-  addAddendum_impound = bool(txtFieldsList_impoundment)
+  #addAddendum_impound = bool(txtFieldsList_impoundment)
+  addAddendum_impound = False
 ---
 attachment:
   - variable name: impound_addendum
