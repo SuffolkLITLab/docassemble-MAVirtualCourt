@@ -338,15 +338,33 @@ subquestion: |
   [Additional information on class actions under Mass. R. Civ. P. 23](https://www.mass.gov/rules-of-civil-procedure/civil-procedure-rule-23-class-actions)
 yesno: class_action_yes
 ---
+objects:
+  - related_actions: 
+      DAList.using(object_type=Thing, there_are_any=True,
+        complete_attribute='complete')
+---
+code: |
+  related_actions[i].docket_number
+  related_actions[i].court_county
+  related_actions[i].case_name
+  related_actions[i].complete = True
+---
 id: related actions
-continue button field: Related_actions
 question: |
-  Are there any actions related to this civil action pending in the Superior Court? 
-subquestion: |
-  Provide the case number, case name, and county of any related actions. If there are none, skip this question. 
+  Tell the court about any related actions pending in the Superior Court
+subquestion: |  
+  Placeholder text
+list collect: True
 fields:
-  - 'Description of related actions': related_actions
+  - Court county: related_actions[i].court_county
     required: False
+  - Name of case: related_actions[i].case_name
+    required: False
+  - Docket number of case: related_actions[i].docket_number
+    required: False
+---
+code: |  
+  related_actions = related_actions[i].case_name + ", " + related_actions[i].docket_number + ", " + related_actions[i].court_county + ", " + related_actions[i].description is correct 
 ---
 id: signature dates
 question: |
@@ -492,8 +510,6 @@ fields:
   - 'Defendant address': defendants[0].address
     input type: area
 ---
-
-
 question: |
   Sign below, ${attorney}
 under: |
@@ -689,7 +705,7 @@ code: |
   description_plaintiff_injury
   collection_of_debt_yes
   total_contract_claims
-  Related_actions
+  related_actions.gather()
   documented_medical_expenses_total
   users[0].signature_date
   str(plaintiffs[0])
