@@ -350,6 +350,7 @@ fields:
   - "What is ${other_parties.familiar()}'s eye color?": other_parties[0].eye_color
     choices:
       - Amber: Amber
+      - Black: Black
       - Blue: Blue
       - Brown: Brown
       - Gray: Gray
