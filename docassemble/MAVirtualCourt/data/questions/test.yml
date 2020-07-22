@@ -1,8 +1,41 @@
 ---
+include:
+  - basic-questions.yml
+---
 mandatory: True
 code: |
-  evaluate_child_addresses # 
-
+  if wants_impoundment_text:
+    impoundment_text = 'Some impoundment text'
+  cover_page_test
 ---
-include:
-  - 209a_package.yml
+id: trigger impoundment text
+question: |
+  Do you want impoundment text?
+yesno: wants_impoundment_text
+---
+id: cover page
+event: cover_page_test
+question: |
+  Cover page test
+subquestion: |
+  ${ general_cover_sheet }
+---
+code: |
+  allowed_courts = ['Housing Court']
+---
+attachment:
+  name: A hello world document
+  variable name: form_to_file_no_cover
+  filename: form_to_file_no_cover
+  content: |
+    nothing
+---
+need:
+  - form_to_file_no_cover
+  - num_package_pages
+  - download_titles
+attachment:
+  variable name: general_cover_sheet
+  filename: d
+  docx template file: general_cover_sheet.docx
+---
