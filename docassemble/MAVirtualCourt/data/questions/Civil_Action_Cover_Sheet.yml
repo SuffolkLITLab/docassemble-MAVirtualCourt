@@ -372,7 +372,6 @@ question: |
   Signature dates to do
 subquestion: |
   Placeholder text
-  Show ${ related_actions_description }
 fields:
   - 'Date of user signature': users[0].signature_date
     datatype: date
@@ -739,7 +738,6 @@ continue button field: Civil_Action_Cover_Sheet0026_preview_question
 question: |
   Placeholder preview screen
 subquestion: |
-  Here is the description of your related actions: ${related_actions_description}
   Here is a preview of the form you'll sign on the next page. 
   
    ${Civil_Action_Cover_Sheet0026_attachment_preview}
