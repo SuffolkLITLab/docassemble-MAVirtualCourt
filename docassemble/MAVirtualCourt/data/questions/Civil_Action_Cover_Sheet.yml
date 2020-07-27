@@ -8,7 +8,7 @@ code: |
   if not defined("interview_metadata['Civil_Action_Cover_Sheet0026']"):
     interview_metadata.initializeObject('Civil_Action_Cover_Sheet0026')
   interview_metadata['Civil_Action_Cover_Sheet0026'].update({
-    'title': 'Civil Action Cover Sheet',
+    'title': 'Civil Action Cover Sheet - Initial Commit',
     'short title': 'Civil Action Cover Sheet',
     'description': 'Placeholder text',
     'original_form': 'https://www.mass.gov/files/documents/2016/08/tf/civil-action-cover-sheet-specific-counties.pdf',
@@ -348,12 +348,13 @@ code: |
   related_actions[i].court_county
   related_actions[i].case_name
   related_actions[i].complete = True
+  # may not need this code block
 ---
 id: related actions
 question: |
   Tell the court about any related actions pending in the Superior Court
 subquestion: |  
-  Placeholder text
+  If you need to add more, click ${word("Add another")}.
 list collect: True
 fields:
   - Court county: related_actions[i].court_county
@@ -363,14 +364,15 @@ fields:
   - Docket number of case: related_actions[i].docket_number
     required: False
 ---
-code: |  
-  related_actions = related_actions[i].case_name + ", " + related_actions[i].docket_number + ", " + related_actions[i].court_county + ", " + related_actions[i].description is correct 
+code: |
+  related_actions_description = comma_and_list([action.case_name + ", " + action.docket_number + ", " + action.court_county for action in related_actions])
 ---
 id: signature dates
 question: |
   Signature dates to do
 subquestion: |
   Placeholder text
+  Show ${ related_actions_description }
 fields:
   - 'Date of user signature': users[0].signature_date
     datatype: date
@@ -672,7 +674,7 @@ attachment:
       - "total_contract_claims": ${ f'{int(round(total_contract_claims)):,}' }
       - "description_of_claim": ${ description_of_claim }
       - "user_signature_date": ${ users[0].signature_date }
-      - "related_actions": ${ related_actions }
+      - "related_actions": ${ related_actions_description }
       - "certification_signature_date": ${ certification_signature_date }
       - "certification_signature": ${ certification_signature }
 ---
@@ -705,7 +707,7 @@ code: |
   description_plaintiff_injury
   collection_of_debt_yes
   total_contract_claims
-  related_actions.gather()
+  # related_actions.gather()
   documented_medical_expenses_total
   users[0].signature_date
   str(plaintiffs[0])
@@ -727,6 +729,17 @@ continue button field: Civil_Action_Cover_Sheet0026_preview_question
 question: |
   Placeholder preview screen
 subquestion: |
+  Here is a preview of the form you'll sign on the next page. 
+  
+   ${Civil_Action_Cover_Sheet0026_attachment_preview}
+---
+mandatory: True
+id: preview screen
+continue button field: Civil_Action_Cover_Sheet0026_preview_question
+question: |
+  Placeholder preview screen
+subquestion: |
+  Here is the description of your related actions: ${related_actions_description}
   Here is a preview of the form you'll sign on the next page. 
   
    ${Civil_Action_Cover_Sheet0026_attachment_preview}
@@ -774,5 +787,5 @@ attachment:
       - "total_contract_claims": ${ f'{int(round(total_contract_claims)):,}' }
       - "description_of_claim": ${ description_of_claim }
       - "user_signature_date": ${ users[0].signature_date }
-      - "related_actions": ${ related_actions }
+      - "related_actions": ${ related_actions_description }
       - "certification_signature_date": ${ certification_signature_date }
