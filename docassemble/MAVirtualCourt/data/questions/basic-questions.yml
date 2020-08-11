@@ -777,14 +777,14 @@ code: |
 ---
 id: basic questions intro screen
 question: |
-  Mass Access Project
+  ${interview_short_title}: Mass Access Project
 subquestion: |
  
-  This website can help you complete and file court forms in 3 steps:
+  The MassAccess Project can help you complete and file court forms in 3 steps:
   
-  Step 1. Answer questions that will fill in your forms for you.  
-  Step 2. Preview the completed forms.  
-  Step 3. Email the forms to the court using this secure website and save copies
+  Step 1. Answer questions that will fill in your form for you.  
+  Step 2. Preview the completed form.  
+  Step 3. Email the form to the court using this secure website and save copies
   for yourself for later reference.  
 
   Tap the {green words} in any screen for a definition or more information.
@@ -801,7 +801,7 @@ subquestion: |
   % endif
 
 fields:
-  - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+  - To continue, you must accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
@@ -1096,3 +1096,31 @@ code: |
   else:
     set_parts(subtitle=str(users))
   update_answer_title = True
+---
+comment: |
+  This placeholder is used in the intro screen.
+  
+  In general, the title should follow the format
+  "Ask the court for..." or "Respond to a ..." with a short, plain language
+  description of what using the interview will accomplish.
+code: |
+  interview_short_title = "[PLACEHOLDER: Ask the court for a ...]"
+---
+comment: |
+  This is an ALTERNATIVE way to define the interview subtitle as a
+  transition until we update all existing interviews.
+code: |
+  # Get all values in the interview_metadata dictionary.
+  # use the `next` function to get the first entry.
+  # If there is no entry, then default to an empty dictionary.
+  # Then grab the title of the first value. It will be None if there is no
+  # title.
+  metadata_title = next(iter(interview_metadata.elements.values()),{}).get('title')
+  
+  # Check if the title was an actual text entry, or None
+  if metadata_title:
+    interview_short_title = "Ask the court for a " + metadata_title
+  else:
+    # This branch will happen for Docx where the interview_metadata dictionary
+    # was never defined.
+    interview_short_title = "[PLACEHOLDER: Ask the court for a ...]"
