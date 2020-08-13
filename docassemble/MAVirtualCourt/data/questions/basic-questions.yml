@@ -520,6 +520,7 @@ fields:
   - Email: x.email
     datatype: email
     required: False
+
 ---
 id: persons signature
 generic object: Individual
@@ -530,68 +531,148 @@ under: |
   ${x}
 progress: 99  
 ---
-# Temporarily always use this form
-if: |
-  True
-id: court information
+comment: |
+  We default to only searching the user's address.
+  
+  This is a reasonable default but you may want to add
+  additional addresses. E.g., the opposing party's address,
+  the address where the incident took place. Especially
+  if this is a responsive case.
+code: |
+  addresses_to_search = [users[0].address]
+---
+comment: |
+  Ensure that addresses_to_search is the correct set of courts.
+  See above--it's defined to user's address by default
+code: |  
+  all_matches = macourts.matching_courts(addresses_to_search, court_types=allowed_courts)
+---
+comment: |
+  # This is the *responding* version of the court selector
+  # It will also be the fallback if we don't know user_role
 sets:
-  - courts[0].name
+  - courts[0]
+id: choose a court
 question: |
-  What court is hearing your case?
-subquestion: |  
-  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
+  What court is your case in?
+subquestion: |
+  Look at your court paperwork. Match the name listed
+  there.
+
+  % if len(all_matches) > 0:
+  Below is a map of the court(s) that serve
+  the address you gave us, ${comma_and_list(addresses_to_search)}.
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
 fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(allowed_courts)
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
     object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
-    
-continue button field: ask_court_question    
+      lambda y: y.short_description()
+    show if: 
+      code: |
+        len(all_matches)      
+  - note: |
+      Does the list above look wrong? If your case was filed in
+      a court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts    
 help: 
   label: |
     How do I pick a court?
   content: |
     If you are responding to a case someone else filed, you may not
-    get to choose your court. But if you are starting a new case, you have
-    a choice. How do you know which court to choose?
+    get to choose your court. Select the court that is already
+    listed on your court paperwork.
+        
+---
+if: |
+  # This is the *initiating* version of the court selector
+  user_role == 'plaintiff'
+sets:
+  - courts[0]
+id: choose a court
+question: |
+  What court do you want to file in?
+subquestion: |
+  % if len(all_matches) > 0:
+  Below is a map of the court(s) that serve
+  the address you gave us, ${comma_and_list(addresses_to_search)}.
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
+fields:
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
+    object labeler: |
+      lambda y: y.short_description()
+    show if: 
+      code: |
+        len(all_matches)      
+  - note: |
+      Does the list above look wrong? If you think you should file in a
+      court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts    
+help: 
+  label: |
+    How do I pick a court?
+  content: |
+    For some cases, you can choose your court.
+    How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
     
     * District Court
     * Boston Municipal Court (BMC)
     * Superior Court
-    * Housing Court
     * Probate and Family Court
     * Juvenile Court
+    * Housing Court
     * Land Court
     
-    The District Court, BMC, and Superior Court are all courts that can hear any
-    type of case. The Land Court, Probate and Family, Juvenile Court, and
-    Housing Court are all **specialist** courts that hear one kind of case. They
-    may have judges with special training as well as special resources
-    available.
+    The District Court, BMC, and Superior Court are all courts that can hear
+    any type of case. Housing, Probate and Family and Juvenile Court are
+     **specialist** courts that hear one kind of case.
+    They have judges with special training as well as special 
+    resources available.
     
-    For example, the Housing Court has trained mediators, a special program for
-    tenants with disabilities, and legal help available on-site on the day that
-    eviction hearings are held.
-    
-    Different courts can make different kinds of decisions. Not every court can
-    give you every kind of help. For example, you cannot file a housing
-    discrimination case in the District Court. You can only ask for visitation
-    in the Probate and Family Court.
+    Different courts can make different kinds of decisions. Not every court
+    can give you every kind of help. For example, you can only
+    ask for visitation in the Probate and Family Court. Only
+    the Housing Court or Superior Court can hear discrimination
+    cases.
     
     Depending on where you live, different courts may be further or closer to
-    your address. There are about 100 district courts all over the state, but
-    each county has only one or a few Superior Courts or specialty courts.
+    your address. There are about 100 district courts all over the state,
+    but each county has only one or a few Superior Courts or specialty
+    courts.
     
-    Choosing a court means thinking about what kind of help you need, as well as
-    which court you can get transportation to on the day of your hearing.
+    Choosing a court means thinking about what kind of help you need, as well
+    as which court you can get transportation to on the day of your hearing.
     
     Only you know the right choice.
     
-    You can also view the court selection guidance at
-    [mass.gov](https://www.mass.gov/courthouse-locator).
+    You can also view the court selection guidance at [mass.gov](https://www.mass.gov/courthouse-locator).
 
 ---
 id: docket number
