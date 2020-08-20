@@ -1,5 +1,6 @@
 const chai = require('chai');
 const putils = require('./puppeteer-utils');
+const interviewConstants = require('./interview-constants.js');  // interview urls, etc.
 
 // Tell Chai that we want to use the expect syntax
 const expect = chai.expect;
@@ -7,8 +8,7 @@ const expect = chai.expect;
 // useful cheat sheet for assertions: https://devhints.io/chai
 // run tests with "npm run test"
 
-const FILENAME_209A = `209a_package.yml`;  // May become larger scope variable for multiple tests
-const TEST_URL = `${putils.BASE_INTERVIEW_URL}%3A${FILENAME_209A}`;
+const TEST_URL = `${interviewConstants.INTERVIEW_URL}`;
 
 describe('Making sure we can log into Docassemble playground', () => {
   it('login and get to the interviews page', async () => {
