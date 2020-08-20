@@ -239,6 +239,7 @@ fields:
       states_list()
     default: "MA"
   - Zip: children[i].previous_addresses[j].zip
+    required: False
 ---
 id: child has another past address
 question: |
@@ -900,6 +901,7 @@ fields:
     code: |
       states_list()
   - Zip: signing_attorney.address.zip
+    required: False
 #---
 #question: |
 #  Date

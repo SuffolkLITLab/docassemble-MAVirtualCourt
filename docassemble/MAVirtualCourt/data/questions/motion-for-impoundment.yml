@@ -164,7 +164,7 @@ help:
     ${ other_parties.familiar() }’s lawyer and 
     * will be available to you, your lawyer, people you give the court permission to show, and to certain persons who may need this information so they can do their job. These are prosecutors, law enforcement officers, victim-witness advocates, sexual assault counselors and domestic violence counselors.
     
-    If you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, the order will say ${ other_parties.familiar() } must stay away from your home, work or school, "whereever that may be."
+    If you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, the order will say ${ other_parties.familiar() } must stay away from your home, work or school, "wherever that may be."
     
     If you need the court not to share this information with people who normally see the information to do their jobs, you may ask the judge to issue an Order of Impoundment. 
     

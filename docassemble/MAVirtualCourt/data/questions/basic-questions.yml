@@ -274,7 +274,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].address.zip 
+  - Zip: users[0].address.zip
+    required: False
 ---
 id: your contact information
 question: |
@@ -495,6 +496,7 @@ fields:
     code: |
       states_list()   
   - Zip: x.address.zip
+    required: False
 ---
 id: persons address
 generic object: Individual
@@ -511,6 +513,7 @@ fields:
     code: |
       states_list()   
   - Zip: x.address.zip
+    required: False
 ---
 id: persons contact information
 generic object: Individual
