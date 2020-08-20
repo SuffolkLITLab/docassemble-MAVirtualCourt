@@ -610,7 +610,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: schools_to_stay_away_from[i].address.zip 
+  - Zip: schools_to_stay_away_from[i].address.zip
+    required: False
 # ---
 # id: wants_to_request_visitation_details
 # question: |
