@@ -596,7 +596,8 @@ fields:
     default: MA   
     code: |
       states_list()   
-  - Zip: other_parties[0].address.zip  
+  - Zip: other_parties[0].address.zip
+    required: False
   - Cell phone: other_parties[0].mobile_number    
     maxlength: 14
     required: False

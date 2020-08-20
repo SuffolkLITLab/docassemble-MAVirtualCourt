@@ -290,7 +290,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].address.zip 
+  - Zip: users[0].address.zip
+    required: False
   - I live at more than one address: users[0].other_addresses.there_are_any
     datatype: yesno
 ---
@@ -312,7 +313,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].other_addresses[i].zip 
+  - Zip: users[0].other_addresses[i].zip
+    required: False
 ---
 id: has another other address
 question: |
