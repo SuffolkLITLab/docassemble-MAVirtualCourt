@@ -37,4 +37,4 @@ jobs:
           path: ./**/error-*.jpg
       - name: Cleanup
         if: ${{ always() }}
-      - run: npm run takedown
+        run: npm run takedown
