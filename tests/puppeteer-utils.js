@@ -6,7 +6,7 @@ const BRANCH_NAME = process.env.BRANCH_NAME
     || (process.env.BRANCH_PATH && process.env.BRANCH_PATH.split('/')[2])
     || 'master';
 const PROJECT_NAME = ('testing' + BRANCH_NAME).replace(/[^A-Za-z0-9]/gi, '');
-const BASE_INTERVIEW_URL = `${BASE_URL}/interview?i=docassemble.playground${process.env.PLAYGROUND_ID}${PROJECT_NAME}`;
+const BASE_INTERVIEW_URL = `${BASE_URL}/interview?reset=1&i=docassemble.playground${process.env.PLAYGROUND_ID}${PROJECT_NAME}`;
 
 const initPuppeteer = async () => {
   const browser = await puppeteer.launch({headless: !process.env.DEBUG});
@@ -24,26 +24,25 @@ const login = async () => {
   await passwordElement.type(process.env.PLAYGROUND_PASSWORD);
   await Promise.all([
     passwordElement.press('Enter'),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
   ]);
   return {'page': page, 'browser': browser};
 };
 
 const navigateToManageProject = async (page) => {
-  // Go to manage projects page URL. Need it for pre-existance of project test.
+  // Go to manage projects page URL
   await page.goto(`${BASE_URL}/playgroundproject`, {waitUntil: 'domcontentloaded'});
 };
 
-// If branch doesn't have a project, new project for it
-// May, in future, add timestamp for unique project
 const createProject = async (page) => {
   await navigateToManageProject(page);
   // Check if a project with this name already exists
   const projectLink = `[href="/playground?project=${PROJECT_NAME}"]`;
   const projectButton = await page.$(projectLink);
   // If project already exists, don't create a new one
-  if (projectButton) { return; }
-
+  if (projectButton) {
+    return;
+  }
   // Go to "Add a new project" page
   await page.goto(`${BASE_URL}/playgroundproject?new=1&project=default`, {waitUntil: 'domcontentloaded'});
   // Enter new project name
@@ -53,11 +52,10 @@ const createProject = async (page) => {
   const saveButton = await page.$('[type="submit"]');
   await Promise.all([
     saveButton.click(),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
   ]);
 };
 
-// Clean up when done. Does not work if test errors. Will need to re-think.
 const deleteProject = async (page) => {
   await navigateToManageProject(page);
   // Click Delete button
@@ -69,17 +67,16 @@ const deleteProject = async (page) => {
   }
   await Promise.all([
     deleteButton.click(),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
   ]);
   // Click Delete button again
   const deleteButton2 = await page.$('[type="submit"]');
   await Promise.all([
     deleteButton2.click(),
-    page.waitForNavigation(),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
   ]);
 };
 
-// URL for pulling the branch
 const installUrl = () => `${BASE_URL}/pullplaygroundpackage?${urlParams(
   {
     project: PROJECT_NAME,
@@ -97,12 +94,8 @@ const installRepo = async (page) => {
   const pullButton = await page.$('button[name=pull]');
   await Promise.all([
     pullButton.click(),
-    page.waitForNavigation({
-      waitUntil: 'networkidle0',  // Gets us at least part of the way there
-    }),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
   ]);
-  // Will refine this process. For now, hard-code the wait time.
-  await page.waitFor(2*60*1000); // wait for 2 minute
 }
 
 module.exports = {
@@ -114,4 +107,3 @@ module.exports = {
   installRepo: installRepo,
   initPuppeteer: initPuppeteer,
 };
-
