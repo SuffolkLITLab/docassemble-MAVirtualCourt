@@ -12,9 +12,6 @@ include:
  - plaintiff-confidential.yml 
  - escape.yml
 ---
-metadata:
-  back button label: Undo
----
 modules:
   - .phone
 ---

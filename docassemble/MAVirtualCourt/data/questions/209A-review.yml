@@ -450,45 +450,71 @@ review:
       ${word(yesno(order_relief_ex_parte))}
 ############################# Past care or custody cases
 ---
+id: section_privacy
+event: section_privacy
+question: |
+  Review Keeping Information Private
+review:
+  - Edit: impound_personal_information
+    button: |
+      Impound personal information: ${ word(yesno(impound_personal_information)) }
+  - Edit: impound_case_record_information
+    button: |
+      Impound case record information: ${ word(yesno(impound_case_record_information)) }
+  - Edit:  case_record_information_to_be_impounded
+    button: |
+      Information to impound:
+      
+      >  ${ single_paragraph(case_record_information_to_be_impounded) }
+  - Edit: request_based_on
+    button: |
+      Reason for impoundment: 
+      
+      > ${ request_based_on }
+  - Edit: impound_information_ex_parte
+    button: |
+      Impound information without a hearing: ${ word(yesno(impound_information_ex_parte)) }
+---
 id: section_care_custody
-continue button field: section_care_custody
+event: section_care_custody
+need: 
+  - children.aff_table
+  - other_care_custody_proceedings.review_table
+  - attorneys_for_parents.table
+  - attorneys_for_children.table
 question: |
   Review Care or Custody Proceedings
-subquestion: |
+review: 
+  - Edit: ask_impound_affidavit
+    button: |
+      Impound adoption information: ${ word(yesno(ask_impound_affidavit)) }
+  - Edit: custody_case_participation
+    button: |
+      Participation in custody case: ${ custody_case_participation }
+  - note: |      
+      #### Addresses for joint children
+      ${children.aff_table}
 
-  % if defined('ask_impound_affidavit'):
-  You said you 
-  % if ask_impound_affidavit:
-  do
-  % else:
-  do not
-  % endif
-  want to have the adoption information "impounded" or kept private. ${action_button_html(url_action('ask_impound_affidavit'))}
-  % endif
+      #### Past and pending cases involving care or custody
+      ${other_care_custody_proceedings.review_table}
 
-  #### Addresses for joint children
-  ${children.aff_table}
+      ${other_care_custody_proceedings.add_action()}
 
-  #### Past and pending cases involving care or custody
-  ${other_care_custody_proceedings.review_table}
+      % if defined('attorneys_for_parents'):
+      #### Attorneys representing a parent in pending cases
+      ${attorneys_for_parents.table}
+      % endif
 
-  ${other_care_custody_proceedings.add_action()}
+      % if defined('attorneys_for_children'):
+      #### Attorneys representing a child in pending cases
+      ${attorneys_for_children.table}
+      % endif
 
-  % if defined('attorneys_for_parents'):
-  #### Attorneys representing a parent in pending cases
-  ${attorneys_for_parents.table}
-  % endif
-
-  % if defined('attorneys_for_children'):
-  #### Attorneys representing a child in pending cases
-  ${attorneys_for_children.table}
-  % endif
-
-  % if defined('gals_investigators'):
-  ${attorneys_for_children.add_action()}
-  #### Guardians ad litem and Investigators working with a child in pending cases
-  ${gals_investigators.table}
-  % endif
+      % if defined('gals_investigators'):
+      ${attorneys_for_children.add_action()}
+      #### Guardians ad litem and Investigators working with a child in pending cases
+      ${gals_investigators.table}
+      % endif
 ---
 table: attorneys_for_children.table
 rows: attorneys_for_children
@@ -567,11 +593,13 @@ review:
     - recompute:
       - other_cases.there_are_any
     button: |
-      ${word(yesno('plaintiff_and_defendant_other_case_yes'))}
+      ${word(yesno(plaintiff_and_defendant_other_case_yes))}
+      
       % if plaintiff_and_defendant_other_case_yes:
       ${other_cases.table}
+      
+      ${other_cases.add_action()}      
       % endif
-      ${other_cases.add_action()}
 ---
 table: other_cases.table
 rows: other_cases
@@ -736,7 +764,7 @@ review:
       Use of drugs/alcohol: ${yesno(other_parties[0].drug_alcohol_yes)} ${showifdef('other_parties[0].drug_alcohol_abuse')}  
       Mental health problems: ${yesno(other_parties[0].psychiatric_emotional_problems_yes)} ${showifdef('other_parties[0].psychiatric_emotional_problems')}  
   - Edit guns:
-    - defendant_has_guns
+    - defendant_has_guns['gun']
     button: |
       ${defendant_has_guns.true_values()}  ${showifdef('defendant_weapons_description')}  
 ################################################# Plaintiff confidential information
@@ -756,22 +784,22 @@ question: |
 review:
   - Edit needs interpreter: user_needs_interpreter
     button: |
-      ${word(yesno('user_needs_interpreter'))}
+      ${word(yesno(user_needs_interpreter))}
   - Edit left home because of abuse: abuser_caused_plaintiff_to_leave_home
     button: |
-      ${word(yesno('abuser_caused_plaintiff_to_leave_home'))}
+      ${word(yesno(abuser_caused_plaintiff_to_leave_home))}
 
       % if abuser_caused_plaintiff_to_leave_home:
       ${users[0].previous_addresses.table}
 
-      % endif
       ${users[0].previous_addresses.add_action()}
+      % endif
   - Edit lives in DV shelter: lives_in_domestic_violence_shelter
     button: |
-      ${word(yesno('lives_in_domestic_violence_shelter'))}
+      ${word(yesno(lives_in_domestic_violence_shelter))}
   - Edit lives in apartment: users[0].apartment_yes
     button: |
-      ${word(yesno('users[0].apartment_yes'))}
+      ${word(yesno(users[0].apartment_yes))}
   #########################################
   # TODO: implement review for new address for school, work fields
   #########################################
