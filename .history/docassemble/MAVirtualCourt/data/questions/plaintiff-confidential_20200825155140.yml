@@ -397,12 +397,21 @@ attachment:
       - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
+<<<<<<< HEAD
+      - "plaintiff_workplace_name": ${ users[0].workplace_name }
+      - "plaintiff_workplace_address": ${ users[0].workplace_address }
+      - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
+      - "plaintiff_school_name": ${ users[0].school_name }
+      - "plaintiff_school_address": ${ users[0].school_address }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\r\n','; ') }
+=======
       - "plaintiff_workplace_name": ${ users[0].workplaces.item(0).name }
       - "plaintiff_workplace_address": ${ users[0].workplaces.item(0).work_address }
       - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
       - "plaintiff_school_name": ${ users[0].schools.item(0).name }
       - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
+>>>>>>> master
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
       - "plaintiff_signature": ${ users[0].signature }
@@ -507,12 +516,21 @@ attachment:
       - "plaintiff_email": ${ users[0].email }
       - "plaintiff_apartment_yes": ${ users[0].apartment_yes }
       - "plaintiff_address_former": ${ users[0].previous_addresses }
+<<<<<<< HEAD
+      - "plaintiff_workplace_name": ${ users[0].workplace_name }
+      - "plaintiff_workplace_address": ${ users[0].workplace_address }
+      - "plaintiff_workplace_phone": ${ users[0].workplace_phone }
+      - "plaintiff_school_name": ${ users[0].school_name }
+      - "plaintiff_school_address": ${ users[0].school_address }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\r\n','; ') }
+=======
       - "plaintiff_workplace_name": ${ users[0].workplaces.item(0).name }
       - "plaintiff_workplace_address": ${ users[0].workplaces.item(0).work_address }
       - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
       - "plaintiff_school_name": ${ users[0].schools.item(0).name }
       - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
       - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
+>>>>>>> master
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
 ---

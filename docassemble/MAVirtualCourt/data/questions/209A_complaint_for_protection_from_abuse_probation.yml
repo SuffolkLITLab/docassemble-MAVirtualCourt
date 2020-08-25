@@ -205,15 +205,10 @@ code: |
   else:
     wants_custody_of = PeopleList("wants_custody_of", gathered=True, auto_gather=False)
   wants_no_contact_for
-  request_no_contact
+  if request_no_contact:
+    reasons_for_no_contact
   for contact_child in wants_no_contact_for:
     contact_child.seeking_no_contact = True
-
-  if len(wants_no_contact_for) > 0:
-    # Wat?! Can't just use reasons_for_no_contact!
-    hack_reasons_for_no_contact = reasons_for_no_contact
-  else:
-    hack_reasons_for_no_contact = ''
 
   if schools_to_stay_away_from.there_are_any:
     schools_to_stay_away_from.minimum_number = 1
@@ -291,9 +286,6 @@ code: |
   # True for most of this block
   requests_custody_yes = len(children_of_both) > 0 and requests_custody and len(wants_custody_of.elements) > 0
   
-  hack_reasons_for_no_contact = showifdef('hack_reasons_for_no_contact', '')
-  reasons_no_contact = reasons_for_no_contact_cutoff
-
   keep_away_from_schools_daycares = schools_to_stay_away_from.there_are_any
   # TODO: Does this need special DA treatment
   school_strings = []
@@ -332,7 +324,9 @@ code: |
   other_order_discription = other_order_pdf
 
   # Trigger computed values
-  reasons_no_contact
+  # reasons_no_contact
+  if request_no_contact:
+    reasons_for_no_contact_cutoff
   schools_to_stay_away_from_pdf
   schools_to_stay_away_from_pdf_cutoff
   # school_strings_cutoff
@@ -706,6 +700,7 @@ fields:
     datatype: yesnowide
   - What visitation center?: visitation_center_name
     required: False
+    maxlength: 52
     show if: wants_center
   - Who should pay the visitation center’s fees?: pays_for_center
     input type: radio
@@ -715,6 +710,7 @@ fields:
       - Me: "plaintiff"
       - Someone else: "other"
   - Who?: other_pays_for_center
+    maxlength: 52
     show if:
       variable: pays_for_center
       is: "other"
@@ -727,9 +723,11 @@ fields:
   #- '**Should someone else supervise ${other_parties.familiar()}’s visits?**': wants_supervision
     datatype: yesnowide
   - Who should the supervisor be?: visitation_supervisor_name_full
+    maxlength: 52
     show if: wants_supervision
   - When should the visitation happen?: supervision_time
     #datatype: time # Need something more flexible
+    maxlength: 28
     show if: wants_supervision
   - Professional supervisors charge fees.  Who should pay those fees?: supervision_payer
     input type: radio
@@ -740,6 +738,7 @@ fields:
       - Someone else: "other"
     required: False
   - Who?: other_supervision_payer
+    maxlength: 32
     show if:
       variable: supervision_payer
       is: "other"
@@ -752,6 +751,7 @@ fields:
   #- '**Should someone else to pick up and drop off the children for visits?**': wants_pickup
     datatype: yesnowide
   - Who should pick up and drop off the child(ren)?: who_picks_up
+    maxlength: 44
     show if: wants_pickup
   - html: |
       <hr>
@@ -763,6 +763,7 @@ fields:
     datatype: yesnowide
   - What else do you need the court to order?: other_order
     input type: area
+    maxlength: 186
     show if: wants_other_order
 ---
 id: child support
@@ -940,7 +941,7 @@ attachment:
       - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).formatted_age() }
       - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
       - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).formatted_age() }
-      - "reasons_no_contact": ${ reasons_no_contact }
+      - "reasons_no_contact": ${ reasons_for_no_contact_cutoff }
       # TODO: add '_yes' to field name
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
@@ -994,7 +995,7 @@ attachment:
       - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).formatted_age() }
       - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
       - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).formatted_age() }
-      - "reasons_no_contact__2": ${ reasons_no_contact }
+      - "reasons_no_contact__2": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes__2": ${ wants_visitation_orders and not prohibit_visitation }
@@ -1069,7 +1070,7 @@ attachment:
       - "wants_no_contact_for5_age": ${ wants_no_contact_for.item(4).formatted_age() }
       - "wants_no_contact_for6_name_full": ${ wants_no_contact_for.item(5) }
       - "wants_no_contact_for6_age": ${ wants_no_contact_for.item(5).formatted_age() }
-      - "reasons_no_contact": ${ reasons_no_contact }
+      - "reasons_no_contact": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       - "permit_visitation_yes": ${ wants_visitation_orders and not prohibit_visitation }
@@ -1140,20 +1141,22 @@ attachment:
       - "wants_other_order_yes__2": ${ wants_other_order_yes }
       - "wants_child_support_yes__2": ${ wants_child_support_yes }
 ---
+code: |
+  need_noContact_addendum = request_no_contact and len(reasons_for_no_contact) > 100 # field length
+---
 comment: Addenda related code. 
 code: |  
   txtFieldsList_page2 = list()      
-  Limit1 = 75
-  sLimit1 = Limit1 - 16   
-  need_noContact_addendum = len(wants_no_contact_for) and len(reasons_for_no_contact) > Limit1
+  # Limit1 = 75
+  # sLimit1 = Limit1 - 16   
   if need_noContact_addendum:    
-    reasons_for_no_contact_cutoff = "(See Addendum.) " + reasons_for_no_contact[:sLimit1].replace("\r","") 
+    reasons_for_no_contact_cutoff = "(See Addendum.) " + reasons_for_no_contact[:100].replace("\r\n","") 
     txtFieldsList_page2.append(
       {'title': 'D. CONTACT WITH CHILDREN. - The specific reasons for this request are:',
       'value': [reasons_for_no_contact]
       })
   else:
-    reasons_for_no_contact_cutoff = reasons_for_no_contact if len(wants_no_contact_for) else ''
+    reasons_for_no_contact_cutoff = reasons_for_no_contact if request_no_contact else ''
     
   Limit2 = 70
   sLimit2 = Limit2 - 16   

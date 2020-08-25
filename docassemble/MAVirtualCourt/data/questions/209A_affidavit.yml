@@ -54,6 +54,7 @@ data:
     field_type: text
   - variable: incident_date
     field_type: text
+    maxlength: 25
 ---
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
@@ -231,6 +232,7 @@ fields:
     code: |
       reversed(list(range(today().year - 20, today().year + 1)))
   - Date: incidents_of_abuse[i].date
+    maxlength: 25
   - note: |
       It is okay to give an approximate date or time, or to put a time of year, like "last summer".
 ---
