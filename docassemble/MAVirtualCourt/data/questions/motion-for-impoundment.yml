@@ -105,24 +105,27 @@ code: |
 ---
 id: impound other
 question: |
-  Keeping information private - Asking the court to impound
+  Keeping other information private - Asking the court to impound
 subquestion: |
-  The only information the court keeps private automatically, is your 
+  % if impound_personal_information:
+  The only information the court keeps private automatically, is  
   % if plaintiff_has_minor_children:
   ${ children.as_noun()}'s addresses and 
   % endif
   your contact information, that goes on the Plaintiff Confidential Information form: your address, phone numbers, email and the best way to reach you. 
 
-  The rest of the forms you file are public record.  
+  The rest of the forms you file are public record.
+  % endif  
   
-  You can ask the court to impound your other forms to keep other information in your forms private. You will need to explain why it is critical to your safety to keep this information private.
+  You can ask the court to impound your other forms to keep other information in your forms private. You need to explain why it is critical to your safety to keep this information private.
 fields:
-  - Is there any information on this form that you need to keep private?: impound_case_record_information
+  - Is there any **other** information you have given that you need to keep private?: impound_case_record_information
     datatype: yesnoradio
   - note: |
       Explain what you need the court to keep private below:
     show if: impound_case_record_information      
   - no label: case_record_information_to_be_impounded
+    maxlength: 364
     show if: impound_case_record_information
     input type: area
 ---
@@ -161,7 +164,7 @@ help:
     ${ other_parties.familiar() }’s lawyer and 
     * will be available to you, your lawyer, people you give the court permission to show, and to certain persons who may need this information so they can do their job. These are prosecutors, law enforcement officers, victim-witness advocates, sexual assault counselors and domestic violence counselors.
     
-    If you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, the order will say ${ other_parties.familiar() } must stay away from your home, work or school, "whereever that may be."
+    If you asked the court to order  ${ other_parties.familiar() } to stay away from your home, work or school, the order will say ${ other_parties.familiar() } must stay away from your home, work or school, "wherever that may be."
     
     If you need the court not to share this information with people who normally see the information to do their jobs, you may ask the judge to issue an Order of Impoundment. 
     
@@ -180,6 +183,7 @@ subquestion: |
   Be specific. Include facts about your safety.
 fields:
   - The information should be kept private because: request_based_on
+    maxlength: 864
     input type: area
     rows: 5
 ---
@@ -189,8 +193,18 @@ question: |
 subquestion: |
   You can ask the judge to impound your information with no notice to ${other_parties.familiar()} if you can show the judge you will suffer "immediate and irreparable harm" if the court lets ${other_parties.familiar()} know about this request in advance.
 
-  Do you need the court to impound your information **and** not let ${other_parties.familiar()} know in advance that you are asking for impoundment?
-yesno: impound_information_ex_parte
+  If you do not need the judge to impound the information **before** the court tells ${other_parties.familiar()}, uncheck the box below.
+fields:
+  - 'I need the judge to impound my information **before** the court tells ${other_parties.familiar()} that I am asking the court to impound this information.': impound_information_ex_parte
+    datatype: yesno
+    default: True
+  - note: |
+      **Warning**: if you uncheck this box, the court will tell
+      ${other_parties.familiar()} that you are asking the court to impound 
+      your information.
+    show if: 
+      variable: impound_information_ex_parte
+      is: False
 ---
 progress: 100
 event: download_impoundment
@@ -224,11 +238,11 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on_cutoff }
+      - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ addAddendum_impound }
+      - "attach_additional_pages": ${ False }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -263,8 +277,8 @@ code: |
   impound_information_ex_parte
   
   # Trigger some computed values
-  case_record_information_to_be_impounded_cutoff
-  request_based_on_cutoff
+  # case_record_information_to_be_impounded_cutoff
+  # request_based_on_cutoff
   addAddendum_impound
   # signature_date
   # By default, we'll mark any un-filled fields as DAEmpty(). This helps avoid errors if you intentionally hide a logic branch or mark a question not required
@@ -298,11 +312,11 @@ attachment:
       - "signature_date": ${ signature_date }
       - "impound_personal_information": ${ impound_personal_information }
       - "impound_case_record_information": ${ impound_case_record_information }
-      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded_cutoff }
+      - "case_record_information_to_be_impounded": ${ case_record_information_to_be_impounded }
       - "impound_information_ex_parte": ${ impound_information_ex_parte }
-      - "request_based_on": ${ request_based_on_cutoff }
+      - "request_based_on": ${ request_based_on }
       # todo: What do we want to do about this?
-      - "attach_additional_pages": ${ addAddendum_impound }
+      - "attach_additional_pages": ${ False }
       # These are for the court to fill in and were included accidentally
       - "motion_allowed_ex_parte": ${ '' }
       - "motion_allowed_after_hearing": ${ '' }
@@ -311,32 +325,33 @@ attachment:
 ---
 comment: Addenda related code. 
 code: |  
-  txtFieldsList_impoundment = list()      
-  Limit1 = 300
-  sLimit1 = Limit1 - 16   
-  need_impoundment_addendum = len(case_record_information_to_be_impounded) > Limit1
-  if need_impoundment_addendum:    
-    case_record_information_to_be_impounded_cutoff = "(See Addendum.) " + case_record_information_to_be_impounded[:sLimit1] 
-    txtFieldsList_impoundment.append(
-      {'title': '1. Information in the case record to be impounded',
-      'value': [case_record_information_to_be_impounded]
-      })
-  else:
-    case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
+  # txtFieldsList_impoundment = list()      
+  # Limit1 = 300
+  # sLimit1 = Limit1 - 16   
+  # need_impoundment_addendum = len(case_record_information_to_be_impounded) > Limit1
+  # if need_impoundment_addendum:    
+  #  case_record_information_to_be_impounded_cutoff = "(See Addendum.) " + case_record_information_to_be_impounded[:sLimit1] 
+  #  txtFieldsList_impoundment.append(
+  #    {'title': '1. Information in the case record to be impounded',
+  #    'value': [case_record_information_to_be_impounded]
+  #    })
+  # else:
+  #  case_record_information_to_be_impounded_cutoff = case_record_information_to_be_impounded
     
-  Limit2 = 700
-  sLimit2 = Limit2 - 16   
-  need_request_addendum = len(request_based_on) > Limit2
-  if need_request_addendum:    
-    request_based_on_cutoff = "(See Addendum.) " + request_based_on[:sLimit2] 
-    txtFieldsList_impoundment.append(
-      {'title': '2. Request the Court to order impoundment',
-      'value': [request_based_on]
-      })
-  else:
-    request_based_on_cutoff = request_based_on
+  # Limit2 = 700
+  # sLimit2 = Limit2 - 16   
+  # need_request_addendum = len(request_based_on) > Limit2
+  #if need_request_addendum:    
+  #  request_based_on_cutoff = "(See Addendum.) " + request_based_on[:sLimit2] 
+  #  txtFieldsList_impoundment.append(
+  #    {'title': '2. Request the Court to order impoundment',
+  #    'value': [request_based_on]
+  #    })
+  #else:
+  #  request_based_on_cutoff = request_based_on
     
-  addAddendum_impound = bool(txtFieldsList_impoundment)
+  #addAddendum_impound = bool(txtFieldsList_impoundment)
+  addAddendum_impound = False
 ---
 attachment:
   - variable name: impound_addendum

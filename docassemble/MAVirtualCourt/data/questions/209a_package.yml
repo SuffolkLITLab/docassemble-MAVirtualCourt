@@ -8,7 +8,7 @@ include:
  - 209A_affidavit_disclosing_care_or_custody_proceedings.yml
  - 209A_complaint_for_protection_from_abuse_probation.yml
  - motion-for-impoundment.yml
- - 209A-review.yml
+ # - 209A-review.yml
  - plaintiff-confidential.yml 
  - escape.yml
 ---
@@ -196,6 +196,7 @@ code: |
   day # Triggers date question in format for aff. of care and custody
   
   nav.set_section('section_signature')
+  signature_date
   preview_209a_package
 
   users[0].states_above_true
@@ -205,6 +206,7 @@ code: |
   
   final_attachment_bundle
   nav.set_section('section_filing')
+  final_attachment_collection.finished
   download_screen
 ---
 id: dev hud etc
@@ -240,56 +242,47 @@ question: |
   Preview your document
 subquestion: |
   Your document is almost ready to sign. Before you sign it,
-  click on the preview image below to view it in a new window.
+  tap on the preview image below to view it in a new window.
 
-  Don't forget to come back to this screen to sign and download
-  your final form.
+  Remember to come back to this screen to sign and download
+  your final set of forms.
 
-  ${pdf_concatenate(final_attachment_preview)}
+  ${pdf_concatenate(final_attachment_preview, filename="209a_preview.pdf")}
 
-  Click ${word("Next")} when you are ready to sign.
+  Tap ${word("Next")} when you are ready to sign.
 field: preview_209a_package
 ---
 initial: True
 code: |
   after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
   court_closed_today = (today().dow > 5)
----
 reconsider:
   - final_attachment_bundle
 id: download
 question: |
-  Your form is ready to download and file
+  Your forms are ready to download and file
 subquestion: |
-
-  1. Look over the form below.
-  1. If it looks correct, download or email it to yourself.
-  1. You still need to deliver it to :
-
-  * The ${courts[0]} and
-  * ${other_parties.familiar()}. The court will help you deliver it to ${other_parties.familiar()}.
-  
-  4. Call the ${courts[0]}'s clerk:  
-  <a href="tel:${courts[0].phone}">${courts[0].phone}</a> to find out how they want you to send them the motion.
+  1. Look over the forms below.
+  1. If they look correct, download them or email them to yourself.
+  1. You still need to deliver them to the ${courts[0]}, when you are ready.
+  4. Call the ${courts[0]}'s clerk: <a href="tel:${courts[0].phone}">${courts[0].phone}</a> to find out how they want you to send your forms to them.
   % if court_closed_today:
-  4. The court is closed today. If you want help filing this form now, you can call your local police station.
+  4. The court is closed today. If you need help to file these forms now, call your local police station.
   % elif after_hours:
-  5. The court is only open between 8:30 AM and 4:30 PM. If you want help filing this form now, you can call your local police station.
+  5. The court is only open between 8:30 AM and 4:30 PM. If you need help to file this form now, call your local police station.
   % endif
-  6. Your hearing will probably be over the phone. But the address
-  of your court is ${courts[0].address.on_one_line()}.
+  6. Your hearing will probably be over the phone or Zoom video conference.  
+     The address of your court, if you need it, is: ${courts[0].address.on_one_line()}.  
 
-  ${pdf_concatenate(final_attachment_bundle)}  
-  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
-# attachment:
-#   pdf template file: 
-#     code: |
-#       pdf_concatenate(final_attachment_bundle)
-#   name: 209A Domestic Violence Restraining order
-#   filename: 209A_dv_protective_order
-#   fields:
-#     - Nothing: Nothing
+  ${pdf_concatenate(final_attachment_bundle, filename="209a_petition.pdf")} 
 event: download_screen  
+attachment code: final_attachment_collection
+---
+comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
+---
+comment: |
+  ${action_button_html(url_action('review_all_sections'), icon='edit', label=word("Make changes"))}
 ---
 comment: |
   Build some variables dynamically
@@ -324,21 +317,33 @@ code: |
     and not defendant_abuse_caused_sexual_assault_force
     and not defendant_abuse_caused_sexual_assault_make)
 ---
-id: affirmation
+id: Signing under oath
 question: |
-  Signing Under Oath
+  Signing under oath 
 subquestion: |
-  Your form must be signed "under penalties of perjury."
-  This means that it can be a crime if you lie on this form.
+  When you sign your name you are declaring, "{under penalty of perjury}” that what you put in your affidavit is {true to the best of your knowledge}.
+  
+  Do you swear under penalty of perjury that all your answers to the questions in this interview are true, to the best of your knowledge?
 fields:
   - no label: users[0].states_above_true
     datatype: checkboxes
     minlength: 1
     choices:
-      - I promise that my answers on this form are the truth under penalties of perjury
+      - I swear that my answers on this form are the truth under penalties of perjury.
     validation messages:
       minlength: |
-        You cannot keep going unless you agree that you will tell the truth.
+        You cannot keep going unless you did your best to tell the truth.
+terms:
+  - under penalty of perjury: |
+      means you swear your answers are true, as far as you know.  
+         
+      Swearing "under penalty of perjury" means the court can punish you if your answers are not true to the best of your knowledge.  
+      
+      The court cannot punish you if your answers are about things you saw, heard, or felt.  
+      The court cannot punish you if you have good reason to believe that your answers are true.
+  - true to the best of your knowledge: |
+      Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it.  
+      Something is true to the best of your knowledge if you have good reason to believe it is true.
 ---
 reconsider: True
 code: |
@@ -360,6 +365,8 @@ code: |
   # motion to impound: a_258e_motion_for_impoundment0019_attachment
   #    impound_addendum
   
+  # always include cover page for user
+  attachment_temp.append(next_steps)
   # Always include page 1 
   attachment_temp.append(complaint_209A_labeled_page10003_attachment)
   if need_page1_addendum:
@@ -454,7 +461,7 @@ subquestion: |
   You can try finding your local court by using the [Courthouse
   Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
   
-  Click ${word("help")} to learn more about choosing a court. This can be
+  Tap ${word("help")} to learn more about choosing a court. This can be
   complicated in a 209A restraining order.
 fields:
   - Court name: courts[0]
@@ -497,22 +504,36 @@ help: |
   
   Some things to think about when you are deciding which court is better for you
   are:  
-  
+
   #### If the other parent wants to visit your child  
   The District Court is not supposed to order visitation between the other
   parent and your child as part of a 209A case. The Probate and Family Court can
   order visitation in a 209A case.  If you want to get visitation settled right
-  away, you might want to go to the Probate and Family Court to file for the
+  away, you may want to go to the Probate and Family Court to file for the
   209A restraining order. If you do not want the court to decide about
   visitation, you might want to go to the District Court for your 209A
   restraining order. 
   #### If the person who abused you is facing criminal charges  
   If the person who abused you is facing criminal charges related to the
-  domestic violence, you might want to file for your 209A restraining order at
+  domestic violence, you may want to file for your 209A restraining order at
   the District or Superior Court where that case is. That way, you may be able
   to work with the same Victim/Witness Advocate for both cases.
+  #### If you are already in Probate and Family Court with another case  
+  Sometimes, it is easier and less complicated to file your 209A Application in Probate and Family Court **if you already have a case going on there now**. If you file in District Court, they may have to get in touch with the Probate and Family Court - this back and forth may slow things down and take more time that you do not have.
   
   [Read more](https://www.masslegalhelp.org/domestic-violence/where-can-i-get-209a).
+---
+id: signature date
+question: |
+  When do you plan to file your application?
+subquestion: |
+  We automatically answer "today" for you, below. You can change the date.
+  
+  If you are keeping these forms as part of your safety plan, you can always cross out today's date and write in the date you actually file.
+fields: 
+  - Date: signature_date
+    datatype: date
+    default: ${today().format("yyyy-MM-dd")}
 ---
 comment: |
   TODO: integrate a method to display form title on intro screen dynamically
@@ -521,21 +542,17 @@ question: |
   Ask the court for a 209A Abuse Prevention Order: MassAccess Project
 subquestion: |
  
-  This website can help you complete and file court forms in 3 steps:
+  This website can help you complete and download your forms in 3 steps:
   
   Step 1. Answer questions that will fill in your forms for you.  
   Step 2. Preview the completed forms.  
-  Step 3. Email the forms to the court using this secure website and save copies
-  for yourself for later reference.  
+  Step 3. Email the forms to yourself or download them so you can send the forms to the court or keep them as part of your safety plan.
 
   Tap the {green words} in any screen for a definition or more information.
-  
-  If you have questions about this form or the court process, 
-  call the Trial Court's Emergency HelpLine:  
-  833-91-COURT (833-912-6878)  
-  Monday-Friday  
-  8:30am - 4:30pm
 
+  This form can take up to 1 and 1/2 hours
+  to complete, depending on your specific situation.
+  
   % if chat_partners_available().help:
   Live help is currently available in this interview. Click the speech bubble
   (:comment-alt:) in the navigation bar to connect to a live advocate for help.
@@ -562,3 +579,20 @@ right: |
   
   ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
   % endif    
+---
+objects:
+  - final_attachment_collection: DAFileCollection
+---
+code: |
+  final_attachment_collection.pdf = pdf_concatenate(final_attachment_bundle)
+  final_attachment_collection.info = {'name': '209A (Abuse Prevention Order/Restraining Order) Application', 
+                      'filename': '209a_restraining_order_application',
+                      'description': '',
+                      'file': {'pdf': final_attachment_collection.pdf.number},
+                      'mimetype': {'pdf': final_attachment_collection.pdf.mimetype}
+                      }
+  final_attachment_collection.finished = True
+---
+attachment: 
+  docx template file: 209A_next_steps_for_user.docx
+  variable name: next_steps

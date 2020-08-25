@@ -350,6 +350,7 @@ fields:
   - "What is ${other_parties.familiar()}'s eye color?": other_parties[0].eye_color
     choices:
       - Amber: Amber
+      - Black: Black
       - Blue: Blue
       - Brown: Brown
       - Gray: Gray
@@ -465,16 +466,21 @@ fields:
     datatype: yesno
     disable others: True    
   - Name of employer: other_parties[0].employer
+    maxlength: 71
   - Address of employer: other_parties[0].work_address
     address autocomplete: True
     required: False
   - Work phone: other_parties[0].work_phone
+    maxlength: 20
     required: False
   - Job title / position: other_parties[0].work_title
+    maxlength: 30
     required: False
   - Department: other_parties[0].work_department
+    maxlength: 71
     required: False  
   - Work hours: other_parties[0].work_hours
+    maxlength: 30
     required: False
 ---
 id: defendant car information
@@ -505,15 +511,18 @@ fields:
     required: False      
   - 'Make': other_parties[0].vehicle_make
     hint: e.g., Honda
+    maxlength: 14
     required: False
   - 'Model': other_parties[0].vehicle_model
     hint: e.g., Civic
+    maxlength: 14
     required: False
   - 'Year': other_parties[0].vehicle_year
     datatype: combobox
     code: recent_years(20)
     required: False
   - "${other_parties.familiar()}'s vehicle license plate number": other_parties[0].vehicle_license_plate
+    maxlength: 36
     required: False
 ---
 id: defendant language and parent info
@@ -527,16 +536,20 @@ fields:
   - 'What language does ${other_parties.familiar()} understand?': other_parties[0].language_other
     show if:
       variable: other_parties[0].understands_english
+      maxlength: 52
       is: False
   - "${other_parties.familiar()}'s mother's maiden name": parents[0]
+    maxlength: 35
     required: False
     help: |
       The police use this information to find the right ${other_parties[0]} in case other people have the same name.
   - "${other_parties.familiar()}'s father's name": parents[1]
+    maxlength: 34
     required: False
     help: |
       The police use this information to find the right ${other_parties[0]} in case other people have the same name.
   - ${other_parties.familiar()}'s birthplace: other_parties[0].birthplace
+    maxlength: 35
     required: False
   - Last 4 digits of ${other_parties.familiar()}'s Social Security Number : other_parties[0].social_security_number
     required: False
@@ -555,7 +568,7 @@ fields:
     datatype: yesnoradio
   - 'Does ${other_parties.familiar()} have a history of using and/or abusing drugs or alcohol?': other_parties[0].drug_alcohol_yes
     datatype: yesnoradio
-  - 'What drugs or alcohol?': other_parties[0].drug_alcohol_abuse
+  - 'Alcohol? And if drugs, what drugs?': other_parties[0].drug_alcohol_abuse
     show if:
       variable: other_parties[0].drug_alcohol_yes
       is: True
@@ -573,22 +586,29 @@ fields:
   - Street address: other_parties[0].address.address
     address autocomplete: True
   - Unit: other_parties[0].address.unit
+    maxlength: 10
     required: False
   - Floor: other_parties[0].address_floor
+    maxlength: 11
     required: False
   - City: other_parties[0].address.city
   - State: other_parties[0].address.state
     default: MA   
     code: |
       states_list()   
-  - Zip: other_parties[0].address.zip  
-  - Cell phone: other_parties[0].mobile_number
+  - Zip: other_parties[0].address.zip
+    required: False
+  - Cell phone: other_parties[0].mobile_number    
+    maxlength: 14
     required: False
   - Other phone number: other_parties[0].phone_number
+    maxlength: 14
     required: False
   - Email: other_parties[0].email
+    maxlength: 50
     required: False 
   - Name on ${other_parties.familiar()}'s mailbox : other_parties[0].name_door_mailbox
+    maxlength: 23
     required: False 
 ---
 progress: 100
@@ -953,13 +973,13 @@ code: |
   else:
     defendant_location_information_other_cutoff = defendant_location_information_other
     
-  if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
-    txtFieldsList_defendant.append(
-      {'title': 'Uploaded defendant photo',
-      'value': [photo_upload]
-      })
+  #if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
+  #  txtFieldsList_defendant.append(
+  #    {'title': 'Uploaded defendant photo',
+  #    'value': [photo_upload]
+  #    })
 
-  addAddendum_defendant = bool(txtFieldsList_defendant)
+  addAddendum_defendant = bool(txtFieldsList_defendant) or other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload
 ---
 attachment:
   - variable name: defendant_addendum

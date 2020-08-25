@@ -290,7 +290,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].address.zip 
+  - Zip: users[0].address.zip
+    required: False
   - I live at more than one address: users[0].other_addresses.there_are_any
     datatype: yesno
 ---
@@ -312,7 +313,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].other_addresses[i].zip 
+  - Zip: users[0].other_addresses[i].zip
+    required: False
 ---
 id: has another other address
 question: |
@@ -348,7 +350,7 @@ fields:
     help: |
       If you do not have a phone number or email the court can use, provide
       specific contact instructions. For example, use a friend's phone number.
-      But the friend must be someone you can trust to tell you the court is
+      But the friend must be someone you can count on to tell you the court is
       trying to reach you.
 validation code: |
   if (not showifdef('users[0].phone_number') and \
@@ -402,7 +404,7 @@ attachment:
       - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
       - "plaintiff_school_name": ${ users[0].schools.item(0).name }
       - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
-      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\r\n','; ') }
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
       - "plaintiff_signature": ${ users[0].signature }
@@ -512,34 +514,44 @@ attachment:
       - "plaintiff_workplace_phone": ${ users[0].workplaces.item(0).phone }
       - "plaintiff_school_name": ${ users[0].schools.item(0).name }
       - "plaintiff_school_address": ${ users[0].schools.item(0).school_address }
-      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\n','; ') }
+      - "persons_authorized_confidential_information": ${ persons_authorized_confidential_information_cutoff.replace('\r\n','; ') }      
       - "plaintiff_needs_interpreter": ${user_needs_interpreter}
       - "plaintiff_preferred_language": ${user_preferred_language if user_needs_interpreter else ''} 
 ---
 comment: Addenda related code. 
 code: |  
+  # txtFieldsList is an array of dictionaries that contain the title
+  # and then a *list* of items that can be reduced to text in the addendum
   txtFieldsList_confidential = list()
   if len(users[0].previous_addresses) >= 2:    
     txtFieldsList_confidential.append(
-      {'title': 'FORMER ADDRESSES',
-      'value': [users[0].previous_addresses]
+      {'title': 'FORMER ADDRESSES (CONTINUED)',
+      'value': users[0].previous_addresses[1:]
       })
   
   if len(users[0].schools) >= 2:
     txtFieldsList_confidential.append(
-      {'title': 'SCHOOL ADRESSES',
-      'value': [school.name + ': ' + school.school_address for school in users[0].schools]}
+      {'title': 'SCHOOL ADRESSES (CONTINUED)',
+      'value': [school.name + ': ' + school.school_address for school in users[0].schools[1:]]}
     )
 
   if len(users[0].workplaces) >= 2:
+    descriptions = []
+    for workplace in users[0].workplaces[1:]: # skip index 0
+      desc = workplace.name
+      if workplace.work_address:
+        desc += ': ' + workplace.work_address
+      if workplace.phone:
+        desc += ' (' + workplace.phone + ')'
+      descriptions.append(desc)
     txtFieldsList_confidential.append(
-      {'title': 'WORKPLACE ADRESSES',
-      'value': [workplace.name + ': ' + workplace.work_address + (' (' + workplace.phone +')' if len(workplace.phone) else '') for workplace in users[0].workplaces]}
+      {'title': 'WORKPLACE ADRESSES (CONTINUED)',
+      'value': descriptions}
     )
   
   if len(users[0].other_addresses) > 0:
     txtFieldsList_confidential.append(
-      {'title': 'OTHER ADDRESSES',
+      {'title': 'OTHER HOME ADDRESSES',
        'value': [address.on_one_line() for address in users[0].other_addresses]}
     )
 

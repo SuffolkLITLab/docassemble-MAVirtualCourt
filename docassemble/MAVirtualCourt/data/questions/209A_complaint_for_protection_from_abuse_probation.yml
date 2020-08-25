@@ -219,7 +219,7 @@ code: |
   actual_supervision_payer = ''
 
   # visitation_info
-  if wants_visitation_orders:
+  if len(children_of_both) and wants_visitation_orders:
     if not prohibit_visitation:
       wants_center  # Asks all the questions
 
@@ -414,10 +414,10 @@ validation code: |
 ---
 id: want orders for children
 question: |
-  Do you need the restraining order to include orders to protect your ${children.as_noun()}?
+  Orders to protect your ${children.as_noun()}
 subquestion: |
   % if who_protecting_screener == "me and children":
-  You said you need this order to protect you and your ${children.as_noun()}
+  You said you need this order to protect you and your ${children.as_noun()}.
   % endif
   You can ask the court to:
   
@@ -428,9 +428,9 @@ subquestion: |
   * Order ${other_parties.familiar()} to pay child support for the children.
   * Order anything else you need to keep your ${children.as_noun()} safe.
 
-  The next questions ask you for the name and birthdate of your ${children.as_noun()}, and then ask if you need any of these orders, one at a time.  
-  Do you need the restraining order to include any orders about ${other_parties.familiar()} and your ${children.as_noun()}?
-yesno: include_children_in_order
+  The next questions ask if you need any of these orders, one at a time.  
+
+continue button field: include_children_in_order
 help:
   label: What is "temporary custody"?
   heading: Temporary custody?
@@ -556,7 +556,7 @@ validation code: |
 ---
 id: no_contact_children
 question: |
-  Do you need the judge to order ${other_parties.familiar()} not to contact the children?
+  Do you need the judge to order ${other_parties.familiar()} not to contact your ${children.as_noun()}?
 fields:
   - I need the judge to order 'No contact.': request_no_contact
     datatype: yesnoradio
@@ -610,7 +610,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: schools_to_stay_away_from[i].address.zip 
+  - Zip: schools_to_stay_away_from[i].address.zip
+    required: False
 # ---
 # id: wants_to_request_visitation_details
 # question: |
@@ -836,6 +837,7 @@ fields:
   - Last Name: majors_needing_support[i].name.last
   - Suffix: majors_needing_support[i].name.suffix
     required: False
+    code: name_suffix()
 ---
 id: do you already have a child support order
 question: |
@@ -885,7 +887,7 @@ comment: |
   This could happen if defendant was adjudicated NOT to be the father, so not a joint child
   and thus case not disclosed on affidavit of care or custody.
 question: |
-  Paternity Cases
+  Paternity cases
 subquestion: |
   Are there any current or closed cases that involve both you and
   ${other_parties.familiar()} that have to do with paternity of a child?
@@ -946,10 +948,9 @@ attachment:
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
       # TODO: wrong field type for bool?
-      # TODO: better name? (wants_visitation_orders)
-      - "permit_visitation_yes": ${ wants_visitation_orders and not prohibit_visitation }
+      - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
       # TODO: wrong field types for visitation bools or for non-visitation ones?
-      - "prohibit_visitation_yes": ${ wants_visitation_orders and prohibit_visitation }
+      - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -998,8 +999,8 @@ attachment:
       - "reasons_no_contact__2": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes__2": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1073,8 +1074,8 @@ attachment:
       - "reasons_no_contact": ${ reasons_for_no_contact_cutoff }
       - "keep_away_from_schools_daycares": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name": ${ visitation_center_name }
       - "wants_visitation_center_yes": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1121,8 +1122,8 @@ attachment:
       - "wants_no_contact_for6_age__2": ${ wants_no_contact_for.item(5).formatted_age() }
       - "keep_away_from_schools_daycares__2": ${ keep_away_from_schools_daycares }
       - "schools_to_stay_away_from__2": ${ schools_to_stay_away_from_pdf_cutoff }
-      - "permit_visitation_yes__2": ${ wants_visitation_orders and not prohibit_visitation }
-      - "prohibit_visitation_yes__2": ${ wants_visitation_orders and prohibit_visitation }
+      - "permit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and not prohibit_visitation }
+      - "prohibit_visitation_yes__2": ${ len(children_of_both) and wants_visitation_orders and prohibit_visitation }
       - "visitation_center_name__2": ${ visitation_center_name }
       - "wants_visitation_center_yes__2": ${ wants_visitation_center_yes }
       # 'plaintiff' and 'defendant' are both ok
@@ -1158,7 +1159,7 @@ code: |
   else:
     reasons_for_no_contact_cutoff = reasons_for_no_contact if request_no_contact else ''
     
-  Limit2 = 70
+  Limit2 = 95
   sLimit2 = Limit2 - 16   
   need_school_addendum = len(schools_to_stay_away_from_pdf) > Limit2
   if need_school_addendum:    

@@ -56,9 +56,9 @@ subquestion: |
   **If you are in danger right now, call 911.**
   
   Please make sure you are in a {safe place}.
+  The application for a 209A is at least 5 pages long. It can take up to 1 and 1/2 hours to answer all the questions.
   
   An Abuse Prevention Order can help protect you from an abusive partner, a family member, or someone in your household. In Massachusetts, we often call this order a {209A restraining order}.
- 
     
   If the abusive person does not obey the order, they  “violate” it. It is a crime to violate a 209A restraining order and the police can arrest them. This order can also order the abusive person to do things like pay utility bills or child support.
   
@@ -118,10 +118,13 @@ fields:
       - Non-binary: non-binary
       - Prefer not to say: prefer-not-to-say
       - Prefer to write in a different gender: self-described
+    help: |
+      If you do not select "Male" or "Female", both checkboxes will be empty on the form. The police use your answer to help them identify the person who is abusing you and enforce your restraining order.  
   - Gender: other_parties[0].gender
     show if:
       variable: other_parties[0].gender
       is: "self-described"
+
 ---
 id: what to expect
 question: |
@@ -154,7 +157,7 @@ Terms:
 ---
 id: other cases
 question: |
-  Tell us about the other cases you have had with ${other_parties.familiar()}
+  Tell the court about the other cases you have had with ${other_parties.familiar()}
 subquestion: |  
   If you need to add more, click ${word("Add another")}.
 list collect: True
@@ -192,7 +195,7 @@ code: |
 ---
 id: had other cases
 question: |
-  Other cases with the Defendant
+  Other cases with ${other_parties.familiar()}
 subquestion: |
   Have you ever had any other cases with ${other_parties.familiar()} for divorce, annulment, separate support, or abuse prevention?
 yesno: plaintiff_and_defendant_other_case_yes
@@ -292,7 +295,7 @@ fields:
   #   - Non-binary: non-binary
   #   - Prefer not to say: prefer-not-to-say
   #  help: |
-  #    If you do not select either "Male" or "Female", both checkboxes
+  #    If you do not select "Male" or "Female", both checkboxes
   #    will be left unchecked on the form. This answer will be used to help
   #    identify ${other_parties[0]} to the police to allow them to enforce
   #    your order.
@@ -366,6 +369,8 @@ subquestion: |
   In some cases, the judge may also order ${other_parties.familiar()} to support
   **you** financially. This support would be **on top of** any child support you
   ask for.
+  
+  Keep your answer short. You can tell the judge more at the hearing.  
 fields:
   - 'I need the judge to order ${other_parties.familiar()} to pay me because of losses I have suffered.': order_defendant_pay_yes
     datatype: yesno
@@ -377,6 +382,8 @@ fields:
       is: True
   - 'This is why the judge should order ${other_parties.familiar()} to pay me:': losses_caused_by_defendant
     input type: area
+    rows: 2
+    maxlength: 113
     show if:
       variable: order_defendant_pay_yes
       is: True
@@ -389,7 +396,7 @@ code: |
   requested_relief_for_minors = requests_custody_yes or wants_other_order_yes or \
     len(wants_custody_of) > 0 or len(wants_no_contact_for) > 0 or len(schools_to_stay_away_from) > 0 \
     or (len(children_of_both) and wants_child_support_yes) or \
-    wants_visitation_orders
+    (len(children_of_both) and wants_visitation_orders)
 ---
 code: |
   # This box should always be checked if the person 
@@ -419,11 +426,14 @@ question: |
   Is there anything else you need the court to order?
 subquestion: |
   Is there anything else you need the court to order ${other_parties.familiar()} to do?
+  
+  Keep your answer short. You can tell the judge more at the hearing.
 fields:
   - 'I need the judge to order something else': order_other_relief_yes
     datatype: yesno
   - 'I also need the judge to order:': other_relief
-    input type: area 
+    input type: area
+    maxlength: 200
     show if:
       variable: order_other_relief_yes
       is: True
@@ -606,25 +616,35 @@ fields:
     datatype: yesnomaybe
 ---
 code: |
-  defendant_weapons_safe_for_pdf = comma_list(defendant_has_guns.true_values()) + (" (see Addendum)" if defendant_has_guns["gun"] else '')
+  defendant_weapons = comma_list(defendant_has_guns.true_values()) + space('defendant_weapons_description', prefix=' - ')
+  defendant_weapons_safe_for_pdf = defendant_weapons + (" (see Addendum)" if len(defendant_weapons) > 40 else '')
 ---
 code: |
   defendant_weapons_for_addendum = comma_list(defendant_has_guns.true_values()) + ( " Description of guns: " + defendant_weapons_description if defendant_has_guns["gun"] else '')
 ---
 code: |
-  need_gun_addendum = defendant_has_guns["gun"]
+  need_gun_addendum = len(defendant_weapons) > 40
 ---
+# Unused
 code: |
   need_relief_addendum =  len(other_relief) > 215 if order_other_relief_yes else False
 ---
+# Unused
 code: |
-  other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","")
+  other_relief_safe_for_pdf = "(See Addendum.) " + other_relief[:215].replace("\r","").replace("\n","")
 ---
 code: |
-  need_losses_addendum = len(losses_caused_by_defendant) > 100 if order_defendant_pay_yes else False
+  # this is a single-line field in the pdf
+  losses_caused_by_defendant = losses_caused_by_defendant.replace("\r\n","").replace("\n","")
+
 ---
+# Unused - set a rediculous limit so it's never met.
 code: |
-  losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","")
+  need_losses_addendum = len(losses_caused_by_defendant) > 2000 if order_defendant_pay_yes else False
+---
+# Unused
+code: |
+  losses_caused_by_defendant_safe_for_pdf = "(See Addendum.) " + losses_caused_by_defendant[:100].replace("\r","").replace("\n","")
 ---
 code: |
   need_cases_addendum = len(other_cases) > 1
@@ -636,7 +656,7 @@ code: |
       showifdef('case.docket_number') for case in other_cases[:1]]) + " (See Addendum)"
 ---
 code: |
-  need_page1_addendum = need_cases_addendum or need_losses_addendum or need_relief_addendum or need_gun_addendum
+  need_page1_addendum = need_cases_addendum or need_gun_addendum
 ---
 id: mandated reporters
 question: |
@@ -712,7 +732,9 @@ code: |
   is_dating_only = (related_as_couple["dating"] or related_as_couple["dated"]) \
                     and not len(related_as_couple.true_values()) > 1 \
                     and not relationship_to_defendant_married.any_true() \
-                    and not related_by_marriage and not related_by_blood
+                    and not defendant_and_plaintiff_relationship_not_married_but_are_related
+                    # and not defendant_and_plaintiff_are_parents_of_child
+                    # and not related_by_marriage and not related_by_blood
 ---
 comment: |
   Adding punctuation at the end of each list item as screen readers need punctuation at the end of each to be able to convey list to user.
@@ -732,7 +754,7 @@ fields:
     none of the above: False
     required: False
   - note: |
-      Were you ever married to ${other_parties.familiar()}?
+      ### Were you ever married to ${other_parties.familiar()}?
   - no label: relationship_to_defendant_married
     datatype: checkboxes
     choices:
@@ -1071,7 +1093,7 @@ attachment:
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
-      - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_name": ${ plaintiff_assistant_name if plaintiff_is_major_no else '' }
       - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
@@ -1095,16 +1117,16 @@ attachment:
       # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
-      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
-      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
-      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
+      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if order_defendant_pay_yes else '' }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief.replace("\r","").replace("\n","") if order_other_relief_yes else '' }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 
@@ -1145,7 +1167,7 @@ attachment:
       - "plaintiff_is_major_no": ${ plaintiff_is_major_no }
       - "defendant_and_plaintiff_relationship_married_to_each_other": ${ relationship_to_defendant_married['now'] }
       - "defendant_and_plaintiff_relationship_formerly_married_to_each_other": ${ relationship_to_defendant_married['past'] }
-      - "plaintiff_assistant_name": ${ plaintiff_assistant_name }
+      - "plaintiff_assistant_name": ${ plaintiff_assistant_name if plaintiff_is_major_no else '' }
       - "plaintiff_assistant_relationship_to_plaintiff": ${ plaintiff_assistant_relationship_to_plaintiff }
       - "defendant_and_plaintiff_relationship_not_married_but_are_related": ${ defendant_and_plaintiff_relationship_not_married_but_are_related }
       - "defendant_relationship_to_plaintiff_is": ${ defendant_relationship_to_plaintiff_is }
@@ -1169,16 +1191,16 @@ attachment:
       # - "If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here": ${ If_this_is_an_apartment_building_or_other_multiple_family_dwelling_check_here }
       - "order_defendant_remain_away_plaintiff_workplace_yes": ${ order_defendant_remain_away_plaintiff_workplace_yes }
       - "order_defendant_remain_away_plaintiff_school_yes": ${ order_defendant_remain_away_plaintiff_school_yes }
-      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes }
-      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes }
-      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school }
+      - "order_impound_plaintiff_address_residential_yes": ${ order_impound_plaintiff_address_residential_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_work_yes": ${ order_impound_plaintiff_address_work_yes if not impound_personal_information else impound_personal_information }
+      - "order_impound_plaintiff_address_school": ${ order_impound_plaintiff_address_school if not impound_personal_information else impound_personal_information }
       - "order_defendant_pay_yes": ${ order_defendant_pay_yes }
       - "order_defendant_pay_amount": ${ thousands(order_defendant_pay_amount) if  order_defendant_pay_amount else ''}
-      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if not need_losses_addendum else losses_caused_by_defendant_safe_for_pdf }
+      - "losses_caused_by_defendant": ${ losses_caused_by_defendant if order_defendant_pay_yes else '' }
       - "order_defendant_pay_temporary_support_to_plaintiff_yes": ${ order_defendant_pay_temporary_support_to_plaintiff_yes }
       - "order_page_two_relief_yes": ${ order_page_two_relief_yes }
       - "order_other_relief_yes": ${ order_other_relief_yes }
-      - "other_relief_description": ${ other_relief if order_other_relief_yes and not need_relief_addendum else other_relief_safe_for_pdf }
+      - "other_relief_description": ${ other_relief.replace("\r","").replace("\n","") if order_other_relief_yes  else '' }
       - "order_relief_ex_parte": ${ order_relief_ex_parte }
       - plaintiff_and_defendant_other_case_description: ${plaintiff_and_defendant_other_case_description if not need_cases_addendum else cases_other_safe_for_pdf}
 ---

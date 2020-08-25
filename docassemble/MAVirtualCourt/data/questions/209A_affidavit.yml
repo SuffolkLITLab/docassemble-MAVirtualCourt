@@ -223,8 +223,12 @@ question: |
     Most recent date
   % endif
 subquestion: |
-  When was the last time ${other_parties.familiar()} abused you?
-  We need to put the year on the form.
+  % if started:
+    When did this happen?
+  % else:
+    When was the last time ${other_parties.familiar()} abused you?  
+    We need to put the year on the form.
+  % endif
   
   For the date, try to remember the exact date. If you are not sure of the exact date, do not guess.
 fields:
@@ -527,7 +531,7 @@ fields:
 ---
 id: 209A Incident Summary
 question: |
-  % if started:
+  % if incidents_of_abuse[i] == incidents_of_abuse[0]:
   The most recent abuse
   % else:
   The ${ordinal(i)} incident you described
@@ -562,7 +566,7 @@ question: |
   This is your Affidavit 
 subquestion: |
   These are your words. Edit this statement in any way you need so that it says exactly what you need to tell the judge.  
-  Once you are satisfied you have told the truth, as far you know, go on to the next set of questions.
+  Once you are satisfied you have told the truth, as far as you know, go on to the next set of questions.
 # The affidavit will start with this text:
 
 # > The following is a brief summary of the events 

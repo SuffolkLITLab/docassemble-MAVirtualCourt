@@ -184,10 +184,22 @@ fields:
 ---
 id: names of opposing parties
 question: |
-  Please list everyone who is on the 'other side' of your case below:
+  % if users==plaintiffs:
+  Please list the name of each **defendant** or respondent in this
+  case below
+  % else:
+  Please list the name of each **plaintiff** or petitioner in this case below
+  % endif
 subquestion: |
   Click "${word("Add another")}" to add more.
-list collect: True
+list collect: 
+  enable: True
+  label: |
+    % if users==plaintiffs:
+    Defendant/Respondent ${i+1}    
+    % else:
+    Plaintiff/Petitioner ${i+1}
+    % endif
 fields:
   - Are they a person, or a business?: other_parties[i].person_type
     input type: radio
@@ -262,7 +274,8 @@ fields:
     code: |
       states_list()
     default: MA      
-  - Zip: users[0].address.zip 
+  - Zip: users[0].address.zip
+    required: False
 ---
 id: your contact information
 question: |
@@ -320,23 +333,23 @@ fields:
   - Last Name: x.name.last
   - Suffix: x.name.suffix
     required: False
----
-id: other users
+---    
+id: any other users
 question: |
-  Is anyone else filing this form with you?  
+  Did anyone else file with you?
 subquestion: |
-  % if len(users.elements) <= 1:
-  Answer yes if someone else is a party in the case with you.
-  For example, a spouse, partner, or co-tenant who is on your side
-  of this case. Do not include any opposing party.
+  % if len(users.elements) > 1:
+  You have already told us about ${comma_and_list(users.complete_elements())}.
   % else:
-  You already told us about ${comma_and_list(users.elements)}
+  We need to know the name of everyone who is part of this case.
   % endif
-yesno: users.there_is_another
+  
+  Is anyone else on your side of this case?
+yesno: users.there_is_another 
 ---
 id: other users names
 question: |
-  What is the name of the ${ ordinal(i) } other person filing with you?
+  What is the name of the ${ ordinal(i) } person on your side of the case?
 fields:
   - First Name: users[i].name.first
   - Middle Name: users[i].name.middle
@@ -344,6 +357,7 @@ fields:
   - Last Name: users[i].name.last
     required: False
   - Suffix: users[i].name.suffix
+    code: name_suffix()
     required: False
 ---
 id: names of children
@@ -396,24 +410,50 @@ code: |
 ---
 id: user role
 question: |
-  Are you starting a new case or responding to an existing case?
-subquestion: |
-  If you are starting the case, you are the "Plaintiff"
-  or the "petitioner."
+  Did you start this case, or are you responding to a case
+  that someone else started?
+fields: 
+  - no label: user_ask_role
+    datatype: radio
+    choices:
+      - Starting a new case: plaintiff
+      - Responding to a case: defendant
+  - note: |
+      Okay, you are the **Plaintiff** or Petitioner in this case. The other 
+      side is the **Defendant** or Respondent.
+    show if:
+      variable: user_ask_role
+      is: "plaintiff"
+  - note: |
+      Okay, you are the **Defendant** or Respondent in this case. The other 
+      side is the **Plaintiff** or Petitioner.
+    show if:
+      variable: user_ask_role
+      is: "defendant"
+help:
+  label: |
+    How do I know?
+  content: |
+    If you are the first person to file a form in the case, you 
+    started the case. You are the "Plaintiff" or the "Petitioner."
   
-  If you are responding to a case, you are the "Defendant"
-  or the "respondent."
-field: user_ask_role
-buttons:
-  - Starting: plaintiff
-  - Responding: defendant
----
+    If you are responding to a case or court papers someone else filed, you
+    are the "Defendant" or the "Respondent."
+---      
 id: other users there are any
 question: |
-  Is there any person or organization on the other side of this case?
+  % if users == plaintiffs:
+  Is there a **defendant** or respondent in this case? 
+  % else:
+  Is there a **plaintiff** or petitioner in this case?
+  % endif
 subquestion: |
   % if users == plaintiffs:
   Answer yes if there is a person or organization you are suing or taking to court.
+  % else:
+  You should be able to find out from the paperwork that told you to 
+  go to court.
+  Answer yes if someone else has sued you or is bringing you to court.
   % endif
 yesno: other_parties.there_are_any
 ---
@@ -456,6 +496,7 @@ fields:
     code: |
       states_list()   
   - Zip: x.address.zip
+    required: False
 ---
 id: persons address
 generic object: Individual
@@ -472,6 +513,7 @@ fields:
     code: |
       states_list()   
   - Zip: x.address.zip
+    required: False
 ---
 id: persons contact information
 generic object: Individual
@@ -481,6 +523,7 @@ fields:
   - Email: x.email
     datatype: email
     required: False
+
 ---
 id: persons signature
 generic object: Individual
@@ -491,60 +534,149 @@ under: |
   ${x}
 progress: 99  
 ---
-# Temporarily disable
-if: |
-  False # preferred_court == 'Housing Court'
-id: court information
+comment: |
+  We default to only searching the user's address.
+  
+  This is a reasonable default but you may want to add
+  additional addresses. E.g., the opposing party's address,
+  the address where the incident took place. Especially
+  if this is a responsive case.
+code: |
+  addresses_to_search = [users[0].address]
+---
+comment: |
+  Ensure that addresses_to_search is the correct set of courts.
+  See above--it's defined to user's address by default
+code: |  
+  all_matches = macourts.matching_courts(addresses_to_search, court_types=allowed_courts)
+---
+comment: |
+  # This is the *responding* version of the court selector
+  # It will also be the fallback if we don't know user_role
 sets:
-  - courts[0].name
+  - courts[0]
+id: choose a court
 question: |
-  What court is your case being heard in?
+  What court is your case in?
 subquestion: |
-  Your case can be heard in one of these courts: ${comma_and_list(allowed_courts)}.
+  Look at your court paperwork. Match the name listed
+  there.
+
+  % if len(all_matches) > 0:
+  Below is a map of the court(s) that serve
+  the address you gave us, ${comma_and_list(addresses_to_search)}.
   
-  % if preferred_court and found_housing_court:
-  We have tried to select the court your case is most likely to be in
-  below, based on the address you gave us.
-  
-  We think you are most likely to file in ${local_housing_court}, which
-  is at ${local_housing_court.address.on_one_line(include_unit=True)}
-  
-  ${map_of(local_housing_court.address)}
-  % else:
-  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you). 
+  ${map_of(combined_locations(all_matches))}
   % endif
 fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(allowed_courts)
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
     object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
-    default: local_housing_court
-continue button field: ask_court_question    
-#help: |
-#  % if local_housing_court:
-#  ${quote_paragraphs(local_housing_court.description)}
-#  % endif
+      lambda y: y.short_description()
+    show if: 
+      code: |
+        len(all_matches)      
+  - note: |
+      Does the list above look wrong? If your case was filed in
+      a court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts    
+help: 
+  label: |
+    How do I pick a court?
+  content: |
+    If you are responding to a case someone else filed, you may not
+    get to choose your court. Select the court that is already
+    listed on your court paperwork.
+        
 ---
-# Temporarily always use this form
 if: |
-  True # not defined('preferred_court') or preferred_court != 'Housing Court'
-id: court information
+  # This is the *initiating* version of the court selector
+  user_role == 'plaintiff'
 sets:
-  - courts[0].name
+  - courts[0]
+id: choose a court
 question: |
-  What court is your case being heard in?
+  What court do you want to file in?
 subquestion: |
-  Your case can be heard in these courts: ${comma_and_list(allowed_courts)}.
-  You can try finding your local court by using the [Courthouse Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
+  % if len(all_matches) > 0:
+  Below is a map of the court(s) that serve
+  the address you gave us, ${comma_and_list(addresses_to_search)}.
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
 fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(allowed_courts)
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
     object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
+      lambda y: y.short_description()
+    show if: 
+      code: |
+        len(all_matches)      
+  - note: |
+      Does the list above look wrong? If you think you should file in a
+      court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts    
+help: 
+  label: |
+    How do I pick a court?
+  content: |
+    For some cases, you can choose your court.
+    How do you know which court to choose?
+  
+    Massachusetts has 7 trial court departments:
     
-continue button field: ask_court_question    
+    * District Court
+    * Boston Municipal Court (BMC)
+    * Superior Court
+    * Probate and Family Court
+    * Juvenile Court
+    * Housing Court
+    * Land Court
+    
+    The District Court, BMC, and Superior Court are all courts that can hear
+    any type of case. Housing, Probate and Family and Juvenile Court are
+     **specialist** courts that hear one kind of case.
+    They have judges with special training as well as special 
+    resources available.
+    
+    Different courts can make different kinds of decisions. Not every court
+    can give you every kind of help. For example, you can only
+    ask for visitation in the Probate and Family Court. Only
+    the Housing Court or Superior Court can hear discrimination
+    cases.
+    
+    Depending on where you live, different courts may be further or closer to
+    your address. There are about 100 district courts all over the state,
+    but each county has only one or a few Superior Courts or specialty
+    courts.
+    
+    Choosing a court means thinking about what kind of help you need, as well
+    as which court you can get transportation to on the day of your hearing.
+    
+    Only you know the right choice.
+    
+    You can also view the court selection guidance at [mass.gov](https://www.mass.gov/courthouse-locator).
+
 ---
 id: docket number
 question: |
@@ -558,7 +690,7 @@ id: docket numbers
 question: |
   What is the docket number for this case?
 subquestion: |
-  If there are multiple docket numbers on this form, you can click "${word("Add another")}"
+  If there are multiple docket numbers on this form, you can tap "${word("Add another")}"
   to add more than one.
 list collect: True
 fields:
@@ -580,7 +712,7 @@ decoration: file-signature
 question: |
   Sign your court forms
 subquestion: |
-  Your forms are almost ready. You will need to sign them first.
+  Your forms are almost ready. You need to sign them first.
   
   Use the mouse or touchpad on your computer or
   sign with your finger on your phone. 
@@ -658,7 +790,7 @@ fields:
 help: |
   Many smartphones will automatically find the link on this screen when you use
   the camera app. The link
-  may "float" up from the screen into a small icon you can click.
+  may "float" up from the screen into a small icon you can tap.
   If your phone does not do this, use the text option instead.
 continue button field: saw_signature_qrcode
 ---
@@ -673,7 +805,7 @@ field: signature_phone_followup
 template: interview_link
 content: |
   Hi, ${ users[0] }  sent you a form from MassAccess. To sign the form,
-  click the link below:  
+  tap the link below:  
   ${interview_url()}
 ---
 code: |
@@ -729,14 +861,14 @@ code: |
 ---
 id: basic questions intro screen
 question: |
-  Mass Access Project
+  ${interview_short_title}: Mass Access Project
 subquestion: |
  
-  This website can help you complete and file court forms in 3 steps:
+  The MassAccess Project can help you complete and file court forms in 3 steps:
   
-  Step 1. Answer questions that will fill in your forms for you.  
-  Step 2. Preview the completed forms.  
-  Step 3. Email the forms to the court using this secure website and save copies
+  Step 1. Answer questions that will fill in your form for you.  
+  Step 2. Preview the completed form.  
+  Step 3. Email the form to the court using this secure website and save copies
   for yourself for later reference.  
 
   Tap the {green words} in any screen for a definition or more information.
@@ -753,7 +885,7 @@ subquestion: |
   % endif
 
 fields:
-  - To continue, please read the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+  - To continue, you must accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
     datatype: checkboxes
     none of the above: False    
     minlength: 1
@@ -1048,3 +1180,31 @@ code: |
   else:
     set_parts(subtitle=str(users))
   update_answer_title = True
+---
+comment: |
+  This placeholder is used in the intro screen.
+  
+  In general, the title should follow the format
+  "Ask the court for..." or "Respond to a ..." with a short, plain language
+  description of what using the interview will accomplish.
+code: |
+  interview_short_title = "[PLACEHOLDER: Ask the court for a ...]"
+---
+comment: |
+  This is an ALTERNATIVE way to define the interview subtitle as a
+  transition until we update all existing interviews.
+code: |
+  # Get all values in the interview_metadata dictionary.
+  # use the `next` function to get the first entry.
+  # If there is no entry, then default to an empty dictionary.
+  # Then grab the title of the first value. It will be None if there is no
+  # title.
+  metadata_title = next(iter(interview_metadata.elements.values()),{}).get('title')
+  
+  # Check if the title was an actual text entry, or None
+  if metadata_title:
+    interview_short_title = "Ask the court for a " + metadata_title
+  else:
+    # This branch will happen for Docx where the interview_metadata dictionary
+    # was never defined.
+    interview_short_title = "[PLACEHOLDER: Ask the court for a ...]"
