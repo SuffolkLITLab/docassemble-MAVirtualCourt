@@ -10,19 +10,6 @@ const expect = chai.expect;
 
 const TEST_URL = `${interviewConstants.INTERVIEW_URL}`;
 
-describe('Making sure we can log into Docassemble playground', () => {
-  it('login and get to the interviews page', async () => {
-    let {page, browser} = await putils.login();
-    expect(page).to.exist;
-    expect(browser).to.exist;
-    expect(page.url()).to.include('/interviews');
-    const bodyText = await page.$eval('body', elem => elem.textContent);
-    expect(bodyText).to.have.string('You have signed in successfully.');
-    await browser.close();
-  });
-});
-
-
 describe('209A url', () => {
   let page, browser;
   before(async () => {
