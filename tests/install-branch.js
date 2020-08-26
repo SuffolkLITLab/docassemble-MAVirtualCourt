@@ -6,6 +6,7 @@ const setup = async () => {
   try {
     await puppeteerutils.createProject(page);
     await puppeteerutils.installRepo(page);
+    await waitForPage(page);
   }
   catch (e) {
     console.log(e);
@@ -25,6 +26,24 @@ const takedown = async () => {
   }
   finally {
     browser.close();
+  }
+};
+
+const waitForPage = async (page) => {
+  const tries = 20;
+
+  await page.goto(interviewConstants.INTERVIEW_URL, {waitUntil: 'domcontentloaded'});
+
+  for (i=0; i<tries; i++) {    
+    const element = await page.$('#daMainQuestion');
+    if (element) {
+      console.log("found question on page");
+      break;
+    } else {
+      console.log("question not found");
+      await page.waitFor(10 * 1000); // 10 seconds
+      await page.reload();
+    }
   }
 };
 
