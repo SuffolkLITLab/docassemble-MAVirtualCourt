@@ -12,6 +12,9 @@ include:
  - plaintiff-confidential.yml 
  - escape.yml
 ---
+metadata:
+  back button label: Undo
+---
 modules:
   - .phone
 ---
@@ -23,8 +26,8 @@ sections:
   - section_intro: Introduction
   - section_basic: Basic information
   - section_relationship: Your relationship
-  - section_affidavit: Your statement
-  - section_children: Children  
+  - section_children: Children
+  - section_affidavit: Your affidavit
   - section_children_relief: Protection for Children
   - section_relief: What you need
   # - section_custody: Custody
@@ -36,7 +39,7 @@ sections:
   - section_cases_with_defendant: Other cases with Defendant
   - section_court: Court selection
   - section_signature: Signing
-  - section_filing: Download
+  - download_screen: Download
 ---
 scan for variables: False
 mandatory: True
@@ -84,6 +87,7 @@ code: |
   ########################## Page 1
   nav.set_section('section_relationship')
   user_saw_relationship
+  nav.set_section('section_children')
   defendant_and_plaintiff_are_parents_of_child
   plaintiff_has_children_parent_of
   children.gather()
@@ -103,7 +107,6 @@ code: |
   complaint_209A_Affidavit # Main affidavit
   # From page 1
   incident_date # Filled in with code, I think
-  nav.set_section('section_children')
   if plaintiff_has_minor_children:
     include_children_in_order
     A_complaint_for_protection_from_abuse_probation_copy0005 # Page 2
@@ -254,8 +257,6 @@ code: |
   after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
   court_closed_today = (today().dow > 5)
 ---
-comment: |
-  In 209A complaints plaintiff does not serve defendant, police do at the court's bidding. Also plaintiff probably asks for ex parte hearing, again they would not serve defendant. Even if plaintiff does not ask for ex parte hearing, I think the court clerk will explain to them how to serve defendant. 
 reconsider:
   - final_attachment_bundle
 id: download
@@ -549,7 +550,7 @@ subquestion: |
   Step 3. Email the forms to yourself or download them so you can send the forms to the court or keep them as part of your safety plan.
 
   Tap the {green words} in any screen for a definition or more information.
-  
+
   This form can take up to 1 and 1/2 hours
   to complete, depending on your specific situation.
   

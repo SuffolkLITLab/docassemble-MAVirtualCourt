@@ -681,6 +681,9 @@ fields:
     - Allow ${other_parties.familiar()} to have visitation.  : False
     - Order ${other_parties.familiar()} to have no visitation with my children.: True
 ---
+comment: |
+  TODO: Refactor to remove horizontal rules--this style doesn't match rest of interview
+  and won't be easily styled.
 id: safe_visits
 # Are we sure we want these all on the same page?
 # Note: have not yet looked into checkboxes with
