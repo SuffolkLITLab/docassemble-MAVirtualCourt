@@ -131,51 +131,39 @@ review:
 id: section_children
 event: section_children
 need: 
-  - children.table_without_addresses
-  - children.table_with_addresses
+  - children.table
+  #- children.table_with_addresses
   - children_cares_for.table
 question: |
   Review information about your children
 subquestion: |
 review:
-  - Edit children with ${other_parties.familiar()}: defendant_and_plaintiff_are_parents_of_child
+  - Edit: defendant_and_plaintiff_are_parents_of_child
     button: |
-      % if defendant_and_plaintiff_are_parents_of_child:
-      You do have children with ${other_parties.familiar()}.
-      % else:
-      You do not have children with ${other_parties.familiar()}.
-      % endif
-  - Edit children you are the parent of: plaintiff_has_children_parent_of
+      Children with ${other_parties.familiar() }: ${ word(yesno(defendant_and_plaintiff_are_parents_of_child)) }
+  - Edit: plaintiff_has_children_parent_of
     button: |
-      % if len(children):
-      ${children.table_with_addresses}
-      % else:
-      You said you do not have any children you are the parent of.
-      % endif
-
+      Children you are the parent of: ${ word(yesno(plaintiff_has_children_parent_of)) }
+      
+      % if plaintiff_has_children_parent_of: 
+      
+      ${children.table}
+      
       ${children.add_action()}
-    show if: |
-      plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases
-  - Edit children you are the parent of: plaintiff_has_children_parent_of
-    button: |
-      % if len(children):
-      ${children.table_without_addresses}
-      % else:
-      You said you do not have any children you take care of but are not the parent of.
       % endif
-
-      ${children.add_action()}
-    show if: |
-      not defined('have_had_custody_cases')
-  - Edit children you take care of: plaintiff_has_children_cares_for
+  - Edit: plaintiff_has_children_cares_for
     button: |
-      % if len(children_cares_for):
+      Children you take care of: ${ word(yesno(plaintiff_has_children_cares_for)) }
+      
+      % if plaintiff_has_children_cares_for:
       ${children_cares_for.table}
+      
+      ${ children_cares_for.add_action() }
       % endif
 
-      ${ children_cares_for.add_action() }
+      
 ---
-table: children.table_with_addresses
+table: children.table
 rows: children
 columns:
   - Name: |
@@ -184,10 +172,10 @@ columns:
       row_item.birthdate.format()
   - Child of ${other_parties.familiar()}: |
       yesno(row_item.defendant_is_parent).title()
-  - Address: |
-      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
-  - Past addresses: |
-      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table')) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
+#  - Address: |
+#      (row_item.address.on_one_line() + ' ' + action_button_html(url_action('children[' + str(row_index) + '].address.address'))) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
+#  - Past addresses: |
+#      str(row_item.previous_addresses) + ' ' + action_button_html(url_action('children[' + str(row_index) + '].previous_addresses.review_table')) if plaintiff_has_minor_children and defendant_and_plaintiff_are_parents_of_child and len(children_of_both) and have_had_custody_cases else 'N/A'
 edit:
   - name.first
   - birthdate
