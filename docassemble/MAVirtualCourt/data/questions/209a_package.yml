@@ -256,6 +256,7 @@ initial: True
 code: |
   after_hours = ((current_datetime() > current_datetime().replace(hour=16,minute=30)) or (current_datetime() < current_datetime().replace(hour=8,minute=30)) )
   court_closed_today = (today().dow > 5)
+---
 reconsider:
   - final_attachment_bundle
 id: download
