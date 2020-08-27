@@ -11,7 +11,7 @@ const BASE_INTERVIEW_URL = `${BASE_URL}/interview?reset=1&i=docassemble.playgrou
 const initPuppeteer = async () => {
   const browser = await puppeteer.launch({headless: !process.env.DEBUG});
   const page = await browser.newPage();
-  page.setDefaultTimeout(120 * 1000)
+  page.setDefaultTimeout(120 * 1000);
 
   return {'page': page, 'browser': browser};
 }
