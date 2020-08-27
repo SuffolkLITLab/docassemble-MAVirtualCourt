@@ -7,47 +7,6 @@ const scope = require('./scope');
 const INTERVIEW_URL = interviewConstants.INTERVIEW_URL;
 setDefaultTimeout(120 * 1000);
 
-// -- From tutorial
-
-Given('a variable set to {int}', function(number) {
-  this.setTo(number);
-});
-
-When('I increment the variable by {int}', function(number) {
-  this.incrementBy(number);
-});
-
-Then('the variable should contain {int}', function(number) {
-  expect(this.variable).to.eql(number);
-});
-
-// chercher puppeteer tutorial
-Given('The browser is open', async function(){
-    this.browser = await puppeteer.launch({headless:false})
-    this.page = await this.browser.newPage();
-})
-
-When('open the Google page', async function () {
-    await this.page.goto("https://google.com")
-});
-
-When('search for chercher tech', async function () {
-    await this.page.waitForSelector("[name='q']")
-    await this.page.type("[name='q']", "chercher tech")
-    await this.page.click("[name='btnK']")
-});
-
-Then('Count the results', async function () {
-    var linkTexts = await this.page.$$eval(".plan-features a",
-                elements=> elements.map(item=>item.textContent))
-    // prints a array of text
-    console.log(linkTexts.length)
-
-    //uncomment close statement if you want
-    //await this.browser.close()
-});
-
-
 // -- Puppeteer specific steps from hello_world.feature
 
 Given(/I start the interview/, async () => {
