@@ -74,6 +74,16 @@ When('I click the defined text link {string}', async (phrase) => {
   }
 });
 
+Then('the question id should be {string}', async (phrase) => {
+  const element = await scope.page.waitFor('body.' + phrase);
+  expect(element).to.exist;
+});
+
+Then('an element should have the id {string}', async (phrase) => {
+  const element = await scope.page.waitFor('#' + phrase);
+  expect(element).to.exist;
+});
+
 Then('I should see the phrase {string}', async (phrase) => {
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
