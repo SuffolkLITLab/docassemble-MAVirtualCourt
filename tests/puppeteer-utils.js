@@ -12,8 +12,7 @@ const initPuppeteer = async () => {
   const browser = await puppeteer.launch({headless: !process.env.DEBUG});
   const page = await browser.newPage();
   page.setDefaultTimeout(120 * 1000);
-  await page.screenshot({ path: `error-foo.jpg`, type: 'jpeg' });
-  browser.close()
+
   return {'page': page, 'browser': browser};
 }
 
