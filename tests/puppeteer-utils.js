@@ -19,7 +19,7 @@ const initPuppeteer = async () => {
 const login = async () => {
   const {page, browser} = await initPuppeteer();
   // Login
-  await page.goto(`${BASE_URL}/user/sign-in?`);
+  await page.goto(`${BASE_URL}/user/sign-in?`, {waitUntil: 'domcontentloaded'});
   const emailElement = await page.$('#email');
   await emailElement.type(process.env.PLAYGROUND_EMAIL);
   const passwordElement = await page.$('#password');
@@ -92,12 +92,18 @@ const urlParams = (params) => urlString = Object.keys(params).map(
 ).join('&')
 
 const installRepo = async (page) => {
-  await page.goto(installUrl());
-  const pullButton = await page.$('button[name=pull]');
-  await Promise.all([
-    pullButton.click(),
-    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
-  ]);
+  console.log( 'BRANCH_NAME:', BRANCH_NAME, '; pull url:', installUrl() );
+  await page.goto(installUrl(), {waitUntil: 'domcontentloaded'});
+
+  // Wait for the options to appear after the ajax call
+  let optSelector = '[value="' + BRANCH_NAME + '"]';
+  await page.waitFor( optSelector );  // This is the key
+  let html = await page.$eval( optSelector, (elem) => { return elem.innerHTML });
+  console.log('<option> text:', html);  // Sanity check
+
+  // Tap 'Pull' and wait till the page has finished loading
+  await page.click('button[name=pull]');
+  await page.waitForNavigation({waitUntil: 'domcontentloaded'})
 }
 
 module.exports = {

@@ -6,7 +6,7 @@ const setup = async () => {
   try {
     await puppeteerutils.createProject(page);
     await puppeteerutils.installRepo(page);
-    await waitForPage(page);
+    await waitForPage(page);  // Ensure server has really restarted
   }
   catch (e) {
     console.log(e);
@@ -29,10 +29,11 @@ const takedown = async () => {
   }
 };
 
+// Way we've found to be sure the server finishes restarting
 const waitForPage = async (page) => {
   const tries = 20;
 
-  await page.goto(interviewConstants.INTERVIEW_URL);
+  await page.goto(interviewConstants.INTERVIEW_URL, {waitUntil: 'domcontentloaded'});
 
   for (i=0; i<tries; i++) {    
     const element = await page.$('#daMainQuestion');
@@ -40,8 +41,8 @@ const waitForPage = async (page) => {
       console.log("found question on page");
       break;
     } else {
-      console.log("question not found");
-      await page.waitFor(10 * 1000); // 10 seconds
+      console.log("question not found:", interviewConstants.INTERVIEW_URL);
+      await page.waitFor(5 * 1000); // 5 seconds
       await page.reload();
     }
   }
