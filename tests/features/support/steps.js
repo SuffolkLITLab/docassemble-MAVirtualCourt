@@ -81,6 +81,7 @@ Then('I should see the phrase {string}', async (phrase) => {
 });
 
 After(async (scenario) => {
+  await scope.page.screenshot({ path: `error-${name}.jpg`, type: 'jpeg' });
   if (scenario.result.status === "failed") {
     const name = scenario.pickle.name.replace(/[^A-Za-z0-9]/gi, '');
     await scope.page.screenshot({ path: `error-${name}.jpg`, type: 'jpeg' });
