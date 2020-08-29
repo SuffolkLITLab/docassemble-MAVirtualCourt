@@ -111,7 +111,8 @@ Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
   
   let linkPage = await scope.browser.newPage();
   let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
-  expect( response.ok() ).to.equal( true );  
+  expect( response.ok() ).to.be.true;
+  linkPage.close()
 });
 
 Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (linkText, which_window) => {
@@ -119,7 +120,6 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
 
   let target_obj = await link.getProperty('target');
   let target = await await target_obj.jsonValue();
-  console.log('target:', target)
   
   let should_open_a_new_window = which_window === 'a new window';
   let opens_a_new_window = target === '_blank';
