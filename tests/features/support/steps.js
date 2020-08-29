@@ -7,6 +7,8 @@ const scope = require('./scope');
 const INTERVIEW_URL = interviewConstants.INTERVIEW_URL;
 setDefaultTimeout(120 * 1000);
 
+//regex thoughts: https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
+
 // -- Puppeteer specific steps from hello_world.feature
 
 Given(/I start the interview/, async () => {
@@ -87,6 +89,45 @@ Then('an element should have the id {string}', async (phrase) => {
 Then('I should see the phrase {string}', async (phrase) => {
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
+});
+
+Then(/I should see link "([^"]+)"/, async (linkText) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  expect(link).to.exist;
+});
+
+Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  
+  let url_obj = await link.getProperty('href');
+  let actual_url = await url_obj.jsonValue();
+  expect( actual_url ).to.equal( expected_url );
+});
+
+Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  let url_obj = await link.getProperty('href');
+  let actual_url = await url_obj.jsonValue();
+  
+  let linkPage = await scope.browser.newPage();
+  let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
+  expect( response.ok() ).to.equal( true );  
+});
+
+Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (linkText, which_window) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+
+  let target_obj = await link.getProperty('target');
+  let target = await await target_obj.jsonValue();
+  console.log('target:', target)
+  
+  let should_open_a_new_window = which_window === 'a new window';
+  let opens_a_new_window = target === '_blank';
+  let hasCorrectWindowTarget =
+    ( should_open_a_new_window && opens_a_new_window )
+    || ( !should_open_a_new_window && !opens_a_new_window );
+
+  expect( hasCorrectWindowTarget ).to.be.true;
 });
 
 After(async (scenario) => {
