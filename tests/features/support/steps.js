@@ -76,13 +76,13 @@ When('I click the defined text link {string}', async (phrase) => {
   }
 });
 
-Then('the question id should be {string}', async (phrase) => {
-  const element = await scope.page.waitFor('body.' + phrase);
+Then('the question id should be {string}', async (question_class) => {
+  const element = await scope.page.waitFor('body.' + question_class);
   expect(element).to.exist;
 });
 
-Then('an element should have the id {string}', async (phrase) => {
-  const element = await scope.page.waitFor('#' + phrase);
+Then('an element should have the id {string}', async (id) => {
+  const element = await scope.page.waitFor('#' + id);
   expect(element).to.exist;
 });
 
@@ -91,7 +91,7 @@ Then('I should see the phrase {string}', async (phrase) => {
   expect(bodyText).to.contain(phrase);
 });
 
-Then(/I should see link "([^"]+)"/, async (linkText) => {
+Then('I should see link {string}', async (linkText) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   expect(link).to.exist;
 });

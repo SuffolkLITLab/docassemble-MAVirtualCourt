@@ -3,12 +3,12 @@ Feature: Intro screen behaves as expected
 Interview loads has already been tested.
 
 Tests:
-1. ID
-1. Custom title text
-1. Green words/help text
-1. Terms of use link set to open new window to the right address
-1. Terms of use link address works
-1. Checkbox controls continuation
+- [x] ID
+- [x] Terms of use link set to open new window to the right address
+- [x] Terms of use link address works
+- [ ] Custom title text
+- [ ] Green words/help text
+- [ ] Checkbox controls continuation
 
 Scenario: Intro page should open
   Given I start the interview
