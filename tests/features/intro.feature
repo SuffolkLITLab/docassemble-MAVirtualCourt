@@ -10,9 +10,9 @@ Tests:
 - [x] Terms of use link address works
 - [x] Accept terms starts as unchecked
 - [x] Can't continue if don't check checkbox
-- [ ] Validation message if try to continue without checking checkbox
-- [ ] Can continue if check checkbox
-- [ ] Green words/help text
+- [x] Validation message if try to continue without checking checkbox
+- [x] Can continue if check checkbox
+- [ ] Green words/help text exists (not sure needed)
 
 Alternative code tests (How to go about this?):
 - [ ] If custom title text is not defined, placeholder text should appear
@@ -41,3 +41,8 @@ Scenario: Can't continue without accepting terms
   Then I do nothing
   Then I can't continue
   Then I will be told an answer is invalid
+
+Scenario: Can continue after accepting terms
+  Given I start the interview
+  Then I check the "I accept" checkbox
+  Then I can continue

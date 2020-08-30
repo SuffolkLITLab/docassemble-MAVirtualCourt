@@ -189,6 +189,8 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
   * "checkbox": label that contains checkbox-like behavior.
   */
 
+  // let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+
   // needs await scope.page.waitForSelector('#daMainQuestion'); from above
   let is_checked = await scope.page.evaluate(function(desired_label) {
 
@@ -218,6 +220,20 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
 //   }
 // );
 
+Then(/I check the "([^"]+)" checkbox/, async (label_text) => {
+  // let [checkbox] = await scope.page.$x(`//label[contains(@aria-label, "${label_text}")]`);
+  // await scope.page.click( checkbox );
+  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+  await checkbox.click();
+});
+
+// TODO: Develop more specific choice selection
+// Then(/check the "([^"]+)" checkbox in the "([^"]+)" options/,
+//   async (choice_label, field_label, expected_status) => {
+//     let note = 'This is more annoying to implement even though it would let you get more specific.'
+//   }
+// );
+
 Then("I can't continue", async () => {
   let can_continue = await scope.canContinue(scope);
   expect( can_continue ).to.be.false;
@@ -226,6 +242,11 @@ Then("I can't continue", async () => {
 Then('I will be told an answer is invalid', async () => {
   let error_message_elem = await scope.page.$('.da-has-error');
   expect( error_message_elem ).to.exist;
+});
+
+Then("I can continue", async () => {
+  let can_continue = await scope.canContinue(scope);
+  expect( can_continue ).to.be.true;
 });
 
 After(async (scenario) => {
