@@ -1,17 +1,21 @@
 Feature: Intro screen behaves as expected
 
 Interview loads has already been tested.
+Being extra thorough thinking about what I know we'll need in the future.
 
 Tests:
 - [x] ID
 - [x] Custom title text should appear
 - [x] Terms of use link set to open new window to the right address
 - [x] Terms of use link address works
+- [x] Accept terms starts as unchecked
+- [ ] Can't continue if don't check checkbox
+- [ ] Validation message if try to continue without checking checkbox
+- [ ] Can continue if check checkbox
 - [ ] Green words/help text
-- [ ] Checkbox controls continuation
 
 Alternative code tests (How to go about this?):
-- [ ] Custom title text must be customized
+- [ ] If custom title text is not defined, placeholder text should appear
 
 Scenario: Intro page should open
   Given I start the interview
@@ -27,3 +31,7 @@ Scenario: Terms link should open correctly
   Then the link "terms of use" should lead to "https://massaccess.suffolklitlab.org/privacy/"
   Then the link "terms of use" should open a working page
   Then the link "terms of use" should open in a new window
+
+Scenario: Accept terms starts as unchecked
+  Given I start the interview
+  Then the checkbox with "I accept" is unchecked
