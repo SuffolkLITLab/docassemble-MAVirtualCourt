@@ -9,7 +9,7 @@ Tests:
 - [x] Terms of use link set to open new window to the right address
 - [x] Terms of use link address works
 - [x] Accept terms starts as unchecked
-- [ ] Can't continue if don't check checkbox
+- [x] Can't continue if don't check checkbox
 - [ ] Validation message if try to continue without checking checkbox
 - [ ] Can continue if check checkbox
 - [ ] Green words/help text
@@ -35,3 +35,9 @@ Scenario: Terms link should open correctly
 Scenario: Accept terms starts as unchecked
   Given I start the interview
   Then the checkbox with "I accept" is unchecked
+
+Scenario: Can't continue without accepting terms
+  Given I start the interview
+  Then I do nothing
+  Then I can't continue
+  Then I will be told an answer is invalid

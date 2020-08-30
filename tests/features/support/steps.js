@@ -14,6 +14,16 @@ const scope = require('./scope');
     there is placeholder text for the title of the form and if it's not
     defined, placeholder text should appear (though that behavior may
     bear discussion).
+1. Add links to resources on:
+   1. Clicks that trigger navigation need Promise.all
+   1. Listening for `targetchanged`
+   1. Listening for responses
+   1. 
+
+// Should post example of detecting page load or not on submit when there
+// is a DOM change that you can detect. I suspect no request is
+// being sent, but I could be wrong. Haven't yet figured out how
+// to detect that.
 */
 
 
@@ -21,11 +31,18 @@ const INTERVIEW_URL = interviewConstants.INTERVIEW_URL;
 // const INTERVIEW_URL = 'https://apps-dev.suffolklitlab.org/interview?reset=1&i=docassemble.playground12MAVCBasicQuestionsTests%3Abasic_questions_tests.yml#page1'
 setDefaultTimeout(120 * 1000);
 
+let device_touch_map = {
+  mobile: 'tap',
+  pc: 'click',
+};
+
 //regex thoughts: https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
 
 // -- Puppeteer specific steps from hello_world.feature
 
 Given(/I start the interview ?(.*)/, async (optional_device) => {
+  scope.device_map = device_touch_map;
+
   // If there is no browser open, start a new one
   if (!scope.browser) {
     scope.browser = await scope.driver.launch({ headless: !process.env.DEBUG });
@@ -49,6 +66,9 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
 
   // Then go to the given page
   await scope.page.goto(INTERVIEW_URL, {waitUntil: 'domcontentloaded'});
+  // This shouldn't be needed, but I think it may help with the ajax
+  // requests. Might not solve all race conditions.
+  await scope.page.waitForSelector('#daMainQuestion');
 });
 
 // Need to see if it's possible to remove the need for this on most occasions
@@ -56,11 +76,10 @@ When(/I wait (\d+) seconds?/, async (seconds) => {
   await scope.page.waitFor(seconds * 1000);
 });
 
-
-async function clickOrTap() {
-  if ( scope.emulating = 'mobile' ) { return 'click'; }
-  else { return 'tap'; }
-};
+Then("I do nothing", async () => {
+  /* Here to make writing tests more comfortable. */
+  expect( true ).to.be.true;
+});
 
 async function findElemByText(elem, text) {
   await scope.page.waitForNavigation({waitUntil: 'domcontentloaded'});
@@ -89,19 +108,20 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
   ]);
   } else {
     if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg' });
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
     }
     throw `No ${elemType} with text ${phrase} exists.`;
   }
 });
 
 When('I click the defined text link {string}', async (phrase) => {
+  // Should we wait for navigation here?
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
     await link.click();  // TODO: change to `clickOrTap`
   } else {
     if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg' });
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
     }
     throw `No link with text ${phrase} exists.`;
   }
@@ -168,13 +188,13 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
   * 
   * "checkbox": label that contains checkbox-like behavior.
   */
-  await scope.page.waitForSelector('#daMainQuestion');
 
+  // needs await scope.page.waitForSelector('#daMainQuestion'); from above
   let is_checked = await scope.page.evaluate(function(desired_label) {
 
-    let all_labels = Array.from( document.querySelectorAll('label[role="checkbox"]') );
+    let checkbox_labels = Array.from( document.querySelectorAll('label[role="checkbox"]') );
     let matching_labels = []
-    for ( let label of all_labels ) {
+    for ( let label of checkbox_labels ) {
 
       if ( label.hasAttribute( 'aria-label' ) ) {
         let label_text = label.getAttribute( 'aria-label' );
@@ -182,8 +202,7 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
           matching_labels.push( label );
         }
       }
-
-    }
+    }  // Ends for all checkbox labels
 
     return matching_labels[0].getAttribute('aria-checked') == 'true';
   }, label);
@@ -199,10 +218,20 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
 //   }
 // );
 
+Then("I can't continue", async () => {
+  let can_continue = await scope.canContinue(scope);
+  expect( can_continue ).to.be.false;
+});
+
+Then('I will be told an answer is invalid', async () => {
+  let error_message_elem = await scope.page.$('.da-has-error');
+  expect( error_message_elem ).to.exist;
+});
+
 After(async (scenario) => {
   if (scenario.result.status === "failed") {
     const name = scenario.pickle.name.replace(/[^A-Za-z0-9]/gi, '');
-    await scope.page.screenshot({ path: `error-${name}.jpg`, type: 'jpeg' });
+    await scope.page.screenshot({ path: `error-${name}.jpg`, type: 'jpeg', fullPage: true });
   }
   // If there is a browser window open, then close it
   if (scope.page) {
