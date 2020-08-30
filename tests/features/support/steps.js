@@ -25,14 +25,26 @@ setDefaultTimeout(120 * 1000);
 
 // -- Puppeteer specific steps from hello_world.feature
 
-Given(/I start the interview/, async () => {
+Given(/I start the interview ?(.*)/, async (optional_device) => {
   // If there is no browser open, start a new one
   if (!scope.browser) {
     scope.browser = await scope.driver.launch({ headless: !process.env.DEBUG });
   }
+
   if (!scope.page) {
     scope.page = await scope.browser.newPage();
     scope.page.setDefaultTimeout(120 * 1000)
+  }
+
+  // I know this issue is coming with devices (headless) and we
+  // need to take care of clicking vs. tapping.
+  // Let developer pick mobile device if they want to
+  if (optional_device && optional_device.includes( 'mobile' )) {
+    await scope.page.setUserAgent("Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36");
+    scope.emulating = 'mobile'
+  } else {
+    await scope.page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36");
+    scope.emulating = 'pc'
   }
 
   // Then go to the given page
@@ -44,6 +56,11 @@ When(/I wait (\d+) seconds?/, async (seconds) => {
   await scope.page.waitFor(seconds * 1000);
 });
 
+
+async function clickOrTap() {
+  if ( scope.emulating = 'mobile' ) { return 'click'; }
+  else { return 'tap'; }
+};
 
 async function findElemByText(elem, text) {
   await scope.page.waitForNavigation({waitUntil: 'domcontentloaded'});
@@ -67,7 +84,7 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
 
   if (elem) {
     await Promise.all([
-      elem.click(),
+      elem.click(),  // TODO: change to `clickOrTap`
       scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
   ]);
   } else {
@@ -81,7 +98,7 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
 When('I click the defined text link {string}', async (phrase) => {
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
-    await link.click();
+    await link.click();  // TODO: change to `clickOrTap`
   } else {
     if (process.env.DEBUG) {
       await scope.page.screenshot({ path: './error.jpg', type: 'jpeg' });
@@ -168,11 +185,11 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
 
     }
 
-    return matching_labels[0].getAttribute('aria-checked');
+    return matching_labels[0].getAttribute('aria-checked') == 'true';
   }, label);
 
   let what_it_should_be = expected_status === 'checked';
-  expect( is_checked ).to.be( what_it_should_be );
+  expect( is_checked ).to.equal( what_it_should_be );
 });
 
 // TODO: Develop more specific choice selection
