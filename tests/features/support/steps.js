@@ -15,7 +15,14 @@ const scope = require('./scope');
     defined, placeholder text should appear (though that behavior may
     bear discussion).
 1. Add links to resources on:
-   1. Clicks that trigger navigation need Promise.all
+   1. Clicks that trigger navigation need Promise.all: https://stackoverflow.com/a/60789449/14144258
+       > I ran into a scenario, where there was the classic POST-303-GET
+       and an input[type=submit] was involved. It seems that in this case, 
+       the click of the button won't resolve until after the associated form's 
+       submission and redirection, so the solution was to remove the waitForNavigation, 
+       because it was executed after the redirection and thus was timing out.
+
+       I think Promise.all is what's taking care of these situations.
    1. Listening for `targetchanged`
    1. Listening for responses
    1. 
