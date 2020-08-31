@@ -63,6 +63,7 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
   // I know this issue is coming with devices (headless) and we
   // need to take care of clicking vs. tapping.
   // Let developer pick mobile device if they want to
+  // TODO: Add 'phone' and 'computer' and 'desktop'?
   if (optional_device && optional_device.includes( 'mobile' )) {
     await scope.page.setUserAgent("Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36");
     scope.emulating = 'mobile'
@@ -134,6 +135,12 @@ When('I click the defined text link {string}', async (phrase) => {
   }
 });
 
+Then('I should see the link {string}', async (linkText) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  expect(link).to.exist;
+});
+
+// TODO: Research how da handles invalid symbols
 Then('the question id should be {string}', async (question_class) => {
   /* Looks for the question id as it's written in the .yml.
   *  
@@ -153,11 +160,6 @@ Then('an element should have the id {string}', async (id) => {
 Then('I should see the phrase {string}', async (phrase) => {
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
-});
-
-Then('I should see the link {string}', async (linkText) => {
-  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
-  expect(link).to.exist;
 });
 
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {

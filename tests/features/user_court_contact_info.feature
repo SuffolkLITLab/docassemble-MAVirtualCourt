@@ -3,9 +3,9 @@ Feature: User contact info for the court
 Tests:
 - [x] ID
 - [x] Can't continue without input
-- [ ] Get invalidation message without input
-- [ ] Green help text exists
-- [ ] Help button exists
+- [x] Get invalidation message without input
+- [ ] Green help text exists (stretch)
+- [ ] Help button exists (stretch)
 
 Scenario: User contact info page should exist
   Given I start the interview
