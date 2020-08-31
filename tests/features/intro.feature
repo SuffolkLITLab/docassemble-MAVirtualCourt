@@ -19,7 +19,7 @@ Alternative code tests (How to go about this?):
 
 Scenario: Intro page should open
   Given I start the interview
-  Then the question id should be "question-basic-questions-intro-screen"
+  Then the question id should be "basic questions intro screen"
 
 Scenario: Text needing customization should appear
   Given I start the interview

@@ -105,7 +105,7 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
     await Promise.all([
       elem.click(),  // TODO: change to `clickOrTap`
       scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
-  ]);
+    ]);
   } else {
     if (process.env.DEBUG) {
       await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
@@ -128,6 +128,12 @@ When('I click the defined text link {string}', async (phrase) => {
 });
 
 Then('the question id should be {string}', async (question_class) => {
+  /* Looks for the question id as it's written in the .yml.
+  *  
+  *  WARNING: Does not handle actual html class attribute name on page
+  */
+  question_class = question_class.replace(/\s/g, '-');
+  question_class = 'question-' + question_class;
   const element = await scope.page.waitFor('body.' + question_class);
   expect(element).to.exist;
 });
