@@ -11,7 +11,7 @@
     "cucumber": "./node_modules/.bin/cucumber-js tests/features/*.feature",
     "setup": "node -e 'require(\"./tests/install-branch.js\").setup()'",
     "takedown": "node -e 'require(\"./tests/install-branch.js\").takedown()'",
-    "local": "npm run setup && npm run cucumber && npm run takedown"
+    "local": "npm run setup && npm run cucumber; npm run takedown"
   },
   "repository": {
     "type": "git",

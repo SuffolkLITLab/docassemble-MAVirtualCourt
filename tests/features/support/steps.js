@@ -19,7 +19,6 @@ Given(/I start the interview/, async () => {
     scope.page.setDefaultTimeout(120 * 1000)
   }
 
-  console.log( INTERVIEW_URL );
   // Then go to the given page
   await scope.page.goto(INTERVIEW_URL, {waitUntil: 'domcontentloaded'});
 });
