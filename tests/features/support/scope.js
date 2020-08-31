@@ -17,4 +17,12 @@ module.exports = {
 
     return winner.constructor.name != 'ElementHandle';
   },
+
+  afterStep: async function canContinue(scope) {
+    if ( process.env.DEBUG ) {
+      await scope.page.waitFor(3000);
+    }
+
+    return;
+  },
 };
