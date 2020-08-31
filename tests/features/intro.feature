@@ -25,9 +25,9 @@ Scenario: Text needing customization should appear
   Given I start the interview
   Then I should see the phrase "Shared content tests: Mass Access Project"
 
-Scenario: Terms link should open correctly
+Scenario: Terms link should work
   Given I start the interview
-  Then I should see link "terms of use"
+  Then I should see the link "terms of use"
   Then the link "terms of use" should lead to "https://massaccess.suffolklitlab.org/privacy/"
   Then the link "terms of use" should open a working page
   Then the link "terms of use" should open in a new window
@@ -38,11 +38,11 @@ Scenario: Accept terms starts as unchecked
 
 Scenario: Can't continue without accepting terms
   Given I start the interview
-  Then I do nothing
+  When I do nothing
   Then I can't continue
   Then I will be told an answer is invalid
 
 Scenario: Can continue after accepting terms
   Given I start the interview
-  Then I check the "I accept" checkbox
-  Then I can continue
+  When I check the "I accept" checkbox
+  Then I continue to the next page

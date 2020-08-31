@@ -76,7 +76,7 @@ When(/I wait (\d+) seconds?/, async (seconds) => {
   await scope.page.waitFor(seconds * 1000);
 });
 
-Then("I do nothing", async () => {
+When("I do nothing", async () => {
   /* Here to make writing tests more comfortable. */
   expect( true ).to.be.true;
 });
@@ -142,7 +142,7 @@ Then('I should see the phrase {string}', async (phrase) => {
   expect(bodyText).to.contain(phrase);
 });
 
-Then('I should see link {string}', async (linkText) => {
+Then('I should see the link {string}', async (linkText) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   expect(link).to.exist;
 });
@@ -181,33 +181,17 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
   expect( hasCorrectWindowTarget ).to.be.true;
 });
 
-Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expected_status) => {
-  /* Tests whether the first "checkbox" whose label text partially
-  *    matches the given text is of the checked status given. Very
-  *    limited. Anything more will get annoying. Future feature.
+Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
+  /* Tests whether the first "checkbox" label "containing"
+  *    the "label text" is of the "checked" status given.
+  *    Anything more complex will be a future feature.
   * 
   * "checkbox": label that contains checkbox-like behavior.
   */
-
-  // let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-
-  // needs await scope.page.waitForSelector('#daMainQuestion'); from above
-  let is_checked = await scope.page.evaluate(function(desired_label) {
-
-    let checkbox_labels = Array.from( document.querySelectorAll('label[role="checkbox"]') );
-    let matching_labels = []
-    for ( let label of checkbox_labels ) {
-
-      if ( label.hasAttribute( 'aria-label' ) ) {
-        let label_text = label.getAttribute( 'aria-label' );
-        if ( label_text.includes( desired_label ) ) {
-          matching_labels.push( label );
-        }
-      }
-    }  // Ends for all checkbox labels
-
-    return matching_labels[0].getAttribute('aria-checked') == 'true';
-  }, label);
+  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+  let is_checked = await scope.page.evaluate( async(elem, labe_text) => {
+    return elem.getAttribute('aria-checked') === 'true';
+  }, checkbox, label_text );
 
   let what_it_should_be = expected_status === 'checked';
   expect( is_checked ).to.equal( what_it_should_be );
@@ -220,9 +204,12 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label, expecte
 //   }
 // );
 
-Then(/I check the "([^"]+)" checkbox/, async (label_text) => {
-  // let [checkbox] = await scope.page.$x(`//label[contains(@aria-label, "${label_text}")]`);
-  // await scope.page.click( checkbox );
+When(/I check the "([^"]+)" checkbox/, async (label_text) => {
+  /* Clicks the first checkbox with the label "containing" the "label text".
+  *    Very limited. Anything more is a future feature.
+  * 
+  * "checkbox": label that contains checkbox-like behavior.
+  */
   let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
   await checkbox.click();
 });
@@ -240,11 +227,11 @@ Then("I can't continue", async () => {
 });
 
 Then('I will be told an answer is invalid', async () => {
-  let error_message_elem = await scope.page.$('.da-has-error');
+  let error_message_elem = await scope.page.waitFor('.da-has-error');
   expect( error_message_elem ).to.exist;
 });
 
-Then("I can continue", async () => {
+Then("I continue to the next page", async () => {
   let can_continue = await scope.canContinue(scope);
   expect( can_continue ).to.be.true;
 });
