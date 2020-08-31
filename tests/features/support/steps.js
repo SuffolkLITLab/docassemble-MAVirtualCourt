@@ -85,7 +85,7 @@ When(/I wait (\d+) seconds?/, async (seconds) => {
 
 When("I do nothing", async () => {
   /* Here to make writing tests more comfortable. */
-  expect( true ).to.be.true;
+  return true;  // Not sure this achieves anything
 });
 
 async function findElemByText(elem, text) {
@@ -235,7 +235,7 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
 // );
 
 Then("I can't continue", async () => {
-  let can_continue = await scope.canContinue(scope);
+  let can_continue = await scope.tryContinue(scope);
   expect( can_continue ).to.be.false;
 });
 
@@ -245,7 +245,7 @@ Then('I will be told an answer is invalid', async () => {
 });
 
 Then("I continue to the next page", async () => {
-  let can_continue = await scope.canContinue(scope);
+  let can_continue = await scope.tryContinue(scope);
   expect( can_continue ).to.be.true;
 });
 
