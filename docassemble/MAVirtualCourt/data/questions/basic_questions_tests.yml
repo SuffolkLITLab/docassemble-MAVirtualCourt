@@ -13,6 +13,7 @@ code: |
   # Custom title text, green words/help text, terms of use link, checkbox controls continuation
   interview_short_title = 'Shared content tests'
   acknowledged_information_use
+  users[0].other_contact_method
   tests_over
 ---
 id: tests_over
