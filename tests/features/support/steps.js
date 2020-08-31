@@ -240,7 +240,10 @@ Then("I can't continue", async () => {
 });
 
 Then('I will be told an answer is invalid', async () => {
-  let error_message_elem = await scope.page.waitFor('.da-has-error');
+  let error_message_elem = await Promise.race([
+      scope.page.waitForSelector('.alert-danger'),
+      scope.page.waitForSelector('.da-has-error'),
+    ]);
   expect( error_message_elem ).to.exist;
 });
 
