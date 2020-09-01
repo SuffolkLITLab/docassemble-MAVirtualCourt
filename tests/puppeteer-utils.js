@@ -102,8 +102,11 @@ const installRepo = async (page) => {
   console.log('<option> text:', html);  // Sanity check
 
   // Tap 'Pull' and wait till the page has finished loading
-  await page.click('button[name=pull]');
-  await page.waitForNavigation({waitUntil: 'domcontentloaded'})
+  const pullButton = await page.$('button[name=pull]');
+  await Promise.all([
+    pullButton.click(),
+    page.waitForNavigation({waitUntil: 'domcontentloaded'}),
+  ]);
 }
 
 module.exports = {
