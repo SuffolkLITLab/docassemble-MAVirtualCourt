@@ -27,23 +27,22 @@ const scope = require('./scope');
    1. Listening for responses
    1. 
 
-// Should post example of detecting page load or not on submit when there
-// is a DOM change that you can detect. I suspect no request is
-// being sent, but I could be wrong. Haven't yet figured out how
-// to detect that.
+Should post example of detecting page load or not on submit when there
+is a DOM change that you can detect. I suspect no request is
+being sent, but I could be wrong. Haven't yet figured out how
+to detect that.
+
+regex thoughts: https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
 */
 
 
 const INTERVIEW_URL = interviewConstants.INTERVIEW_URL;
-// const INTERVIEW_URL = 'https://apps-dev.suffolklitlab.org/interview?reset=1&i=docassemble.playground12MAVCBasicQuestionsTests%3Abasic_questions_tests.yml#page1'
 setDefaultTimeout(120 * 1000);
 
 let device_touch_map = {
   mobile: 'tap',
   pc: 'click',
 };
-
-//regex thoughts: https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
 
 // -- Puppeteer specific steps from hello_world.feature
 
