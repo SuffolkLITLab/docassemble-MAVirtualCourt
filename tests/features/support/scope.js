@@ -42,9 +42,9 @@ module.exports = {
 
   getTextFieldId: async function getTextFieldId(scope, field_label) {
     // make sure at least one is on screen
-    await scope.page.waitFor('div.da-field-container-datatype-text label');
+    await scope.page.waitFor('label[class*="datext"]');
 
-    let field_id = await scope.page.$$eval('div.da-field-container-datatype-text label', (elements, field_label) => {
+    let field_id = await scope.page.$$eval('label[class*="datext"]', (elements, field_label) => {
       let elems_array = Array.from( elements );
       for ( let elem of elems_array ) {
         if (( elem.innerText ).includes( field_label )) {
