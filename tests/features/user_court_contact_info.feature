@@ -5,7 +5,7 @@ Tests:
 - [x] Can't continue without input
 - [x] Get invalidation message without input
 - [x] Input in mobile number will allow continuing
-- [ ] Input in other phone number will allow continuing
+- [x] Input in other phone number will allow continuing
 - [ ] Input in email will allow continuing
 - [ ] Input in "other ways" will allow continuing
 - [ ] Green help text exists
@@ -37,4 +37,11 @@ Scenario: Giving a mobile number will allow the user to continue
   When I check the "I accept" checkbox
   Then I continue to the next page
   Then I type "201 555-0123" in the "Mobile number" field
+  Then I continue to the next page
+
+Scenario: Giving a mobile number will allow the user to continue
+  Given I start the interview
+  When I check the "I accept" checkbox
+  Then I continue to the next page
+  Then I type "201 555-0123" in the "Other phone number" field
   Then I continue to the next page
