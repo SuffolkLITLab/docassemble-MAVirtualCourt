@@ -236,6 +236,12 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
 //   }
 // );
 
+Then('I type {string} in the {string} field', async (value, field_label) => {
+  let id = await scope.getTextFieldId(scope, field_label);
+  await scope.page.type( '#' + id, value );
+  await scope.page.screenshot({ path: `error-debug.jpg`, type: 'jpeg', fullPage: true });
+});
+
 Then("I can't continue", async () => {
   let can_continue = await scope.tryContinue(scope);
   expect( can_continue ).to.be.false;
@@ -249,7 +255,7 @@ Then('I will be told an answer is invalid', async () => {
   expect( error_message_elem ).to.exist;
 });
 
-Then("I continue to the next page", async () => {
+Then('I continue to the next page', async () => {
   let can_continue = await scope.tryContinue(scope);
   expect( can_continue ).to.be.true;
 });

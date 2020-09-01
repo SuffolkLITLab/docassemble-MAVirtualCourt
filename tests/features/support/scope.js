@@ -39,4 +39,21 @@ module.exports = {
 
     return navigation_won && target_changed;
   },
+
+  getTextFieldId: async function getTextFieldId(scope, field_label) {
+    // make sure at least one is on screen
+    await scope.page.waitFor('div.da-field-container-datatype-text label');
+
+    let field_id = await scope.page.$$eval('div.da-field-container-datatype-text label', (elements, field_label) => {
+      let elems_array = Array.from( elements );
+      for ( let elem of elems_array ) {
+        if (( elem.innerText ).includes( field_label )) {
+          return elem.getAttribute( 'for' );
+        }
+      }  // End for labels
+
+    }, field_label);
+
+    return field_id;
+  },
 };
