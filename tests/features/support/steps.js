@@ -239,7 +239,6 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
 Then('I type {string} in the {string} field', async (value, field_label) => {
   let id = await scope.getTextFieldId(scope, field_label);
   await scope.page.type( '#' + id, value );
-  await scope.page.screenshot({ path: `error-debug.jpg`, type: 'jpeg', fullPage: true });
 });
 
 Then("I can't continue", async () => {
