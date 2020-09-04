@@ -17,6 +17,7 @@ default screen parts:
 ---
 features:
   javascript: show_id.js
+  small screen navigation: False
 ---
 # This is a backfill to ensure these keys in our metadata dictionary are
 # defined and can be accessed by other helper code
