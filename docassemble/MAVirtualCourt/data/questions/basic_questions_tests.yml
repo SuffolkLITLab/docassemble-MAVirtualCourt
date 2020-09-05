@@ -1,0 +1,22 @@
+comment: |
+  Tests to remember to implement:
+  - Showing login suggestion for (and only for) users who are not logged in
+  - Check chat help available somehow
+  
+  This should probably actually be testing the server version of basic-questions.yml
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+---
+mandatory: True
+code: |
+  # Custom title text, green words/help text, terms of use link, checkbox controls continuation
+  interview_short_title = 'Shared content tests'
+  acknowledged_information_use
+  users[0].other_contact_method
+  tests_over
+---
+id: tests_over
+event: tests_over
+question: |
+  Thanks for testing
