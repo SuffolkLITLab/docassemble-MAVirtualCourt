@@ -551,87 +551,24 @@ comment: |
 code: |  
   all_matches = macourts.matching_courts(addresses_to_search, court_types=allowed_courts)
 ---
-comment: |
-  # This is the *responding* version of the court selector
-  # It will also be the fallback if we don't know user_role
+if: |
+  # this should only be reached if the user's address is out of state
+  not len(all_matches)
 sets:
   - courts[0]
 id: choose a court
 question: |
+  % if user_role == 'plaintiff':
+  What court do you want to file in?
+  % else:
   What court is your case in?
+  % endif
 subquestion: |
+  % if not user_role == 'plaintiff':
   Look at your court paperwork. Match the name listed
   there.
-
-  % if len(all_matches) > 0:
-  Below is a map of the court(s) that serve
-  the address you gave us, ${comma_and_list(addresses_to_search)}.
-  
-  ${map_of(combined_locations(all_matches))}
   % endif
 fields:
-  - no label: courts[0]
-    datatype: object_radio
-    choices: all_matches
-    none of the above: True
-    disable others: True
-    object labeler: |
-      lambda y: y.short_description()
-    show if: 
-      code: |
-        len(all_matches)      
-  - note: |
-      Does the list above look wrong? If your case was filed in
-      a court we didn't list, choose from the full list below.
-    show if: 
-      code: |
-        len(all_matches)
-  - no label: courts[0]
-    datatype: object
-    object labeler: |
-      lambda y: y.short_label()
-    choices: macourts    
-help: 
-  label: |
-    How do I pick a court?
-  content: |
-    If you are responding to a case someone else filed, you may not
-    get to choose your court. Select the court that is already
-    listed on your court paperwork.
-        
----
-if: |
-  # This is the *initiating* version of the court selector
-  user_role == 'plaintiff'
-sets:
-  - courts[0]
-id: choose a court
-question: |
-  What court do you want to file in?
-subquestion: |
-  % if len(all_matches) > 0:
-  Below is a map of the court(s) that serve
-  the address you gave us, ${comma_and_list(addresses_to_search)}.
-  
-  ${map_of(combined_locations(all_matches))}
-  % endif
-fields:
-  - no label: courts[0]
-    datatype: object_radio
-    choices: all_matches
-    none of the above: True
-    disable others: True
-    object labeler: |
-      lambda y: y.short_description()
-    show if: 
-      code: |
-        len(all_matches)      
-  - note: |
-      Does the list above look wrong? If you think you should file in a
-      court we didn't list, choose from the full list below.
-    show if: 
-      code: |
-        len(all_matches)
   - no label: courts[0]
     datatype: object
     object labeler: |
@@ -642,6 +579,7 @@ help:
     How do I pick a court?
   content: |
     For some cases, you can choose your court.
+    % if user_role == 'plaintiff':    
     How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
@@ -677,7 +615,101 @@ help:
     Only you know the right choice.
     
     You can also view the court selection guidance at [mass.gov](https://www.mass.gov/courthouse-locator).
+    % else:
+    If you are responding to a case someone else filed, you may not
+    get to choose your court. Select the court that is already
+    listed on your court paperwork.
+    % endif
+---
+if: |
+  len(all_matches)
+id: choose a court
+question: |
+  % if user_role == 'plaintiff':
+  What court do you want to file in?
+  % else:
+  What court is your case in?
+  % endif
+subquestion: |
+  % if not user_role == 'plaintiff':
+  Look at your court paperwork. Match the name listed
+  there.
+  % endif
 
+  % if len(all_matches) > 0:
+  Below is a map of the court(s) that serve
+  the address you gave us, ${comma_and_list(addresses_to_search)}.
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
+fields:
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: True
+    disable others: True
+    object labeler: |
+      lambda y: y.short_description()
+    show if: 
+      code: |
+        len(all_matches)      
+  - note: |
+      Does the list above look wrong? If your case was filed in
+      a court we didn't list, choose from the full list below.
+    show if: 
+      code: |
+        len(all_matches)
+  - no label: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts    
+help: 
+  label: |
+    How do I pick a court?
+  content: |
+    For some cases, you can choose your court.
+    % if user_role == 'plaintiff':    
+    How do you know which court to choose?
+  
+    Massachusetts has 7 trial court departments:
+    
+    * District Court
+    * Boston Municipal Court (BMC)
+    * Superior Court
+    * Probate and Family Court
+    * Juvenile Court
+    * Housing Court
+    * Land Court
+    
+    The District Court, BMC, and Superior Court are all courts that can hear
+    any type of case. Housing, Probate and Family and Juvenile Court are
+     **specialist** courts that hear one kind of case.
+    They have judges with special training as well as special 
+    resources available.
+    
+    Different courts can make different kinds of decisions. Not every court
+    can give you every kind of help. For example, you can only
+    ask for visitation in the Probate and Family Court. Only
+    the Housing Court or Superior Court can hear discrimination
+    cases.
+    
+    Depending on where you live, different courts may be further or closer to
+    your address. There are about 100 district courts all over the state,
+    but each county has only one or a few Superior Courts or specialty
+    courts.
+    
+    Choosing a court means thinking about what kind of help you need, as well
+    as which court you can get transportation to on the day of your hearing.
+    
+    Only you know the right choice.
+    
+    You can also view the court selection guidance at [mass.gov](https://www.mass.gov/courthouse-locator).
+    % else:
+    If you are responding to a case someone else filed, you may not
+    get to choose your court. Select the court that is already
+    listed on your court paperwork.
+    % endif
 ---
 id: docket number
 question: |
