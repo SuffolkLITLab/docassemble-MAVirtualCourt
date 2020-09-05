@@ -132,6 +132,7 @@ list collect: True
 fields:
   - First name: witnesses[i].name.first
   - Middle name: witnesses[i].name.middle
+    required: False
   - Last name: witnesses[i].name.last
     required: False
   - Suffix: witnesses[i].name.suffix
