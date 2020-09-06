@@ -1,0 +1,16 @@
+name: Close feedback issues that are always empty
+# See https://github.com/marketplace/actions/issue-title-checker
+
+on:
+  issues:
+    types: [opened]
+jobs:   
+  auto_close:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Automatically close user issues we can't address (more help wanted)
+      uses: IndyV/IssueChecker@v1.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-close-message: "This issue was automatically closed because it has no content"
+        issue-pattern: "User: I'm looking for more help"
