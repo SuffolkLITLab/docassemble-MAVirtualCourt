@@ -203,7 +203,7 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, ex
   * "checkbox": label that contains checkbox-like behavior.
   */
   let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  let is_checked = await scope.page.evaluate( async(elem, labe_text) => {
+  let is_checked = await scope.page.evaluate( async(elem, label_text) => {
     return elem.getAttribute('aria-checked') === 'true';
   }, checkbox, label_text );
 
@@ -226,6 +226,40 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
   */
   let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
   await checkbox.click();
+});
+
+// TODO: Should it be 'containing', or should it be exact? Might be better to be exact.
+// TODO: Should we have a test just for the state of MA to be selected? Much easier... Or states in general
+When('I select the {string} option from the {string} choices', async (choice_text, label_text) => {
+  /* Selects the option having exactly the text `choice_text`
+  * in the <select> with the label "containing" the `label text`.
+  *    Finding one out of a bunch is a future feature.
+  * 
+  * Note: `page.select()` is the only way to click on an element in a <select>
+  */
+  // Make sure ajax is finished getting the items in the <select>
+  await scope.page.waitForSelector('option');
+
+  // The <label> will have the `id` for the <select> we're looking for
+  let [label] = await scope.page.$x(`//label[text()="${label_text}"]`);
+  let select_id = await scope.page.evaluate(( label ) => {
+    return label.getAttribute('for');
+  }, label);
+
+  // Get the actual option to pick. Can't use `value` here unfortunately as it doesn't reflect the text
+  let select = await scope.page.waitForSelector(`#${ select_id }`);
+
+  // Get the option with the exactly matching text
+  let option_value = await scope.page.evaluate(( select_elem, option_text ) => {
+    let options = select_elem.querySelectorAll( 'option' );
+    for ( let option of options ) {
+      if ( option.textContent === option_text ) { return option.getAttribute('value'); }
+    }
+    return null;
+  }, select, choice_text);
+
+  // No other way to click on an element in a <select>
+  await scope.page.select(`#${ select_id }`, option_value);
 });
 
 // TODO: Develop more specific choice selection
