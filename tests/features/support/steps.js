@@ -88,6 +88,11 @@ When("I do nothing", async () => {
   return true;  // Not sure this achieves anything
 });
 
+Then('I should see the text {string}', async (text) => {
+  let [node] = await scope.page.$x(`//*[contains(text(), "${text}")]`);
+  expect(node).to.exist;
+});
+
 async function findElemByText(elem, text) {
   await scope.page.waitForNavigation({waitUntil: 'domcontentloaded'});
   const elems = await scope.page.$$(elem);
