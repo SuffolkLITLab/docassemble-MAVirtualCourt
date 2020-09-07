@@ -6,7 +6,7 @@ comment: |
   This should probably actually be testing the server version of basic-questions.yml
 ---
 include:
-  - docassemble.MAVirtualCourt:basic-questions.yml
+  - basic-questions.yml
 ---
 mandatory: True
 code: |
