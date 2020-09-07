@@ -223,9 +223,21 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
   *    Very limited. Anything more is a future feature.
   * 
   * "checkbox": label that contains checkbox-like behavior.
+  * 
+  * May switch to using the below instead - almost same code, but
+  *    its text has to match exactly and it turns out clicking labels
+  *    works for more than one thing.
   */
   let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
   await checkbox.click();
+});
+
+When('I pick the {string} option', async (label_text) => {
+  /* Clicks the first label "containing" the "label text".
+  *    Very limited. Anything more is a future feature.
+  */
+  let choice = await scope.page.waitFor( `label[aria-label="${ label_text }"]` );
+  await choice.click();
 });
 
 // TODO: Should it be 'containing', or should it be exact? Might be better to be exact.

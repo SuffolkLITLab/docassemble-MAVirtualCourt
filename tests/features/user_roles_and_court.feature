@@ -1,9 +1,9 @@
 Feature: User role combined with address and court finding
 
 Tests:
-- [ ] When user is plaintiff and address is in state
+- [ ] When user is plaintiff and address is in-state
 - [ ] When user is plaintiff and address is out of state
-- [ ] When user is defendant and address is in state
+- [ ] When user is defendant and address is in-state
 - [ ] When user is defendant and address is out of state
 
 Scenario: In-state user is plaintiff and picks court
@@ -17,3 +17,6 @@ Scenario: In-state user is plaintiff and picks court
   Then I type "Boston" in the "City" field
   Then I select the "Iowa" option from the "State" choices
   Then I type "02118" in the "Zip" field
+  Then I continue to the next page
+  Then I pick the "Starting a new case" option
+
