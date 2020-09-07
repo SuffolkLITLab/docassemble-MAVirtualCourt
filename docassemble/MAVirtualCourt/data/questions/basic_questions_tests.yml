@@ -14,6 +14,18 @@ code: |
   interview_short_title = 'Shared content tests'
   acknowledged_information_use
   users[0].other_contact_method
+  users[0].address.address
+  user_ask_role
+  allowed_courts = [
+    'Boston Municipal Court',
+    'District Court',
+    'Probate and Family Court',
+    'Housing Court',
+    'Juvenile Court',
+    'Superior Court',
+    'Land Court',
+  ]
+  courts[0]
   tests_over
 ---
 id: tests_over
