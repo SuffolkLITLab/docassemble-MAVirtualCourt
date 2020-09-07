@@ -557,7 +557,7 @@ if: |
   not len(all_matches)
 sets:
   - courts[0]
-id: other state address choose a court
+id: empty matches choose a court
 question: |
   % if user_role == 'plaintiff':
   What court do you want to file in?
@@ -624,7 +624,7 @@ help:
 ---
 if: |
   len(all_matches)
-id: ma address choose a court
+id: matching courts choose a court
 question: |
   % if user_role == 'plaintiff':
   What court do you want to file in?
