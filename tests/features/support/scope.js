@@ -21,10 +21,10 @@ module.exports = {
       scope.page.waitForSelector('.da-has-error'),
       Promise.all([
         scope.page[ scope.device_map[ scope.emulating ]]('button.btn-primary[type="submit"]'),
-        scope.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+        scope.page.waitForNavigation({ waitUntil: ['domcontentloaded', 'networkidle2'] }),
       ])
     ]);
-
+    
     // // Success still doesn't exit
     // await scope.browser.removeAllListeners();
 

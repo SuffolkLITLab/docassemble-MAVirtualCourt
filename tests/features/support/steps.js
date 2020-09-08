@@ -88,9 +88,10 @@ When("I do nothing", async () => {
   return true;  // Not sure this achieves anything
 });
 
-Then('I should see the text {string}', async (text) => {
-  let [node] = await scope.page.$x(`//*[contains(text(), "${text}")]`);
-  expect(node).to.exist;
+Then('I should see the phrase {string}', async (phrase) => {
+  /* In Chrome, this `innerText` gets only visible text */
+  const bodyText = await scope.page.$eval('body', elem => elem.innerText);
+  expect(bodyText).to.contain(phrase);
 });
 
 async function findElemByText(elem, text) {
@@ -159,11 +160,6 @@ Then('the question id should be {string}', async (question_class) => {
 Then('an element should have the id {string}', async (id) => {
   const element = await scope.page.waitFor('#' + id);
   expect(element).to.exist;
-});
-
-Then('I should see the phrase {string}', async (phrase) => {
-  const bodyText = await scope.page.$eval('body', elem => elem.innerText);
-  expect(bodyText).to.contain(phrase);
 });
 
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
@@ -241,7 +237,7 @@ When('I pick the {string} option', async (label_text) => {
   /* Clicks the first label "containing" the "label text".
   *    Very limited. Anything more is a future feature.
   */
-  let choice = await scope.page.waitFor( `label[aria-label="${ label_text }"]` );
+  let choice = await scope.page.waitForSelector( `label[aria-label="${ label_text }"]` );
   await choice.click();
 });
 
