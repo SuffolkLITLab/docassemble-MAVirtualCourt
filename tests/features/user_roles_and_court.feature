@@ -39,3 +39,35 @@ Scenario: In-state plaintiff picks a court
   Then I continue to the next page
   Then the question id should be "matching courts choose a court"
   Then I should see the phrase "What court do you want to file in?"
+
+Scenario: Out of state defendant picks a court
+  Given I start the interview
+  Then I check the "I accept" checkbox
+  Then I continue to the next page
+  Then I type "201 555-0123" in the "Mobile number" field
+  Then I continue to the next page
+  Then I type "1600 Pennsylvania Avenue" in the "Street address" field
+  Then I type "Washington" in the "City" field
+  Then I select the "District of Columbia" option from the "State" choices
+  Then I type "20500" in the "Zip" field
+  Then I continue to the next page
+  Then I pick the "Responding to a case" option
+  Then I continue to the next page
+  Then the question id should be "empty matches choose a court"
+  Then I should see the phrase "What court is your case in?"
+
+Scenario: Out of state plaintiff picks a court
+  Given I start the interview
+  Then I check the "I accept" checkbox
+  Then I continue to the next page
+  Then I type "201 555-0123" in the "Mobile number" field
+  Then I continue to the next page
+  Then I type "1600 Pennsylvania Avenue" in the "Street address" field
+  Then I type "Washington" in the "City" field
+  Then I select the "District of Columbia" option from the "State" choices
+  Then I type "20500" in the "Zip" field
+  Then I continue to the next page
+  Then I pick the "Starting a new case" option
+  Then I continue to the next page
+  Then the question id should be "empty matches choose a court"
+  Then I should see the phrase "What court do you want to file in?"
