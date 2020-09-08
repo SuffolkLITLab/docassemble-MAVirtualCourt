@@ -1,8 +1,8 @@
 Feature: User role combined with address and court finding
 
 Tests:
-- [ ] When user is defendant and address is in-state (What court is your case in?)
-- [?] When user is plaintiff and address is in-state (What court do you want to file in?)
+- [x] When user is defendant and address is in-state (What court is your case in?)
+- [x] When user is plaintiff and address is in-state (What court do you want to file in?)
 - [ ] When user is defendant and address is out of state (no map)
 - [ ] When user is plaintiff and address is out of state (no map)
 
@@ -20,6 +20,7 @@ Scenario: In-state defendant picks a court
   Then I continue to the next page
   Then I pick the "Responding to a case" option
   Then I continue to the next page
+  Then the question id should be "matching courts choose a court"
   Then I should see the phrase "What court is your case in?"
 
 Scenario: In-state plaintiff picks a court
@@ -36,4 +37,5 @@ Scenario: In-state plaintiff picks a court
   Then I continue to the next page
   Then I pick the "Starting a new case" option
   Then I continue to the next page
+  Then the question id should be "matching courts choose a court"
   Then I should see the phrase "What court do you want to file in?"
