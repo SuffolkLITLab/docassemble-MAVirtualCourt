@@ -2,8 +2,8 @@ Feature: User role combined with address and court finding
 
 Tests:
 - [ ] When user is defendant and address is in-state (What court is your case in?)
+- [?] When user is plaintiff and address is in-state (What court do you want to file in?)
 - [ ] When user is defendant and address is out of state (no map)
-- [ ] When user is plaintiff and address is in-state (What court do you want to file in?)
 - [ ] When user is plaintiff and address is out of state (no map)
 
 Scenario: In-state defendant picks a court
