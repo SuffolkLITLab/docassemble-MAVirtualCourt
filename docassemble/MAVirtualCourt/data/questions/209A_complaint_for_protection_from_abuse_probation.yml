@@ -372,8 +372,7 @@ id: number_of_own_children_under_18
 question: |
   The court needs to know if you have any children under 18
 subquestion: |
-  This includes
-  
+  This includes 
   % if defendant_and_plaintiff_are_parents_of_child:
   * children you have with ${other_parties.familiar()} who are under 18, as well as
   * 
