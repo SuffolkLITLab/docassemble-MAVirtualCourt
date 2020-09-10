@@ -341,7 +341,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
+      On or about ${ incidents_of_abuse[i].date }, ${incidents_of_abuse[i].year}, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -533,7 +533,7 @@ question: |
   % if incidents_of_abuse[i] == incidents_of_abuse[0]:
   The most recent abuse
   % else:
-  The ${ordinal(i)} incident you described
+  The ${ordinal_number(i+1, use_word=False)} incident you described
   % endif
 subquestion: | 
   This is what you have told me about this incident, so far.  
