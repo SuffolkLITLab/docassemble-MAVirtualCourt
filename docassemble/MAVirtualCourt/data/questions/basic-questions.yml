@@ -379,6 +379,7 @@ fields:
     required: False
 ---
 code: |
+  # TODO: remove this so that user_role is always defined to a meaningful value
   # This is a workaround for the fact that user role isn't
   # defined in the wizard-generated file yet.
   if not defined('user_role'):
@@ -408,6 +409,7 @@ code: |
       plaintiffs = other_parties
       petitioners = other_parties
       other_parties.there_are_any = True
+    user_role = user_ask_role
   evaluate_role = True
 ---
 id: user role
@@ -559,13 +561,13 @@ sets:
   - courts[0]
 id: empty matches choose a court
 question: |
-  % if user_role == 'plaintiff':
+  % if users == plaintiffs:
   What court do you want to file in?
   % else:
   What court is your case in?
   % endif
 subquestion: |
-  % if not user_role == 'plaintiff':
+  % if not users == plaintiffs:
   Look at your court paperwork. Match the name listed
   there.
   % endif
@@ -580,7 +582,7 @@ help:
     How do I pick a court?
   content: |
     For some cases, you can choose your court.
-    % if user_role == 'plaintiff':    
+    % if users == plaintiffs:    
     How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
@@ -626,13 +628,13 @@ if: |
   len(all_matches)
 id: matching courts choose a court
 question: |
-  % if user_role == 'plaintiff':
+  % if users == plaintiffs:
   What court do you want to file in?
   % else:
   What court is your case in?
   % endif
 subquestion: |
-  % if not user_role == 'plaintiff':
+  % if not users == plaintiffs:
   Look at your court paperwork. Match the name listed
   there.
   % endif
@@ -670,7 +672,7 @@ help:
     How do I pick a court?
   content: |
     For some cases, you can choose your court.
-    % if user_role == 'plaintiff':    
+    % if users == plaintiffs:    
     How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
