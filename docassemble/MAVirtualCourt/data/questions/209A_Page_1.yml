@@ -1079,7 +1079,7 @@ attachment:
     fields: 
       - "user_name_full": ${ str(users[0]) }
       - "defendant": ${ str(other_parties[0]) }
-      - "signature_date": ${ signature_date }
+      - "signature_date": ${ signature_date.format("M/d/yyyy") }
       - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
       - "district_court": ${ courts[0].department == "District Court" }
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }
@@ -1153,7 +1153,7 @@ attachment:
       - "user_signature": ${ users[0].signature }
       - "user_name_full": ${ str(users[0]) }
       - "defendant": ${ str(other_parties[0]) }
-      - "signature_date": ${ signature_date }
+      - "signature_date": ${ signature_date.format("M/d/yyyy") }
       - "municipal_court": ${ courts[0].department == "Boston Municipal Court" }
       - "district_court": ${ courts[0].department == "District Court" }
       - "probate_court": ${ courts[0].department == "Probate and Family Court" }

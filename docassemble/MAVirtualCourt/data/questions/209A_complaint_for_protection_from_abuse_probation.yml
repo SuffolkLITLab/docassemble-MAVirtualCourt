@@ -910,7 +910,7 @@ attachment:
     pdf template file: 209A_complaint_page2.pdf
     decimal places: 2    
     fields: 
-      - "signature_date": ${ signature_date }
+      - "signature_date": ${ signature_date.format("M/d/yyyy") }
       - "signature_date__2": ${ signature_date }
       - "have_had_custody_cases_yes": ${ have_had_custody_cases }
       - "have_had_custody_cases_no": ${ not have_had_custody_cases }
@@ -1039,7 +1039,7 @@ attachment:
     fields:
       - "user_signature": ${ users[0].signature }
       - "user_signature_probation_copy": ${ users[0].signature }
-      - "signature_date": ${ signature_date }
+      - "signature_date": ${ signature_date.format("M/d/yyyy") }
       - "signature_date__2": ${ signature_date }
       - "have_had_custody_cases_yes": ${ have_had_custody_cases }
       - "have_had_custody_cases_no": ${ not have_had_custody_cases }

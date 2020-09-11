@@ -202,7 +202,7 @@ attachment:
       - "visitation_other": ${ visitation_other }
       - "visitation_other_requests": ${ visitation_other_requests }
       - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
-      - "user_signature_date": ${ user_signature_date }
+      - "user_signature_date": ${ signature_date.format("M/d/yyyy") }
 ---
 variable name: interview_metadata['A_complaint_for_protection_from_abuse_probation_copy0005']['built_in_fields_used']
 data:
@@ -437,4 +437,4 @@ attachment:
       - "visitation_other": ${ visitation_other }
       - "visitation_other_requests": ${ visitation_other_requests }
       - "request_child_support_temporary_yes": ${ request_child_support_temporary_yes }
-      - "user_signature_date": ${ user_signature_date }
+      - "user_signature_date": ${ signature_date.format("M/d/yyyy") }
