@@ -20,6 +20,13 @@ Scenario: In-state defendant picks a court
   Then I continue to the next page
   Then I pick the "Responding to a case" option
   Then I continue to the next page
+  Then I type "Me" in the "First Name" field
+  Then I type "Myself" in the "Last Name" field
+  Then I continue to the next page
+  Then I click the button "No"
+  Then I check the "Business or organization" checkbox
+  Then I type "A Plaintiff" in the "Name of organization or business" field
+  Then I continue to the next page
   Then the question id should be "matching courts choose a court"
   Then I should see the phrase "What court is your case in?"
 
@@ -37,6 +44,10 @@ Scenario: In-state plaintiff picks a court
   Then I continue to the next page
   Then I pick the "Starting a new case" option
   Then I continue to the next page
+  Then I type "Me" in the "First Name" field
+  Then I type "Myself" in the "Last Name" field
+  Then I continue to the next page
+  Then I click the button "No"
   Then the question id should be "matching courts choose a court"
   Then I should see the phrase "What court do you want to file in?"
 
@@ -52,6 +63,13 @@ Scenario: Out of state defendant picks a court
   Then I type "20500" in the "Zip" field
   Then I continue to the next page
   Then I pick the "Responding to a case" option
+  Then I continue to the next page
+  Then I type "Me" in the "First Name" field
+  Then I type "Myself" in the "Last Name" field
+  Then I continue to the next page
+  Then I click the button "No"
+  Then I check the "Business or organization" checkbox
+  Then I type "A Plaintiff" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "empty matches choose a court"
   Then I should see the phrase "What court is your case in?"
@@ -69,5 +87,9 @@ Scenario: Out of state plaintiff picks a court
   Then I continue to the next page
   Then I pick the "Starting a new case" option
   Then I continue to the next page
+  Then I type "Me" in the "First Name" field
+  Then I type "Myself" in the "Last Name" field
+  Then I continue to the next page
+  Then I click the button "No"
   Then the question id should be "empty matches choose a court"
   Then I should see the phrase "What court do you want to file in?"
