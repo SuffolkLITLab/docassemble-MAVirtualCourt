@@ -341,7 +341,7 @@ fields:
   - no label: incidents_of_abuse[i].description
     input type: area
     default: |
-      On or about ${ incidents_of_abuse[i].date }, ${ incidents_of_abuse[i].time_of_day } ${ incidents_of_abuse[i].location }, 
+      On or about ${ incidents_of_abuse[i].date }, ${incidents_of_abuse[i].year}, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
 help:
   label: How descriptive should I be?
   heading: How descriptive should I be?
@@ -519,11 +519,10 @@ fields:
 ---
 id: 209A Affidavit Feelings
 question: |
-  I felt...
+  Tell the judge how this incident made you feel
 subquestion: |
    It gives the judge a better picture if you describe how this incident made you feel. 
-   
-   Complete this sentence: "Because of what happened, I felt..."
+   Write a sentence or 2.
 fields: 
   - no label: incidents_of_abuse[i].feelings
     input type: area
@@ -534,7 +533,7 @@ question: |
   % if incidents_of_abuse[i] == incidents_of_abuse[0]:
   The most recent abuse
   % else:
-  The ${ordinal(i)} incident you described
+  The ${ordinal_number(i+1, use_word=False)} incident you described
   % endif
 subquestion: | 
   This is what you have told me about this incident, so far.  
@@ -544,7 +543,7 @@ fields:
     input type: area
     rows: 10
     default: |
-      ${ incidents_of_abuse[i].description + space("incidents_of_abuse[" + str(i) + "].feelings", prefix=' Because of what happened, I felt ') }
+      ${ incidents_of_abuse[i].description + space("incidents_of_abuse[" + str(i) + "].feelings") }
 ---
 id: there is another abuse incident
 question: |
@@ -592,6 +591,7 @@ attachment:
     pdf template file: complaint_209A_affidavit.pdf
     decimal places: 2    
     fields: 
+      - "signature_date": ${ signature_date }
       - "affidavit_body": ${ affidavit_body_cutoff }
       - "incident_date": ${ incident_date }
       - "has_addendum": ${ addAddendum_affidavit }      
