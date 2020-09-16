@@ -106,6 +106,7 @@ async function findElemByText(elem, text) {
   return null;
 }
 
+// Hmm, this is basically the continue button... right?
 When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
   let elem;
   if (elemType === 'button') {
@@ -239,6 +240,8 @@ When('I pick the {string} option', async (label_text) => {
   */
   let choice = await scope.page.waitForSelector( `label[aria-label="${ label_text }"]` );
   await choice.click();
+
+  await scope.waitForShowIf(scope);
 });
 
 // TODO: Should it be 'containing', or should it be exact? Might be better to be exact.
@@ -288,7 +291,7 @@ Then('I type {string} in the {string} field', async (value, field_label) => {
 });
 
 Then("I can't continue", async () => {
-  let can_continue = await scope.tryContinue(scope);
+  let can_continue = await scope.trySubmitButton(scope);
   expect( can_continue ).to.be.false;
 });
 
@@ -301,7 +304,7 @@ Then('I will be told an answer is invalid', async () => {
 });
 
 Then('I continue to the next page', async () => {
-  let can_continue = await scope.tryContinue(scope);
+  let can_continue = await scope.trySubmitButton(scope);
   expect( can_continue ).to.be.true;
 });
 
