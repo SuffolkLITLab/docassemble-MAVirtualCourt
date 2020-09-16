@@ -1,11 +1,11 @@
 module.exports = {
-  tryContinue: async function tryContinue(scope) {
+  trySubmitButton: async function trySubmitButton(scope) {
     /* See if there's a validation message instead of a
     *     page navigation when continue button is pressed.
     * 
-    * Could use `this`, but I've found it can be confusing.
+    * Do all buttons on DA pages navigate? Not sure about that.
     * 
-    * ISSUE MADE ON PUPPETEER for async hang: https://github.com/puppeteer/puppeteer/issues/6379
+    * ISSUE MADE ON PUPPETEER REPO for async hang: https://github.com/puppeteer/puppeteer/issues/6379
     */
 
     // // Causes hang at end of successful tests
@@ -20,7 +20,7 @@ module.exports = {
       scope.page.waitForSelector('.alert-danger'),  // Not sure this is useful with url detection now
       scope.page.waitForSelector('.da-has-error'),
       Promise.all([
-        scope.page[ scope.device_map[ scope.emulating ]]('button.btn-primary[type="submit"]'),
+        scope.page[ scope.device_map[ scope.emulating ]]( 'button.btn-primary[type="submit"]' ),
         scope.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
       ])
     ]);
@@ -55,5 +55,14 @@ module.exports = {
     }, field_label);
 
     return field_id;
+  },
+
+  waitForShowIf: async function waitForShowIf(scope) {
+    // If something might be hidden or shown, wait extra time to let it hide or show
+    let showif = await scope.page.$('.dashowif');
+    if ( showif ) {
+      // console.log('showif exists');
+      await scope.page.waitFor(500);
+    }
   },
 };
