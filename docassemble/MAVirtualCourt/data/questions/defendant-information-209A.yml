@@ -404,7 +404,7 @@ fields:
     required: False
     validate: |
       lambda y: True if not y.isnumeric() else validation_error(word("Please include a unit. E.g., 180 pounds."))
-  - "What best describes ${other_parties.familiar()}'s body type?'": other_parties[0].physical_build
+  - "What best describes ${other_parties.familiar()}'s body type?": other_parties[0].physical_build
     help: |
       You can choose more than one if that is helpful to describe ${other_parties.familiar()}.
     datatype: checkboxes
