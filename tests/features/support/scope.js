@@ -1,5 +1,5 @@
 module.exports = {
-  trySubmitButton: async function trySubmitButton(scope) {//, button_text) {
+  trySubmitButton: async function trySubmitButton(scope) {
     /* See if there's a validation message instead of a
     *     page navigation when continue button is pressed.
     * 
@@ -20,7 +20,6 @@ module.exports = {
       scope.page.waitForSelector('.alert-danger'),  // Not sure this is useful with url detection now
       scope.page.waitForSelector('.da-has-error'),
       Promise.all([
-        // scope.page[ scope.device_map[ scope.emulating ]](button_selector),
         scope.page[ scope.device_map[ scope.emulating ]]( 'button.btn-primary[type="submit"]' ),
         scope.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
       ])
