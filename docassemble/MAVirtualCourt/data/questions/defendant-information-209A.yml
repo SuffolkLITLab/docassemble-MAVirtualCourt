@@ -432,9 +432,10 @@ fields:
       - Acne: Acne
   - note: |
       Using your own words, briefly describe anything that would help the police identify ${other_parties.familiar()} that we haven't covered
-  - no label: other_parties[0].physical_other_details      
+  - no label: other_parties[0].physical_other_details
     hint: e.g., details about tattoo, unusual walk, etc.
     required: False
+    max: 34
 ---
 code: |
   defendant_race = other_parties[0].race if not other_parties[0].race == 'other' else other_parties[0].race_other
@@ -658,7 +659,7 @@ attachment:
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
-      - "defendant_physical_other": ${ defendant_other_description_cutoff }
+      - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
@@ -875,7 +876,7 @@ attachment:
       - "defendant_height": ${ other_parties[0].height }
       - "defendant_weight": ${ other_parties[0].weight }
       - "defendant_physical_build": ${ other_parties[0].physical_build.true_values() }
-      - "defendant_physical_other": ${ defendant_other_description_cutoff }
+      - "defendant_physical_other": ${ defendant_other_description }
       - "defendant_address": ${ other_parties[0].address.on_one_line(include_unit=True) }
       - "defendant_english_yes": ${ other_parties[0].understands_english }
       - "defendant_english_no": ${ not other_parties[0].understands_english }
@@ -924,18 +925,7 @@ code: |
 ---
 comment: Addenda related code. 
 code: |  
-  txtFieldsList_defendant = list()      
-  Limit1 = 50
-  sLimit1 = Limit1 - 16   
-  need_defendant_addendum = len(defendant_other_description) > Limit1
-  if need_defendant_addendum:    
-    defendant_other_description_cutoff = "(See Addendum.) " + defendant_other_description[:sLimit1].replace("\r","")
-    txtFieldsList_defendant.append(
-      {'title': 'OTHER PHYSICAL CHARACTERISTICS',
-      'value': [defendant_other_description]
-      })
-  else:
-    defendant_other_description_cutoff = defendant_other_description
+  txtFieldsList_defendant = list()
     
   Limit2 = 25
   sLimit2 = Limit2 - 16   
