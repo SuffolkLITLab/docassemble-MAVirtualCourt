@@ -379,11 +379,32 @@ fields:
     required: False
 ---
 code: |
-  # TODO: remove this so that user_role is always defined to a meaningful value
-  # This is a workaround for the fact that user role isn't
-  # defined in the wizard-generated file yet.
-  if not defined('user_role'):
-    user_role = False # this should get defined to "plaintiff" or "defendant" in the actual interview
+  # Sometimes we have values that can be set from interview_metadata.
+  # They don't always work, but interview author can override.
+  
+  # Some interviews have multiple interview_metadata keys. Look in the 1st one
+  first_form_key = next(iter(interview_metadata),{})
+  if isinstance(interview_metadata.get(first_form_key,{}), dict):
+    first_form = interview_metadata.get(first_form_key,{})
+  else:
+    first_form = {}
+  del(first_form_key)    
+---
+code: |
+  # If the author hasn't explicitly defined it in the interview_order block,
+  # define user_role to be either "defendant" or "plaintiff",
+  # either by checking interview_metadata or asking the user.
+  # The only valid values for user_role are "plaintiff" and "defendant".
+  
+  # We will check for the "typical_role" key.  
+  # Some older wizarded code doesn't define `typical_role`, so fall back
+  # to "unknown" if the key is not present.
+  # first_form is the first entry in interview_metadata
+  if not first_form.get("typical_role", 'unknown') == 'unknown':
+    user_role = first_form.get("typical_role")
+  else:
+    # If the user role was set to "unknown" at the time wizard run
+    user_role = user_ask_role
 ---
 code: |
   if user_role == 'plaintiff':
@@ -396,23 +417,39 @@ code: |
     respondents = users
     plaintiffs = other_parties
     petitioners = other_parties
-    other_parties.there_are_any = True
-  else:
-    if user_ask_role == 'plaintiff':
-      plaintiffs = users
-      petitioners = users
-      defendants = other_parties
-      respondents = other_parties
-    else:
-      defendants = users
-      respondents = users
-      plaintiffs = other_parties
-      petitioners = other_parties
-      other_parties.there_are_any = True
-    user_role = user_ask_role
-  evaluate_role = True
+    # If we're the defendant, there's always another party.
+    # Is that true? What about a case that is In re ...
+    # other_parties.there_are_any = True
+    #else:
+    #  if user_ask_role == 'plaintiff':
+    #    plaintiffs = users
+    #    petitioners = users
+    #    defendants = other_parties
+    #    respondents = other_parties
+    #  else:
+    #    defendants = users
+    #    respondents = users
+    #    plaintiffs = other_parties
+    #    petitioners = other_parties
+    #    other_parties.there_are_any = True
+    # user_role = user_ask_role
+  # We explicitly call evaluate_role in the wizard-generated code 
+  # if the user's role is not known in advance for this form
+  # evaluate_role = True
 ---
-id: user role
+code: |
+  user_role
+  evaluate_role = True # code for backward compatibility
+---
+id: is the user the plaintiff or defendant?
+comment: |
+  This question is asked if the interview can be used by both
+  a Plaintiff and a Defendant. It sets the value of `user_role`,
+  `plaintiffs`, `defendants`, `petitioners` and `respondents`.
+  
+  If you know your interview is exclusively
+  used by the Plaintiff or Defendant, set `user_role = 'plaintiff'` or 
+  `user_role='defendant'` in your code.
 question: |
   Did you start this case, or are you responding to a case
   that someone else started?
@@ -444,7 +481,7 @@ help:
     If you are responding to a case or court papers someone else filed, you
     are the "Defendant" or the "Respondent."
 ---      
-id: other users there are any
+id: is there an opposing party?
 question: |
   % if users == plaintiffs:
   Is there a **defendant** or respondent in this case? 
@@ -476,6 +513,7 @@ fields:
     required: False  
 ---
 code: |
+  # I don't think this code does anything
   children_parent_question_temp = []
   for child in children:
     pass
@@ -527,7 +565,6 @@ fields:
   - Email: x.email
     datatype: email
     required: False
-
 ---
 id: persons signature
 generic object: Individual
@@ -548,6 +585,18 @@ comment: |
 code: |
   addresses_to_search = [users[0].address]
 ---
+code: |
+  # Check the first entry in interview_metadata, if it exists
+  mavc_all_default_courts = ["Boston Municipal Court",
+      "District Court",
+      "Superior Court",
+      "Housing Court",
+      "Probate and Family Court",
+      "Juvenile Court",
+      "Land Court"]
+  allowed_courts = first_form.get("allowed_courts",mavc_all_default_courts)
+  del(mavc_all_default_courts) # no need to clutter answers with this
+---
 comment: |
   Ensure that addresses_to_search is the correct set of courts.
   See above--it's defined to user's address by default
@@ -559,15 +608,15 @@ if: |
   not len(all_matches)
 sets:
   - courts[0]
-id: empty matches choose a court
+id: choose a court (no matching courts found)
 question: |
-  % if users == plaintiffs:
+  % if user_role=='plaintiff':
   What court do you want to file in?
   % else:
   What court is your case in?
   % endif
 subquestion: |
-  % if not users == plaintiffs:
+  % if not user_role=='plaintiff':
   Look at your court paperwork. Match the name listed
   there.
   % endif
@@ -582,7 +631,7 @@ help:
     How do I pick a court?
   content: |
     For some cases, you can choose your court.
-    % if users == plaintiffs:    
+    % if user_role=='plaintiff':    
     How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
@@ -626,22 +675,22 @@ help:
 ---
 if: |
   len(all_matches)
-id: matching courts choose a court
+id: choose a court (courts matching provided address were found)
 question: |
-  % if users == plaintiffs:
+  % if user_role=='plaintiff':
   What court do you want to file in?
   % else:
   What court is your case in?
   % endif
 subquestion: |
-  % if not users == plaintiffs:
+  % if not user_role=='plaintiff':
   Look at your court paperwork. Match the name listed
   there.
   % endif
 
   % if len(all_matches) > 0:
   Below is a map of the court(s) that serve
-  the address you gave us, ${comma_and_list(addresses_to_search)}.
+  the address you gave us, ${comma_and_list([address.on_one_line() for address in addresses_to_search],comma_string='; ')}.
   
   ${map_of(combined_locations(all_matches))}
   % endif
@@ -672,7 +721,7 @@ help:
     How do I pick a court?
   content: |
     For some cases, you can choose your court.
-    % if users == plaintiffs:    
+    % if user_role=='plaintiff':    
     How do you know which court to choose?
   
     Massachusetts has 7 trial court departments:
@@ -1171,6 +1220,10 @@ subquestion: |
 buttons:
   ${word("Resume")}: continue
 ---
+id: interpreter
+comment: |
+  This question is required for the cover page we send to the court,
+  even if the form does not use it.
 question: |
   Do you need an interpreter?
 subquestion: |
