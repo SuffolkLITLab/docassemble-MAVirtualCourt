@@ -1,4 +1,4 @@
-name: Close feedback issues that are always empty
+name: Close issues we are not able to help
 # See https://github.com/marketplace/actions/issue-title-checker
 
 on:
@@ -8,9 +8,9 @@ jobs:
   auto_close:
     runs-on: ubuntu-latest
     steps:
-    - name: Automatically close user issues we can't address (more help wanted)
+    - name: Well wishes
       uses: IndyV/IssueChecker@v1.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-close-message: "This issue was automatically closed because it has no content"
+        issue-close-message: "Hope everyone finds the help they need."
         issue-pattern: "User: I'm looking for more help"
