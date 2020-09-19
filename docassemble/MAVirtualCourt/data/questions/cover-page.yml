@@ -53,7 +53,10 @@ reconsider: True
 code: |
   # This is here as a fallback. In many interviews, we want to use
   # a different document that includes addenda
-  final_form_to_file = pdf_concatenate(general_cover_sheet, form_to_file_no_cover, filename=space_to_underscore(package_title) + '.pdf')
+  if package_title:
+    final_form_to_file = pdf_concatenate(general_cover_sheet, form_to_file_no_cover, filename=space_to_underscore(package_title) + '.pdf')
+  else:
+    final_form_to_file = pdf_concatenate(general_cover_sheet, form_to_file_no_cover, filename='file.pdf')  
 ---
 sets: num_package_pages
 code: |
@@ -76,7 +79,10 @@ code: |
   # This is a fallback package title to avoid errors on new forms
   # It defines package_title as the title of the first form.
   # You may want a better form title for most interviews
-  package_title = next(iter(download_titles),'')
+  if next(iter(download_titles),''):
+    package_title = next(iter(download_titles))
+  else:
+    package_title = "MassAccess Form"
 ---
 need:
   - form_to_file_no_cover
