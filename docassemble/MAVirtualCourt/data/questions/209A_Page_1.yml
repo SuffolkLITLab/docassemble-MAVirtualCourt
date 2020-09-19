@@ -605,6 +605,7 @@ fields:
   - A gun: defendant_has_guns['gun']
     datatype: yesnomaybe
   - Describe the gun(s): defendant_weapons_description
+    maxlength: 29
     show if: 
       variable: defendant_has_guns['gun']
       is: True    
