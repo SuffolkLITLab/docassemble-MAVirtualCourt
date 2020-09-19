@@ -17,7 +17,7 @@ code: |
   users.gather()
   #users[0].name.first
   users[0].address.address
-  user_ask_role
+  user_role # this is a better test
   allowed_courts = [
     'District Court',
     'Boston Municipal Court',
