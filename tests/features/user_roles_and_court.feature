@@ -24,6 +24,7 @@ Scenario: In-state defendant picks a court
   Then I continue to the next page
   Then I pick the "Responding to a case" option
   Then I continue to the next page
+  Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
   Then I type "A Plaintiff" in the "Name of organization or business" field
   Then I continue to the next page
@@ -48,6 +49,7 @@ Scenario: In-state plaintiff picks a court
   Then I continue to the next page
   Then I pick the "Starting a new case" option
   Then I continue to the next page
+  Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
   Then I type "A Plaintiff" in the "Name of organization or business" field
   Then I continue to the next page
@@ -71,6 +73,7 @@ Scenario: Out of state defendant picks a court
   Then I continue to the next page
   Then I pick the "Responding to a case" option
   Then I continue to the next page
+  Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
   Then I type "A Plaintiff" in the "Name of organization or business" field
   Then I continue to the next page
@@ -94,6 +97,7 @@ Scenario: Out of state plaintiff picks a court
   Then I continue to the next page
   Then I pick the "Starting a new case" option
   Then I continue to the next page
+  Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
   Then I type "A Plaintiff" in the "Name of organization or business" field
   Then I continue to the next page
