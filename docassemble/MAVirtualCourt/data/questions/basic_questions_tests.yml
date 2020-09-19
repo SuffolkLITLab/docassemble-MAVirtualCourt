@@ -15,9 +15,9 @@ code: |
   acknowledged_information_use
   users[0].other_contact_method
   users.gather()
-  #users[0].name.first
   users[0].address.address
-  user_ask_role
+  user_role # this is a better test than user_ask_role now. It should trigger user_ask_role in this interview
+  other_parties.gather()
   allowed_courts = [
     'District Court',
     'Boston Municipal Court',
