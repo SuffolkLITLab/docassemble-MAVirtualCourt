@@ -26,7 +26,7 @@ Scenario: In-state defendant picks a court
   Then I continue to the next page
   Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
-  Then I type "A Plaintiff" in the "Name of organization or business" field
+  Then I type "Plaintiff LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (courts matching provided address were found)"
   Then I should see the phrase "What court is your case in?"
@@ -51,9 +51,9 @@ Scenario: In-state plaintiff picks a court
   Then I continue to the next page
   Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
-  Then I type "A Plaintiff" in the "Name of organization or business" field
+  Then I type "Defendant LLC" in the "Name of organization or business" field
   Then I continue to the next page
-  Then the question id should be "matching courts choose a court"
+  Then the question id should be "choose a court (courts matching provided address were found)"
   Then I should see the phrase "What court do you want to file in?"
 
 Scenario: Out of state defendant picks a court
@@ -75,7 +75,7 @@ Scenario: Out of state defendant picks a court
   Then I continue to the next page
   Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
-  Then I type "A Plaintiff" in the "Name of organization or business" field
+  Then I type "Plaintiff LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (no matching courts found)"
   Then I should see the phrase "What court is your case in?"
@@ -99,7 +99,7 @@ Scenario: Out of state plaintiff picks a court
   Then I continue to the next page
   Then I click the button "Yes"
   Then I check the "Business or organization" checkbox
-  Then I type "A Plaintiff" in the "Name of organization or business" field
+  Then I type "Defendant LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (no matching courts found)"
   Then I should see the phrase "What court do you want to file in?"
