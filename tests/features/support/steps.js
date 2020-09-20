@@ -157,7 +157,7 @@ Then('the question id should be {string}', async (question_id) => {
   *  
   *  WARNING: Does not handle actual html class attribute name on page
   */
-  clean_id = question_id.toLowerCase().replace(/[^A-z0-9]+/g, '-');
+  clean_id = question_id.toLowerCase().replace(/[^A-Za-z0-9]+/g, '-');
   question_class = 'question-' + clean_id;
   const element = await scope.page.waitFor('body.' + question_class);
   expect(element).to.exist;
