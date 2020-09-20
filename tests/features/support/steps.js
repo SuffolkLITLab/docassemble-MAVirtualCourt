@@ -4,6 +4,7 @@ const puppeteer = require('puppeteer');
 const interviewConstants = require('../../interview-constants');
 const scope = require('./scope');
 
+
 /* TODO:
 1. 'choice' to be any kind of choice - radio, checkbox,
     dropdown, etc. Have to research the different DOM for each
@@ -146,14 +147,18 @@ Then('I should see the link {string}', async (linkText) => {
   expect(link).to.exist;
 });
 
-// TODO: Research how da handles invalid symbols
-Then('the question id should be {string}', async (question_class) => {
-  /* Looks for the question id as it's written in the .yml.
+// TODO: Switch to getting the id and then checking it against the argument
+//     which will make for more useful test error messages.
+Then('the question id should be {string}', async (question_id) => {
+  /* Looks for a santized version of the question id as it's written
+  *     in the .yml.
+  *
+  * docassemble: re.sub(r'[^A-Za-z0-9]+', '-', interview_status.question.id.lower())
   *  
   *  WARNING: Does not handle actual html class attribute name on page
   */
-  question_class = question_class.replace(/\s/g, '-');
-  question_class = 'question-' + question_class;
+  clean_id = question_id.toLowerCase().replace(/[^A-Za-z0-9]+/g, '-');
+  question_class = 'question-' + clean_id;
   const element = await scope.page.waitFor('body.' + question_class);
   expect(element).to.exist;
 });
@@ -232,10 +237,12 @@ When(/I check the "([^"]+)" checkbox/, async (label_text) => {
   */
   let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
   await checkbox.click();
+
+  await scope.waitForShowIf(scope);
 });
 
 When('I pick the {string} option', async (label_text) => {
-  /* Clicks the first label "containing" the "label text".
+  /* Clicks the first label with the exact `label_text`.
   *    Very limited. Anything more is a future feature.
   */
   let choice = await scope.page.waitForSelector( `label[aria-label="${ label_text }"]` );
