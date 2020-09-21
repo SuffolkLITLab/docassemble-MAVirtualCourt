@@ -20,12 +20,6 @@ code: |
   other_parties.gather()
   allowed_courts = [
     'District Court',
-    'Boston Municipal Court',
-    'Superior Court',
-    'Probate and Family Court',
-    'Juvenile Court',
-    'Housing Court',
-    'Land Court',
   ]
   courts[0]
   tests_over
