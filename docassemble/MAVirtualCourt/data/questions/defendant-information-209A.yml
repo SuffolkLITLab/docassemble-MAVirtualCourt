@@ -937,9 +937,9 @@ code: |
 ---
 comment: Addenda related code. 
 code: |  
-  addAddendum_defendant = other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload
+ addAddendum_defendant = other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload
   
-  #  txtFieldsList_defendant = list()
+  # txtFieldsList_defendant = list()
   #    
   #  Limit2 = 25
   #  sLimit2 = Limit2 - 16   
@@ -978,10 +978,10 @@ code: |
   #  defendant_location_information_other_cutoff = defendant_location_information_other
     
   #if other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload:
-  #  txtFieldsList_defendant.append(
-  #    {'title': 'Uploaded defendant photo',
-  #    'value': [photo_upload]
-  #    })
+  #   txtFieldsList_defendant.append(
+  #  {'title': 'Uploaded defendant photo',
+  #  'value': [photo_upload]
+  #   })
 
   # addAddendum_defendant = bool(txtFieldsList_defendant) or other_parties[0].photo_yes and other_parties[0].photo_yes_can_upload
 ---
