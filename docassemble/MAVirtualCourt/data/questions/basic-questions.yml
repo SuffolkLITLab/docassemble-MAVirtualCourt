@@ -625,7 +625,7 @@ fields:
     datatype: object
     object labeler: |
       lambda y: y.short_label()
-    choices: macourts    
+    choices: macourts.filter_courts(allowed_courts)    
 help: 
   label: |
     How do I pick a court?
@@ -715,7 +715,7 @@ fields:
     datatype: object
     object labeler: |
       lambda y: y.short_label()
-    choices: macourts    
+    choices: macourts.filter_courts(allowed_courts)    
 help: 
   label: |
     How do I pick a court?
