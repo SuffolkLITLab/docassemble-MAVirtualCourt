@@ -59,10 +59,8 @@ module.exports = {
 
   waitForShowIf: async function waitForShowIf(scope) {
     // If something might be hidden or shown, wait extra time to let it hide or show
+    // I think `.$()` does not use a timeout
     let showif = await scope.page.$('.dashowif');
-    if ( showif ) {
-      // console.log('showif exists');
-      await scope.page.waitFor(500);
-    }
+    if ( showif ) { await scope.page.waitFor(500); }
   },
 };

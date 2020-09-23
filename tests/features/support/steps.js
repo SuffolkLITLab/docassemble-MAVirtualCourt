@@ -24,11 +24,11 @@ const scope = require('./scope');
        because it was executed after the redirection and thus was timing out.
 
        I think Promise.all is what's taking care of these situations.
-   1. Listening for `targetchanged`
+   1. Listening for `targetchanged` or changed URL
    1. Listening for responses
    1. 
 
-Should post example of detecting page load or not on submit when there
+Should post example of detecting new page/no new page on submit when there
 is a DOM change that you can detect. I suspect no request is
 being sent, but I could be wrong. Haven't yet figured out how
 to detect that.
@@ -127,10 +127,12 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
     }
     throw `No ${elemType} with text ${phrase} exists.`;
   }
+
+  await scope.waitForShowIf(scope);
 });
 
 When('I click the defined text link {string}', async (phrase) => {
-  // Should we wait for navigation here?
+  /* Clicks on link with exact matching text, I think */
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
     await link.click();  // TODO: change to `clickOrTap`
@@ -140,6 +142,8 @@ When('I click the defined text link {string}', async (phrase) => {
     }
     throw `No link with text ${phrase} exists.`;
   }
+
+  await scope.waitForShowIf(scope);
 });
 
 Then('I should see the link {string}', async (linkText) => {
@@ -283,6 +287,8 @@ When('I select the {string} option from the {string} choices', async (choice_tex
 
   // No other way to click on an element in a <select>
   await scope.page.select(`#${ select_id }`, option_value);
+
+  await scope.waitForShowIf(scope);
 });
 
 // TODO: Develop more specific choice selection
@@ -295,6 +301,8 @@ When('I select the {string} option from the {string} choices', async (choice_tex
 Then('I type {string} in the {string} field', async (value, field_label) => {
   let id = await scope.getTextFieldId(scope, field_label);
   await scope.page.type( '#' + id, value );
+
+  await scope.waitForShowIf(scope);
 });
 
 Then("I can't continue", async () => {
@@ -313,6 +321,9 @@ Then('I will be told an answer is invalid', async () => {
 Then('I continue to the next page', async () => {
   let can_continue = await scope.trySubmitButton(scope);
   expect( can_continue ).to.be.true;
+
+  // I've seen stuff take an extra moment or two. Shame to have it everywhere
+  await scope.page.waitFor(200);
 });
 
 After(async (scenario) => {
