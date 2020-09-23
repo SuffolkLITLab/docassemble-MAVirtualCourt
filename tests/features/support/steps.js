@@ -4,6 +4,11 @@ const puppeteer = require('puppeteer');
 const interviewConstants = require('../../interview-constants');
 const scope = require('./scope');
 
+/* Of Note:
+- We're using `*=` because sometimes da text has funny characters in it that are hard to anticipate
+
+*/
+
 
 /* TODO:
 1. 'choice' to be any kind of choice - radio, checkbox,
@@ -11,7 +16,7 @@ const scope = require('./scope');
 1. 'choice' to have a more specific way to access each item. For
     example, for a list collect or other things that have multiple
     things with the same text on the page.
-1. Figure out how to test allowing felxibility for coder. For example
+1. Figure out how to test allowing felxibility for coder. For example:
     there is placeholder text for the title of the form and if it's not
     defined, placeholder text should appear (though that behavior may
     bear discussion).
@@ -26,7 +31,6 @@ const scope = require('./scope');
        I think Promise.all is what's taking care of these situations.
    1. Listening for `targetchanged` or changed URL
    1. Listening for responses
-   1. 
 
 Should post example of detecting new page/no new page on submit when there
 is a DOM change that you can detect. I suspect no request is
@@ -45,10 +49,8 @@ let device_touch_map = {
   pc: 'click',
 };
 
-// -- Puppeteer specific steps from hello_world.feature
-
 Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
-  scope.device_map = device_touch_map;
+  scope.click_type = device_touch_map;  // changing vocab
 
   // If there is no browser open, start a new one
   if (!scope.browser) {
@@ -64,10 +66,10 @@ Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
   // TODO: Add 'phone' and 'computer' and 'desktop'?
   if (optional_device && optional_device.includes( 'mobile' )) {
     await scope.page.setUserAgent("Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36");
-    scope.emulating = 'mobile'
+    scope.device = 'mobile';
   } else {
     await scope.page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36");
-    scope.emulating = 'pc'
+    scope.device = 'pc';
   }
 
   // Then go to the given page
@@ -76,7 +78,7 @@ Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
   // requests. Might not solve all race conditions.
   await scope.page.waitForSelector('#daMainQuestion');
   // I've seen stuff take an extra moment or two. Shame to have it everywhere
-  await scope.page.waitFor(200);
+  await scope.afterStep(scope, {waitForTimeout: 200});
 });
 
 //#####################################
@@ -87,44 +89,51 @@ Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
 
 // Need to see if it's possible to remove the need for this on most occasions
 When(/I wait (\d+) seconds?/, async (seconds) => {
-  await scope.page.waitFor(seconds * 1000);
+  await scope.afterStep(scope, {waitForTimeout: (seconds * 1000)});
 });
 
 When("I do nothing", async () => {
   /* Here to make writing tests more comfortable. */
-  return true;  // Not sure this achieves anything
+  await scope.afterStep(scope);
 });
 
 Then('I should see the phrase {string}', async (phrase) => {
   /* In Chrome, this `innerText` gets only visible text */
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
+
+  await scope.afterStep(scope);
 });
 
 Then('I should see the link {string}', async (linkText) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   expect(link).to.exist;
+
+  await scope.afterStep(scope);
 });
 
 // TODO: Switch to getting the id and then checking it against the argument
 //     which will make for more useful test error messages.
 Then('the question id should be {string}', async (question_id) => {
   /* Looks for a santized version of the question id as it's written
-  *     in the .yml.
-  *
-  * docassemble: re.sub(r'[^A-Za-z0-9]+', '-', interview_status.question.id.lower())
+  *     in the .yml. docassemble:
+  *     re.sub(r'[^A-Za-z0-9]+', '-', interview_status.question.id.lower())
   *  
-  *  WARNING: Does not handle actual html class attribute name on page
+  *  WARNING: Does not handle actual html `class` name on page
   */
   clean_id = question_id.toLowerCase().replace(/[^A-Za-z0-9]+/g, '-');
   question_class = 'question-' + clean_id;
   const element = await scope.page.waitFor('body.' + question_class);
   expect(element).to.exist;
+
+  await scope.afterStep(scope);
 });
 
 Then('an element should have the id {string}', async (id) => {
   const element = await scope.page.waitFor('#' + id);
   expect(element).to.exist;
+
+  await scope.afterStep(scope);
 });
 
 Then('I will be told an answer is invalid', async () => {
@@ -133,6 +142,8 @@ Then('I will be told an answer is invalid', async () => {
       scope.page.waitForSelector('.da-has-error'),
     ]);
   expect( error_message_elem ).to.exist;
+
+  await scope.afterStep(scope);
 });
 
 Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
@@ -149,6 +160,24 @@ Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, ex
 
   let what_it_should_be = expected_status === 'checked';
   expect( is_checked ).to.equal( what_it_should_be );
+
+  await scope.afterStep(scope);
+});
+
+Then('I arrive at the next page', async () => {
+  /* Tests for detection of url change from button or link tap.
+  *    Can other things trigger navigation? Re: other inputs things
+  *    like 'Enter' acting like a click is a test for docassemble */
+  expect( scope.navigated ).to.be.true;
+  await scope.afterStep(scope);
+});
+
+Then(/I (don't|can't) continue/, async (unused) => {
+  /* Tests for detection of url change from button or link tap.
+  *    Can other things trigger navigation? Re: other inputs things
+  *    like 'Enter' acting like a click is a test for docassemble */
+  expect( scope.navigated ).to.be.false;
+  await scope.afterStep(scope);
 });
 
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
@@ -157,6 +186,8 @@ Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_ur
   let prop_obj = await link.getProperty('href');
   let actual_url = await prop_obj.jsonValue();
   expect( actual_url ).to.equal( expected_url );
+  
+  await scope.afterStep(scope);
 });
 
 Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (linkText, which_window) => {
@@ -172,6 +203,8 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
     || ( !should_open_a_new_window && !opens_a_new_window );
 
   expect( hasCorrectWindowTarget ).to.be.true;
+  
+  await scope.afterStep(scope);
 });
 
 
@@ -183,9 +216,11 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
 //#####################################
 
 //#####################################
-// Possible naviation
+// Possible navigation
 //#####################################
 
+// Consider people wanting to use this for an in-interview page
+// Also consider 'the link url "..." should open...'?
 Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   let prop_obj = await link.getProperty('href');
@@ -195,10 +230,16 @@ Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
   let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
   expect( response.ok() ).to.be.true;
   linkPage.close()
+  
+  await scope.afterStep(scope);
 });
 
-// Hmm, this is basically the continue button... right? Submit buttons
+
 When(/I tap the (button|link) "([^"]+)"/, async (elemType, phrase) => {
+  /* Taps a button and stores or reacts to what happens:
+  *    navigation, validation error, page error, just a click. */
+  let start_url = await scope.page.url()
+
   let elem;
   if (elemType === 'button') {
     [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
@@ -207,31 +248,21 @@ When(/I tap the (button|link) "([^"]+)"/, async (elemType, phrase) => {
   }
 
   if (elem) {
-    await Promise.all([
-      elem[ scope.device_map[ scope.emulating ]](),
-      scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
+    result = await Promise.race([
+      Promise.all([
+        // Click with no navigation will end immediately
+        elem[ scope.click_type[ scope.device ]](),
+        scope.page.waitForNavigation({waitUntil: 'domcontentloaded'}),
+      ]),
+      scope.page.waitForSelector('.alert-danger'),
+      scope.page.waitForSelector('.da-has-error'),
+      scope.page.waitForSelector('#da-retry'),  // Actual error
     ]);
-  } else {
-    if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
-    }
-    throw `No ${elemType} with text ${phrase} exists.`;
   }
 
-  await scope.waitForShowIf(scope);
-});
+  let end_url = await scope.page.url();
 
-Then("I can't continue", async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.false;
-});
-
-Then('I continue to the next page', async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.true;
-
-  // I've seen stuff take an extra moment or two. Shame to have it everywhere
-  await scope.page.waitFor(200);
+  await scope.afterStep(scope, {waitForShowIf: true, navigated: start_url !== end_url});
 });
 
 //#####################################
@@ -239,18 +270,19 @@ Then('I continue to the next page', async () => {
 //#####################################
 
 When('I tap the defined text link {string}', async (phrase) => {
-  /* Not sure what 'defined' means here */
+  /* Not sure what 'defined' means here. Maybe for terms? */
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
-    await link[ scope.device_map[ scope.emulating ]]();
+    await link[ scope.click_type[ scope.device ]]();
   } else {
+    // Is this needed or will it cause an error anyway?
     if (process.env.DEBUG) {
       await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
     }
     throw `No link with text ${phrase} exists.`;
   }
 
-  await scope.waitForShowIf(scope);
+  await scope.afterStep(scope, {waitForShowIf: true});
 });
 
 // TODO: Develop more specific choice selection
@@ -269,19 +301,20 @@ When(/I tap the option with the text "([^"]+)"/, async (label_text) => {
   *    works for more than one thing.
   */
   let choice = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  await choice[ scope.device_map[ scope.emulating ]]();
+  await choice[ scope.click_type[ scope.device ]]();
 
-  await scope.waitForShowIf(scope);
+  await scope.afterStep(scope, {waitForShowIf: true});
 });
 
 When('I tap the {string} option', async (label_text) => {
   /* taps the first label with the exact `label_text`.
   *    Very limited. Anything more is a future feature.
   */
-  let choice = await scope.page.waitForSelector( `label[aria-label="${ label_text }"]` );
-  await choice[ scope.device_map[ scope.emulating ]]();
+  // Page has loaded? Should not wait?
+  let choice = await scope.page.waitForSelector( `label[aria-label*="${ label_text }"]` );
+  await choice[ scope.click_type[ scope.device ]]();
 
-  await scope.waitForShowIf(scope);
+  await scope.afterStep(scope, {waitForShowIf: true});
 });
 
 // TODO: Should it be 'containing', or should it be exact? Might be better to be exact.
@@ -297,15 +330,17 @@ When('I select the {string} option from the {string} choices', async (choice_tex
   await scope.page.waitForSelector('option');
 
   // The <label> will have the `id` for the <select> we're looking for
-  let [label] = await scope.page.$x(`//label[text()="${label_text}"]`);
+  let [label] = await scope.page.$x(`//label[contains(text(), "${label_text}")]`);
   let select_id = await scope.page.evaluate(( label ) => {
     return label.getAttribute('for');
   }, label);
 
   // Get the actual option to pick. Can't use `value` here unfortunately as it doesn't reflect the text
+  // Waiting for possible ajax request.
   let select = await scope.page.waitForSelector(`#${ select_id }`);
 
   // Get the option with the exactly matching text
+  // Might want to make this flexible for reasons noted at the top of the script
   let option_value = await scope.page.evaluate(( select_elem, option_text ) => {
     let options = select_elem.querySelectorAll( 'option' );
     for ( let option of options ) {
@@ -317,7 +352,7 @@ When('I select the {string} option from the {string} choices', async (choice_tex
   // No other way to tap on an element in a <select>
   await scope.page.select(`#${ select_id }`, option_value);
 
-  await scope.waitForShowIf(scope);
+  await scope.afterStep(scope, {waitForShowIf: true});
 });
 
 // TODO: Develop more specific choice selection
@@ -331,7 +366,7 @@ Then('I type {string} in the {string} field', async (value, field_label) => {
   let id = await scope.getTextFieldId(scope, field_label);
   await scope.page.type( '#' + id, value );
 
-  await scope.waitForShowIf(scope);
+  await scope.afterStep(scope, {waitForShowIf: true});
 });
 
 

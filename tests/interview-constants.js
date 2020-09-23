@@ -5,7 +5,6 @@ const putils = require('./puppeteer-utils');
 let filename = 'basic_questions_tests';  // Easier to edit
 const INTERVIEW_URL_START = process.env.INTERVIEW_URL || `${putils.BASE_INTERVIEW_URL}%3A`;
 const INTERVIEW_URL = process.env.INTERVIEW_URL || `${INTERVIEW_URL_START}${filename}.yml`;
-console.log('INTERVIEW_URL:', INTERVIEW_URL);
 
 
 module.exports = {

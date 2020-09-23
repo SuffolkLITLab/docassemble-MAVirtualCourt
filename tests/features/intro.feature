@@ -39,10 +39,12 @@ Scenario: Accept terms starts as unchecked
 Scenario: Can't continue without accepting terms
   Given I start the interview
   When I do nothing
+  Then I tap the button "Next"
   Then I can't continue
   Then I will be told an answer is invalid
 
 Scenario: Can continue after accepting terms
   Given I start the interview
   When I tap the option with the text "I accept"
-  Then I continue to the next page
+  Then I tap the button "Next"
+  Then I arrive at the next page
