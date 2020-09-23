@@ -241,7 +241,7 @@ Then('I continue to the next page', async () => {
 //#####################################
 
 When('I click the defined text link {string}', async (phrase) => {
-  /* Clicks on link with exact matching text, I think */
+  /* Not sure what 'defined' means here */
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
     await link.click();  // TODO: change to `clickOrTap`
@@ -262,23 +262,21 @@ When('I click the defined text link {string}', async (phrase) => {
 //   }
 // );
 
-When(/I check the "([^"]+)" checkbox/, async (label_text) => {
-  /* Clicks the first checkbox with the label "containing" the "label text".
+When(/I click the option with the text "([^"]+)"/, async (label_text) => {
+  /* Clicks the first element with the label "containing" the "label text".
   *    Very limited. Anything more is a future feature.
-  * 
-  * "checkbox": label that contains checkbox-like behavior.
   * 
   * May switch to using the below instead - almost same code, but
   *    its text has to match exactly and it turns out clicking labels
   *    works for more than one thing.
   */
-  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  await checkbox.click();
+  let choice = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+  await choice.click();
 
   await scope.waitForShowIf(scope);
 });
 
-When('I pick the {string} option', async (label_text) => {
+When('I click the {string} option', async (label_text) => {
   /* Clicks the first label with the exact `label_text`.
   *    Very limited. Anything more is a future feature.
   */
