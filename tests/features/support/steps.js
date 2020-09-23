@@ -38,7 +38,7 @@ regex thoughts: https://stackoverflow.com/questions/171480/regex-grabbing-values
 
 
 const INTERVIEW_URL = interviewConstants.INTERVIEW_URL;
-setDefaultTimeout(120 * 1000);
+setDefaultTimeout(5 * 1000);
 
 let device_touch_map = {
   mobile: 'tap',
@@ -57,7 +57,7 @@ Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
 
   if (!scope.page) {
     scope.page = await scope.browser.newPage();
-    scope.page.setDefaultTimeout(120 * 1000)
+    scope.page.setDefaultTimeout(5 * 1000)
   }
 
   // Let developer pick mobile device if they want to
