@@ -8,7 +8,7 @@ Tests:
 
 Scenario: In-state defendant picks a court
   Given I start the interview
-  Then I check the "I accept" checkbox
+  When I click the option with the text "I accept"
   Then I continue to the next page
   Then I type "201 555-0123" in the "Mobile number" field
   Then I continue to the next page
@@ -22,10 +22,10 @@ Scenario: In-state defendant picks a court
   Then I select the "Massachusetts" option from the "State" choices
   Then I type "02118" in the "Zip" field
   Then I continue to the next page
-  Then I pick the "Responding to a case" option
+  Then I click the "Responding to a case" option
   Then I continue to the next page
   Then I click the button "Yes"
-  Then I check the "Business or organization" checkbox
+  Then I click the option with the text "Business or organization"
   Then I type "Plaintiff LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (courts matching provided address were found)"
@@ -33,7 +33,7 @@ Scenario: In-state defendant picks a court
 
 Scenario: In-state plaintiff picks a court
   Given I start the interview
-  Then I check the "I accept" checkbox
+  When I click the option with the text "I accept"
   Then I continue to the next page
   Then I type "201 555-0123" in the "Mobile number" field
   Then I continue to the next page
@@ -47,10 +47,10 @@ Scenario: In-state plaintiff picks a court
   Then I select the "Massachusetts" option from the "State" choices
   Then I type "02118" in the "Zip" field
   Then I continue to the next page
-  Then I pick the "Starting a new case" option
+  Then I click the "Starting a new case" option
   Then I continue to the next page
   Then I click the button "Yes"
-  Then I check the "Business or organization" checkbox
+  Then I click the option with the text "Business or organization"
   Then I type "Defendant LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (courts matching provided address were found)"
@@ -58,7 +58,7 @@ Scenario: In-state plaintiff picks a court
 
 Scenario: Out of state defendant picks a court
   Given I start the interview
-  Then I check the "I accept" checkbox
+  When I click the option with the text "I accept"
   Then I continue to the next page
   Then I type "201 555-0123" in the "Mobile number" field
   Then I continue to the next page
@@ -71,10 +71,10 @@ Scenario: Out of state defendant picks a court
   Then I select the "District of Columbia" option from the "State" choices
   Then I type "20500" in the "Zip" field
   Then I continue to the next page
-  Then I pick the "Responding to a case" option
+  Then I click the "Responding to a case" option
   Then I continue to the next page
   Then I click the button "Yes"
-  Then I check the "Business or organization" checkbox
+  Then I click the option with the text "Business or organization"
   Then I type "Plaintiff LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (no matching courts found)"
@@ -82,7 +82,7 @@ Scenario: Out of state defendant picks a court
 
 Scenario: Out of state plaintiff picks a court
   Given I start the interview
-  Then I check the "I accept" checkbox
+  When I click the option with the text "I accept"
   Then I continue to the next page
   Then I type "201 555-0123" in the "Mobile number" field
   Then I continue to the next page
@@ -95,10 +95,10 @@ Scenario: Out of state plaintiff picks a court
   Then I select the "District of Columbia" option from the "State" choices
   Then I type "20500" in the "Zip" field
   Then I continue to the next page
-  Then I pick the "Starting a new case" option
+  Then I click the "Starting a new case" option
   Then I continue to the next page
   Then I click the button "Yes"
-  Then I check the "Business or organization" checkbox
+  Then I click the option with the text "Business or organization"
   Then I type "Defendant LLC" in the "Name of organization or business" field
   Then I continue to the next page
   Then the question id should be "choose a court (no matching courts found)"
