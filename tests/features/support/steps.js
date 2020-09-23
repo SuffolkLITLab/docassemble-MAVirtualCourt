@@ -137,6 +137,22 @@ Then('I will be told an answer is invalid', async () => {
   expect( error_message_elem ).to.exist;
 });
 
+Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
+  /* Tests whether the first "checkbox" label "containing"
+  *    the "label text" is of the "checked" status given.
+  *    Anything more complex will be a future feature.
+  * 
+  * "checkbox": label that contains checkbox-like behavior.
+  */
+  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+  let is_checked = await scope.page.evaluate( async(elem, label_text) => {
+    return elem.getAttribute('aria-checked') === 'true';
+  }, checkbox, label_text );
+
+  let what_it_should_be = expected_status === 'checked';
+  expect( is_checked ).to.equal( what_it_should_be );
+});
+
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   
@@ -237,22 +253,6 @@ When('I click the defined text link {string}', async (phrase) => {
   }
 
   await scope.waitForShowIf(scope);
-});
-
-Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
-  /* Tests whether the first "checkbox" label "containing"
-  *    the "label text" is of the "checked" status given.
-  *    Anything more complex will be a future feature.
-  * 
-  * "checkbox": label that contains checkbox-like behavior.
-  */
-  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  let is_checked = await scope.page.evaluate( async(elem, label_text) => {
-    return elem.getAttribute('aria-checked') === 'true';
-  }, checkbox, label_text );
-
-  let what_it_should_be = expected_status === 'checked';
-  expect( is_checked ).to.equal( what_it_should_be );
 });
 
 // TODO: Develop more specific choice selection
