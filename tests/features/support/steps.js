@@ -79,6 +79,12 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
   await scope.page.waitForSelector('#daMainQuestion');
 });
 
+//#####################################
+//#####################################
+// Passive/Observational
+//#####################################
+//#####################################
+
 // Need to see if it's possible to remove the need for this on most occasions
 When(/I wait (\d+) seconds?/, async (seconds) => {
   await scope.page.waitFor(seconds * 1000);
@@ -93,57 +99,6 @@ Then('I should see the phrase {string}', async (phrase) => {
   /* In Chrome, this `innerText` gets only visible text */
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
-});
-
-async function findElemByText(elem, text) {
-  await scope.page.waitForNavigation({waitUntil: 'domcontentloaded'});
-  const elems = await scope.page.$$(elem);
-  for (var i=0; i < elems.length; i++) {
-    let elemText = await (await elems[i].getProperty('innerText')).jsonValue();
-    if (elemText.includes(text)) {
-      return elems[i];
-    }
-  }
-  return null;
-}
-
-// Hmm, this is basically the continue button... right?
-When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
-  let elem;
-  if (elemType === 'button') {
-    [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
-  } else {
-    [elem] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
-  }
-
-  if (elem) {
-    await Promise.all([
-      elem.click(),  // TODO: change to `clickOrTap`
-      scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
-    ]);
-  } else {
-    if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
-    }
-    throw `No ${elemType} with text ${phrase} exists.`;
-  }
-
-  await scope.waitForShowIf(scope);
-});
-
-When('I click the defined text link {string}', async (phrase) => {
-  /* Clicks on link with exact matching text, I think */
-  const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
-  if (link) {
-    await link.click();  // TODO: change to `clickOrTap`
-  } else {
-    if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
-    }
-    throw `No link with text ${phrase} exists.`;
-  }
-
-  await scope.waitForShowIf(scope);
 });
 
 Then('I should see the link {string}', async (linkText) => {
@@ -172,23 +127,20 @@ Then('an element should have the id {string}', async (id) => {
   expect(element).to.exist;
 });
 
+Then('I will be told an answer is invalid', async () => {
+  let error_message_elem = await Promise.race([
+      scope.page.waitForSelector('.alert-danger'),
+      scope.page.waitForSelector('.da-has-error'),
+    ]);
+  expect( error_message_elem ).to.exist;
+});
+
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   
   let prop_obj = await link.getProperty('href');
   let actual_url = await prop_obj.jsonValue();
   expect( actual_url ).to.equal( expected_url );
-});
-
-Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
-  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
-  let prop_obj = await link.getProperty('href');
-  let actual_url = await prop_obj.jsonValue();
-  
-  let linkPage = await scope.browser.newPage();
-  let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
-  expect( response.ok() ).to.be.true;
-  linkPage.close()
 });
 
 Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (linkText, which_window) => {
@@ -204,6 +156,85 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
     || ( !should_open_a_new_window && !opens_a_new_window );
 
   expect( hasCorrectWindowTarget ).to.be.true;
+});
+
+
+
+//#####################################
+//#####################################
+// Actions
+//#####################################
+//#####################################
+
+//#####################################
+// Possible naviation
+//#####################################
+
+Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  let prop_obj = await link.getProperty('href');
+  let actual_url = await prop_obj.jsonValue();
+  
+  let linkPage = await scope.browser.newPage();
+  let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
+  expect( response.ok() ).to.be.true;
+  linkPage.close()
+});
+
+// Hmm, this is basically the continue button... right? Submit buttons
+When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
+  let elem;
+  if (elemType === 'button') {
+    [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
+  } else {
+    [elem] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
+  }
+
+  if (elem) {
+    await Promise.all([
+      elem.click(),  // TODO: change to `clickOrTap`
+      scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
+    ]);
+  } else {
+    if (process.env.DEBUG) {
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
+    }
+    throw `No ${elemType} with text ${phrase} exists.`;
+  }
+
+  await scope.waitForShowIf(scope);
+});
+
+Then("I can't continue", async () => {
+  let can_continue = await scope.trySubmitButton(scope);
+  expect( can_continue ).to.be.false;
+});
+
+Then('I continue to the next page', async () => {
+  let can_continue = await scope.trySubmitButton(scope);
+  expect( can_continue ).to.be.true;
+
+  // I've seen stuff take an extra moment or two. Shame to have it everywhere
+  await scope.page.waitFor(200);
+});
+
+//#####################################
+// UI element interaction
+//#####################################
+
+When('I click the defined text link {string}', async (phrase) => {
+  /* Clicks on link with exact matching text, I think */
+  const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
+  if (link) {
+    await link.click();  // TODO: change to `clickOrTap`
+  } else {
+    if (process.env.DEBUG) {
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
+    }
+    throw `No link with text ${phrase} exists.`;
+  }
+
+  await scope.waitForShowIf(scope);
 });
 
 Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
@@ -305,26 +336,13 @@ Then('I type {string} in the {string} field', async (value, field_label) => {
   await scope.waitForShowIf(scope);
 });
 
-Then("I can't continue", async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.false;
-});
 
-Then('I will be told an answer is invalid', async () => {
-  let error_message_elem = await Promise.race([
-      scope.page.waitForSelector('.alert-danger'),
-      scope.page.waitForSelector('.da-has-error'),
-    ]);
-  expect( error_message_elem ).to.exist;
-});
 
-Then('I continue to the next page', async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.true;
-
-  // I've seen stuff take an extra moment or two. Shame to have it everywhere
-  await scope.page.waitFor(200);
-});
+//#####################################
+//#####################################
+// After
+//#####################################
+//#####################################
 
 After(async (scenario) => {
   if (scenario.result.status === "failed") {
