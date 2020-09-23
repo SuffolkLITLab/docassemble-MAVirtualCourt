@@ -16,10 +16,10 @@ const scope = require('./scope');
     defined, placeholder text should appear (though that behavior may
     bear discussion).
 1. Add links to resources on:
-   1. Clicks that trigger navigation need Promise.all: https://stackoverflow.com/a/60789449/14144258
+   1. taps that trigger navigation need Promise.all: https://stackoverflow.com/a/60789449/14144258
        > I ran into a scenario, where there was the classic POST-303-GET
        and an input[type=submit] was involved. It seems that in this case, 
-       the click of the button won't resolve until after the associated form's 
+       the tap of the button won't resolve until after the associated form's 
        submission and redirection, so the solution was to remove the waitForNavigation, 
        because it was executed after the redirection and thus was timing out.
 
@@ -47,7 +47,7 @@ let device_touch_map = {
 
 // -- Puppeteer specific steps from hello_world.feature
 
-Given(/I start the interview ?(.*)/, async (optional_device) => {
+Given(/I start the interview[ on ]?(.*)/, async (optional_device) => {
   scope.device_map = device_touch_map;
 
   // If there is no browser open, start a new one
@@ -60,8 +60,6 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
     scope.page.setDefaultTimeout(120 * 1000)
   }
 
-  // I know this issue is coming with devices (headless) and we
-  // need to take care of clicking vs. tapping.
   // Let developer pick mobile device if they want to
   // TODO: Add 'phone' and 'computer' and 'desktop'?
   if (optional_device && optional_device.includes( 'mobile' )) {
@@ -200,7 +198,7 @@ Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
 });
 
 // Hmm, this is basically the continue button... right? Submit buttons
-When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
+When(/I tap the (button|link) "([^"]+)"/, async (elemType, phrase) => {
   let elem;
   if (elemType === 'button') {
     [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
@@ -210,7 +208,7 @@ When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
 
   if (elem) {
     await Promise.all([
-      elem.click(),  // TODO: change to `clickOrTap`
+      elem[ scope.device_map[ scope.emulating ]](),
       scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
     ]);
   } else {
@@ -240,11 +238,11 @@ Then('I continue to the next page', async () => {
 // UI element interaction
 //#####################################
 
-When('I click the defined text link {string}', async (phrase) => {
+When('I tap the defined text link {string}', async (phrase) => {
   /* Not sure what 'defined' means here */
   const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   if (link) {
-    await link.click();  // TODO: change to `clickOrTap`
+    await link[ scope.device_map[ scope.emulating ]]();
   } else {
     if (process.env.DEBUG) {
       await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
@@ -262,26 +260,26 @@ When('I click the defined text link {string}', async (phrase) => {
 //   }
 // );
 
-When(/I click the option with the text "([^"]+)"/, async (label_text) => {
-  /* Clicks the first element with the label "containing" the "label text".
+When(/I tap the option with the text "([^"]+)"/, async (label_text) => {
+  /* taps the first element with the label "containing" the "label text".
   *    Very limited. Anything more is a future feature.
   * 
   * May switch to using the below instead - almost same code, but
-  *    its text has to match exactly and it turns out clicking labels
+  *    its text has to match exactly and it turns out taping labels
   *    works for more than one thing.
   */
   let choice = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  await choice.click();
+  await choice[ scope.device_map[ scope.emulating ]]();
 
   await scope.waitForShowIf(scope);
 });
 
-When('I click the {string} option', async (label_text) => {
-  /* Clicks the first label with the exact `label_text`.
+When('I tap the {string} option', async (label_text) => {
+  /* taps the first label with the exact `label_text`.
   *    Very limited. Anything more is a future feature.
   */
   let choice = await scope.page.waitForSelector( `label[aria-label="${ label_text }"]` );
-  await choice.click();
+  await choice[ scope.device_map[ scope.emulating ]]();
 
   await scope.waitForShowIf(scope);
 });
@@ -293,7 +291,7 @@ When('I select the {string} option from the {string} choices', async (choice_tex
   * in the <select> with the label "containing" the `label text`.
   *    Finding one out of a bunch is a future feature.
   * 
-  * Note: `page.select()` is the only way to click on an element in a <select>
+  * Note: `page.select()` is the only way to tap on an element in a <select>
   */
   // Make sure ajax is finished getting the items in the <select>
   await scope.page.waitForSelector('option');
@@ -316,7 +314,7 @@ When('I select the {string} option from the {string} choices', async (choice_tex
     return null;
   }, select, choice_text);
 
-  // No other way to click on an element in a <select>
+  // No other way to tap on an element in a <select>
   await scope.page.select(`#${ select_id }`, option_value);
 
   await scope.waitForShowIf(scope);
