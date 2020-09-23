@@ -24,11 +24,11 @@ const scope = require('./scope');
        because it was executed after the redirection and thus was timing out.
 
        I think Promise.all is what's taking care of these situations.
-   1. Listening for `targetchanged`
+   1. Listening for `targetchanged` or changed URL
    1. Listening for responses
    1. 
 
-Should post example of detecting page load or not on submit when there
+Should post example of detecting new page/no new page on submit when there
 is a DOM change that you can detect. I suspect no request is
 being sent, but I could be wrong. Haven't yet figured out how
 to detect that.
@@ -77,7 +77,15 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
   // This shouldn't be needed, but I think it may help with the ajax
   // requests. Might not solve all race conditions.
   await scope.page.waitForSelector('#daMainQuestion');
+  // I've seen stuff take an extra moment or two. Shame to have it everywhere
+  await scope.page.waitFor(200);
 });
+
+//#####################################
+//#####################################
+// Passive/Observational
+//#####################################
+//#####################################
 
 // Need to see if it's possible to remove the need for this on most occasions
 When(/I wait (\d+) seconds?/, async (seconds) => {
@@ -93,53 +101,6 @@ Then('I should see the phrase {string}', async (phrase) => {
   /* In Chrome, this `innerText` gets only visible text */
   const bodyText = await scope.page.$eval('body', elem => elem.innerText);
   expect(bodyText).to.contain(phrase);
-});
-
-async function findElemByText(elem, text) {
-  await scope.page.waitForNavigation({waitUntil: 'domcontentloaded'});
-  const elems = await scope.page.$$(elem);
-  for (var i=0; i < elems.length; i++) {
-    let elemText = await (await elems[i].getProperty('innerText')).jsonValue();
-    if (elemText.includes(text)) {
-      return elems[i];
-    }
-  }
-  return null;
-}
-
-// Hmm, this is basically the continue button... right?
-When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
-  let elem;
-  if (elemType === 'button') {
-    [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
-  } else {
-    [elem] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
-  }
-
-  if (elem) {
-    await Promise.all([
-      elem.click(),  // TODO: change to `clickOrTap`
-      scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
-    ]);
-  } else {
-    if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
-    }
-    throw `No ${elemType} with text ${phrase} exists.`;
-  }
-});
-
-When('I click the defined text link {string}', async (phrase) => {
-  // Should we wait for navigation here?
-  const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
-  if (link) {
-    await link.click();  // TODO: change to `clickOrTap`
-  } else {
-    if (process.env.DEBUG) {
-      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
-    }
-    throw `No link with text ${phrase} exists.`;
-  }
 });
 
 Then('I should see the link {string}', async (linkText) => {
@@ -168,23 +129,36 @@ Then('an element should have the id {string}', async (id) => {
   expect(element).to.exist;
 });
 
+Then('I will be told an answer is invalid', async () => {
+  let error_message_elem = await Promise.race([
+      scope.page.waitForSelector('.alert-danger'),
+      scope.page.waitForSelector('.da-has-error'),
+    ]);
+  expect( error_message_elem ).to.exist;
+});
+
+Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
+  /* Tests whether the first "checkbox" label "containing"
+  *    the "label text" is of the "checked" status given.
+  *    Anything more complex will be a future feature.
+  * 
+  * "checkbox": label that contains checkbox-like behavior.
+  */
+  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
+  let is_checked = await scope.page.evaluate( async(elem, label_text) => {
+    return elem.getAttribute('aria-checked') === 'true';
+  }, checkbox, label_text );
+
+  let what_it_should_be = expected_status === 'checked';
+  expect( is_checked ).to.equal( what_it_should_be );
+});
+
 Then(/the link "([^"]+)" should lead to "([^"]+)"/, async (linkText, expected_url) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   
   let prop_obj = await link.getProperty('href');
   let actual_url = await prop_obj.jsonValue();
   expect( actual_url ).to.equal( expected_url );
-});
-
-Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
-  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
-  let prop_obj = await link.getProperty('href');
-  let actual_url = await prop_obj.jsonValue();
-  
-  let linkPage = await scope.browser.newPage();
-  let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
-  expect( response.ok() ).to.be.true;
-  linkPage.close()
 });
 
 Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (linkText, which_window) => {
@@ -202,20 +176,83 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
   expect( hasCorrectWindowTarget ).to.be.true;
 });
 
-Then(/the checkbox with "([^"]+)" is (checked|unchecked)/, async (label_text, expected_status) => {
-  /* Tests whether the first "checkbox" label "containing"
-  *    the "label text" is of the "checked" status given.
-  *    Anything more complex will be a future feature.
-  * 
-  * "checkbox": label that contains checkbox-like behavior.
-  */
-  let checkbox = await scope.page.waitFor( `label[aria-label*="${ label_text }"]` );
-  let is_checked = await scope.page.evaluate( async(elem, label_text) => {
-    return elem.getAttribute('aria-checked') === 'true';
-  }, checkbox, label_text );
 
-  let what_it_should_be = expected_status === 'checked';
-  expect( is_checked ).to.equal( what_it_should_be );
+
+//#####################################
+//#####################################
+// Actions
+//#####################################
+//#####################################
+
+//#####################################
+// Possible naviation
+//#####################################
+
+Then(/the link "([^"]+)" should open a working page/, async (linkText) => {
+  let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
+  let prop_obj = await link.getProperty('href');
+  let actual_url = await prop_obj.jsonValue();
+  
+  let linkPage = await scope.browser.newPage();
+  let response = await linkPage.goto(actual_url, {waitUntil: 'domcontentloaded'});
+  expect( response.ok() ).to.be.true;
+  linkPage.close()
+});
+
+// Hmm, this is basically the continue button... right? Submit buttons
+When(/I click the (button|link) "([^"]+)"/, async (elemType, phrase) => {
+  let elem;
+  if (elemType === 'button') {
+    [elem] = await scope.page.$x(`//button/span[contains(text(), "${phrase}")]`);
+  } else {
+    [elem] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
+  }
+
+  if (elem) {
+    await Promise.all([
+      elem.click(),  // TODO: change to `clickOrTap`
+      scope.page.waitForNavigation({waitUntil: 'domcontentloaded'})
+    ]);
+  } else {
+    if (process.env.DEBUG) {
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
+    }
+    throw `No ${elemType} with text ${phrase} exists.`;
+  }
+
+  await scope.waitForShowIf(scope);
+});
+
+Then("I can't continue", async () => {
+  let can_continue = await scope.trySubmitButton(scope);
+  expect( can_continue ).to.be.false;
+});
+
+Then('I continue to the next page', async () => {
+  let can_continue = await scope.trySubmitButton(scope);
+  expect( can_continue ).to.be.true;
+
+  // I've seen stuff take an extra moment or two. Shame to have it everywhere
+  await scope.page.waitFor(200);
+});
+
+//#####################################
+// UI element interaction
+//#####################################
+
+When('I click the defined text link {string}', async (phrase) => {
+  /* Clicks on link with exact matching text, I think */
+  const [link] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
+  if (link) {
+    await link.click();  // TODO: change to `clickOrTap`
+  } else {
+    if (process.env.DEBUG) {
+      await scope.page.screenshot({ path: './error.jpg', type: 'jpeg', fullPage: true });
+    }
+    throw `No link with text ${phrase} exists.`;
+  }
+
+  await scope.waitForShowIf(scope);
 });
 
 // TODO: Develop more specific choice selection
@@ -283,6 +320,8 @@ When('I select the {string} option from the {string} choices', async (choice_tex
 
   // No other way to click on an element in a <select>
   await scope.page.select(`#${ select_id }`, option_value);
+
+  await scope.waitForShowIf(scope);
 });
 
 // TODO: Develop more specific choice selection
@@ -295,25 +334,17 @@ When('I select the {string} option from the {string} choices', async (choice_tex
 Then('I type {string} in the {string} field', async (value, field_label) => {
   let id = await scope.getTextFieldId(scope, field_label);
   await scope.page.type( '#' + id, value );
+
+  await scope.waitForShowIf(scope);
 });
 
-Then("I can't continue", async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.false;
-});
 
-Then('I will be told an answer is invalid', async () => {
-  let error_message_elem = await Promise.race([
-      scope.page.waitForSelector('.alert-danger'),
-      scope.page.waitForSelector('.da-has-error'),
-    ]);
-  expect( error_message_elem ).to.exist;
-});
 
-Then('I continue to the next page', async () => {
-  let can_continue = await scope.trySubmitButton(scope);
-  expect( can_continue ).to.be.true;
-});
+//#####################################
+//#####################################
+// After
+//#####################################
+//#####################################
 
 After(async (scenario) => {
   if (scenario.result.status === "failed") {
