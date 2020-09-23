@@ -77,6 +77,8 @@ Given(/I start the interview ?(.*)/, async (optional_device) => {
   // This shouldn't be needed, but I think it may help with the ajax
   // requests. Might not solve all race conditions.
   await scope.page.waitForSelector('#daMainQuestion');
+  // I've seen stuff take an extra moment or two. Shame to have it everywhere
+  await scope.page.waitFor(200);
 });
 
 //#####################################
