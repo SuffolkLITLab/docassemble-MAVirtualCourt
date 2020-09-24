@@ -44,5 +44,5 @@ Scenario: Can't continue without accepting terms
 
 Scenario: Can continue after accepting terms
   Given I start the interview
-  When I check the "I accept" checkbox
+  When I tap the option with the text "I accept"
   Then I continue to the next page
