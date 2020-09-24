@@ -240,6 +240,9 @@ code: |
   # menu_items = (action_menu_item('Language','language'))
   set_live_help_status(availability='available', mode='help',partner_roles=['housing','family law'])
 ---
+code: |
+  form_approved_for_email_filing = True # Default is that the form is e-filable
+---
 id: your name
 question:  |
   What is your name?
@@ -948,14 +951,22 @@ id: basic questions intro screen
 question: |
   ${interview_short_title}: Mass Access Project
 subquestion: |
- 
+  % if form_approved_for_email_filing:
   The MassAccess Project can help you complete and file court forms in 3 steps:
+  % else:
+  The MassAccess Project can help you complete and download forms in 3 steps:
+  % endif
   
   Step 1. Answer questions that will fill in your form for you.  
   Step 2. Preview the completed form.  
+  % if form_approved_for_email_filing:  
   Step 3. Email the form to the court using this secure website and save copies
   for yourself for later reference.  
-
+  % else:
+  Step 3. Download and print the final form. You will need to deliver it
+  to the court on your own.
+  % endif
+  
   Tap the {green words} in any screen for a definition or more information.
   
   If you have questions about this form or the court process, 

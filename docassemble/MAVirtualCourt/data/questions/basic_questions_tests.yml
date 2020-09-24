@@ -3,10 +3,13 @@ comment: |
   - Showing login suggestion for (and only for) users who are not logged in
   - Check chat help available somehow
   
-  This should probably actually be testing the server version of basic-questions.yml
+  This should probably actually be testing the server version of basic-questions.yml # QS: I think we also want to test the package version. Server-version could be its own test
 ---
 include:
   - basic-questions.yml
+---
+code: |
+  form_approved_for_email_filing = False
 ---
 mandatory: True
 code: |
