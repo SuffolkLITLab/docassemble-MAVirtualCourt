@@ -21,7 +21,7 @@ code: |
   allowed_courts = [
     'District Court',
     'Boston Municipal Court',
-    'Superior Court',
+    #'Superior Court',
     'Probate and Family Court',
     'Juvenile Court',
     'Housing Court',
