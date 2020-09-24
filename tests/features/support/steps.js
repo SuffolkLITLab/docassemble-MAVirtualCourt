@@ -247,22 +247,29 @@ When(/I tap the (button|link) "([^"]+)"/, async (elemType, phrase) => {
     [elem] = await scope.page.$x(`//a[contains(text(), "${phrase}")]`);
   }
 
+  let winner;
   if (elem) {
-    result = await Promise.race([
-      Promise.all([
+    winner = await Promise.race([
+      Promise.all([  // Error loads page, so no need to detect
         // Click with no navigation will end immediately
         elem[ scope.click_type[ scope.device ]](),
         scope.page.waitForNavigation({waitUntil: 'domcontentloaded'}),
       ]),
       scope.page.waitForSelector('.alert-danger'),
       scope.page.waitForSelector('.da-has-error'),
-      scope.page.waitForSelector('#da-retry'),  // Actual error
     ]);
   }
 
   let end_url = await scope.page.url();
 
-  await scope.afterStep(scope, {waitForShowIf: true, navigated: start_url !== end_url});
+  // If navigation, wait for 200ms. If stay on page, wait for `show if`.
+  // Navigation may be to same page. Not sure how we'll do reload...
+  if (winner.constructor.name === 'ElementHandle') {
+    await scope.afterStep(scope, {waitForShowIf: true, navigated: start_url !== end_url});
+  } else {
+    await scope.afterStep(scope, {waitForTimeout: 200, navigated: start_url !== end_url});
+  }
+  
 });
 
 //#####################################
