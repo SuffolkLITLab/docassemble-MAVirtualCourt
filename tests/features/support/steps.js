@@ -229,7 +229,8 @@ Then(prohibited_choice_words_regex, async (prohibited, specifier) => {
   *
   * @param prohibited {string} String, possibly containing commas and ', or' to
   *    denote multiple phrases, that should not appear in the options.
-  * @param specifier {string} Text that is in the label of the <select>
+  * @param specifier {string} Optional. Either an ordinal up to 'tenth' or text that
+  *    is in the label of the <select>
   */
   // Make sure ajax is finished getting the items in the <select>
   await scope.page.waitForSelector('option');
