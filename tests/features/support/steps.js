@@ -105,6 +105,14 @@ Then('I should see the phrase {string}', async (phrase) => {
   await scope.afterStep(scope);
 });
 
+Then('I should not see the phrase {string}', async (phrase) => {
+  /* In Chrome, this `innerText` gets only visible text */
+  const bodyText = await scope.page.$eval('body', elem => elem.innerText);
+  expect(bodyText).not.to.contain(phrase);
+
+  await scope.afterStep(scope);
+});
+
 Then('I should see the link {string}', async (linkText) => {
   let [link] = await scope.page.$x(`//a[contains(text(), "${linkText}")]`);
   expect(link).to.exist;
@@ -204,6 +212,60 @@ Then(/the link "([^"]+)" should open in (a new window|the same window)/, async (
 
   expect( hasCorrectWindowTarget ).to.be.true;
   
+  await scope.afterStep(scope);
+});
+
+// FEATURE IN DEVELOPMENT. A FOOL'S ERRAND
+let number_map = {first: 0, second: 1, third: 2, fourth: 3, fifth: 4, sixth: 5, seventh: 6, eighth: 7, ninth: 8, tenth: 9, };
+let specified = '?"?(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|"[^"]+)?"?';
+let prohibited_choice_words = `I should not see the options? "([^"]+)" ?(?:in the ${specified} choice list)?`;
+let prohibited_choice_words_regex = new RegExp(prohibited_choice_words);
+Then(prohibited_choice_words_regex, async (prohibited, specifier) => {
+  /* In development.
+  *
+  * Checks that `prohibited` does not appear in the text of the
+  *    the list of options in the <select> with the label "containing" the `label text`.
+  *    Only checks the first <select>.
+  *
+  * @param prohibited {string} String, possibly containing commas and ', or' to
+  *    denote multiple phrases, that should not appear in the options.
+  * @param specifier {string} Optional. Either an ordinal up to 'tenth' or text that
+  *    is in the label of the <select>
+  */
+  // Make sure ajax is finished getting the items in the <select>
+  await scope.page.waitForSelector('option');
+
+  let options = await scope.page.$$(`option`);
+  if ( specifier ) {
+    // If they want to check a specific set of options
+
+    // The <label> will have the `id` for the <select> we're looking for
+    let [label] = await scope.page.$x(`//label[contains(text(), "${specifier}")]`);
+    if ( !label ) {
+      [label] = await scope.page.$x(`//label//a[contains(text(), "${specifier}")]`);
+    }
+
+    let select_id = await scope.page.evaluate(( label ) => {
+      return label.getAttribute('for');
+    }, label);
+
+    options = await scope.page.$$(`*[id*='${ select_id }'] option`);
+  }
+
+  let phrases = prohibited.split(', ');
+  // Take 'or' off of the last item if it's there.
+  let last_phrase = phrases.pop();
+  last_phrase = last_phrase.replace(/^or /, '');
+  phrases.push( last_phrase );
+
+  for (let option in options) {
+    let prop_handle = await option.getProperty( 'textContent' );
+    let option_text = await prop_handle.jsonValue();
+    for (let phrase in phrases) {
+      expect( option_text ).not.to.contain( phrase );
+    }
+  }
+
   await scope.afterStep(scope);
 });
 
@@ -313,6 +375,7 @@ When(/I tap the option with the text "([^"]+)"/, async (label_text) => {
   await scope.afterStep(scope, {waitForShowIf: true});
 });
 
+// 'I choose {string}'?
 When('I tap the {string} option', async (label_text) => {
   /* taps the first label with the exact `label_text`.
   *    Very limited. Anything more is a future feature.
