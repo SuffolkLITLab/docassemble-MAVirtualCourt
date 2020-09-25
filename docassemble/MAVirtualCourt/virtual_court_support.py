@@ -43,6 +43,9 @@ class PeopleList(DAList):
   def familiar_or(self):
     return comma_and_list([person.name.familiar() for person in self],and_string=word("or"))
 
+  def possessive(self):
+    return comma_and_list([str(person) + "'s" for person in self])
+
 class UniquePeopleList(PeopleList):
   pass
 
