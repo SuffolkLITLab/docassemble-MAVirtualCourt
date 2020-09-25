@@ -11,7 +11,7 @@ Test interview will have to be modified to allow this
 - [ ] Exclusion of Housing Court
 - [ ] Inclusion of all courts
 
-Scenario: All except Superior Court
+Scenario: Show all courts except Superior Court
   Given I start the interview
   When I tap the option with the text "I accept"
   Then I tap the button "Next"
