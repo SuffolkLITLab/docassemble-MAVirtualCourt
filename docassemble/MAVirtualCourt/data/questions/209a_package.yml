@@ -411,7 +411,7 @@ code: |
     attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
     if addAddendum_impound:
       attachment_temp.append(impound_addendum)  
-  if has_evidence and len(exhibits):
+  if has_evidence and has_evidence_ready_to_upload and len(exhibits):
     attachment_temp.append(exhibit_attachment)
   final_attachment_bundle = attachment_temp
 ---
@@ -450,8 +450,8 @@ code: |
     attachment_preview_temp.append(a_258e_motion_for_impoundment0019_attachment_preview)
     if addAddendum_impound:
       attachment_preview_temp.append(impound_addendum) 
-  if has_evidence and len(exhibits):
-    attachment_preview_temp.append(exhibit_attachment)      
+  if has_evidence and has_evidence_ready_to_upload and len(exhibits):
+    attachment_preview_temp.append(exhibit_attachment)
   final_attachment_preview = attachment_preview_temp
 ---
 reconsider: is_dating_only
