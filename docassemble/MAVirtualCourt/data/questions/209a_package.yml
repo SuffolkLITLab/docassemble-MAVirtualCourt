@@ -11,6 +11,7 @@ include:
  - 209A-review.yml
  - plaintiff-confidential.yml 
  - escape.yml
+ - 209A_attach_exhibits.yml
 ---
 metadata:
   title: |
@@ -32,6 +33,7 @@ sections:
   - section_relationship: Your relationship
   - section_children: Children
   - section_affidavit: Your affidavit
+  - review_exhibits: Attach evidence  
   - section_children_relief: Protection for Children
   - section_relief: What you need
   # - section_custody: Custody
@@ -117,6 +119,12 @@ code: |
   # if no_abuse_checked:
   #  abuse_does_not_qualify # placeholder question not sure we even want the option of no abuse checked. Ask SMEs
     # refer_to_258E_resources # Maybe this info is wrong
+
+  # Attach evidence
+  nav.set_section('review_exhibits')
+  has_evidence
+  if has_evidence:
+    review_exhibits
 
   nav.set_section('section_relief')
   ############################ Relief
@@ -403,6 +411,8 @@ code: |
     attachment_temp.append(a_258e_motion_for_impoundment0019_attachment)
     if addAddendum_impound:
       attachment_temp.append(impound_addendum)  
+  if has_evidence and has_evidence_ready_to_upload and len(exhibits):
+    attachment_temp.append(exhibit_attachment)
   final_attachment_bundle = attachment_temp
 ---
 reconsider: True
@@ -439,7 +449,9 @@ code: |
   if asked_for_impoundment:
     attachment_preview_temp.append(a_258e_motion_for_impoundment0019_attachment_preview)
     if addAddendum_impound:
-      attachment_preview_temp.append(impound_addendum)  
+      attachment_preview_temp.append(impound_addendum) 
+  if has_evidence and has_evidence_ready_to_upload and len(exhibits):
+    attachment_preview_temp.append(exhibit_attachment)
   final_attachment_preview = attachment_preview_temp
 ---
 reconsider: is_dating_only
