@@ -33,6 +33,10 @@ generic object: DADict
 code: |
   x['built_in_fields_used'] = DAEmpty()
 ---
+question: |
+  Do you have a docket number for this case?
+yesno: docket_numbers.there_are_any
+---
 default screen parts:
   under: |
     % if not user_logged_in():
