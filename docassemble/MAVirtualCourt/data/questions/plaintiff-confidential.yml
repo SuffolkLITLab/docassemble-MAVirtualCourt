@@ -443,7 +443,6 @@ id: interview_order_A_Plaintiff_Confidential_Information0011
 code: |
   # This is a placeholder to control logic flow in this interview
   # It was generated from interview_generator.py as an 'interview order' type question.  basic_questions_intro_screen 
-  user_role = plaintiff
   A_Plaintiff_Confidential_Information0011_intro
   # Set the preferred/allowed courts for this interview
   # preferred_court = interview_metadata["A_Plaintiff_Confidential_Information0011"]["preferred court"]

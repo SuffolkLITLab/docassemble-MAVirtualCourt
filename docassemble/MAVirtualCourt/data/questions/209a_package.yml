@@ -455,13 +455,99 @@ code: |
     attachment_preview_temp.append(exhibit_attachment)
   final_attachment_preview = attachment_preview_temp
 ---
-reconsider: is_dating_only
+depends on: 
+  - abuser_caused_plaintiff_to_leave_home
+code: |
+  temp = []
+  if abuser_caused_plaintiff_to_leave_home:
+    temp = [users[0].address] + users[0].previous_addresses.elements
+  else:
+    temp = [users[0].address]
+  if users[0].other_addresses.there_are_any:
+    temp.extend(users[0].other_addresses.elements)
+  addresses_to_search = temp    
+---
+depends on:
+  - addresses_to_search
+  - is_dating_only
+  - wants_visitation_orders
+code: |
+  if is_dating_only:
+    allowed_courts = ["District Court","Boston Municipal Court", "Probate and Family Court"]
+  elif len(children_of_both) and wants_visitation_orders:
+    allowed_courts = ["Probate and Family Court"]
+  else: # not is_dating_only and not (len(children_of_both) and wants_visitation_orders):
+    allowed_courts =  ["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"]
+  all_matches = macourts.matching_courts(addresses_to_search, court_types=allowed_courts)    
+---
+if: |
+  not len(all_matches)
+depends on: 
+  - allowed_courts
+  - is_dating_only
+  - all_matches
+  - wants_visitation_orders
+reconsider:
+  - all_matches
+id: court information (no matching court)
+sets:
+  - courts[0].name
+question: |
+  Where will you file your request?
+subquestion: |
+  ${ court_question_template }
+fields:
+  - Choose a court from this list: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts.filter_courts(allowed_courts)
+continue button field: ask_court_question    
+help: |
+  ${ court_help_template }
+---
+if: |
+  len(all_matches)
+depends on: 
+  - allowed_courts
+  - is_dating_only
+  - all_matches
+  - wants_visitation_orders
+reconsider:
+  - all_matches
 id: court information
 sets:
   - courts[0].name
 question: |
   Where will you file your request?
 subquestion: |
+  ${ court_question_template }
+fields:
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: |
+      My court is not listed above. I want to file in a different court.
+    disable others: True
+    object labeler: |
+      lambda y: y.short_label_and_address()
+    show if: 
+      code: |
+        len(all_matches)      
+  - If your court is not listed above, choose a court from this list: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts.filter_courts(allowed_courts)
+    show if: 
+      variable: courts[0]
+      is: null    
+continue button field: ask_court_question    
+help: |
+  ${ court_help_template }
+---
+template: court_question_template
+content: |
   Choose a court from the list below that serves the address where you live, or
   an address that you left because of ${other_parties.familiar()}'s abuse.
 
@@ -476,38 +562,22 @@ subquestion: |
   [I want to file in a different court. I changed my mind about visitation](${url_action('wants_visitation_orders')}).
   % endif
 
-  You can try finding your local court by using the [Courthouse
-  Locator](https://www.mass.gov/guides/find-a-courthouse-serving-you).
+  % if len(all_matches):
+  % if len(addresses_to_search) > 1:
+  Below is a map of the court(s) that serve
+  the addresses you gave us, ${comma_and_list([address.on_one_line() for address in addresses_to_search],comma_string='; ')}.
+  % else:
+  Below is a map of the court(s) that serve your address.
+  % endif
+  
+  ${map_of(combined_locations(all_matches))}
+  % endif
   
   Tap ${word("help")} to learn more about choosing a court. This can be
-  complicated in a 209A restraining order.
-fields:
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(["Probate and Family Court"])
-    object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
-    show if:
-      code: |
-        len(children_of_both) and wants_visitation_orders
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court"])
-    object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
-    show if:
-      code: |
-        is_dating_only
-  - Court name: courts[0]
-    datatype: object
-    choices: macourts.filter_courts(["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"])
-    object labeler: |
-      lambda y: (str(y) +' (' + y.address.city + ')') if y.address.city not in str(y) else str(y)    
-    show if:
-      code: |
-        not is_dating_only and not (len(children_of_both) and wants_visitation_orders)
-continue button field: ask_court_question    
-help: |
+  complicated in a 209A restraining order.  
+---
+template: court_help_template
+content: |
   You can get a 209A restraining order at the District Court near where you live
   or the Probate and Family Court in your county.  If you live in Boston, you
   can go to the Boston Municipal Court (BMC) near where you live instead of a
