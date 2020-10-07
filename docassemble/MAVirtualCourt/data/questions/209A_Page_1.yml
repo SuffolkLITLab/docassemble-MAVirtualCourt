@@ -541,14 +541,14 @@ question: |
   % endif
 subquestion: |
   We can only help people under 18 if a parent, guardian, or advocate files for them.
-  
-  % if who_protecting_screener == "someone else":
-  What is ${users.familiar()}'s birthdate?
-  % else:
-  What is your birthdate?
-  % endif 
 fields:
-  - Date: users[0].birthdate
+  - label: |
+      % if who_protecting_screener == "someone else":
+      What is ${users.familiar()}'s birthdate?
+      % else:
+      What is your birthdate?
+      % endif      
+    field: users[0].birthdate
     datatype: BirthDate
 ---
 code: |  
