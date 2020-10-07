@@ -395,7 +395,7 @@ fields:
   - I don't know when ${other_parties.familiar()} was born: dont_know_birthdate
     datatype: yesno
   - Birthdate: other_parties[0].birthdate
-    datatype: date
+    datatype: BirthDate
     hide if: dont_know_birthdate
   - Best estimate of age (in years): other_parties[0].age
     datatype: integer
