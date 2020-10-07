@@ -475,7 +475,7 @@ fields:
     code: |
       name_suffix()
   - Birthdate: children[i].birthdate
-    datatype: date
+    datatype: BirthDate
     min: ${ today().minus(years=18) }
     max: ${ today() }
     validation messages:
@@ -486,6 +486,9 @@ fields:
     show if:
       code: |
         defendant_and_plaintiff_are_parents_of_child # means parents of any children
+validation code: |
+  if children[i].birthdate < today().minus(years=18):
+    validation_error("The court asks only for children under 18", field="children[i].birthdate")
 ---
 id: non_parent_children
 question: |

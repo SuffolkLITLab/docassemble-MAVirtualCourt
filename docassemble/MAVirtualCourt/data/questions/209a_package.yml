@@ -22,6 +22,7 @@ metadata:
 ---
 modules:
   - .phone
+  - docassemble.AssemblyLineToolbox.ThreePartsDate # Not strictly necessary as long it's installed somewhere on the server
 ---
 features:
   navigation: True

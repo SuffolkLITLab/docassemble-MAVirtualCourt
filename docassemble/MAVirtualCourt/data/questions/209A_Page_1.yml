@@ -548,8 +548,8 @@ subquestion: |
   What is your birthdate?
   % endif 
 fields:
-  - no label: users[0].birthdate
-    datatype: date
+  - Date: users[0].birthdate
+    datatype: BirthDate
 ---
 code: |  
   if users[0].birthdate >= today().minus(years=18):
