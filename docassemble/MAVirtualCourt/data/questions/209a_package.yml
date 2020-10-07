@@ -22,6 +22,7 @@ metadata:
 ---
 modules:
   - .phone
+  - docassemble.AssemblyLineToolbox.ThreePartsDate # Not strictly necessary as long it's installed somewhere on the server
 ---
 features:
   navigation: True
@@ -479,6 +480,34 @@ code: |
     allowed_courts =  ["District Court","Boston Municipal Court", "Probate and Family Court", "Superior Court"]
   all_matches = macourts.matching_courts(addresses_to_search, court_types=allowed_courts)    
 ---
+if: |
+  not len(all_matches)
+depends on: 
+  - allowed_courts
+  - is_dating_only
+  - all_matches
+  - wants_visitation_orders
+reconsider:
+  - all_matches
+id: court information (no matching court)
+sets:
+  - courts[0].name
+question: |
+  Where will you file your request?
+subquestion: |
+  ${ court_question_template }
+fields:
+  - Choose a court from this list: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts.filter_courts(allowed_courts)
+continue button field: ask_court_question    
+help: |
+  ${ court_help_template }
+---
+if: |
+  len(all_matches)
 depends on: 
   - allowed_courts
   - is_dating_only
@@ -492,6 +521,33 @@ sets:
 question: |
   Where will you file your request?
 subquestion: |
+  ${ court_question_template }
+fields:
+  - no label: courts[0]
+    datatype: object_radio
+    choices: all_matches
+    none of the above: |
+      My court is not listed above. I want to file in a different court.
+    disable others: True
+    object labeler: |
+      lambda y: y.short_label_and_address()
+    show if: 
+      code: |
+        len(all_matches)      
+  - If your court is not listed above, choose a court from this list: courts[0]
+    datatype: object
+    object labeler: |
+      lambda y: y.short_label()
+    choices: macourts.filter_courts(allowed_courts)
+    show if: 
+      variable: courts[0]
+      is: null    
+continue button field: ask_court_question    
+help: |
+  ${ court_help_template }
+---
+template: court_question_template
+content: |
   Choose a court from the list below that serves the address where you live, or
   an address that you left because of ${other_parties.familiar()}'s abuse.
 
@@ -519,28 +575,9 @@ subquestion: |
   
   Tap ${word("help")} to learn more about choosing a court. This can be
   complicated in a 209A restraining order.
-fields:
-  - no label: courts[0]
-    datatype: object_radio
-    choices: all_matches
-    none of the above: |
-      My court is not listed above. I want to file in a different court.
-    disable others: True
-    object labeler: |
-      lambda y: y.short_label_and_address()
-    show if: 
-      code: |
-        len(all_matches)      
-  - If your court is not listed above, choose a court from this list: courts[0]
-    datatype: object
-    object labeler: |
-      lambda y: y.short_label()
-    choices: macourts.filter_courts(allowed_courts)
-    show if: 
-      variable: courts[0]
-      is: null    
-continue button field: ask_court_question    
-help: |
+---
+template: court_help_template
+content: |
   You can get a 209A restraining order at the District Court near where you live
   or the Probate and Family Court in your county.  If you live in Boston, you
   can go to the Boston Municipal Court (BMC) near where you live instead of a
