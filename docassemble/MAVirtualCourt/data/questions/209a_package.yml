@@ -574,7 +574,7 @@ content: |
   % endif
   
   Tap ${word("help")} to learn more about choosing a court. This can be
-  complicated in a 209A restraining order.  
+  complicated in a 209A restraining order.
 ---
 template: court_help_template
 content: |
