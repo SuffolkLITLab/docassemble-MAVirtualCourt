@@ -518,7 +518,7 @@ fields:
     code: |
       name_suffix()
   - Birthdate: children_cares_for[i].birthdate
-    datatype: date
+    datatype: BirthDate
     min: ${ today().minus(years=18) }
     max: ${ today() }    
     validation messages:
@@ -534,6 +534,9 @@ fields:
       
       You may have to file a guardianship case also.  [Talk to a lawyer](https://MassLegalHelp.org/find-legal-aid) if you need the judge to order ${other_parties.familiar()} to have no contact with this child.
     show if: children_cares_for[i].defendant_is_parent
+validation code: |
+  if children_cares_for[i].birthdate < today().minus(years=18):
+    validation_error("The court asks only for children under 18", field="children_cares_for[i].birthdate")    
 ---
 comment: |
   Changed code to list only first names of children in question id: children user is parent of, but then choices for children_of_both became their full names in this question instead of only first names - even after I added '.familiar()' to the end.
