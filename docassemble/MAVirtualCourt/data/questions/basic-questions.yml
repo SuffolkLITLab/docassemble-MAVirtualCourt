@@ -77,7 +77,7 @@ objects:
   - plaintiff: Individual
   - other_parties: PeopleList
   - courts: DAList.using(auto_gather=False, gathered=True, complete_attribute='name') # Normally let's only have one court...
-  - macourts: MACourtList.using(courts=['housing_courts','bmc','district_courts','superior_courts','land_court', 'juvenile_courts', 'probate_and_family_courts'])  # this is for lookups
+  - macourts: MACourtList.using(courts=['housing_courts','bmc','district_courts','superior_courts','land_court', 'juvenile_courts', 'probate_and_family_courts','appeals_court'])  # this is for lookups
   - witnesses: PeopleList
   - docket_numbers: DAList
   - caregivers: PeopleList
