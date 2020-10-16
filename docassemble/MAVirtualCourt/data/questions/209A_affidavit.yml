@@ -29,6 +29,7 @@ objects:
 features:
   question help button: True
 ---
+
 id: isolated_test_download
 event: affidavit_download
 comment: |
@@ -59,6 +60,38 @@ data:
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
 ---
+id: complaint_209A_Affidavit
+code: |
+  basic_questions_intro_screen 
+  complaint_209A_Affidavit_intro
+  complaint_209A_Affidavit_intro_2
+  complaint_209A_Affidavit_intro_3
+  # defendant # now that stitched up no longer need this variable
+  # plaintiff_has_minor_children
+  
+  started = False
+  most_recent_abuse_year
+  incidents_of_abuse[0].reminders = True
+  incidents_of_abuse[0].complete
+  started = True
+  
+  affidavit_summary = ""
+  
+  for incident in incidents_of_abuse:
+    affidavit_summary += incident.summary + "\n\n"
+  
+  if not pattern:
+    pattern_description = ""
+
+  saw_incidents
+
+  # Trigger required computed variables for attachment block
+  addAddendum_affidavit
+  affidavit_intro
+  affidavit_body_cutoff 
+
+  complaint_209A_Affidavit = True
+---
 id: 209A Affidavit Intro
 continue button field: complaint_209A_Affidavit_intro
 question: |
@@ -70,7 +103,7 @@ subquestion: |
   
   You should know that if the court does not "{impound}" your affidavit, your words will be public record. It is not easy, but if someone wants to go into court to find and read your affidavit, they can.
   
-  Later in this guide, you will get a chance to ask the court to {impound} your affidavit.
+  Later, you will get a chance to ask the court to {impound} your affidavit.
 
 terms:
   - impound: |
@@ -93,7 +126,7 @@ subquestion: |
   
   * The judge should also know about:
   
-      * Times ${other_parties.familiar()} abused your child,
+      * Times ${other_parties.familiar()} abused your ${children.as_noun()},
       * Where your ${children.as_noun()} ${children.did_verb('was')} when ${other_parties.familiar()} was abusing you,
       * Times your ${children.as_noun()} witnessed ${other_parties.familiar()} abusing you, and
       * How the abuse affected your ${children.as_noun()}.
@@ -104,9 +137,7 @@ continue button field: complaint_209A_Affidavit_intro_3
 question: | 
   ${users.familiar()}, you can do this!
 subquestion: |
-  The questions coming up are to help you include all the details the judge needs to know.
-  
-  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}. 
+  Writing your affidavit can be hard for all kinds of reasons. Remember you can always call a domestic violence advocate for help. [Safelink](https://www.casamyrna.org/get-support/safelink): ${tel("1-877-785-2020")}.
 
   Finally, as you write your affidavit, keep in mind that when you sign your name at the end of this guide, you are declaring, “{under penalty of perjury}” that your answers to all these questions are {true to the best of your knowledge}.
 
@@ -135,33 +166,7 @@ terms:
       Something is true "to the best of your knowledge" if you were there and saw, heard, or felt it.  
       Something is true to the best of your knowledge if you have good reason to believe it is true.
 ---
-id: complaint_209A_Affidavit
-code: |
-  basic_questions_intro_screen 
-  complaint_209A_Affidavit_intro
-  complaint_209A_Affidavit_intro_2
-  complaint_209A_Affidavit_intro_3
-  # defendant # now that stitched up no longer need this variable
-  plaintiff_has_minor_children
-  
-  started = False
-  incidents_of_abuse[0].complete
-  started = True
-  
-  affidavit_summary = ""
-  
-  for incident in incidents_of_abuse:
-    affidavit_summary += incident.summary + "\n\n"
-  
-  saw_incidents
 
-  # Trigger required computed variables for attachment block
-  addAddendum_affidavit
-  affidavit_intro
-  affidavit_body_cutoff 
-
-  complaint_209A_Affidavit = True
----
 comment: |
   Hopefully this screen will also go away if/when it is merged with other parts of 209A
 continue button field: complaint_209A_Affidavit_preview_question
@@ -182,34 +187,69 @@ subquestion: |
 # fields:
 #  - 'Defendant Name': defendant
 ---
-code: |
-  incidents_of_abuse[i].year
-  incidents_of_abuse[i].time_of_day
-  incidents_of_abuse[i].location
-  # incidents_of_abuse[i].abuse
-  incidents_of_abuse[i].description
+# code: |
+#   incidents_of_abuse[i].year
+#   incidents_of_abuse[i].time_of_day
+#   incidents_of_abuse[i].location
+#   # incidents_of_abuse[i].abuse
+#   incidents_of_abuse[i].description
   
-  if not incidents_of_abuse[i].police_included:
-    if not incidents_of_abuse[i].police_involved:
-      if incidents_of_abuse[i].police_why_not:
-        incidents_of_abuse[i].description = incidents_of_abuse[i].police_description
-    else:
-      if incidents_of_abuse[i].add_police:
+#   if not incidents_of_abuse[i].police_included:
+#     if not incidents_of_abuse[i].police_involved:
+#       if incidents_of_abuse[i].police_why_not:
+#         incidents_of_abuse[i].description = incidents_of_abuse[i].police_description
+#     else:
+#       if incidents_of_abuse[i].add_police:
+#         incidents_of_abuse[i].description = incidents_of_abuse[i].police_description
+
+#   if plaintiff_has_minor_children:
+#   #  if incidents_of_abuse[i].injuries_self_child:	
+#     incidents_of_abuse[i].injuries_describe	
+#     if incidents_of_abuse[i].injuries_edit:	
+#       incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
+#   else:
+#     if not incidents_of_abuse[i].injuries:
+#       if incidents_of_abuse[i].injuries_edit:
+#         incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
+    
+#   if incidents_of_abuse[i].medical_add:
+#     incidents_of_abuse[i].description = incidents_of_abuse[i].medical_treatment
+    
+#   incidents_of_abuse[i].feelings
+#   incidents_of_abuse[i].summary
+  
+#   incidents_of_abuse[i].complete = True
+---
+code: |
+  incidents_of_abuse[i].description
+
+  if incidents_of_abuse[i].reminders:
+
+    if plaintiff_has_minor_children:
+      if incidents_of_abuse[i].children:
+        if incidents_of_abuse[i].children_edit:
+          incidents_of_abuse[i].description = incidents_of_abuse[i].children_description
+    
+    if incidents_of_abuse[i].injuries:
+      if incidents_of_abuse[i].injuries_edit:
+        incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description 
+
+    if incidents_of_abuse[i].medical:
+      if incidents_of_abuse[i].medical_edit:
+        incidents_of_abuse[i].description = incidents_of_abuse[i].medical_description
+
+    if incidents_of_abuse[i].property:
+      if incidents_of_abuse[i].property_edit:
+        incidents_of_abuse[i].description = incidents_of_abuse[i].property_description
+    
+    if incidents_of_abuse[i].pets:
+      if incidents_of_abuse[i].pets_edit:
+        incidents_of_abuse[i].description = incidents_of_abuse[i].pets_description
+    
+    if incidents_of_abuse[i].police:
+      if incidents_of_abuse[i].police_edit:
         incidents_of_abuse[i].description = incidents_of_abuse[i].police_description
 
-  if plaintiff_has_minor_children:
-  #  if incidents_of_abuse[i].injuries_self_child:	
-    incidents_of_abuse[i].injuries_describe	
-    if incidents_of_abuse[i].injuries_edit:	
-      incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
-  else:
-    if not incidents_of_abuse[i].injuries:
-      if incidents_of_abuse[i].injuries_edit:
-        incidents_of_abuse[i].description = incidents_of_abuse[i].injuries_description
-    
-  if incidents_of_abuse[i].medical_add:
-    incidents_of_abuse[i].description = incidents_of_abuse[i].medical_treatment
-    
   incidents_of_abuse[i].feelings
   incidents_of_abuse[i].summary
   
@@ -217,56 +257,337 @@ code: |
 ---
 id: 209A Affidavit Date
 question: |
-  % if started:
-    Another incident date
-  % else:
-    Most recent date
-  % endif
-subquestion: |
-  % if started:
-    When did this happen?
-  % else:
-    When was the last time ${other_parties.familiar()} abused you?  
-    We need to put the year on the form.
-  % endif
+  Most recent date
   
+subquestion: |
+  When was the last time ${other_parties.familiar()} abused you?  
+
+  We need to put the year on the form.
+    
   For the date, try to remember the exact date. If you are not sure of the exact date, do not guess.
 fields:
-  - Year: incidents_of_abuse[i].year
+  - Year: most_recent_abuse_year
     code: |
       reversed(list(range(today().year - 20, today().year + 1)))
-  - Date: incidents_of_abuse[i].date
+  - Date: most_recent_abuse_date
     maxlength: 25
   - note: |
       It is okay to give an approximate date or time, or to put a time of year, like "last summer".
 ---
-id: 209A Affidavit time of day
-question: | 
-  Time of day
-subquestion: |
-  What time of day did it happen?
-fields:
-  - no label: incidents_of_abuse[i].time_of_day
-  - note: |
-      It is okay to give an approximate time, like "in the morning".
-help:
-  label: What if I cannot remember?
-  heading: What if I cannot remember?
-  content: |
-    Do the best you can. Put in the time or describe the time of day.
-    For example, you can say "3:00 p.m.," or "bedtime."
----
-id: 209A Affidavit Location
+comment: |
+  add field with checkbox, that asks if you want to see reminders, 
+id: Affidavit description
 question: |
-  Location
+  Describe the incident
 subquestion: |
-   Where were you? 
-   
-   Be as specific as possible. 
-   
-   For example, "my living room" or "at ______ Park."
+  In your own words, what happened? Please use complete sentences, and be as descriptive as you can. List as many details and witnesses as you can remember. 
+
+   Tap "How descriptive should I be?" for some examples
+  
+  % if not started:
+  The court form for the Affidavit starts, "On or about incident_date ${ other_parties.familiar() }… 
+   finish this sentence and describe what ${ other_parties.familiar() } did. Then tell the rest of your story.
+  % endif
+
+fields: 
+  - no label: incidents_of_abuse[i].description
+    input type: area
+   # default: |
+   #   On or about ${ incidents_of_abuse[i].date }, ${incidents_of_abuse[i].year}, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
+help:
+  label: How descriptive should I be?
+  heading: How descriptive should I be?
+  content: |
+    See [Writing Your 209A Affidavit](https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit) on MassLegalHelp.org for help.
+---
+id: 209A affidavit reminders
+comment: |
+  details, check your details? 
+  ask for advocates, don't ask for non-advocates the first time through, then ask.
+question: |
+  Did you remember everything?
+subquestion: |
+  It is easy to to leave out details while you are writing. Sometimes the incident is so horrid, you forget things. 
+
+  We can ask you questions to help you include details that give the judge a picture of what happened. Or, you can skip the questions. 
+  
+field: incidents_of_abuse[i].reminders
+buttons:
+  - "Ask me": True
+  - "Skip": False
+---
+id: Affidavit details
+question: |
+  Did you include?
+subquestion: |
+  In your description of the abuse, did you include anything about:
 fields:
-  - no label: incidents_of_abuse[i].location
+  - children: incidents_of_abuse[i].children
+    datatype: noyesradio
+    help: |
+      Were any children harmed? Think about:	
+      Times ${ other_parties.familiar() } abused your children. 
+      Where your children were when ${ other_parties.familiar() } was abusing you.
+      Times your children witnessed ${ other_parties.familiar() } abusing you, and
+      How the abuse affected your children.
+    show if:
+      code: |
+        plaintiff_has_minor_children
+  - Do you need to add anything about children?: incidents_of_abuse[i].children_edit
+    datatype: yesnoradio
+    show if: 
+      variable: incidents_of_abuse[i].children
+      is: True    
+      code: |
+        plaintiff_has_minor_children
+  - note: |
+      <hr style="overflow: visible /* For IE */; height: 30px, border-style: solid; border-color: red; border-width: 3px 0 0 0; border-radius: 20px;"/>
+  #  show if: incidents_of_abuse[i].children
+  - injuries?: incidents_of_abuse[i].injuries
+    datatype: noyesradio
+    help: |
+      The injuries do not need to be serious.
+  - Do you need to add anything about injuries?: incidents_of_abuse[i].injuries_edit
+    datatype: yesnoradio
+    show if: incidents_of_abuse[i].injuries
+  - note: |
+      <hr style="overflow: visible /* For IE */; height: 30px; border-style: solid; border-color: orange; border-width: 3px 0 0 0; border-radius: 20px;"/>
+  #  show if: incidents_of_abuse[i].injuries
+  - medical or dental treatment needed?: incidents_of_abuse[i].medical
+    datatype: noyesradio
+  - Do you need to add anything about medical or dental treatment?: incidents_of_abuse[i].medical_edit
+    datatype: yesnoradio
+    show if: incidents_of_abuse[i].medical
+  - note: |
+      <hr style="overflow: visible /* For IE */; height: 30px; border-style: solid; border-color: green; border-width: 3px 0 0 0; border-radius: 20px;"/>
+  #  show if: incidents_of_abuse[i].medical
+  - property damage?: incidents_of_abuse[i].property
+    datatype: noyesradio
+  - Do you need to add anything about property damage?: incidents_of_abuse[i].property_edit
+    datatype: yesnoradio
+    show if: incidents_of_abuse[i].property
+  - note: |
+      <hr style="overflow: visible /* For IE */; height: 30px; border-style: solid; border-color: blue; border-width: 3px 0 0 0; border-radius: 20px;"/>
+  #  show if: incidents_of_abuse[i].property
+  - cruelty to pets: incidents_of_abuse[i].pets
+    datatype: noyesradio
+    help: |
+      Being cruel to your pets is a way for ${ other_parties.familiar() } to abuse you also. Even threatening to hurt or kill your pets, as you know, is a way to hurt you too.
+  - Do you need to add anything about your pets?: incidents_of_abuse[i].pets_edit
+    datatype: yesnoradio
+    show if: incidents_of_abuse[i].pets
+  - note: |
+      <hr style="overflow: visible; /* For IE */; height: 30px; border-style: solid, border-color: #8A2BE2; border-width: 5px 0 0 0; border-radius: 20px;"/>
+  #  show if: incidents_of_abuse[i].pets
+  - the police being involved: incidents_of_abuse[i].police
+    datatype: noyesradio
+    help: |
+      You do **not** need to talk about the police. You do not need to have called the police to get a restraining order. If you needed the police and ${ other_parties.familiar() } stopped you from calling them, this information could help the judge understand your situation.
+  - Do you need to add anything about the police?: incidents_of_abuse[i].police_edit
+    datatype: yesnoradio
+    show if: incidents_of_abuse[i].police
+---
+id: 209A Affidavit children present
+question: |
+   Were any children harmed?
+subquestion: |
+ Think about:	
+  
+   * Times ${ other_parties.familiar() } abused your children,
+   * Where your children were when ${ other_parties.familiar() } was abusing you,
+   * Times your children witnessed ${ other_parties.familiar() } abusing you, and
+   * How the abuse affected your children.
+  
+  
+  **Note:**
+  
+  If a child has been abused or witnessed abuse, the judge may: 
+   
+  * Appoint a Guardian ad Litem to represent your child's interest. 
+  * Report the abuse to the Department of Children and Families (DCF) who would probably start an investigation, or 
+  * Do both.
+  
+  This is what you have said so far. 
+  
+  Edit it as much as you need, to include how this incident affected your children.
+fields:
+  - no label: incidents_of_abuse[i].children_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+---
+id: 209A Affidavit injuries describe
+question: |
+  Describe the harm ${ other_parties.familiar() } caused
+subquestion: |
+  It helps to describe all your injuries in detail, even if the injuries were not serious. Be sure to say who was hurt. 
+  
+  Full sentences are easier for a judge to read and understand. This is what you have said so far:
+fields:
+  - no label: incidents_of_abuse[i].injuries_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+---
+id: 209A Affidavit Medical treatment describe
+question: |
+  Describe any medical treatment
+subquestion: |
+  % if plaintiff_has_minor_children:
+  It may help you to tell the judge about any medical or dental treatment you or your children got. 
+
+  Or, if you or your children needed treatment and did not get it, why not? 
+  % else:
+  It may help you to tell the judge about any medical or dental treatment you got. 
+
+  Or, if you needed it and did not get it, why not? 
+  % endif
+
+  This is what you have said so far. Add a description of the medical treatment you needed and the name of the doctor, hospital or clinic that saw you. 
+    
+  If there was a reason you could not get medical treatment, you may want to write about that.  
+fields: 
+  - no label: incidents_of_abuse[i].medical_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+---
+id: 209A pet cruelty
+question: |
+  How did ${other_parties.familiar()} abuse your pet?
+subquestion: |
+  Include your pet's name, whose pet it is, the kind of animal it is and what ${ other_parties.familiar()} did. 
+
+  If ${ other_parties.familiar() } threatened to hurt your pet, write about that. 
+  
+  If ${ other_parties.familiar() } abused more than one pet during this incident, include all the pets involved in your description.
+
+  This is what you have said so far, edit your description to talk about how ${ other_parties.familiar() } was cruel to your pet or pets.
+
+fields: 
+  - no label: incidents_of_abuse[i].pets_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+---
+id: 209A property damage
+question: |
+  How did ${other_parties.familiar()}damage any property to hurt you?
+subquestion: |    
+  Edit what you have said so far to include what ${ other_parties.familiar()}:  
+  * did or threatened to do,
+  * whose property it is, 
+  * the value of the property - emotional, in dollars or both, and 
+  * how you felt about the threat of damage or actual damage.
+
+fields: 
+  - no label: incidents_of_abuse[i].property_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+---
+id: 209A Affidavit Police involvement
+question: |
+  Police involvement
+subquestion: |
+  This is what you have said so far. 
+  
+    Edit it as much as you need to include how the police **were** involved or why they  **were not** involved.
+  
+comment: |
+  Here we want to display the incident user has described so far in a fairly large text area and allow the user to edit the text.
+fields:
+  - no label: incidents_of_abuse[i].police_description
+    input type: area
+    default: |
+      ${ incidents_of_abuse[i].description }
+help:
+  label: How do I describe their involvement?
+  heading: How do I describe their involvement?
+  content: |
+    You can put into your affidavit:
+
+    * who called the police, 
+    * did they come in time, 
+    * if they arrested anyone, 
+    * who they arrested,
+    * if ${ other_parties.familiar() } stopped you from trying to call the police,
+    * if the police made a report.
+---
+id: 209A Affidavit Feelings
+question: |
+  Tell the judge how this incident made you feel
+subquestion: |
+   It gives the judge a better picture if you describe how this incident made you feel. 
+   Write 1 or 2 sentences.
+fields: 
+  - no label: incidents_of_abuse[i].feelings
+    input type: area
+    required: False
+---
+id: 209A Incident Summary
+question: |
+  % if incidents_of_abuse[i] == incidents_of_abuse[0]:
+  The most recent abuse
+  % else:
+  The ${ordinal_number(i+1, use_word=False)} incident you described
+  % endif
+subquestion: | 
+  This is what you have told me about this incident, so far.  
+  If you need to add or change anything, you can edit it in the box below:
+fields:
+  - no label: incidents_of_abuse[i].summary
+    input type: area
+    rows: 10
+    default: |
+      ${ incidents_of_abuse[i].description}  ${ incidents_of_abuse[i].feelings }
+---
+id: there is another abuse incident
+question: |
+  Can you describe another time ${ other_parties.familiar() } abused you?
+yesno: incidents_of_abuse.there_is_another
+---
+id: pattern of abuse
+question: |
+   Can you tell the judge about any "patterns of abuse"? 
+subquestion: |
+  Does ${ other_parties.familiar() } do or say anything regularly to: 
+  
+  * scare you,
+  * control you, or
+  * stop you from doing things you want or need to do?
+fields:
+  - no label: pattern
+    datatype: yesnoradio
+  - What does ${ other_parties.familiar() } do?: pattern_description
+    input type: area
+    show if: pattern
+help:
+  label: What is a "pattern of abuse"?
+  heading: Can you give me some examples?
+  content: |
+    
+    ### See the Mayo Clinic's webpage:
+    
+    ### [Recognize patterns](https://www.mayoclinic.org/healthy-lifestyle/adult-health/in-depth/domestic-violence/art-20048397?p=1)
+---
+id: saw incidents of abuse
+question: |
+  This is your Affidavit 
+subquestion: |
+  These are your words. Edit this statement in any way you need so that it says exactly what you need to tell the judge.  
+  Once you are satisfied you have told the truth, as far as you know, go on to the next set of questions.
+  
+fields:
+  - no label: affidavit_body
+    input type: area
+    default: |
+      ${ affidavit_summary + pattern_description }
+    rows: 10
+field: saw_incidents
+---
+code: |
+  affidavit_intro = "\n The preceding statement is a brief summary of the events and does not attempt to capture all the detail of the abuse. "
 ---
 id: 209A Affidavit Type of violence
 question: |
@@ -298,8 +619,7 @@ help:
     For children under 18, it can mean any sexual contact.
 
     More - See [Writing Your 209A Affidavit on MassLegalHelp](https://www.masslegalhelp.org/domestic-violence/209a-writing-affidavit)
-comment: |
-  Should get link for this
+
 ---
 comment: |
   Used to build the affidavit incidents.
@@ -330,192 +650,192 @@ code: |
   }
   # incidents_of_abuse[i].description_placeholder = comma_and_list([var_map[key] for key in incidents_of_abuse[i].abuse.true_values()])
 ---
-id: Affidavit description
-question: |
-  Describe the incident  
-subquestion: |
-   In your own words, what happened? Please use complete sentences, and be as descriptive as you can. List as many details and witnesses as you can remember. 
-
-   Click "How descriptive should I be?" for some examples
-fields: 
-  - no label: incidents_of_abuse[i].description
-    input type: area
-    default: |
-      On or about ${ incidents_of_abuse[i].date }, ${incidents_of_abuse[i].year}, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
-help:
-  label: How descriptive should I be?
-  heading: How descriptive should I be?
-  content: |
-    2 examples to help you understand how to write a good description: 
-    
-    **A poor example:** 
-    
-    We were arguing. ${ other_parties.familiar() } screamed at me and I was afraid. 
-    
-    **A good example:** 
-    
-    Last Thanksgiving night, November 2019, we were talking about our child. Defendant screamed that I had better do exactly what he said or I would be sorry. He was standing inches away from me and I was backed into the wall of the kitchen. I could feel his spit on my face as he screamed. I was afraid because the last time, about a month before, when he said I better do something or I would be sorry, I did not do what he wanted. So he grabbed me and shook me really hard. This time I was really afraid he would do it again. I ducked under his arms and ran out of the house.    
----
-id: Affidavit police included?
-question: |
-  Did you include the police in your description?
-subquestion: |
-   Did you say if the police were involved in this incident?
-yesno: incidents_of_abuse[i].police_included
----
-id: Affidavit police called?
-question: |
-  Were the police called?
-subquestion: |
-  It may help you give the judge a better picture if you explain how the police were involved. 
-    
-  You may have good reasons **not** to talk about the police. Do not feel you have to include anything about the police in your affidavit.
-  
-  Were the police involved at all?
-yesno: incidents_of_abuse[i].police_involved
----
-id: Affidavit may want to include police
-question: |
-  You may want to include police in your story.
-subquestion: |
-   It may help you give the judge a better picture if you explain how the police were involved. 
-   
-   You can say how they got involved and what they did. But you do not need to talk about the police at all.
-   
-   Do you need to add anything to your story? 
-yesno: incidents_of_abuse[i].add_police
----
-id: Affidavit did not call police
-question: |
-  If you did not include the police in your story  
-subquestion: |
-   If you needed the police but you did not call them because you were afraid or you could not call them, it may help you to tell the judge. 
-   
-   Do not feel you have to explain. You do not have to include anything about the police to get a restraining order. 
-   
-   Do you want to explain why the police were **not** involved?   
-yesno: incidents_of_abuse[i].police_why_not
----
-id: 209A Affidavit Police involvement
-question: |
-  Police involvement
-subquestion: |
-  This is what you have said so far. 
-  
-  % if incidents_of_abuse[i].police_involved:
-    Edit it as much as you need to include how the police **were** involved.
-  % else:
-    Edit it as much as you need to include why the police **were not** involved
-  % endif
-comment: |
-  Here we want to display the incident user has described so far in a fairly large text area and allow the user to edit the text.
-fields:
-  - no label: incidents_of_abuse[i].police_description
-    input type: area
-    default: |
-      ${ incidents_of_abuse[i].description }
-help:
-  label: How do I describe their involvement?
-  heading: How do I describe their involvement?
-  content: |
-    You can put into your affidavit:
-
-    * who called the police, 
-    * did they come in time, 
-    * if they arrested anyone, 
-    * who they arrested,
-    * if ${ other_parties.familiar() } stopped you from trying to call the police,
-    * if the police made a report.
----
-id: 209A Affidavit you or child injured
-question: |
-  Were you or a child injured?
-subquestion: |
-  
-yesno: incidents_of_abuse[i].injuries_self_child
----
-id: 209A Affidavit you or child injuries described
-question: |
-  Did you include harm to you or your ${children.as_noun()}?
-subquestion: |  
-  Think about:	
-  
-  * Times ${ other_parties.familiar() } abused your ${children.as_noun()},
-  * Where your ${children.as_noun()} ${children.did_verb('was')} when ${ other_parties.familiar() } was abusing you,
-  * Times your ${children.as_noun()} witnessed ${ other_parties.familiar() } abusing you, and
-  * How the abuse affected your ${children.as_noun()}.
-  
-  
-  **Note:**
-  
-  If a child has been abused or witnessed abuse, the judge may: 
-   
-  * Appoint a Guardian ad Litem to represent the child's interest. 
-  * Report the abuse to the Department of Children and Families (DCF) who would probably start an investigation, or 
-  * Do both.
-  
-  Did you already describe any injuries that ${ other_parties.familiar() } caused you or your ${children.as_noun()}?
-  
-  Injuries do not need to be serious.
-  
-yesno: incidents_of_abuse[i].injuries_describe
----
-id: 209A Affidavit you injured
-question: |
-  Did you already describe any injuries you suffered because of ${ other_parties.familiar() }?
-subquestion: |
-   The injuries do not need to be serious.
-yesno: incidents_of_abuse[i].injuries
----
-id: 209A Affidavit Injuries to include
-question: |
-  Do you need to edit or add anything?
-subquestion: |  
-  Do you need to add anything about the harm ${other_parties.familiar()} caused,  or change what you said?
-yesno: incidents_of_abuse[i].injuries_edit
----
-id: 209A Affidavit injuries describe
-question: |
-  Describe the harm ${other_parties.familiar()} caused
-subquestion: |
-  It helps to describe all your injuries in detail, even if the injuries were not serious. Be sure to say who was hurt. 
-  
-  Please write full sentences. This is what you have said so far:
-fields:
-  - no label: incidents_of_abuse[i].injuries_description
-    input type: area
-    default: |
-      ${ incidents_of_abuse[i].description }
----
-id: 209A Affidavit medical treatment
-question: |
-  Medical or dental treatment
-subquestion: |
-  % if plaintiff_has_minor_children:
-  It may help you to tell the judge about any medical or dental treatment you or your children got. 
-
-  Or, if you or your children needed treatment and did not get it, why not? 
-  % else:
-  It may help you to tell the judge about any medical or dental treatment you got. 
-
-  Or, if you needed it and did not get it, why not? 
-  % endif
-   
-  Do you need to add anything about medical or dental treatment? 
-yesno: incidents_of_abuse[i].medical_add
----
-id: 209A Affidavit Medical treatment describe
-question: |
-  Describe any medical treatment
-subquestion: |
-    This is what you have said so far. Add a description of the medical treatment you needed and the name of the doctor, hospital or clinic that saw you. 
-    
-    If there was a reason you could not get medical treatment, you may want to write about that.  
-fields: 
-  - no label: incidents_of_abuse[i].medical_treatment
-    input type: area
-    default: |
-      ${ incidents_of_abuse[i].description }
+# id: Affidavit description
+# question: |
+#   Describe the incident  
+# subquestion: |
+#    In your own words, what happened? Please use complete sentences, and be as descriptive as you can. List as many details and witnesses as you can remember. 
+# 
+#    Click "How descriptive should I be?" for some examples
+# fields: 
+#   - no label: incidents_of_abuse[i].description
+#     input type: area
+#     default: |
+#       On or about ${ incidents_of_abuse[i].date }, ${incidents_of_abuse[i].year}, ${ incidents_of_abuse[i].time_of_day }, ${ incidents_of_abuse[i].location }, 
+# help:
+#   label: How descriptive should I be?
+#   heading: How descriptive should I be?
+#   content: |
+#     2 examples to help you understand how to write a good description: 
+#     
+#     **A poor example:** 
+#     
+#     We were arguing. ${ other_parties.familiar() } screamed at me and I was afraid. 
+#     
+#     **A good example:** 
+#     
+#     Last Thanksgiving night, November 2019, we were talking about our child. Defendant screamed that I had better do exactly what he said or I would be sorry. He was standing inches away from me and I was backed into the wall of the kitchen. I could feel his spit on my face as he screamed. I was afraid because the last time, about a month before, when he said I better do something or I would be sorry, I did not do what he wanted. So he grabbed me and shook me really hard. This time I was really afraid he would do it again. I ducked under his arms and ran out of the house.    
+# ---
+# id: Affidavit police included?
+# question: |
+#   Did you include the police in your description?
+# subquestion: |
+#    Did you say if the police were involved in this incident?
+# yesno: incidents_of_abuse[i].police_included
+# ---
+# id: Affidavit police called?
+# question: |
+#   Were the police called?
+# subquestion: |
+#   It may help you give the judge a better picture if you explain how the police were involved. 
+#     
+#   You may have good reasons **not** to talk about the police. Do not feel you have to include anything about the police in your affidavit.
+#   
+#   Were the police involved at all?
+# yesno: incidents_of_abuse[i].police_involved
+# ---
+# id: Affidavit may want to include police
+# question: |
+#   You may want to include police in your story.
+# subquestion: |
+#    It may help you give the judge a better picture if you explain how the police were involved. 
+#    
+#    You can say how they got involved and what they did. But you do not need to talk about the police at all.
+#    
+#    Do you need to add anything to your story? 
+# yesno: incidents_of_abuse[i].add_police
+# ---
+# id: Affidavit did not call police
+# question: |
+#   If you did not include the police in your story  
+# subquestion: |
+#    If you needed the police but you did not call them because you were afraid or you could not call them, it may help you to tell the judge. 
+#    
+#    Do not feel you have to explain. You do not have to include anything about the police to get a restraining order. 
+#    
+#    Do you want to explain why the police were **not** involved?   
+# yesno: incidents_of_abuse[i].police_why_not
+# ---
+# id: 209A Affidavit Police involvement
+# question: |
+#   Police involvement
+# subquestion: |
+#   This is what you have said so far. 
+#   
+#   % if incidents_of_abuse[i].police_involved:
+#     Edit it as much as you need to include how the police **were** involved.
+#   % else:
+#     Edit it as much as you need to include why the police **were not** involved
+#   % endif
+# comment: |
+#   Here we want to display the incident user has described so far in a fairly large text area and allow the user to edit the text.
+# fields:
+#   - no label: incidents_of_abuse[i].police_description
+#     input type: area
+#     default: |
+#       ${ incidents_of_abuse[i].description }
+# help:
+#   label: How do I describe their involvement?
+#   heading: How do I describe their involvement?
+#   content: |
+#     You can put into your affidavit:
+# 
+#     * who called the police, 
+#     * did they come in time, 
+#     * if they arrested anyone, 
+#     * who they arrested,
+#     * if ${ other_parties.familiar() } stopped you from trying to call the police,
+#     * if the police made a report.
+# ---
+# id: 209A Affidavit you or child injured
+# question: |
+#   Were you or a child injured?
+# subquestion: |
+#   
+# yesno: incidents_of_abuse[i].injuries_self_child
+# ---
+# id: 209A Affidavit you or child injuries described
+# question: |
+#   Did you include harm to you or your ${children.as_noun()}?
+# subquestion: |  
+#   Think about:	
+#   
+#   * Times ${ other_parties.familiar() } abused your ${children.as_noun()},
+#   * Where your ${children.as_noun()} ${children.did_verb('was')} when ${ other_parties.familiar() } was abusing you,
+#   * Times your ${children.as_noun()} witnessed ${ other_parties.familiar() } abusing you, and
+#   * How the abuse affected your ${children.as_noun()}.
+#   
+#   
+#   **Note:**
+#   
+#   If a child has been abused or witnessed abuse, the judge may: 
+#    
+#   * Appoint a Guardian ad Litem to represent the child's interest. 
+#   * Report the abuse to the Department of Children and Families (DCF) who would probably start an investigation, or 
+#   * Do both.
+#   
+#   Did you already describe any injuries that ${ other_parties.familiar() } caused you or your ${children.as_noun()}?
+#   
+#   Injuries do not need to be serious.
+#   
+# yesno: incidents_of_abuse[i].injuries_describe
+# ---
+# id: 209A Affidavit you injured
+# question: |
+#   Did you already describe any injuries you suffered because of ${ other_parties.familiar() }?
+# subquestion: |
+#    The injuries do not need to be serious.
+# yesno: incidents_of_abuse[i].injuries
+# ---
+# id: 209A Affidavit Injuries to include
+# question: |
+#   Do you need to edit or add anything?
+# subquestion: |  
+#   Do you need to add anything about the harm ${other_parties.familiar()} caused,  or change what you said?
+# yesno: incidents_of_abuse[i].injuries_edit
+# ---
+# id: 209A Affidavit injuries describe
+# question: |
+#   Describe the harm ${other_parties.familiar()} caused
+# subquestion: |
+#   It helps to describe all your injuries in detail, even if the injuries were not serious. Be sure to say who was hurt. 
+#   
+#   Please write full sentences. This is what you have said so far:
+# fields:
+#   - no label: incidents_of_abuse[i].injuries_description
+#     input type: area
+#     default: |
+#       ${ incidents_of_abuse[i].description }
+# ---
+# id: 209A Affidavit medical treatment
+# question: |
+#   Medical or dental treatment
+# subquestion: |
+#   % if plaintiff_has_minor_children:
+#   It may help you to tell the judge about any medical or dental treatment you or your children got. 
+# 
+#   Or, if you or your children needed treatment and did not get it, why not? 
+#   % else:
+#   It may help you to tell the judge about any medical or dental treatment you got. 
+# 
+#   Or, if you needed it and did not get it, why not? 
+#   % endif
+#    
+#   Do you need to add anything about medical or dental treatment? 
+# yesno: incidents_of_abuse[i].medical_add
+# ---
+# id: 209A Affidavit Medical treatment describe
+# question: |
+#   Describe any medical treatment
+# subquestion: |
+#     This is what you have said so far. Add a description of the medical treatment you needed and the name of the doctor, hospital or clinic that saw you. 
+#     
+#     If there was a reason you could not get medical treatment, you may want to write about that.  
+# fields: 
+#   - no label: incidents_of_abuse[i].medical_treatment
+#     input type: area
+#     default: |
+#       ${ incidents_of_abuse[i].description }
 ---
 id: 209A Affidavit Feelings
 question: |
@@ -575,7 +895,7 @@ fields:
   - no label: affidavit_body
     input type: area
     default: |
-      ${ affidavit_summary }
+      ${  affidavit_summary + pattern_description  }
     rows: 10
 field: saw_incidents
 ---
@@ -614,7 +934,7 @@ attachment:
 code: |
   # List the informal part of the date first. I think this is more logical
   # E.g., Summer, 2020
-  incident_date = incidents_of_abuse[0].date + ", " + str(incidents_of_abuse[0].year)
+  incident_date = most_recent_abuse_date + ", " + str(most_recent_abuse_year)
 ---
 comment: Addenda related code. 
 code: |  
