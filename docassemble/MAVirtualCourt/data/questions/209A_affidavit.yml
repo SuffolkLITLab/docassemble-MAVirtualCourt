@@ -285,7 +285,7 @@ subquestion: |
    Tap "How descriptive should I be?" for some examples
   
   % if not started:
-  The court form for the Affidavit starts, "On or about incident_date ${ other_parties.familiar() }… 
+  The court form for the Affidavit starts, "On or about ${ incident_date }, ${ other_parties.familiar() }… 
    finish this sentence and describe what ${ other_parties.familiar() } did. Then tell the rest of your story.
   % endif
 
@@ -472,7 +472,7 @@ fields:
 ---
 id: 209A property damage
 question: |
-  How did ${other_parties.familiar()}damage any property to hurt you?
+  How did ${other_parties.familiar()} damage any property to hurt you?
 subquestion: |    
   Edit what you have said so far to include what ${ other_parties.familiar()}:  
   * did or threatened to do,
