@@ -474,8 +474,9 @@ id: 209A property damage
 question: |
   How did ${other_parties.familiar()} damage any property to hurt you?
 subquestion: |    
-  Edit what you have said so far to include what ${ other_parties.familiar()}:  
-  * did or threatened to do,
+  Edit what you have said so far to include: 
+  
+  * what ${ other_parties.familiar()} did or threatened to do,
   * whose property it is, 
   * the value of the property - emotional, in dollars or both, and 
   * how you felt about the threat of damage or actual damage.
