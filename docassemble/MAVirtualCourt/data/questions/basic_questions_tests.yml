@@ -15,7 +15,7 @@ mandatory: True
 code: |
   # Custom title text, green words/help text, terms of use link, checkbox controls continuation
   interview_short_title = 'Shared content tests'
-  acknowledged_information_use
+  basic_questions_intro_screen
   users[0].other_contact_method
   users.gather()
   users[0].address.address
