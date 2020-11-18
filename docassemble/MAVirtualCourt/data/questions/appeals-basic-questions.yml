@@ -1,0 +1,198 @@
+---
+code: |
+  courts[0] = macourts.matching_appeals_court("")
+---
+id: appeals basic questions intro screen
+question: |
+  ${interview_short_title}: Mass Access Project
+subquestion: |
+  % if form_approved_for_email_filing:
+  The MassAccess Project can help you complete and file court forms in 3 steps:
+  % else:
+  The MassAccess Project can help you complete and download forms in 3 steps:
+  % endif
+  
+  Step 1. Answer questions that will fill in your form for you.  
+  Step 2. Preview the completed form.  
+  % if form_approved_for_email_filing:  
+  Step 3. Email the form to the court using this secure website and save copies
+  for yourself for later reference.  
+  % else:
+  Step 3. Download and print the final form. You will need to deliver it
+  to the court on your own.
+  % endif
+  
+  Tap the {green words} in any screen for a definition or more information.
+  
+  If you have questions about this form or the court process, 
+  call the Appeals Court Clerk's Office:  
+  617-921-4443 
+  Monday-Friday  
+  8:30am - 4:30pm
+  % if chat_partners_available().help:
+  Live help is currently available in this interview. Click the speech bubble
+  (:comment-alt:) in the navigation bar to connect to a live advocate for help.
+  % endif
+fields:
+  - To continue, you must accept the [terms of use](https://massaccess.suffolklitlab.org/privacy/): acknowledged_information_use
+    datatype: checkboxes
+    none of the above: False    
+    minlength: 1
+    choices:
+      - I accept the terms of use.
+    validation messages:
+      minlength: |
+        You cannot continue unless you agree to the terms of use.        
+continue button field: appeals_basic_questions_intro_screen
+terms:
+  green words: |
+    Green words are legal terms or a short way of referring to something that needs more explanation. The definition or explanation pops up when you tap the green words.
+right: |
+  % if user_has_saved_answers:
+  ${fa_icon("bell", color="primary", size="sm")}
+  Saved answers available!  
+  
+  ${action_button_html(url_action('load_answer'), icon="folder-open", label=word("View answers"), size="sm" )}
+  % endif
+---
+id: appeals user address
+question: |
+  What is your address?
+subquestion: |
+  List the address where you want the court to mail papers to you.
+fields:
+  - Email address: users[0].email    
+    datatype: email
+    required: False
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: states_list()
+  - Zip: users[0].address.zip 
+---
+id: appeals_contact information
+question: |
+  Contact information
+subquestion: |
+  Provide at least one other way for the court to reach you. 
+fields:
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
+    required: False
+validation code: |
+  if (not showifdef('users[0].phone_number') and 
+      (not showifdef('users[0].mobile_number'))):
+    validation_error(word("You need to provide at least one other contact method."))
+---
+id: download form
+event: download
+decoration: file-download
+question: |
+  % if not defined('email_success') or not email_success:
+  Review, Download, and Send Form
+  % else:
+  Form delivered
+  % endif
+subquestion: |
+  % if not defined('email_success') or not email_success:
+  Thank you ${users[0]}. Your form is ready to send to the court. **It is not
+  delivered until you complete the delivery process below.**
+  
+  % if no_notice_of_appeal_filed:
+  **You have two documents to deliver:** 
+  
+  1. The [:file-download: Notice of Appeal]( ${ Notice_of_Appeal['final'].pdf.url_for()} ),
+  which needs to be delivered to the **${ housing_court }**. You need to deliver
+  this on your own. Call the ${ housing_court } at ${ housing_court.phone }
+  to find out how.
+  2. Your Appeal, which needs to be delivered to ${ courts[0] }. You can deliver the appeal by following the steps below.
+  
+  Follow these steps to deliver the Appeal to the ${ courts[0] }:
+  % endif
+  
+  1. Click the preview image below to open the form in a new window.
+  1. Download and save or print a copy of this form for your 
+  records.
+  1. Click "Submit to ${courts[0]}" to send it to the court. 
+  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+  % else:
+  If you do not hear from the court in 1 business day, call the   Appeals Court Clerk's Office: 617-921-4443 
+  
+  The Appeals Court Clerk's Office is open:  
+  Monday - Friday  
+  8:30am - 4:30pm
+  % endif
+  
+  ${ form_to_file_no_cover }  
+  
+  % if not defined('email_success') or not email_success:
+    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+    
+  Or download/email below:
+  % else:
+    Your email has already been delivered to ${courts[0]}
+
+  % for file in final_form_to_file:
+  % if hasattr(file, 'info'):
+  * [:file-download: ${ file.info.get("filename") }](${file.url_for()})
+  % elif hasattr(file, 'file_info'):
+  * [:file-download: ${ file.file_info.get("filename") }](${file.url_for()})
+  % else:
+  * [:file-download: ${ str(file) }](${file.url_for()})
+  % endif
+  % endfor 
+  % endif
+progress: 100
+section: download
+attachment code: motion_attachment["final"]
+---
+need:
+  - comments_to_clerk
+  - package_version_number
+id: ready to email
+question: |
+  Final Review With Cover Page
+subquestion: |
+  
+  Below is your ${comma_and_list(download_titles)} document with the 
+  cover page that we will deliver to ${courts[0]}.
+  
+  Click "Back" if you need to make any changes.  
+  Click "Send to court" to deliver it.
+  
+  Here is what the clerk at ${courts} will get:
+
+  % for file in final_form_to_file:
+  
+  % if hasattr(file, 'info'):
+  * [:file-download: ${ file.info.get("filename") }](${file.url_for()})
+  % elif hasattr(file, 'file_info'):
+  * [:file-download: ${ file.file_info.get("filename") }](${file.url_for()})
+  % else:
+  * [:file-download: ${ str(file) }](${file.url_for()})
+  % endif
+  % endfor
+  
+  % if found_email:
+  We will deliver it securely. Please allow up to 15 minutes for the email to
+  arrive.
+  % else:
+  There was a problem delivering this to the ${courts[0]}. We couldn't
+  locate the contact information for this court.
+  % endif
+ 
+  Press below to deliver the form.
+fields:
+  - Send me a copy: should_cc_user
+    datatype: yesno
+  - Email address: cc_email
+    datatype: email
+    show if: should_cc_user
+    default: ${users[0].email if defined('users[0].email') else ''}
+continue button field: ready_to_email
+continue button label: Send to court
+---
