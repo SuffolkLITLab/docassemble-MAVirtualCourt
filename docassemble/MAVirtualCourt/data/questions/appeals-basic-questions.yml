@@ -196,3 +196,19 @@ fields:
 continue button field: ready_to_email
 continue button label: Send to court
 ---
+id: interpreter
+comment: |
+  This question is required for the cover page we send to the court,
+  even if the form does not use it.
+question: |
+  Do you need an interpreter?
+subquestion: |
+  You have the right to an interpreter.
+  If there is a chance you may not understand everything that is said in English, or if other people may not be able to understand you, ask for an interpreter.
+  You do not have to speak only through the interpreter, but you may have one if you need one.
+fields:
+  - I need an interpreter: user_needs_interpreter
+    datatype: yesnoradio
+  - My preferred language is: user_preferred_language
+    show if: user_needs_interpreter
+---
