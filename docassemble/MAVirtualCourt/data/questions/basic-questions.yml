@@ -138,7 +138,6 @@ fields:
   - Middle name: witnesses[i].name.middle
     required: False
   - Last name: witnesses[i].name.last
-    required: False
   - Suffix: witnesses[i].name.suffix
     code: |
       name_suffix()
@@ -566,12 +565,18 @@ fields:
 ---
 id: persons contact information
 generic object: Individual
-question: What is the contact information for ${ x.name }?
+question: |
+  What is ${x}'s phone number?
 fields:
   - Phone: x.phone_number
+---
+id: email
+generic object: Individual
+question: |
+  What is ${x}'s email address?
+fields:
   - Email: x.email
     datatype: email
-    required: False
 ---
 id: persons signature
 generic object: Individual
@@ -1298,12 +1303,9 @@ question: |
 subquestion: |
   You have the right to an interpreter.
 
-  If you are not 100% confident about speaking English, ask for an interpreter.
-
   If there is a chance you may not understand everything that is said in English, or if other people may not be able to understand you, ask for an interpreter.
 
   You do not have to speak only through the interpreter, but you may have one if you need one.
-  
 fields:
   - I need an interpreter: user_needs_interpreter
     datatype: yesnoradio
