@@ -10,13 +10,16 @@ metadata:
 default screen parts:
   continue button label: |
     Next
+  back button label: |
+    Undo
   pre: |
-    % if 'dev' in get_config('url root') or 'test' in get_config('url root'):
-    <div id="qId"></div>
+    % if get_config('debug'):
+    `id: ${ user_info().question_id }`  
+    `Package: ${ user_info().package } ${ package_version_number }; ${ mavc_version }`
     % endif
 ---
 features:
-  javascript: show_id.js
+  # javascript: show_id.js
   small screen navigation: False
 ---
 # This is a backfill to ensure these keys in our metadata dictionary are
@@ -1258,18 +1261,20 @@ content: |
   confirm that you received this message.
 ---
 imports:
+  - importlib
   - docassemble.MAVirtualCourt # INSTALLED version of the package
 ---
 code: |
-  # Build up the package version and try to convey the server and if running from playground (not installed)
-  extra = ''
-  if 'playground' in interview_url():
-    extra = ', (playground)'
-  if 'test' in get_config('url root'):
-    extra += ', test'
-  if 'dev' in get_config('url root'):
-    extra += ', dev'
-  package_version_number = str(docassemble.MAVirtualCourt.__version__) + extra
+  try:
+    mavc_version = "MAVC-" + str(docassemble.MAVirtualCourt.__version__)
+  except:
+    mavc_version = ""
+---
+code: |
+  try:
+    package_version_number = str(importlib.import_module(user_info().package).__version__)
+  except:
+    package_version_number = "playground"
 ---
 event: review_all_sections
 question: |
