@@ -41,16 +41,23 @@ question: |
   Do you have a docket number for this case?
 yesno: docket_numbers.there_are_any
 ---
+code: |
+  package_name = str(user_info().package)
+  if package_name and not "playground" in package_name:
+    github_repo_name = package_name.replace('.','-')
+  else:    
+    github_repo_name = "docassemble-MAVirtualCourt"
+---
 default screen parts:
   under: |
     % if not user_logged_in():
     [:sign-in-alt: Sign-in](${url_of('login', next=interview_url())}) or [register](${url_of('register', next=interview_url())}) to save your progress (optional).
     % endif
 
-    % if 'dev' in get_config('url root') or 'test' in get_config('url root'):
-    Feedback, suggestions, or comments? [Complete this survey](https://docs.google.com/forms/d/e/1FAIpQLSeHwCqKxXLJVcmPyUOZceuj2iUTmvOLWIEbAkWxfJVfDHvytA/viewform?usp=sf_link).
+    % if get_config('debug'):
+    Feedback, suggestions, or comments? [Complete this survey](${ interview_url(i="docassemble.MAVirtualCourt:feedback.yml", github_repo=github_repo_name, github_user='suffolklitlab', variable=user_info().variable, question_id=user_info().question_id, package_version=package_version_number, local=False,reset=1) } ).
     % else:
-    Feedback, suggestions, or comments? [Complete this survey](https://docs.google.com/forms/d/e/1FAIpQLSen48P7xIH6Feuzi9ovLs9HsOmhbo787vK-jScspAyZyjMqdg/viewform?usp=sf_link).
+    Feedback, suggestions, or comments? [Complete this survey](${ interview_url(i="docassemble.MAVirtualCourt:feedback.yml", github_repo=github_repo_name, github_user='suffolklitlab', variable=user_info().variable, question_id=user_info().question_id, package_version=package_version_number, local=False,reset=1) } ).
     % endif    
 ---
 objects from file:
