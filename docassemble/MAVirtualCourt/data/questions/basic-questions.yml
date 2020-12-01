@@ -1007,7 +1007,7 @@ fields:
       - I accept the terms of use.
     validation messages:
       minlength: |
-        You cannot continue unless you agree to the terms of use.        
+        You can only continue if you agree to our terms of use.        
 continue button field: appeals_basic_questions_intro_screen
 terms:
   green words: |
