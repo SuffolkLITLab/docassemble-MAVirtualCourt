@@ -1,11 +1,12 @@
 metadata:
   title: |
-    MassAccess
+    CourtFormsOnline: MassAccess
   short title: |
-    MassAccess
-  title url: https://massaccess.suffolklitlab.org/
+    CourFormsOnline
+  title url: https://courtformsonline.org
   logo: |
-    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">MassAccess</div>
+    <img src="/packagestatic/docassemble.MAVirtualCourt/mass_icon.png" class="ma_icon" alt="MA State Icon"><div class="title">CourtFormsOnline: MassAccess</div>
+  exit url: https://courtformsonline.org    
 ---
 default screen parts:
   continue button label: |
