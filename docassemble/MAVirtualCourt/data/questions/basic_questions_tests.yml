@@ -1,3 +1,4 @@
+---  
 comment: |
   Tests to remember to implement:
   - Showing login suggestion for (and only for) users who are not logged in
