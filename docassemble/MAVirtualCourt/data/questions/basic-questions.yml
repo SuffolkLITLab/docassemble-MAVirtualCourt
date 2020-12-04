@@ -967,9 +967,19 @@ code: |
 code: |
   user_signature_verification = users[0].signature
 ---
+image sets:
+  smashicons:
+    attribution: |
+      Icon made by
+      [Smashicons](https://www.flaticon.com/authors/smashicons)
+    images:
+      form: sign-form.svg
+      form-lineal: sign-form-lineal.svg
+---
 id: appeals basic questions intro screen
 question: |
   ${interview_short_title}: Mass Access Project
+decoration:  form 
 subquestion: |
   % if form_approved_for_email_filing:
   The MassAccess Project can help you complete and file court forms in 3 steps:
@@ -1021,6 +1031,7 @@ right: |
   % endif
 ---
 id: basic questions intro screen
+decoration: form-lineal
 question: |
   ${interview_short_title}: Mass Access Project
 subquestion: |

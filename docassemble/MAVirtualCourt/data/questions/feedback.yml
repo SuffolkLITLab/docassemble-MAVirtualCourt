@@ -37,6 +37,7 @@ image sets:
       confusion: confusion.svg
       lifebuoy: lifebuoy.svg
       love: love.svg
+      enhancement: enhance.svg
 ---
 mandatory: True
 code: |
@@ -52,6 +53,9 @@ code: |
     issue_template = other_feedback_report
   elif reason == 'help':
     gentle_exit
+  else:
+    value(reason)  
+    issue_template = generic_report[reason]
   send_to_github
   prevent_going_back()
   store_variables_snapshot(persistent=True) # this is mostly just for backup reasons
@@ -74,6 +78,8 @@ code: |
     mark_task_as_performed('sent to github', persistent=True)
   send_to_github = True
 ---
+if: |
+  not get_config('debug')
 id: intro
 question: |
   Tell us how we're doing
@@ -102,6 +108,55 @@ fields:
       - I have something else to tell you: else
 continue button field: intro  
 ---
+if: |
+  get_config('debug')
+id: intro
+question: |
+  Tester feedback form
+decoration: opinion  
+subquestion: |
+  This form is designed to be used by testers and community
+  stakeholders. 
+  
+  The information you type here will be publicly available. That means anyone
+  will be able to see it. 
+  
+  It helps us to know how to prioritize your feedback. We use
+  a [5-level 
+  rating](https://suffolklitlab.org/legal-tech-class/docs/legal-tech-overview/maturity-model/#example-maturity-model-for-the-massaccess-project)
+  for our finished forms. Forms are usually 
+  ready to publish when they meet level 1, but all kinds of
+  feedback are valuable. Some forms will reach level 2-5 through 
+  iterative revision. Some will stay at level 1. Categorizing feedback
+  helps us choose the right tasks to work on in the right order.
+  
+  #### Description of levels
+  1. A user is able to correctly fill in the full form, like the paper form.
+      * 1.5 Eliminates compound question. First pass at plain language.
+  2. Similar to an intake with a new attorney
+  3. Similar to an intake with an experienced attorney
+  4. Provides substantial help and tailored resources in addition
+  to filling in the form.
+fields:
+  - "**What would you like to tell us about?**": reason
+    input type: radio
+    choices:
+      - Bug: bug
+      - Language fix: language
+      - Logic error: logic
+      - Confusing user experience: confusing
+      - Proposed enhancement: enhancement
+      - I have something else to tell you: else
+continue button field: intro  
+---
+variable name: maturity_levels
+data:
+  - Level 1 - this needs to be fixed to be equivalent to the blank form
+  - Level 1.5 - it works as-is, but this is a significant plain language issue
+  - Level 2 - this needs to be fixed to meet expectations of a basic intake
+  - Level 3 - this needs to be fixed to meet expectations of a sophisticated intake worker
+  - Level 4 - this is purely an enhancement to improve user experience
+---
 id: bug
 question: |
   Tell us about the bug
@@ -126,6 +181,15 @@ fields:
     show if:
       code: |
         not question_id
+  - When should this fix be implemented?: maturity_level
+    code: maturity_levels
+    show if:
+      code: |
+        get_config('debug')
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')  
   - label: |
       **Tell us the steps that you followed before you noticed the problem.** [BR]
       For example: 1. I opened the interview. 2. On the first page, I put in just my first name. 3. On the second page, I put in my phone number. 4. I pressed a button to go to the next page.
@@ -179,6 +243,15 @@ fields:
     show if:
       code: |
         not question_id    
+  - When should this fix be implemented?: maturity_level
+    code: maturity_levels
+    show if:
+      code: |
+        get_config('debug')
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')          
   - label: |
       **What was confusing or missing information? **
     field: confusing_details
@@ -208,6 +281,10 @@ fields:
       - Other worker at a nonprofit
       - Attorney or paralegal
       - Other: other
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')        
   - Other (please specify): user_type
     show if:
       variable: user_type
@@ -216,6 +293,113 @@ fields:
       **What would you like to tell us?**
     field: other_feedback   
     datatype: area
+---
+id: language fix
+question: |
+  Tell us about the language fix
+decoration: confusion
+fields:
+  - label: |
+      **What form were you using?**
+    field: form_title
+    show if:
+      code: |
+        github_repo == default_repository
+  - label: |
+      **What was the title at the top of the page where
+      the bug happened?**
+    field: page_title
+    show if:
+      code: |
+        not question_id    
+  - When should this fix be implemented?: maturity_level
+    code: maturity_levels
+    show if:
+      code: |
+        get_config('debug')
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')          
+  - label: |
+      **What language fix is needed? **
+    field: language
+    datatype: area
+    rows: 4
+  - label: |
+      **What else would you like to tell us?**
+    field: share_other_details   
+    datatype: area
+    required: False
+---
+id: logic fix
+question: |
+  Tell us about the logic error
+decoration: confusion
+fields:
+  - label: |
+      **What form were you using?**
+    field: form_title
+    show if:
+      code: |
+        github_repo == default_repository
+  - label: |
+      **What was the title at the top of the page where
+      the bug happened?**
+    field: page_title
+    show if:
+      code: |
+        not question_id    
+  - When should this fix be implemented?: maturity_level
+    code: maturity_levels
+    show if:
+      code: |
+        get_config('debug')
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')
+  - label: |
+      **What logic fix is needed? **
+    field: logic
+    datatype: area
+    rows: 4
+  - label: |
+      **What else would you like to tell us?**
+    field: share_other_details   
+    datatype: area
+    required: False
+---
+id: enhancement
+question: |
+  Tell us about the enhancement you propose
+decoration: enhancement
+fields:
+  - label: |
+      **What form were you using?**
+    field: form_title
+    show if:
+      code: |
+        github_repo == default_repository
+  - When should this fix be implemented?: maturity_level
+    code: maturity_levels
+    show if:
+      code: |
+        get_config('debug')
+  - Who are you? Just tell us your name or github username, not email. This will be public.: user_contact_info
+    show if:
+      code: |
+        get_config('debug')          
+  - label: |
+      **What enhancement do you propose? **
+    field: enhancement
+    datatype: area
+    rows: 4
+  - label: |
+      **What else would you like to tell us?**
+    field: share_other_details   
+    datatype: area
+    required: False
 ---
 id: exit
 event: gentle_exit
@@ -254,7 +438,11 @@ buttons:
 ---
 template: bug_report
 subject: |
-  User: Bug report
+  % if get_config('debug'):
+  Tester feedback: bug
+  % else:
+  User: bug
+  % endif
 content: |
   &nbsp; | &nbsp;
   -------|------------------------------------
@@ -273,10 +461,18 @@ content: |
   % if package_version:
   Package version | `${ package_version }`
   % endif
+  % if get_config('debug'):
+  Maturity target | ${ maturity_level }
+  Tester contact info | ${ user_contact_info }
+  % endif
 ---
 template: confusing_report
 subject: |
+  % if get_config('debug'):
+  Tester feedback: part of the form was confusing
+  % else:
   User: part of the form was confusing
+  % endif
 content: |
   &nbsp; | &nbsp;
   -------|------------------------------------
@@ -293,10 +489,18 @@ content: |
   % if package_version:
   Package version | `${ package_version }`
   % endif  
+  % if get_config('debug'):
+  Maturity target | ${ maturity_level }
+  Tester contact info | ${ user_contact_info }
+  % endif
 ---
 template: other_feedback_report
 subject: |
+  % if get_config('debug'):
+  Tester feedback: other
+  % else:
   User: other feedback
+  % endif
 content: | 
   ## What best describes you?
   
@@ -315,3 +519,32 @@ content: |
   % if package_version:
   Package version | `${ package_version }`
   % endif  
+  % if get_config('debug'):
+  Maturity target | ${ maturity_level }
+  Tester contact info | ${ user_contact_info }
+  % endif 
+---
+objects:
+  - generic_report: DADict
+---
+template: generic_report[i]
+subject: |
+  Tester feedback: ${i}
+content: |
+  &nbsp; | &nbsp;
+  -------|------------------------------------
+  % if question_id:
+  Question ID | `${ question_id }`
+  % elif defined('page_title'): 
+  Page title | ${ page_title }
+  % endif  
+  ${i} | ${ value(i) }
+  Other information | ${ share_other_details }
+  % if variable:
+  Variable being sought | `${ variable }`
+  % endif  
+  % if package_version:
+  Package version | `${ package_version }`
+  % endif   
+  Maturity target | ${ maturity_level }
+  Tester contact info | ${ user_contact_info }
