@@ -1,0 +1,7 @@
+mandatory: True
+code: |
+  try:
+    log('Wrong link to 209A is provided at :' + str(referring_url()))
+  except:
+    log("Wrong link to 209a was provided: (unknown referer)")
+  response(url="https://apps.suffolklitlab.org/start/209a")

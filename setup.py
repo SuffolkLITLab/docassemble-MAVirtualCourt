@@ -43,9 +43,9 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MAVirtualCourt',
-      version='1.0.20',
+      version='1.0.21',
       description=(''),
-      long_description='# docassemble.MAVirtualCourt\r\n\r\n\r\n\r\n## Author\r\n\r\nQuinten Steenhuis\r\nCaroline Robinson\r\nKate Barry\r\nPlocket\r\nLily Yang\r\nMatthew Brooks\r\nLance Godard\r\nMaeve MacGlinchey\r\nKendall Garner\r\nDavid Colarusso',
+      long_description='# docassemble.MAVirtualCourt\r\n\r\nThis package supported version 1 of CourtFormsOnline interviews (forms authored March 2020-January 2021) and is \r\nnow superseded by https://github.com/SuffolkLITLab/docassemble-AssemblyLine\r\n\r\nMany existing production forms still rely on this but may get migrated over time.\r\n\r\n## Author\r\n\r\nQuinten Steenhuis\r\nCaroline Robinson\r\nKate Barry\r\nPlocket\r\nLily Yang\r\nMatthew Brooks\r\nLance Godard\r\nMaeve MacGlinchey\r\nKendall Garner\r\nDavid Colarusso\r\n',
       long_description_content_type='text/markdown',
       author='Quinten Steenhuis',
       author_email='qsteenhuis@suffolk.edu',
@@ -53,7 +53,7 @@ setup(name='docassemble.MAVirtualCourt',
       url='https://docassemble.org',
       packages=find_packages(),
       namespace_packages=['docassemble'],
-      install_requires=['docassemble.AssemblyLineToolbox', 'docassemble.GithubFeedbackForm>=0.0.1', 'docassemble.MACourts>=0.0.47', 'docassemble.assemblylinewizard>=0.39'],
+      install_requires=['docassemble.AssemblyLineToolbox', 'docassemble.GithubFeedbackForm>=0.0.1', 'docassemble.MACourts>=0.0.47', 'docassemble.assemblylinewizard>=0.57'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MAVirtualCourt/', package='docassemble.MAVirtualCourt'),
      )

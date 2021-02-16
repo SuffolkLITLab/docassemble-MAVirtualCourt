@@ -1,0 +1,7 @@
+mandatory: True
+code: |
+  try:
+    log('Wrong link to Housing TRO is provided at :' + str(referring_url()))
+  except:
+    log("Wrong link to Housing TRO was provided: (unknown referer)")
+  response(url="https://apps.suffolklitlab.org/start/housing_tro")
