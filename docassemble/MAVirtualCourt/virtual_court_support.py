@@ -1,7 +1,7 @@
 from docassemble.base.functions import define, defined, value, comma_and_list, word, comma_list, DANav, url_action, showifdef
 
 from docassemble.base.util import Address, Individual, DAEmpty, DAList, Thing, DAObject, Person, date_difference
-from docassemble.assemblylinewizard.interview_generator import map_names
+from .map_names import map_names
 import re
 
 class AddressList(DAList):
