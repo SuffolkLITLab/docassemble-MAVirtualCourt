@@ -15,10 +15,6 @@ code: |
 mandatory: True
 code: |
   # Custom title text, green words/help text, terms of use link, checkbox controls continuation
-  users[0].address
-  bcc_failsafe = 'foo@example.com'
-  court_email = 'foo@example.com'
-  sent_email_to_court
   interview_short_title = 'Shared content tests'
   basic_questions_intro_screen
   users[0].other_contact_method
