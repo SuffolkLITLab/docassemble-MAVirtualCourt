@@ -15,19 +15,6 @@ code: |
 mandatory: True
 code: |
   # Custom title text, green words/help text, terms of use link, checkbox controls continuation
-  
-  allowed_courts = [
-    'District Court',
-    'Boston Municipal Court',
-    #'Superior Court',
-    'Probate and Family Court',
-    'Juvenile Court',
-    'Housing Court',
-    'Land Court'
-    ,'Appeals Court',    
-  ]
-  courts[0]
-  users[0].name.first
   users[0].address
   bcc_failsafe = 'foo@example.com'
   court_email = 'foo@example.com'
