@@ -15,6 +15,23 @@ code: |
 mandatory: True
 code: |
   # Custom title text, green words/help text, terms of use link, checkbox controls continuation
+  
+  allowed_courts = [
+    'District Court',
+    'Boston Municipal Court',
+    #'Superior Court',
+    'Probate and Family Court',
+    'Juvenile Court',
+    'Housing Court',
+    'Land Court'
+    ,'Appeals Court',    
+  ]
+  courts[0]
+  users[0].name.first
+  users[0].address
+  bcc_failsafe = 'foo@example.com'
+  court_email = 'foo@example.com'
+  sent_email_to_court
   interview_short_title = 'Shared content tests'
   basic_questions_intro_screen
   users[0].other_contact_method
