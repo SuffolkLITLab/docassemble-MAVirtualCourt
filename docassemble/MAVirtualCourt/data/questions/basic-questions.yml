@@ -1182,13 +1182,13 @@ code: |
   # email_to_use = "massaccess@suffolk.edu"
   
   if task_not_yet_performed('send email'):
-    log("Court email is " + court_email)
+    log(f'Court email is { court_email }')
     email_success = False
     if should_cc_user:
-      log('Sending email to ' + email_to_use + ' and ccing ' + cc_email + ' for ' + str(users) + ' bcc to ' + bcc_email)
+      log(f'Sending email to { email_to_use } and ccing { cc_email } for { users } bcc to { bcc_email }')
       email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', cc=cc_email, bcc=bcc_email, attachments=final_form_to_file) # True # until we're ready to turn this on
     else:
-      log('Sending email to ' + email_to_use + ' and no cc ' + ' for ' + str(users) + ' bcc to ' + bcc_email)
+      log(f'Sending email to { email_to_use } and no cc for { users } bcc to { bcc_email }')
       email_success = send_email(to=email_to_use, template=email_to_court_template, task='send email', attachments=final_form_to_file, bcc=bcc_email)
     mark_task_as_performed('send email')
   sent_email_to_court = True

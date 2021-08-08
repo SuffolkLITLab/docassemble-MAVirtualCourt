@@ -53,7 +53,7 @@ setup(name='docassemble.MAVirtualCourt',
       url='https://docassemble.org',
       packages=find_packages(),
       namespace_packages=['docassemble'],
-      install_requires=['docassemble.ALToolbox>=0.0.7', 'docassemble.GithubFeedbackForm>=0.0.1', 'docassemble.MACourts>=0.0.47'],
+      install_requires=['docassemble.ALToolbox>=0.0.11', 'docassemble.GithubFeedbackForm>=0.0.1', 'docassemble.MACourts>=0.0.58.2'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MAVirtualCourt/', package='docassemble.MAVirtualCourt'),
      )
