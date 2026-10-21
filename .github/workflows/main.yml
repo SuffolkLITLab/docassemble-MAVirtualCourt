@@ -29,7 +29,7 @@ jobs:
       - run: npm run setup
       - run: npm run cucumber
       - name: upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: screenshots
