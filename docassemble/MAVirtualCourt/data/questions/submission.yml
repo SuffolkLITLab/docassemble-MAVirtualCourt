@@ -29,6 +29,7 @@ code: |
     authorized
 ---
 event: authorized
+id: "you are authorized to see submission id"
 question: |
   You are authorized to see submission ${ id }
 subquestion: |
@@ -37,6 +38,7 @@ subquestion: |
   % endfor
 ---
 event: no_submission
+id: "submissions you can view"
 question: |
   Submissions you can view. 
 subquestion: |
@@ -51,10 +53,12 @@ subquestion: |
   % endif
 ---
 event: not_authorized
+id: "you are not authorized to view submission id"
 question: |
   You are not authorized to view submission ${ id }.
 ---
 event: not_authorized_login
+id: "you are not authorized to view submission id please log in"
 question: |
   You are not authorized to view submission ${ id }. Please log in.
 buttons:
