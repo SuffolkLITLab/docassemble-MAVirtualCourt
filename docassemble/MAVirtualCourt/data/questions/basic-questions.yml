@@ -37,9 +37,12 @@ generic object: DADict
 code: |
   x['built_in_fields_used'] = DAEmpty()
 ---
+id: "do you have a docket number for this case"
 question: |
   Do you have a docket number for this case?
-yesno: docket_numbers.there_are_any
+fields:
+  - no label: docket_numbers.there_are_any
+    datatype: yesnoradio
 ---
 code: |
   package_name = str(user_info().package)
@@ -130,13 +133,17 @@ id: who will be on this form
 generic object: PeopleList
 question: |
   Will this form include any ${noun_plural(x.object_name())}?
-yesno: x.there_are_any
+fields:
+  - no label: x.there_are_any
+    datatype: yesnoradio
 ---
-id: who will be on this form
+id: "who will be on this form 2"
 generic object: VCBusinessList
 question: |
   Will this form include any ${noun_plural(x.object_name())}?
-yesno: x.there_are_any
+fields:
+  - no label: x.there_are_any
+    datatype: yesnoradio
 ---
 id: names of witnesses
 question: |
@@ -364,7 +371,9 @@ subquestion: |
   % endif
   
   Is anyone else on your side of this case?
-yesno: users.there_is_another 
+fields:
+  - no label: users.there_is_another
+    datatype: yesnoradio
 ---
 id: other users names
 question: |
@@ -513,7 +522,9 @@ subquestion: |
   go to court.
   Answer yes if someone else has sued you or is bringing you to court.
   % endif
-yesno: other_parties.there_are_any
+fields:
+  - no label: other_parties.there_are_any
+    datatype: yesnoradio
 ---
 id: children names without birthdate
 question: |
@@ -1134,7 +1145,7 @@ subquestion: |
   If you answer something other than "Female" or "Male", we may not be able
   to check any box on your form. This may delay your case.
 fields:
-  - no label: x.gender
+  - "What is ${x.possessive('gender')}?": x.gender
     choices:
       - Female: female
       - Male: male
@@ -1300,6 +1311,7 @@ code: |
     package_version_number = "playground"
 ---
 event: review_all_sections
+id: "review of your answers"
 question: |
   Review of your answers
 subquestion: |
